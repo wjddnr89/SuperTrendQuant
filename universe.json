@@ -1,0 +1,39 @@
+{
+  "KR_UNIVERSE_MAP": {
+    "066570": "KOSPI",
+    "009150": "KOSPI",
+    "000660": "KOSPI",
+    "011070": "KOSPI",
+    "005380": "KOSPI",
+    "005930": "KOSPI",
+    "007660": "KOSPI",
+    "017670": "KOSPI",
+    "034020": "KOSPI",
+    "006800": "KOSPI",
+    "010140": "KOSPI",
+    "012450": "KOSPI",
+    "267260": "KOSPI",
+    "010120": "KOSPI",
+    "042700": "KOSPI",
+    "010170": "KOSDAQ",
+    "058610": "KOSDAQ",
+    "222800": "KOSDAQ",
+    "189300": "KOSDAQ",
+    "032820": "KOSDAQ",
+    "086520": "KOSDAQ",
+    "240810": "KOSDAQ",
+    "403870": "KOSDAQ",
+    "336260": "KOSPI",
+    "056190": "KOSDAQ",
+    "052020": "KOSDAQ",
+    "064290": "KOSDAQ",
+    "489790": "KOSPI",
+    "347700": "KOSDAQ",
+    "031980": "KOSDAQ",
+    "298040": "KOSPI"
+  },
+  "US_UNIVERSE_LIST": [
+    "SOXL", "TQQQ", "NVDA", "MU", "GEV", "VRT", "RKLB", "PL", "RDW", "OUST", "MRVL", "SPCX",
+    "TSLA", "AEHR", "AXON", "RZLV", "FN", "AMD", "COHR", "MP", "TSM"
+  ]
+}

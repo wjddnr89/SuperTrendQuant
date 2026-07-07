@@ -1,9 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+초기 리더 로테이션 실험 파일입니다.
+
+MAX_SLOTS=1로 가장 강한 종목 하나만 보유하는 아이디어를 빠르게 검증하던 버전입니다.
+현재 비교/검증용으로는 같은 아이디어를 더 정리한 backtest_30m_leader.py를 우선 보면 됩니다.
+"""
+
 import os
+import sys
+import io
+import tempfile
 import json
 import numpy as np
 import pandas as pd
 import yfinance as yf
 from datetime import datetime
+from pathlib import Path
+
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding="utf-8")
+    sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding="utf-8")
+
+YFINANCE_CACHE_DIR = Path(tempfile.gettempdir()) / "trading_bot_yfinance_cache"
+YFINANCE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+yf.set_tz_cache_location(str(YFINANCE_CACHE_DIR))
 
 # ==========================================
 # ⚙️ 핵심 백테스트 파라미터 및 마켓 설정
@@ -13,7 +33,7 @@ INITIAL_CASH = 10_000_000.0 if BACKTEST_MARKET == "KR" else 10_000.0
 MAX_SLOTS = 1               
 
 HURDLE_ATR_MULT = 1.25      
-ALLOW_LATE_CHASE = True     
+ALLOW_LATE_CHASE = True   
 
 RS_PERIOD = 100             
 FEE_HALF = 0.00225          
@@ -26,7 +46,7 @@ EXPERIMENTAL_TIMEFRAMES = ['None', '30m', '1h', '2h', '3h', '4h']
 # ==========================================
 # 🛠️ 수퍼트렌드 및 유니버스 로더 레이어
 # ==========================================
-def calculate_supertrend(df, period=7, multiplier=3.0):
+def calculate_supertrend(df, period=10, multiplier=3.0):
     if df.empty or len(df) < period: return df
     high, low, close = df['High'].squeeze(), df['Low'].squeeze(), df['Close'].squeeze()
     tr = pd.concat([high - low, (high - close.shift(1)).abs(), (low - close.shift(1)).abs()], axis=1).max(axis=1)

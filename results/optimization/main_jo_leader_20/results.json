@@ -1,0 +1,757 @@
+[
+  {
+    "iteration": 1,
+    "name": "baseline",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/01_baseline.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/01_baseline",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {}
+  },
+  {
+    "iteration": 2,
+    "name": "supertrend_period_5",
+    "params": {
+      "supertrend_period": 5,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/02_supertrend_period_5.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/02_supertrend_period_5",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "supertrend_period": 5
+    }
+  },
+  {
+    "iteration": 3,
+    "name": "supertrend_period_9",
+    "params": {
+      "supertrend_period": 9,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/03_supertrend_period_9.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/03_supertrend_period_9",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "supertrend_period": 9
+    }
+  },
+  {
+    "iteration": 4,
+    "name": "supertrend_period_11",
+    "params": {
+      "supertrend_period": 11,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/04_supertrend_period_11.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/04_supertrend_period_11",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "supertrend_period": 11
+    }
+  },
+  {
+    "iteration": 5,
+    "name": "supertrend_multiplier_2_5",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 2.5,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/05_supertrend_multiplier_2_5.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/05_supertrend_multiplier_2_5",
+    "metrics": {
+      "total_return": 0.1886332702230098,
+      "mdd": -0.0805379368739163,
+      "sharpe": 9.740092565460333,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.34316615309525833,
+    "mutation_params": {
+      "supertrend_multiplier": 2.5
+    }
+  },
+  {
+    "iteration": 6,
+    "name": "supertrend_multiplier_3_5",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.5,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/06_supertrend_multiplier_3_5.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/06_supertrend_multiplier_3_5",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "supertrend_multiplier": 3.5
+    }
+  },
+  {
+    "iteration": 7,
+    "name": "leveraged_symbol_multiplier_3_5",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 3.5,
+        "SOXS": 3.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/07_leveraged_symbol_multiplier_3_5.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/07_leveraged_symbol_multiplier_3_5",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "symbol_multiplier": 3.5
+    }
+  },
+  {
+    "iteration": 8,
+    "name": "leveraged_symbol_multiplier_5_5",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 5.5,
+        "SOXS": 5.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/08_leveraged_symbol_multiplier_5_5.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/08_leveraged_symbol_multiplier_5_5",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "symbol_multiplier": 5.5
+    }
+  },
+  {
+    "iteration": 9,
+    "name": "rs_lookback_80",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 80,
+        "KR": 100,
+        "default": 80
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/09_rs_lookback_80.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/09_rs_lookback_80",
+    "metrics": {
+      "total_return": -0.07174905501409135,
+      "mdd": -0.15530635538364423,
+      "sharpe": -3.2901742221990684,
+      "win_rate": 0.5,
+      "payoff_ratio": 0.6142381385260807,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": -0.21520571714989484,
+    "mutation_params": {
+      "rs_lookback": 80
+    }
+  },
+  {
+    "iteration": 10,
+    "name": "rs_lookback_100",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 100,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/10_rs_lookback_100.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/10_rs_lookback_100",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 4.505032643444077,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.13414851551401802,
+    "mutation_params": {
+      "rs_lookback": 100
+    }
+  },
+  {
+    "iteration": 11,
+    "name": "rs_lookback_160",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 160,
+        "KR": 100,
+        "default": 160
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/11_rs_lookback_160.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/11_rs_lookback_160",
+    "metrics": {
+      "total_return": -0.03148949167194559,
+      "mdd": -0.0820505022998762,
+      "sharpe": -3.130275949547232,
+      "win_rate": 0.5,
+      "payoff_ratio": 0.6616438811668417,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": -0.13512026181282832,
+    "mutation_params": {
+      "rs_lookback": 160
+    }
+  },
+  {
+    "iteration": 12,
+    "name": "rotation_hurdle_0_75",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 0.75,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/12_rotation_hurdle_0_75.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/12_rotation_hurdle_0_75",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "hurdle_multiplier": 0.75
+    }
+  },
+  {
+    "iteration": 13,
+    "name": "rotation_hurdle_1_0",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.0,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/13_rotation_hurdle_1_0.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/13_rotation_hurdle_1_0",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "hurdle_multiplier": 1.0
+    }
+  },
+  {
+    "iteration": 14,
+    "name": "rotation_hurdle_1_5",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.5,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/14_rotation_hurdle_1_5.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/14_rotation_hurdle_1_5",
+    "metrics": {
+      "total_return": 0.09017037454742693,
+      "mdd": -0.07546236459106459,
+      "sharpe": 5.560018059179784,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1636395534354903,
+    "mutation_params": {
+      "hurdle_multiplier": 1.5
+    }
+  },
+  {
+    "iteration": 15,
+    "name": "no_late_chase",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": false,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/15_no_late_chase.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/15_no_late_chase",
+    "metrics": {
+      "total_return": -0.14517304659083352,
+      "mdd": -0.1788442337595011,
+      "sharpe": -10.860544761920636,
+      "win_rate": 0.5,
+      "payoff_ratio": 0.012512144340395806,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": -0.4518060587089968,
+    "mutation_params": {
+      "allow_late_chase": false
+    }
+  },
+  {
+    "iteration": 16,
+    "name": "min_rotation_profit_0",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.0
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/16_min_rotation_profit_0.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/16_min_rotation_profit_0",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "min_rotation_profit_pct": 0.0
+    }
+  },
+  {
+    "iteration": 17,
+    "name": "min_rotation_profit_2pct",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.02
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/17_min_rotation_profit_2pct.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/17_min_rotation_profit_2pct",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "min_rotation_profit_pct": 0.02
+    }
+  },
+  {
+    "iteration": 18,
+    "name": "sell_confirm_2bars",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 2,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/18_sell_confirm_2bars.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/18_sell_confirm_2bars",
+    "metrics": {
+      "total_return": 0.08442635332437454,
+      "mdd": -0.08075698135847609,
+      "sharpe": 5.415526800829551,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.1523583986617275,
+    "mutation_params": {
+      "sell_confirm_bars": 2
+    }
+  },
+  {
+    "iteration": 19,
+    "name": "benchmark_filter_30m",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 3.0,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "30m",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/19_benchmark_filter_30m.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/19_benchmark_filter_30m",
+    "metrics": {
+      "total_return": 0.10909658076768802,
+      "mdd": -0.12796155737458959,
+      "sharpe": 5.244209089383187,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.14999998386805696,
+    "mutation_params": {
+      "benchmark_timeframe": "30m"
+    }
+  },
+  {
+    "iteration": 20,
+    "name": "best_single_factor_combo",
+    "params": {
+      "supertrend_period": 7,
+      "supertrend_multiplier": 2.5,
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      },
+      "benchmark_timeframe": "1h",
+      "rs_lookback": {
+        "US": 130,
+        "KR": 100,
+        "default": 100
+      },
+      "sell_confirm_bars": 1,
+      "hurdle_multiplier": 1.5,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "variant_path": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/variants/20_best_single_factor_combo.yaml",
+    "run_dir": "/home/jh/Project/SuperTrendQuant/results/optimization/main_jo_leader_20/backtests/20_best_single_factor_combo",
+    "metrics": {
+      "total_return": 0.10225693173540518,
+      "mdd": -0.1279440115658267,
+      "sharpe": 4.96224223610742,
+      "win_rate": 1.0,
+      "payoff_ratio": Infinity,
+      "trade_count": 2
+    },
+    "trade_count": 2,
+    "skipped": [],
+    "score": 0.13752977067464023
+  }
+]

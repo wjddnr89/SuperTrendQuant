@@ -1,0 +1,8 @@
+# Runtime dependencies for the backtest scripts.
+# Install into this project's venv with:
+# venv\Scripts\python.exe -m pip install -r requirements.txt
+
+yfinance
+pandas>=2.2,<3.0
+numpy>=2.0
+optuna>=3.6

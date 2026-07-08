@@ -15,7 +15,7 @@ from supertrend_quant.runtime import check_market_schedule
 
 
 def load_live_config():
-    return load_split_config("configs/strategies/main_jo_leader_rotation.yaml", "configs/runtimes/live_toss.yaml")
+    return load_split_config("configs/strategies/leader_rotation.yaml", "configs/runtimes/live_toss.yaml")
 
 
 class FakeBroker:

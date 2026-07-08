@@ -7,7 +7,14 @@ import pandas as pd
 from supertrend_quant.brokers import PaperBroker
 from supertrend_quant.config import benchmark_for_symbol, load_split_config
 from supertrend_quant.portfolio import AccountSnapshot
-from supertrend_quant.strategies import _trend_down_confirmed, build_order_plan, effective_rs_period
+from supertrend_quant.strategies import (
+    _trend_down_confirmed,
+    available_strategies,
+    build_order_plan,
+    create_strategy,
+    effective_rs_period,
+    register_strategy,
+)
 
 
 class ConfigAndStrategyTest(unittest.TestCase):
@@ -62,23 +69,78 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertIn("relative_strength", {component.type for component in config.components})
         self.assertEqual(len(config.components), 4)
 
-    def test_split_live_config_matches_main_jo_runtime_settings(self):
+    def test_strategy_registry_creates_registered_strategy(self):
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+
+        strategy = create_strategy(config)
+
+        self.assertEqual(strategy.strategy_type, "simple_supertrend")
+        self.assertEqual(strategy.warmup_bars(), 2)
+        self.assertIn("leader_rotation", available_strategies())
+        self.assertIn("simple_supertrend", available_strategies())
+
+    def test_unknown_strategy_type_lists_available_strategies(self):
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+        bad_config = config.__class__(
+            **{
+                **config.__dict__,
+                "strategy": config.strategy.__class__(
+                    name="missing",
+                    type="missing_strategy",
+                    params={},
+                ),
+            }
+        )
+
+        with self.assertRaisesRegex(ValueError, "Available strategies: .*simple_supertrend"):
+            create_strategy(bad_config)
+
+    def test_duplicate_strategy_registration_is_rejected(self):
+        class DuplicateSimpleSupertrend:
+            strategy_type = "simple_supertrend"
+
+        with self.assertRaisesRegex(ValueError, "already registered"):
+            register_strategy(DuplicateSimpleSupertrend)
+
+    def test_strategy_specific_params_reject_unknown_keys(self):
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+        bad_config = config.__class__(
+            **{
+                **config.__dict__,
+                "strategy": config.strategy.__class__(
+                    name=config.strategy.name,
+                    type=config.strategy.type,
+                    params={"typo": 1},
+                ),
+            }
+        )
+
+        with self.assertRaisesRegex(ValueError, "Unsupported params for simple_supertrend"):
+            create_strategy(bad_config)
+
+    def test_backtest_engine_has_no_strategy_type_dispatch(self):
+        runner_source = Path("supertrend_quant/runners.py").read_text(encoding="utf-8")
+
+        self.assertNotIn("config.strategy.type ==", runner_source)
+        self.assertNotIn("if config.strategy.type", runner_source)
+
+    def test_split_live_config_uses_remaining_leader_rotation_strategy(self):
         config = load_split_config(
-            "configs/strategies/main_jo_leader_rotation.yaml",
+            "configs/strategies/leader_rotation.yaml",
             "configs/runtimes/live_toss.yaml",
         )
 
-        self.assertEqual(config.strategy.name, "main_jo_live_leader_rotation")
+        self.assertEqual(config.strategy.name, "leader_rotation_default")
         self.assertEqual(config.market, "AUTO")
         self.assertEqual(config.universe_file, "universe.json")
         self.assertEqual(config.period, "30d")
-        self.assertEqual(config.supertrend.period, 7)
-        self.assertEqual(config.supertrend.atr_method, "ewm")
+        self.assertEqual(config.supertrend.period, 10)
+        self.assertEqual(config.supertrend.atr_method, "wilder")
         self.assertEqual(config.supertrend.symbol_multipliers["SOXL"], 4.5)
-        self.assertEqual(config.market_trend_filter.timeframe, "1h")
+        self.assertEqual(config.market_trend_filter.timeframe, "1d")
         self.assertEqual(config.leader_rotation.rs_period, 100)
-        self.assertEqual(config.leader_rotation.rs_period_by_market, {"US": 130, "KR": 100})
-        self.assertEqual(effective_rs_period(config.__class__(**{**config.__dict__, "market": "US"})), 130)
+        self.assertEqual(config.leader_rotation.rs_period_by_market, {})
+        self.assertEqual(effective_rs_period(config.__class__(**{**config.__dict__, "market": "US"})), 100)
         self.assertEqual(effective_rs_period(config.__class__(**{**config.__dict__, "market": "KR"})), 100)
         self.assertEqual(config.execution.broker, "toss")
         self.assertEqual(config.execution.live_confirm_required, True)

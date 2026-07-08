@@ -94,6 +94,7 @@ class ComponentConfig:
 class StrategyIdentity:
     name: str
     type: str
+    params: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -161,13 +162,11 @@ def compose_split_config(
     if portfolio_mode and portfolio_mode != strategy_type:
         raise ValueError("portfolio.mode must match strategy type.")
     max_positions = int(portfolio_raw.get("max_positions", 1))
-    if strategy_type == "leader_rotation" and max_positions != 1:
-        raise ValueError("leader_rotation currently supports portfolio.max_positions: 1 only.")
-
     composed = {
         "strategy": {
             "name": str(strategy_raw.get("name") or strategy_type),
             "type": strategy_type,
+            "params": _optional_mapping(strategy_raw, "params"),
         },
         "market": str(runtime_raw.get("market", "US")).upper(),
         "universe": {
@@ -228,11 +227,10 @@ def parse_config(raw: dict[str, Any]) -> AppConfig:
     strategy = StrategyIdentity(
         name=str(strategy_raw.get("name") or strategy_raw.get("type") or "").strip(),
         type=str(strategy_raw.get("type") or "").strip(),
+        params=dict(_optional_mapping(strategy_raw, "params")),
     )
     if not strategy.name or not strategy.type:
         raise ValueError("strategy.name and strategy.type are required.")
-    if strategy.type not in {"simple_supertrend", "leader_rotation"}:
-        raise ValueError("strategy.type must be simple_supertrend or leader_rotation.")
 
     indicators = _optional_mapping(raw, "indicators")
     filters = _optional_mapping(raw, "filters")
@@ -402,7 +400,8 @@ def _compose_components(strategy_raw: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _validate_strategy_schema(raw: dict[str, Any]) -> None:
-    _reject_unknown_keys(raw, {"name", "type", "portfolio", "signals", "rotation", "timeframe", "period"}, "strategy")
+    _reject_unknown_keys(raw, {"name", "type", "params", "portfolio", "signals", "rotation", "timeframe", "period"}, "strategy")
+    _optional_mapping(raw, "params")
     _reject_unknown_keys(_optional_mapping(raw, "portfolio"), {"max_positions", "allocation_pct"}, "strategy.portfolio")
     rotation = _optional_mapping(raw, "rotation")
     _reject_unknown_keys(rotation, {"hurdle", "allow_late_chase", "min_rotation_profit_pct"}, "strategy.rotation")

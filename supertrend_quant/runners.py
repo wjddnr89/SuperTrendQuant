@@ -9,7 +9,7 @@ from .config import AppConfig, load_universe
 from .data import common_index, download_market_data
 from .metrics import calculate_metrics, format_float, format_pct
 from .portfolio import AccountSnapshot, OrderPlan, Position
-from .strategies import build_order_plan, effective_rs_period
+from .strategies import build_order_plan, create_strategy
 
 
 @dataclass(frozen=True)
@@ -33,7 +33,8 @@ def run_backtest(config: AppConfig) -> BacktestResult:
     equity_points: list[tuple[pd.Timestamp, float]] = []
     trade_returns: list[float] = []
 
-    start_i = effective_rs_period(config) + 1 if config.strategy.type == "leader_rotation" else 2
+    strategy = create_strategy(config)
+    start_i = strategy.warmup_bars()
     for i in range(start_i, len(idx) - 1):
         signal_ts = idx[i]
         exec_ts = idx[i + 1]
@@ -41,8 +42,7 @@ def run_backtest(config: AppConfig) -> BacktestResult:
         benchmark = _slice_benchmark(market_data.benchmark, signal_ts)
         filter_benchmark = _slice_benchmark(market_data.filter_benchmark, signal_ts)
         account = AccountSnapshot(cash=cash, positions=positions.copy())
-        plan = build_order_plan(
-            config,
+        plan = strategy.build_order_plan(
             sliced,
             account,
             mode="backtest",

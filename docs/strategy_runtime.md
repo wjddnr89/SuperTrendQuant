@@ -16,7 +16,7 @@ uv run quant-paper \
   --state state/paper.json
 
 uv run quant-live \
-  --strategy configs/strategies/main_jo_leader_rotation.yaml \
+  --strategy configs/strategies/leader_rotation.yaml \
   --runtime configs/runtimes/live_toss.yaml
 ```
 
@@ -74,18 +74,18 @@ uv run quant-compare \
 
 - `supertrend_quant.config`: loads and composes YAML/TOML settings.
 - `supertrend_quant.indicators`: indicator calculations such as Supertrend.
-- `supertrend_quant.strategies`: creates a shared order plan from market data.
+- `supertrend_quant.strategies`: strategy interface, registry, and strategy modules
+  that create shared order plans from market data.
 - `supertrend_quant.brokers`: paper JSON broker and Toss live broker.
 - `supertrend_quant.live_runtime`: migrated `main_jo.py` live loop, schedule,
   holdings sync, open-order guard, Telegram, and Toss order dispatch.
 - `supertrend_quant.runners`: mode-specific execution flow.
 - `supertrend_quant.cli`: `uv run` entrypoints.
 
-## main_jo.py Migration Notes
+## Live Runtime Notes
 
-`configs/strategies/main_jo_leader_rotation.yaml` with
-`configs/runtimes/live_toss.yaml` is the migrated live profile for the
-`main_jo.py` strategy. It keeps these runtime semantics:
+`configs/strategies/leader_rotation.yaml` with `configs/runtimes/live_toss.yaml`
+is the current live profile. The live runtime keeps these execution semantics:
 
 - KR/US market schedule and close briefing windows.
 - Toss account cash/holding sync into `holding.json`.
@@ -93,9 +93,8 @@ uv run quant-compare \
 - 30m yfinance stock/benchmark cache plus stale-symbol exclusion.
 - Individual stale-symbol retry during live cycles.
 - KR benchmark routing: KOSPI -> `^KS11`, KOSDAQ -> `^KQ11`; US -> `QQQ`.
-- 1h benchmark Supertrend buy filter.
-- `main_jo.py` ewm Supertrend compatibility through `atr_method: ewm`.
-- US/KR RS periods of 130/100 from `lookback_bars` in the strategy config.
+- Benchmark Supertrend buy filter when enabled by the strategy config.
+- Relative-strength lookback from `lookback_bars` in the strategy config.
 - SOXL/SOXS Supertrend multiplier of 4.5 from `symbol_multipliers`.
 - Open-order guard and 1% minimum-profit hard brake before leader-rotation sells.
 - Same-cycle post-sell leader buy intent, with buy quantity recalculated after

@@ -1,0 +1,25 @@
+# module research runtime config.
+# supertrend_quant/configs/runtimes와 같은 형태를 사용하지만, module의
+# 백테스트 조합 탐색과 Optuna 최적화를 위한 기본 국장 런타임입니다.
+
+name: module_research_kr
+market: KR
+universe_file: universe.json
+symbols: []
+
+data:
+  timeframe: 30m
+  period: 60d
+
+capital:
+  initial_cash: 10000000
+
+costs:
+  fee_rate: 0.00225
+  slippage_rate: 0.0005
+
+execution:
+  order_type: market
+  broker: paper
+  live_confirm_required: true
+

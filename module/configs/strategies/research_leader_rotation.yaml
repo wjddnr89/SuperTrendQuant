@@ -1,0 +1,37 @@
+# module research strategy config.
+# supertrend_quant/configs/strategies와 같은 형태를 사용하지만, 이 파일은
+# module 백테스트/최적화에서 기본 조합을 읽기 위한 연구용 예시입니다.
+
+name: research_leader_rotation
+type: leader_rotation
+
+portfolio:
+  max_positions: 1
+  allocation_pct: 1.0
+
+signals:
+  entries:
+    - type: supertrend
+      enabled: true
+      period: 10
+      multiplier: 3.0
+      atr_method: wilder
+
+  filters:
+    - type: benchmark_trend
+      enabled: true
+      timeframe: 1d
+
+    - type: relative_strength
+      lookback_bars: 100
+
+  exits:
+    - type: supertrend_flip
+      confirm_bars: 1
+
+rotation:
+  hurdle:
+    multiplier: 1.25
+  allow_late_chase: true
+  min_rotation_profit_pct: 0.0
+

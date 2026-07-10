@@ -1,0 +1,102 @@
+"""Research orchestration over the production strategy and backtest engine."""
+
+from .benchmarks import BenchmarkResult, build_benchmark_report
+from .data_resolver import (
+    MarketDataCache,
+    MarketDataMismatchError,
+    MarketDataSource,
+    data_request_key,
+    resolve_market_data,
+)
+from .evaluation import (
+    EvaluationResult,
+    SegmentEvaluation,
+    evaluate_config,
+    evaluate_ranking_segment,
+    evaluate_segment,
+    split_index,
+)
+from .export import (
+    config_to_split_dicts,
+    save_split_yaml,
+    split_yaml_text,
+    strict_split_roundtrip,
+)
+from .optimize import (
+    OptimizationResult,
+    OptimizationSpace,
+    OptimizationTrial,
+    optimize_config,
+    require_optuna,
+    run_optimize,
+)
+from .overlays import (
+    apply_config_overlay,
+    replace_path,
+    with_asset_filters,
+    with_costs,
+    with_entry,
+    with_filter,
+    with_filters,
+    with_market_filter,
+    with_relative_strength,
+    with_sell_confirmation,
+    with_single_entry,
+    with_timeframe,
+    with_triple_entry,
+)
+from .scoring import score_metrics
+from .search import (
+    SearchError,
+    SearchResult,
+    SearchRow,
+    cartesian_overlays,
+    run_search,
+    search_configs,
+)
+
+__all__ = [
+    "BenchmarkResult",
+    "EvaluationResult",
+    "MarketDataCache",
+    "MarketDataMismatchError",
+    "MarketDataSource",
+    "OptimizationResult",
+    "OptimizationSpace",
+    "OptimizationTrial",
+    "SearchError",
+    "SearchResult",
+    "SearchRow",
+    "SegmentEvaluation",
+    "apply_config_overlay",
+    "build_benchmark_report",
+    "cartesian_overlays",
+    "config_to_split_dicts",
+    "data_request_key",
+    "evaluate_config",
+    "evaluate_ranking_segment",
+    "evaluate_segment",
+    "optimize_config",
+    "replace_path",
+    "require_optuna",
+    "resolve_market_data",
+    "run_optimize",
+    "run_search",
+    "save_split_yaml",
+    "score_metrics",
+    "search_configs",
+    "split_index",
+    "split_yaml_text",
+    "strict_split_roundtrip",
+    "with_asset_filters",
+    "with_costs",
+    "with_entry",
+    "with_filter",
+    "with_filters",
+    "with_market_filter",
+    "with_relative_strength",
+    "with_sell_confirmation",
+    "with_single_entry",
+    "with_timeframe",
+    "with_triple_entry",
+]

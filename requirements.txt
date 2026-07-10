@@ -1,9 +1,10 @@
-# Runtime dependencies for the backtest scripts.
-# Install into this project's venv with:
-# venv\Scripts\python.exe -m pip install -r requirements.txt
+# Runtime and research dependencies for the unified package.
+# Prefer `uv sync`; pip users can install this file directly.
 
 yfinance
-pandas>=2.2,<3.0
+pandas>=2.2
 numpy>=2.0
 pyyaml>=6.0
 optuna>=3.6
+python-dotenv>=1.0
+requests>=2.31

@@ -1,0 +1,29 @@
+name: research_us
+market: US
+universe_file: universe.json
+symbols: []
+
+data:
+  timeframe: 30m
+  period: 60d
+
+capital:
+  initial_cash: 10000
+
+costs:
+  fee_rate: 0.00225
+  slippage_rate: 0.0005
+
+execution:
+  order_type: market
+  broker: paper
+  live_confirm_required: true
+
+paper:
+  state_file: state/research_us_paper.json
+  results_dir: results/research/us/paper
+  loop_interval_seconds: 60
+  run_once_per_candle: true
+
+backtest:
+  results_dir: results/research/us/backtests

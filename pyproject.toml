@@ -17,10 +17,16 @@ quant-backtest = "supertrend_quant.cli:backtest_main"
 quant-paper = "supertrend_quant.cli:paper_main"
 quant-live = "supertrend_quant.cli:live_main"
 quant-compare = "supertrend_quant.cli:compare_main"
+quant-search = "supertrend_quant.cli:search_main"
+quant-optimize = "supertrend_quant.cli:optimize_main"
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+package-dir = {"" = "unified_quant/src"}
+
 [tool.setuptools.packages.find]
+where = ["unified_quant/src"]
 include = ["supertrend_quant*"]

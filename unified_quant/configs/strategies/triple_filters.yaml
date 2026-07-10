@@ -1,0 +1,49 @@
+name: triple_filters_research
+type: leader_rotation
+
+portfolio:
+  max_positions: 1
+  allocation_pct: 1.0
+
+signals:
+  entries:
+    - type: triple_supertrend
+      enabled: true
+      atr_method: wilder
+      settings:
+        - period: 10
+          multiplier: 1.0
+        - period: 11
+          multiplier: 2.0
+        - period: 12
+          multiplier: 3.0
+
+  filters:
+    - type: benchmark_trend
+      enabled: true
+      timeframe: 1d
+
+    - type: relative_strength
+      lookback_bars: 100
+
+    - type: ichimoku_cloud
+      enabled: true
+      tenkan: 9
+      kijun: 26
+      span_b: 52
+      shift: 26
+
+    - type: ema_trend
+      enabled: true
+      period: 200
+
+  exits:
+    - type: triple_supertrend_flip
+      down_count: 2
+      confirm_bars: 3
+
+rotation:
+  hurdle:
+    multiplier: 1.25
+  allow_late_chase: true
+  min_rotation_profit_pct: 0.0

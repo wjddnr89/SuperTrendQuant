@@ -1,0 +1,148 @@
+from __future__ import annotations
+
+import asyncio
+from dataclasses import replace
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+from .brokers import PaperBroker
+from .config import AppConfig, load_universe_for_market
+from .data_cache import YahooStateCache
+from .portfolio import OrderPlan
+from .results import PaperRunRecorder
+from .runtime import check_market_schedule, last_completed_bar_end
+from .runners import _latest_prices
+from .strategies import build_order_plan
+
+
+class PaperRuntime:
+    def __init__(
+        self,
+        config: AppConfig,
+        state_path: str | None = None,
+        broker: PaperBroker | None = None,
+        data_cache: YahooStateCache | None = None,
+        recorder: PaperRunRecorder | None = None,
+    ):
+        self.config = config
+        self.state_path = state_path or config.paper.state_file
+        self.broker = broker or PaperBroker(self.state_path, initial_cash=config.capital.initial_cash)
+        self.data_cache = data_cache or YahooStateCache()
+        self.recorder = recorder or PaperRunRecorder(config.paper.results_dir, config.strategy.name)
+        self.recorder.write_metadata(config)
+        self.last_candle_base_time: dict[str, datetime | None] = {"KR": None, "US": None}
+
+    def run_once(self, ignore_schedule: bool = False) -> tuple[OrderPlan, list[str]]:
+        resolved = self._resolve_market(ignore_schedule)
+        if resolved is None:
+            plan = OrderPlan(self.config.strategy.name, "paper", (), ("Market is sleeping.",))
+            return plan, ["No open market for paper cycle."]
+        session_market, session_timezone = resolved
+
+        config = replace(self.config, market=session_market)
+        symbols = list(config.symbols) if config.symbols else load_universe_for_market(config.universe_file, session_market)
+        market_now = datetime.now(session_timezone)
+        filter_timeframe = (
+            config.market_trend_filter.timeframe
+            if config.market_trend_filter.enabled
+            else config.timeframe
+        )
+        if hasattr(self.data_cache, "configure"):
+            self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
+        current_base = last_completed_bar_end(market_now, session_market, config.timeframe)
+        candle_key = f"last_candle_base:{session_market}"
+        candle_value = current_base.isoformat()
+        if config.paper.run_once_per_candle and self.broker.get_metadata(candle_key) == candle_value:
+            plan = OrderPlan(config.strategy.name, "paper", (), (f"Candle already processed: {candle_value}",))
+            return plan, ["No paper orders."]
+
+        benchmarks = ["^KS11", "^KQ11", "QQQ"]
+        if self.last_candle_base_time.get(session_market) != current_base:
+            self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
+            self.last_candle_base_time[session_market] = current_base
+        self.data_cache.retry_missing(session_market, config.universe_file, session_timezone, current_base)
+        bars, stale_symbols = self.data_cache.fresh_stock_bars(symbols, session_timezone, current_base)
+        benchmark = self.data_cache.fresh_benchmark_map(
+            symbols,
+            session_market,
+            config.universe_file,
+            config.timeframe,
+            session_timezone,
+            current_base,
+        )
+        current_filter_base = last_completed_bar_end(market_now, session_market, filter_timeframe)
+        filter_benchmark = self.data_cache.fresh_benchmark_map(
+            symbols,
+            session_market,
+            config.universe_file,
+            filter_timeframe,
+            session_timezone,
+            current_filter_base,
+        )
+        if not bars:
+            plan = OrderPlan(config.strategy.name, "paper", (), ("No fresh market data.",))
+            return plan, ["No paper orders."]
+
+        prices = _latest_prices(bars)
+        account_before = self.broker.get_account()
+        plan = build_order_plan(
+            config,
+            bars,
+            account_before,
+            mode="paper",
+            benchmark=benchmark,
+            filter_benchmark=filter_benchmark,
+        )
+        if stale_symbols:
+            plan = OrderPlan(
+                plan.strategy_name,
+                plan.mode,
+                plan.orders,
+                plan.notes + (f"Skipped stale symbols: {', '.join(stale_symbols)}",),
+            )
+        fills = self.broker.execute_plan(
+            plan,
+            prices,
+            config.costs.fee_rate,
+            config.costs.slippage_rate,
+            metadata_updates={candle_key: candle_value},
+        )
+        account_after = self.broker.get_account()
+        self.recorder.record_cycle(
+            timestamp=market_now,
+            market=session_market,
+            candle_base=current_base,
+            plan=plan,
+            fills=fills,
+            account_before=account_before,
+            account_after=account_after,
+            prices=prices,
+        )
+        return plan, fills or ["No paper orders."]
+
+    async def run_loop(self, ignore_schedule: bool = False) -> None:
+        while True:
+            try:
+                plan, results = self.run_once(ignore_schedule=ignore_schedule)
+                print(f"Paper Order Plan: {len(plan.orders)} orders")
+                for note in plan.notes:
+                    print(note)
+                for result in results:
+                    print(result)
+            except Exception as exc:
+                print(f"Paper runtime exception: {exc}")
+            await asyncio.sleep(self.config.paper.loop_interval_seconds)
+
+    def _resolve_market(self, ignore_schedule: bool) -> tuple[str, ZoneInfo] | None:
+        if ignore_schedule:
+            market = "US" if self.config.market == "AUTO" else self.config.market
+            session_market = market if market in {"KR", "US"} else "US"
+            session_timezone = ZoneInfo("Asia/Seoul") if session_market == "KR" else ZoneInfo("America/New_York")
+            return session_market, session_timezone
+
+        session = check_market_schedule()
+        if session.market is None or session.timezone is None:
+            return None
+        if self.config.market != "AUTO" and session.market != self.config.market:
+            return None
+        return session.market, session.timezone

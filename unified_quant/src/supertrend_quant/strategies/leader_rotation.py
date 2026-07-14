@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import Any
 
 import pandas as pd
 
@@ -17,6 +19,7 @@ from .common import (
     entry_state_allows_buy,
     market_filter_allows_buy,
     precompute_market_filter_trends,
+    scheduled_prepared_slice,
     sell_all,
     with_strategy_components,
 )
@@ -28,6 +31,7 @@ class PreparedLeaderBacktest(PreparedBacktest):
     strategy: "LeaderRotationStrategy"
     prepared: dict[str, pd.DataFrame]
     market_filter_trends: dict[str, pd.Series]
+    universe_schedule: tuple[Mapping[str, Any], ...] = ()
 
     def build_order_plan(
         self,
@@ -35,10 +39,12 @@ class PreparedLeaderBacktest(PreparedBacktest):
         account: AccountSnapshot,
         mode: str = "backtest",
     ) -> OrderPlan:
-        prepared = {
-            symbol: frame.loc[:signal_ts]
-            for symbol, frame in self.prepared.items()
-        }
+        prepared = scheduled_prepared_slice(
+            self.prepared,
+            signal_ts,
+            account,
+            self.universe_schedule,
+        )
         market_filter_states = {
             symbol: _trend_is_up_at(trend, signal_ts)
             for symbol, trend in self.market_filter_trends.items()
@@ -62,8 +68,8 @@ class LeaderRotationStrategy:
     @classmethod
     def validate_config(cls, config: AppConfig) -> None:
         reject_unknown_params(config.strategy.params, set(), cls.strategy_type)
-        if config.risk.max_position_count != 1:
-            raise ValueError("leader_rotation currently supports portfolio.max_positions: 1 only.")
+        if config.risk.max_position_count < 1:
+            raise ValueError("leader_rotation requires portfolio.max_positions >= 1.")
 
     def warmup_bars(self) -> int:
         warmup = max(self.scorer.warmup_bars(), self.config.supertrend.period)
@@ -88,6 +94,7 @@ class LeaderRotationStrategy:
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput = None,
         filter_benchmark: BenchmarkInput = None,
+        universe_schedule: tuple[Mapping[str, Any], ...] = (),
     ) -> PreparedLeaderBacktest:
         market_filter_data = filter_benchmark if filter_benchmark is not None else benchmark
         prepared = self._prepare_leader_data(bars, benchmark)
@@ -96,7 +103,7 @@ class LeaderRotationStrategy:
             list(bars),
             market_filter_data,
         )
-        return PreparedLeaderBacktest(self, prepared, market_filter_trends)
+        return PreparedLeaderBacktest(self, prepared, market_filter_trends, universe_schedule)
 
     def build_order_plan(
         self,
@@ -134,27 +141,42 @@ class LeaderRotationStrategy:
             market_filter_states=market_filter_states,
         )
         orders: list[OrderIntent] = []
-        held = next(iter(account.positions.values()), None)
+        max_positions = max(1, int(config.risk.max_position_count))
+        target_candidates = candidates[:max_positions]
+        target_symbols = {str(candidate["symbol"]) for candidate in target_candidates}
+        held_positions = {
+            symbol: position
+            for symbol, position in account.positions.items()
+            if position.quantity > 0
+        }
+        sell_symbols: set[str] = set()
+        estimated_cash = float(account.cash)
 
-        if held and held.quantity > 0:
-            held_df = prepared.get(held.symbol)
+        for symbol, held in held_positions.items():
+            held_df = prepared.get(symbol)
             if held_df is None or held_df.empty:
                 orders.append(sell_all(held, "Held symbol missing from strategy data"))
+                sell_symbols.add(symbol)
             else:
                 held_row = held_df.iloc[-1]
-                best_new = next((candidate for candidate in candidates if candidate["symbol"] != held.symbol), None)
                 sell_reason = None
-                follow_up_buy = None
                 if configured_exit_down_confirmed(config, held_df):
                     sell_reason = (
                         "Triple Supertrend down"
                         if enabled_component(config, "exits", "triple_supertrend_flip") is not None
                         else "Supertrend down"
                     )
-                elif best_new:
+                elif symbol not in target_symbols:
+                    replacement = _first_replacement_candidate(
+                        target_candidates,
+                        held_symbols=set(held_positions),
+                        sell_symbols=sell_symbols,
+                    )
+                    if replacement is None:
+                        continue
                     current_score = _finite_float(held_row.get("Score"))
-                    hurdle = best_new["atr_pct"] * config.leader_rotation.hurdle_atr_mult
-                    if current_score is not None and best_new["score"] - current_score > hurdle:
+                    hurdle = replacement["atr_pct"] * config.leader_rotation.hurdle_atr_mult
+                    if current_score is not None and replacement["score"] - current_score > hurdle:
                         profit_pct = (
                             (float(held_row["Close"]) - held.avg_price) / held.avg_price
                             if held.avg_price > 0
@@ -162,56 +184,46 @@ class LeaderRotationStrategy:
                         )
                         if profit_pct >= config.leader_rotation.min_rotation_profit_pct:
                             sell_reason = "Leader rotation"
-                            follow_up_buy = best_new
                 if sell_reason:
                     orders.append(sell_all(held, sell_reason))
-                    if follow_up_buy is None and candidates:
-                        follow_up_buy = next((candidate for candidate in candidates if candidate["symbol"] != held.symbol), None)
-                    if follow_up_buy:
-                        estimated_sell_price = float(held_row["Close"]) * (1.0 - config.costs.slippage_rate)
-                        estimated_proceeds = (
-                            held.quantity
-                            * max(0.0, estimated_sell_price)
-                            * (1.0 - config.costs.fee_rate)
-                        )
-                        estimated_cash = account.cash + max(0.0, estimated_proceeds)
-                        qty = estimate_quantity(
-                            estimated_cash,
-                            follow_up_buy["price"],
-                            config.execution.allocation_pct,
-                            fee_rate=config.costs.fee_rate,
-                            slippage_rate=config.costs.slippage_rate,
-                        )
-                        if qty > 0:
-                            orders.append(
-                                OrderIntent(
-                                    symbol=follow_up_buy["symbol"],
-                                    side="buy",
-                                    quantity=qty,
-                                    order_type=config.execution.order_type,
-                                    reason="Post-sell leader entry",
-                                )
-                            )
+                    sell_symbols.add(symbol)
+                    estimated_cash += _estimated_sell_proceeds(held, float(held_row["Close"]), config)
 
-        if not held and candidates:
-            best = candidates[0]
+        kept_symbols = set(held_positions) - sell_symbols
+        open_slots = max(0, max_positions - len(kept_symbols))
+        buy_candidates = [
+            candidate
+            for candidate in candidates
+            if candidate["symbol"] not in kept_symbols and candidate["symbol"] not in sell_symbols
+        ]
+        remaining_buy_budget = estimated_cash * config.execution.allocation_pct
+
+        for candidate in buy_candidates:
+            if open_slots <= 0 or estimated_cash <= 0 or remaining_buy_budget <= 0:
+                break
+            slot_budget = remaining_buy_budget / open_slots
             qty = estimate_quantity(
-                account.cash,
-                best["price"],
-                config.execution.allocation_pct,
+                min(estimated_cash, slot_budget),
+                candidate["price"],
+                1.0,
                 fee_rate=config.costs.fee_rate,
                 slippage_rate=config.costs.slippage_rate,
             )
-            if qty > 0:
-                orders.append(
-                    OrderIntent(
-                        symbol=best["symbol"],
-                        side="buy",
-                        quantity=qty,
-                        order_type=config.execution.order_type,
-                        reason="Top-ranked leader",
-                    )
+            if qty <= 0:
+                continue
+            orders.append(
+                OrderIntent(
+                    symbol=candidate["symbol"],
+                    side="buy",
+                    quantity=qty,
+                    order_type=config.execution.order_type,
+                    reason="Top-ranked leader",
                 )
+            )
+            estimated_cost = _estimated_buy_cost(qty, float(candidate["price"]), config)
+            estimated_cash = max(0.0, estimated_cash - estimated_cost)
+            remaining_buy_budget = max(0.0, remaining_buy_budget - estimated_cost)
+            open_slots -= 1
 
         return OrderPlan(strategy_name=config.strategy.name, mode=mode, orders=tuple(orders))
 
@@ -273,6 +285,29 @@ def _finite_float(value) -> float | None:
     except (TypeError, ValueError):
         return None
     return parsed if math.isfinite(parsed) else None
+
+
+def _first_replacement_candidate(
+    candidates: list[dict[str, float | str]],
+    *,
+    held_symbols: set[str],
+    sell_symbols: set[str],
+) -> dict[str, float | str] | None:
+    for candidate in candidates:
+        symbol = str(candidate["symbol"])
+        if symbol not in held_symbols or symbol in sell_symbols:
+            return candidate
+    return None
+
+
+def _estimated_sell_proceeds(position, price: float, config: AppConfig) -> float:
+    fill = price * (1.0 - config.costs.slippage_rate)
+    return position.quantity * max(0.0, fill) * (1.0 - config.costs.fee_rate)
+
+
+def _estimated_buy_cost(quantity: float, price: float, config: AppConfig) -> float:
+    fill = price * (1.0 + config.costs.slippage_rate)
+    return quantity * max(0.0, fill) * (1.0 + config.costs.fee_rate)
 
 
 def _trend_is_up_at(trend: pd.Series, signal_ts) -> bool:

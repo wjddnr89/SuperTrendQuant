@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Mapping
 
 from ..config import AppConfig
-from ..data import MarketData, common_index
+from ..data import MarketData, market_index
 from .data_resolver import (
     MarketDataMismatchError,
     MarketDataSource,
@@ -32,6 +32,8 @@ class OptimizationSpace:
     max_rs_period: int = 200
     min_sell_confirm_bars: int = 1
     max_sell_confirm_bars: int = 30
+    min_leader_positions: int = 1
+    max_leader_positions: int = 1
     min_st_period: int = 5
     max_st_period: int = 30
     min_st_multiplier: float = 1.0
@@ -102,6 +104,17 @@ def suggest_default_config(
             space.max_sell_confirm_bars,
         ),
     }
+    min_positions = max(1, int(space.min_leader_positions))
+    max_positions = max(min_positions, int(space.max_leader_positions))
+    if min_positions == max_positions:
+        if min_positions != base_config.risk.max_position_count:
+            overlay["max_positions"] = min_positions
+    else:
+        overlay["max_positions"] = trial.suggest_int(
+            "max_positions",
+            min_positions,
+            max_positions,
+        )
     if entry_type in {"single", "single_supertrend", "supertrend"}:
         overlay["st_period"] = trial.suggest_int(
             "st_period", space.min_st_period, space.max_st_period
@@ -188,7 +201,7 @@ def optimize_config(
                 fixed_config=base_config,
             )
             segments = split_index(
-                common_index(candidate_data.bars),
+                market_index(candidate_data),
                 train_ratio,
                 validation_ratio,
                 min_segment_bars=min_segment_bars,

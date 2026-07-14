@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
+
 import pandas as pd
 
 from ..config import AppConfig, ComponentConfig
 from ..indicators import add_ema_trend, add_ichimoku, add_triple_supertrend, calculate_supertrend
-from ..portfolio import OrderIntent
+from ..portfolio import AccountSnapshot, OrderIntent
 from .base import BenchmarkInput
 
 
@@ -168,3 +171,58 @@ def sell_all(position, reason: str) -> OrderIntent:
         quantity=position.quantity,
         reason=reason,
     )
+
+
+def scheduled_prepared_slice(
+    prepared: dict[str, pd.DataFrame],
+    signal_ts,
+    account: AccountSnapshot,
+    universe_schedule: tuple[Mapping[str, Any], ...],
+) -> dict[str, pd.DataFrame]:
+    active = active_universe_symbols(universe_schedule, signal_ts)
+    allowed = None if active is None else active | set(account.positions)
+    sliced: dict[str, pd.DataFrame] = {}
+    for symbol, frame in prepared.items():
+        if allowed is not None and symbol not in allowed:
+            continue
+        try:
+            selected = frame.loc[:signal_ts]
+        except TypeError:
+            signal_date = pd.Timestamp(signal_ts).date()
+            selected = frame.loc[[pd.Timestamp(idx).date() <= signal_date for idx in frame.index]]
+        if not selected.empty:
+            sliced[symbol] = selected
+    return sliced
+
+
+def active_universe_symbols(
+    universe_schedule: tuple[Mapping[str, Any], ...],
+    signal_ts,
+) -> set[str] | None:
+    if not universe_schedule:
+        return None
+    signal_date = pd.Timestamp(signal_ts).date()
+    selected: set[str] = set()
+    for entry in sorted(universe_schedule, key=lambda item: str(item.get("effective_date", ""))):
+        try:
+            effective_date = pd.Timestamp(entry["effective_date"]).date()
+        except Exception:
+            continue
+        if effective_date > signal_date:
+            break
+        selected = _entry_symbols(entry)
+    return selected
+
+
+def _entry_symbols(entry: Mapping[str, Any]) -> set[str]:
+    symbols = entry.get("symbols")
+    if isinstance(symbols, (list, tuple)):
+        return {str(symbol) for symbol in symbols if str(symbol)}
+    members = entry.get("members", ())
+    if isinstance(members, (list, tuple)):
+        return {
+            str(member.get("symbol"))
+            for member in members
+            if isinstance(member, Mapping) and member.get("symbol")
+        }
+    return set()

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Protocol, TYPE_CHECKING
+from collections.abc import Mapping
+from typing import Any, Protocol, TYPE_CHECKING
 
 import pandas as pd
 
@@ -21,6 +22,7 @@ class MarketData:
     filter_benchmark: BenchmarkData | None = None
     skipped: tuple[str, ...] = ()
     universe_snapshot: dict[str, object] | None = None
+    universe_schedule: tuple[dict[str, Any], ...] = ()
 
 
 class MarketDataProvider(Protocol):
@@ -120,6 +122,11 @@ def _download_yahoo_market_data(
             resolved_universe.snapshot.to_dict()
             if resolved_universe is not None
             else None
+        ),
+        universe_schedule=(
+            resolved_universe.schedule_as_dicts()
+            if resolved_universe is not None
+            else ()
         ),
     )
 
@@ -254,3 +261,59 @@ def common_index(bars: dict[str, pd.DataFrame]) -> pd.Index:
     if close_df.empty:
         raise ValueError("No common timeline across symbols.")
     return close_df.index
+
+
+def market_index(market_data: MarketData) -> pd.Index:
+    """Return the canonical simulation timeline for static or rolling universes."""
+    if market_data.universe_schedule:
+        return scheduled_index(market_data.bars, market_data.universe_schedule)
+    return common_index(market_data.bars)
+
+
+def scheduled_index(
+    bars: dict[str, pd.DataFrame],
+    schedule: tuple[Mapping[str, Any], ...],
+) -> pd.Index:
+    entries = sorted(schedule, key=lambda item: str(item.get("effective_date", "")))
+    pieces: list[pd.Index] = []
+    for position, entry in enumerate(entries):
+        start = pd.Timestamp(entry["effective_date"]).date()
+        end = (
+            pd.Timestamp(entries[position + 1]["effective_date"]).date()
+            if position + 1 < len(entries)
+            else None
+        )
+        for symbol in _schedule_symbols(entry):
+            frame = bars.get(symbol)
+            if frame is None or frame.empty:
+                continue
+            idx = pd.Index(frame.index)
+            index_dates = pd.Index([pd.Timestamp(value).date() for value in idx])
+            mask = index_dates >= start
+            if end is not None:
+                mask = mask & (index_dates < end)
+            selected = idx[mask]
+            if len(selected):
+                pieces.append(selected)
+    if not pieces:
+        raise ValueError("No timeline across scheduled universe members.")
+    combined = pieces[0]
+    for piece in pieces[1:]:
+        combined = combined.union(piece)
+    if not combined.is_monotonic_increasing:
+        combined = combined.sort_values()
+    return combined.drop_duplicates()
+
+
+def _schedule_symbols(entry: Mapping[str, Any]) -> tuple[str, ...]:
+    symbols = entry.get("symbols")
+    if isinstance(symbols, (list, tuple)):
+        return tuple(str(symbol) for symbol in symbols if str(symbol))
+    members = entry.get("members", ())
+    if isinstance(members, (list, tuple)):
+        return tuple(
+            str(member.get("symbol"))
+            for member in members
+            if isinstance(member, Mapping) and member.get("symbol")
+        )
+    return ()

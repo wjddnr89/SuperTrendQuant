@@ -139,6 +139,7 @@ class UniverseConfig:
     source: str = "file"
     profiles: dict[str, tuple[str, ...]] = field(default_factory=dict)
     file: str = "universe.json"
+    history_file: str = ""
     symbols: tuple[str, ...] = ()
     refresh: str = "daily"
     snapshot_dir: str = "state/universes"
@@ -417,6 +418,7 @@ def _parse_universe_config(raw: dict[str, Any]) -> UniverseConfig:
         source=source,
         profiles=profiles,
         file=str(value.get("file") or legacy_file),
+        history_file=str(value.get("history_file") or ""),
         symbols=symbols,
         refresh=str(value.get("refresh") or "daily").strip().lower(),
         snapshot_dir=str(value.get("snapshot_dir") or "state/universes"),
@@ -429,7 +431,16 @@ def _parse_universe_config(raw: dict[str, Any]) -> UniverseConfig:
 def _validate_universe_mapping(raw: dict[str, Any]) -> None:
     _reject_unknown_keys(
         raw,
-        {"source", "profiles", "file", "symbols", "refresh", "snapshot_dir", "filters"},
+        {
+            "source",
+            "profiles",
+            "file",
+            "history_file",
+            "symbols",
+            "refresh",
+            "snapshot_dir",
+            "filters",
+        },
         "universe",
     )
     profiles = raw.get("profiles", {}) or {}
@@ -466,8 +477,8 @@ def _validate_universe_mapping(raw: dict[str, Any]) -> None:
 
 
 def _validate_universe_config(config: UniverseConfig) -> None:
-    if config.source not in {"profiles", "file", "symbols"}:
-        raise ValueError("universe.source must be profiles, file, or symbols.")
+    if config.source not in {"profiles", "file", "symbols", "history_file"}:
+        raise ValueError("universe.source must be profiles, file, symbols, or history_file.")
     if config.refresh != "daily":
         raise ValueError("universe.refresh must be daily.")
     if config.source == "profiles" and not any(config.profiles.values()):
@@ -476,6 +487,10 @@ def _validate_universe_config(config: UniverseConfig) -> None:
         raise ValueError("universe.source=symbols requires universe.symbols.")
     if config.source == "file" and not config.file.strip():
         raise ValueError("universe.source=file requires universe.file.")
+    if config.source == "history_file" and not config.history_file.strip():
+        raise ValueError("universe.source=history_file requires universe.history_file.")
+    if config.source == "history_file" and config.filters.enabled:
+        raise ValueError("universe.filters are not supported with universe.source=history_file.")
     for market, selected in config.profiles.items():
         seen: set[str] = set()
         for profile in selected:

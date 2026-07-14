@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Mapping
+from typing import Any, Iterable, Mapping
 
 import pandas as pd
 
@@ -56,6 +56,46 @@ def _equal_buy_and_hold(
     return equity
 
 
+def _rolling_equal_hold(
+    frames: Mapping[str, pd.DataFrame],
+    schedule: tuple[Mapping[str, Any], ...],
+    *,
+    initial_cash: float,
+    run_index: pd.Index | None,
+    name: str,
+) -> pd.Series:
+    if not schedule:
+        return pd.Series(dtype=float, name=name)
+    index = pd.Index(run_index) if run_index is not None else _schedule_index(frames, schedule)
+    if len(index) == 0:
+        return pd.Series(dtype=float, name=name)
+    closes = {
+        symbol: frame["Close"].dropna().sort_index().astype(float)
+        for symbol, frame in frames.items()
+        if "Close" in frame and not frame.empty
+    }
+    equity = float(initial_cash)
+    points: list[tuple[object, float]] = []
+    previous_prices: dict[str, float] = {}
+    for timestamp in index:
+        active = _active_symbols(schedule, timestamp)
+        current_prices = {
+            symbol: price
+            for symbol in active
+            if (price := _price_at_or_before(closes.get(symbol), timestamp)) is not None
+        }
+        returns = [
+            current_prices[symbol] / previous_prices[symbol] - 1.0
+            for symbol in current_prices
+            if symbol in previous_prices and previous_prices[symbol] > 0
+        ]
+        if returns:
+            equity *= 1.0 + float(pd.Series(returns).mean())
+        points.append((timestamp, equity))
+        previous_prices = current_prices
+    return pd.Series([value for _, value in points], index=[ts for ts, _ in points], name=name)
+
+
 def build_benchmark_report(
     config: AppConfig,
     market_data: MarketData,
@@ -69,12 +109,21 @@ def build_benchmark_report(
     """
 
     report: dict[str, BenchmarkResult] = {}
-    equal = _equal_buy_and_hold(
-        sorted(market_data.bars.items()),
-        initial_cash=config.capital.initial_cash,
-        run_index=run_index,
-        name="equal_buy_and_hold",
-    )
+    if market_data.universe_schedule:
+        equal = _rolling_equal_hold(
+            market_data.bars,
+            market_data.universe_schedule,
+            initial_cash=config.capital.initial_cash,
+            run_index=run_index,
+            name="rolling_equal_hold",
+        )
+    else:
+        equal = _equal_buy_and_hold(
+            sorted(market_data.bars.items()),
+            initial_cash=config.capital.initial_cash,
+            run_index=run_index,
+            name="equal_buy_and_hold",
+        )
     if not equal.empty:
         report["equal"] = BenchmarkResult(
             name="equal",
@@ -103,6 +152,61 @@ def build_benchmark_report(
                 metrics=result.metrics,
             )
     return report
+
+
+def _schedule_index(
+    frames: Mapping[str, pd.DataFrame],
+    schedule: tuple[Mapping[str, Any], ...],
+) -> pd.Index:
+    pieces = []
+    for entry in schedule:
+        for symbol in _entry_symbols(entry):
+            frame = frames.get(symbol)
+            if frame is not None and not frame.empty:
+                pieces.append(pd.Index(frame.index))
+    if not pieces:
+        return pd.Index([])
+    index = pieces[0]
+    for piece in pieces[1:]:
+        index = index.union(piece)
+    return index.sort_values().drop_duplicates()
+
+
+def _active_symbols(schedule: tuple[Mapping[str, Any], ...], timestamp) -> set[str]:
+    timestamp_date = pd.Timestamp(timestamp).date()
+    selected: set[str] = set()
+    for entry in sorted(schedule, key=lambda item: str(item.get("effective_date", ""))):
+        if pd.Timestamp(entry["effective_date"]).date() > timestamp_date:
+            break
+        selected = _entry_symbols(entry)
+    return selected
+
+
+def _entry_symbols(entry: Mapping[str, Any]) -> set[str]:
+    symbols = entry.get("symbols")
+    if isinstance(symbols, (list, tuple)):
+        return {str(symbol) for symbol in symbols if str(symbol)}
+    members = entry.get("members", ())
+    if isinstance(members, (list, tuple)):
+        return {
+            str(member.get("symbol"))
+            for member in members
+            if isinstance(member, Mapping) and member.get("symbol")
+        }
+    return set()
+
+
+def _price_at_or_before(series: pd.Series | None, timestamp) -> float | None:
+    if series is None or series.empty:
+        return None
+    try:
+        available = series.loc[:timestamp]
+    except TypeError:
+        signal_date = pd.Timestamp(timestamp).date()
+        available = series.loc[[pd.Timestamp(idx).date() <= signal_date for idx in series.index]]
+    if available.empty:
+        return None
+    return float(available.iloc[-1])
 
 
 def benchmark_report_as_dict(report: Mapping[str, BenchmarkResult]) -> dict[str, dict]:

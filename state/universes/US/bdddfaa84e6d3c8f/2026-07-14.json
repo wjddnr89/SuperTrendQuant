@@ -1,0 +1,2499 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-07-14",
+  "created_at": "2026-07-14T04:59:12.635021+00:00",
+  "market": "US",
+  "source": "profiles",
+  "profiles": [
+    "nasdaq100"
+  ],
+  "selection_hash": "bdddfaa84e6d3c8f",
+  "raw_members": [
+    {
+      "symbol": "AAPL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Apple Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AAPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ABNB",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Airbnb, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ABNB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADBE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Adobe Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADBE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Analog Devices, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Automatic Data Processing, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADSK",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Autodesk, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADSK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AEP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "American Electric Power Company, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALAB",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Astera Labs, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALAB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALNY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Alnylam Pharmaceuticals, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALNY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMAT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Applied Materials, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMAT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Advanced Micro Devices, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMGN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Amgen Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Amazon.com, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMZN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "APP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Applovin Corporation Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "APP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ARM",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Arm Holdings plc American Depositary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ARM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ASML",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "ASML Holding N.V. New York Registry Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ASML",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AVGO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Broadcom Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AVGO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AXON",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Axon Enterprise, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AXON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKNG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Booking Holdings Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKNG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Baker Hughes Company Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CCEP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Coca-Cola Europacific Partners plc Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CCEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CDNS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Cadence Design Systems, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CDNS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CEG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Constellation Energy Corporation Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CEG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CMCSA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Comcast Corporation Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CMCSA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "COST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Costco Wholesale Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "COST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CPRT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Copart, Inc. (DE) Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CPRT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "CrowdStrike Holdings, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWV",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "CoreWeave, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSCO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Cisco Systems, Inc. Common Stock (DE)",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "CSX Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTAS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Cintas Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTAS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DASH",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "DoorDash, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DASH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DDOG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Datadog, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DDOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DXCM",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "DexCom, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DXCM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Electronic Arts Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Exelon Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FANG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Diamondback Energy, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FANG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FAST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Fastenal Company Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FAST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FER",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Ferrovial N.V. Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FTNT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Fortinet, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FTNT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GEHC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "GE HealthCare Technologies Inc. Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GEHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GILD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Gilead Sciences, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GILD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Alphabet Inc. Class C Capital Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Alphabet Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOGL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HON",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Honeywell International Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HONA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Honeywell Aerospace Inc. Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HONA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "IDXX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "IDEXX Laboratories, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "IDXX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Intel Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTU",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Intuit Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ISRG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Intuitive Surgical, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ISRG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KDP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Keurig Dr Pepper Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KDP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KHC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "The Kraft Heinz Company Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KLAC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "KLA Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KLAC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LIN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Linde plc Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LIN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LITE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Lumentum Holdings Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LITE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LRCX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Lam Research Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LRCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MAR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Marriott International Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MCHP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Microchip Technology Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MCHP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MDLZ",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Mondelez International, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MDLZ",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MELI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "MercadoLibre, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MELI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "META",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Meta Platforms, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "META",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MNST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Monster Beverage Corporation",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MNST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MPWR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Monolithic Power Systems, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MPWR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MRVL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Marvell Technology, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MRVL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Microsoft Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSFT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSTR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Strategy Inc Common Stock Class A",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MU",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Micron Technology, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NBIS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Nebius Group N.V. Class A Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NBIS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NFLX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Netflix, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NFLX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "NVIDIA Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NVDA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NXPI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "NXP Semiconductors N.V. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NXPI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ODFL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Old Dominion Freight Line, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ODFL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ORLY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "O'Reilly Automotive, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ORLY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PANW",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Palo Alto Networks, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PANW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PAYX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Paychex, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PAYX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PCAR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PACCAR Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PCAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PDD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PDD Holdings Inc. American Depositary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PDD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PEP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PepsiCo, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PLTR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Palantir Technologies Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PLTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PYPL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PayPal Holdings, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PYPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QCOM",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "QUALCOMM Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QCOM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "REGN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Regeneron Pharmaceuticals, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "REGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RKLB",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Rocket Lab Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RKLB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Roper Technologies, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Ross Stores, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SBUX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Starbucks Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SBUX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHOP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Shopify Inc. Class A Subordinate Voting Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHOP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNDK",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Sandisk Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNDK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNPS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Synopsys, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNPS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPCX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Space Exploration Technologies Corp. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "STX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Seagate Technology Holdings PLC Ordinary Shares (Ireland)",
+      "security_type": "STOCK",
+      "yfinance_symbol": "STX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TER",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Teradyne, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TMUS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "T-Mobile US, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TMUS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TRI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Thomson Reuters Corporation Common Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TRI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Tesla, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TSLA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TTWO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Take-Two Interactive Software, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TTWO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TXN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Texas Instruments Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TXN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRTX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Vertex Pharmaceuticals Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRTX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WBD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Warner Bros. Discovery, Inc. Series A Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WBD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDAY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Workday, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Western Digital Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WMT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Walmart Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WMT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XEL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Xcel Energy Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XEL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    }
+  ],
+  "eligible_members": [
+    {
+      "symbol": "AAPL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Apple Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AAPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ABNB",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Airbnb, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ABNB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADBE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Adobe Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADBE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Analog Devices, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Automatic Data Processing, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADSK",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Autodesk, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADSK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AEP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "American Electric Power Company, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALAB",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Astera Labs, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALAB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALNY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Alnylam Pharmaceuticals, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALNY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMAT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Applied Materials, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMAT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Advanced Micro Devices, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMGN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Amgen Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Amazon.com, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMZN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "APP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Applovin Corporation Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "APP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ARM",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Arm Holdings plc American Depositary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ARM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ASML",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "ASML Holding N.V. New York Registry Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ASML",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AVGO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Broadcom Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AVGO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AXON",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Axon Enterprise, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AXON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKNG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Booking Holdings Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKNG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Baker Hughes Company Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CCEP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Coca-Cola Europacific Partners plc Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CCEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CDNS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Cadence Design Systems, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CDNS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CEG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Constellation Energy Corporation Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CEG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CMCSA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Comcast Corporation Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CMCSA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "COST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Costco Wholesale Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "COST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CPRT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Copart, Inc. (DE) Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CPRT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "CrowdStrike Holdings, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWV",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "CoreWeave, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSCO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Cisco Systems, Inc. Common Stock (DE)",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "CSX Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTAS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Cintas Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTAS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DASH",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "DoorDash, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DASH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DDOG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Datadog, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DDOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DXCM",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "DexCom, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DXCM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Electronic Arts Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Exelon Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FANG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Diamondback Energy, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FANG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FAST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Fastenal Company Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FAST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FER",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Ferrovial N.V. Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FTNT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Fortinet, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FTNT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GEHC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "GE HealthCare Technologies Inc. Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GEHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GILD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Gilead Sciences, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GILD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Alphabet Inc. Class C Capital Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Alphabet Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOGL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HON",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Honeywell International Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "IDXX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "IDEXX Laboratories, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "IDXX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Intel Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTU",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Intuit Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ISRG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Intuitive Surgical, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ISRG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KDP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Keurig Dr Pepper Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KDP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KHC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "The Kraft Heinz Company Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KLAC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "KLA Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KLAC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LIN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Linde plc Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LIN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LITE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Lumentum Holdings Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LITE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LRCX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Lam Research Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LRCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MAR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Marriott International Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MCHP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Microchip Technology Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MCHP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MDLZ",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Mondelez International, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MDLZ",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MELI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "MercadoLibre, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MELI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "META",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Meta Platforms, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "META",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MNST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Monster Beverage Corporation",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MNST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MPWR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Monolithic Power Systems, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MPWR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MRVL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Marvell Technology, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MRVL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Microsoft Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSFT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSTR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Strategy Inc Common Stock Class A",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MU",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Micron Technology, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NBIS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Nebius Group N.V. Class A Ordinary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NBIS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NFLX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Netflix, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NFLX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "NVIDIA Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NVDA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NXPI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "NXP Semiconductors N.V. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NXPI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ODFL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Old Dominion Freight Line, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ODFL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ORLY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "O'Reilly Automotive, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ORLY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PANW",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Palo Alto Networks, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PANW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PAYX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Paychex, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PAYX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PCAR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PACCAR Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PCAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PDD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PDD Holdings Inc. American Depositary Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PDD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PEP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PepsiCo, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PLTR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Palantir Technologies Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PLTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PYPL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "PayPal Holdings, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PYPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QCOM",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "QUALCOMM Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QCOM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "REGN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Regeneron Pharmaceuticals, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "REGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RKLB",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Rocket Lab Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RKLB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Roper Technologies, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Ross Stores, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SBUX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Starbucks Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SBUX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHOP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Shopify Inc. Class A Subordinate Voting Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHOP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNDK",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Sandisk Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNDK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNPS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Synopsys, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNPS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "STX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Seagate Technology Holdings PLC Ordinary Shares (Ireland)",
+      "security_type": "STOCK",
+      "yfinance_symbol": "STX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TER",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Teradyne, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TMUS",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "T-Mobile US, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TMUS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TRI",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Thomson Reuters Corporation Common Shares",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TRI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Tesla, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TSLA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TTWO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Take-Two Interactive Software, Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TTWO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TXN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Texas Instruments Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TXN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRTX",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Vertex Pharmaceuticals Incorporated Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRTX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WBD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Warner Bros. Discovery, Inc. Series A Common Stock ",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WBD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDAY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Workday, Inc. Class A Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Western Digital Corporation Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WMT",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Walmart Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WMT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XEL",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "name": "Xcel Energy Inc. Common Stock",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XEL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "symbol": "HONA",
+      "reasons": [
+        "spac",
+        "insufficient_history",
+        "turnover_window"
+      ]
+    },
+    {
+      "symbol": "SPCX",
+      "reasons": [
+        "spac",
+        "insufficient_history"
+      ]
+    }
+  ],
+  "filters": {
+    "enabled": true,
+    "exclude_managed": true,
+    "exclude_suspended": true,
+    "exclude_delisting": true,
+    "exclude_etf_etn": true,
+    "exclude_spac": true,
+    "exclude_preferred": true,
+    "min_price": {
+      "US": 5.0,
+      "KR": 1000.0
+    },
+    "avg_turnover_window": 20,
+    "min_avg_turnover": {
+      "US": 10000000.0,
+      "KR": 1000000000.0
+    },
+    "min_history_daily_bars": 120
+  }
+}

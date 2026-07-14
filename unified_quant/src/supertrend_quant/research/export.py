@@ -96,6 +96,7 @@ def config_to_split_dicts(
             for market, profiles in config.universe.profiles.items()
         },
         "file": config.universe.file,
+        "history_file": config.universe.history_file,
         "symbols": list(config.universe.symbols),
         "refresh": config.universe.refresh,
         "snapshot_dir": config.universe.snapshot_dir,

@@ -6,7 +6,7 @@ from typing import Mapping
 import pandas as pd
 
 from ..config import AppConfig
-from ..data import MarketData, common_index
+from ..data import MarketData, market_index
 from ..runners import BacktestResult, run_backtest_on_data
 from .benchmarks import BenchmarkResult, build_benchmark_report
 from .scoring import score_metrics
@@ -146,7 +146,7 @@ def evaluate_ranking_segment(
     if preferred not in {"overall", "train", "validation"}:
         raise ValueError("Research ranking_split must be overall, train, or validation.")
     splits = split_index(
-        common_index(market_data.bars),
+        market_index(market_data),
         train_ratio,
         validation_ratio,
         min_segment_bars=min_segment_bars,
@@ -183,7 +183,7 @@ def evaluate_config(
 ) -> EvaluationResult:
     """Evaluate one production config with the canonical backtest engine."""
 
-    base_index = pd.Index(run_index) if run_index is not None else common_index(market_data.bars)
+    base_index = pd.Index(run_index) if run_index is not None else market_index(market_data)
     splits = (
         split_index(
             base_index,

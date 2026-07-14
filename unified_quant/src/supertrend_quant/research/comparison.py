@@ -11,7 +11,7 @@ from typing import Mapping
 import pandas as pd
 
 from ..config import AppConfig, load_split_config
-from ..data import MarketData, common_index
+from ..data import MarketData, market_index
 from ..metrics import format_float, format_pct
 from ..results import make_run_id, save_backtest_result
 from ..runners import BacktestResult, run_backtest_on_data
@@ -144,7 +144,7 @@ def compare_strategies(
             config = load_split_config(path, runtime)
             strategy = create_strategy(config)
             data = resolve_market_data(source, config)
-            index = common_index(data.bars)
+            index = market_index(data)
             if len(index) < 2:
                 raise RuntimeError("Not enough common market bars for comparison.")
             candidates.append(
@@ -282,9 +282,9 @@ def save_comparison_result(
 
 
 def _shared_comparison_index(candidates: list[_Candidate]) -> pd.Index:
-    shared = common_index(candidates[0].data.bars)
+    shared = market_index(candidates[0].data)
     for candidate in candidates[1:]:
-        shared = shared.intersection(common_index(candidate.data.bars), sort=False)
+        shared = shared.intersection(market_index(candidate.data), sort=False)
     if not shared.is_monotonic_increasing:
         shared = shared.sort_values()
     max_warmup = max(candidate.warmup_bars for candidate in candidates)

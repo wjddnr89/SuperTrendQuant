@@ -25,6 +25,7 @@ def add_search_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     )
     parser.add_argument("--sell-confirm-bars", default="1,2,3,5,8,13")
     parser.add_argument("--rs-periods", default="50,100")
+    parser.add_argument("--max-positions", default=None, help="Comma-separated leader position counts.")
     parser.add_argument("--st-periods", default="10")
     parser.add_argument("--st-multipliers", default="3.0")
     parser.add_argument("--top", type=int, default=20)
@@ -49,6 +50,8 @@ def add_optimize_arguments(parser: argparse.ArgumentParser) -> argparse.Argument
     parser.add_argument("--timeframes", default=None, help="Comma-separated candidate timeframes.")
     parser.add_argument("--min-rs-period", type=int, default=10)
     parser.add_argument("--max-rs-period", type=int, default=200)
+    parser.add_argument("--min-positions", type=int, default=None)
+    parser.add_argument("--max-positions", type=int, default=None)
     parser.add_argument("--max-sell-confirm-bars", type=int, default=30)
     parser.add_argument(
         "--show-best-config",
@@ -86,6 +89,8 @@ def search_from_namespace(
         "sell_confirm_bars": tuple(int(value) for value in csv_values(args.sell_confirm_bars)),
         "rs_period": tuple(int(value) for value in csv_values(args.rs_periods)),
     }
+    if args.max_positions:
+        grid["max_positions"] = tuple(int(value) for value in csv_values(args.max_positions))
     # ST knobs are meaningful only for single entries. Keeping a single/triple
     # grid generic would create inactive dimensions, so add them only when the
     # caller searches single entry exclusively.
@@ -113,6 +118,12 @@ def optimize_from_namespace(
         market_filters=market_filters,
         min_rs_period=args.min_rs_period,
         max_rs_period=args.max_rs_period,
+        min_leader_positions=(
+            config.risk.max_position_count if args.min_positions is None else args.min_positions
+        ),
+        max_leader_positions=(
+            config.risk.max_position_count if args.max_positions is None else args.max_positions
+        ),
         max_sell_confirm_bars=args.max_sell_confirm_bars,
     )
     return run_optimize(

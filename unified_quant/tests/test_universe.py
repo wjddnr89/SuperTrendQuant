@@ -12,7 +12,7 @@ from unittest.mock import patch
 import pandas as pd
 
 from supertrend_quant.config import load_split_config
-from supertrend_quant.data import _yf_download, extract_ohlc
+from supertrend_quant.data import MarketData, _yf_download, extract_ohlc, market_index
 from supertrend_quant.research.export import config_to_split_dicts, strict_split_roundtrip
 from supertrend_quant.research.data_resolver import data_request_key
 from supertrend_quant.results import save_backtest_result
@@ -285,6 +285,68 @@ class UniverseConfigTest(unittest.TestCase):
                 )
                 with self.assertRaisesRegex(ValueError, error):
                     load_split_config(STRATEGY, runtime)
+
+    def test_history_file_universe_loads_union_and_schedule(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            history_path = Path(tmp) / "nasdaq100_history.json"
+            history_path.write_text(
+                json.dumps(
+                    {
+                        "market": "US",
+                        "profile": "nasdaq100",
+                        "snapshots": [
+                            {"effective_date": "2023-07-03", "symbols": ["AAA", "BBB"]},
+                            {"effective_date": "2023-10-02", "symbols": ["BBB", "CCC"]},
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            base = load_split_config(STRATEGY, SIMULATION)
+            config = replace(
+                base,
+                market="US",
+                symbols=(),
+                universe=replace(
+                    base.universe,
+                    source="history_file",
+                    history_file=str(history_path),
+                    filters=replace(base.universe.filters, enabled=False),
+                ),
+            )
+
+            resolved = resolve_universe(config, as_of=date(2026, 7, 14))
+
+            self.assertEqual(resolved.eligible_symbols, ("AAA", "BBB", "CCC"))
+            self.assertEqual(
+                [entry.symbols for entry in resolved.schedule],
+                [("AAA", "BBB"), ("BBB", "CCC")],
+            )
+            self.assertEqual(resolved.benchmark_for("AAA"), "QQQ")
+
+    def test_rolling_market_index_uses_active_members_instead_of_global_intersection(self):
+        def frame(start: str, periods: int) -> pd.DataFrame:
+            index = pd.date_range(start, periods=periods, freq="D")
+            return pd.DataFrame(
+                {"Open": 1.0, "High": 1.0, "Low": 1.0, "Close": 1.0},
+                index=index,
+            )
+
+        data = MarketData(
+            bars={
+                "AAA": frame("2023-07-01", 4),
+                "BBB": frame("2023-07-04", 4),
+            },
+            universe_schedule=(
+                {"effective_date": "2023-07-01", "symbols": ["AAA"]},
+                {"effective_date": "2023-07-04", "symbols": ["BBB"]},
+            ),
+        )
+
+        self.assertEqual(
+            list(market_index(data)),
+            list(pd.date_range("2023-07-01", periods=7, freq="D")),
+        )
 
 
 class UniverseFilterTest(unittest.TestCase):

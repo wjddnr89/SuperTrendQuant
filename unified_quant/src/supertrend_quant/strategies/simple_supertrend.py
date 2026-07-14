@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import Any
 
 import pandas as pd
 
@@ -12,6 +14,7 @@ from .common import (
     benchmark_for_strategy_symbol,
     market_filter_allows_buy,
     precompute_market_filter_trends,
+    scheduled_prepared_slice,
     trend_down_confirmed,
     with_supertrend,
 )
@@ -23,6 +26,7 @@ class PreparedSimpleBacktest(PreparedBacktest):
     strategy: "SimpleSupertrendStrategy"
     prepared: dict[str, pd.DataFrame]
     market_filter_trends: dict[str, pd.Series]
+    universe_schedule: tuple[Mapping[str, Any], ...] = ()
 
     def build_order_plan(
         self,
@@ -30,10 +34,12 @@ class PreparedSimpleBacktest(PreparedBacktest):
         account: AccountSnapshot,
         mode: str = "backtest",
     ) -> OrderPlan:
-        prepared = {
-            symbol: frame.loc[:signal_ts]
-            for symbol, frame in self.prepared.items()
-        }
+        prepared = scheduled_prepared_slice(
+            self.prepared,
+            signal_ts,
+            account,
+            self.universe_schedule,
+        )
         market_filter_states = {
             symbol: _trend_is_up_at(trend, signal_ts)
             for symbol, trend in self.market_filter_trends.items()
@@ -66,6 +72,7 @@ class SimpleSupertrendStrategy:
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput = None,
         filter_benchmark: BenchmarkInput = None,
+        universe_schedule: tuple[Mapping[str, Any], ...] = (),
     ) -> PreparedSimpleBacktest:
         market_filter_data = filter_benchmark if filter_benchmark is not None else benchmark
         featured = {
@@ -78,7 +85,7 @@ class SimpleSupertrendStrategy:
             list(bars),
             market_filter_data,
         )
-        return PreparedSimpleBacktest(self, prepared, market_filter_trends)
+        return PreparedSimpleBacktest(self, prepared, market_filter_trends, universe_schedule)
 
     def build_order_plan(
         self,

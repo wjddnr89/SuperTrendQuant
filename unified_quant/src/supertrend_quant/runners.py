@@ -1,16 +1,18 @@
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass, field
 
 import pandas as pd
 
 from .brokers import PaperBroker, TossBroker
 from .config import AppConfig
-from .data import common_index, download_market_data
+from .data import download_market_data, market_index
 from .metrics import calculate_metrics, format_float, format_pct
 from .portfolio import AccountSnapshot, OrderPlan, Position, estimate_quantity
 from .strategies import build_order_plan, create_strategy
 from .strategies.base import PreparedBacktest
+from .strategies.common import active_universe_symbols
 from .universe import resolve_universe
 
 
@@ -46,7 +48,7 @@ def run_backtest_on_data(
     if not market_data.bars:
         raise RuntimeError("No market data was downloaded.")
 
-    full_idx = common_index(market_data.bars)
+    full_idx = market_index(market_data)
     idx = _select_run_index(full_idx, run_index)
     if len(idx) < 2:
         raise RuntimeError("Not enough common bars to run a backtest.")
@@ -76,7 +78,12 @@ def run_backtest_on_data(
         if prepared_backtest is not None:
             plan = prepared_backtest.build_order_plan(signal_ts, account, mode="backtest")
         else:
-            sliced = {symbol: df.loc[:signal_ts].copy() for symbol, df in market_data.bars.items()}
+            allowed_symbols = _allowed_symbols_for_signal(market_data, signal_ts, positions)
+            sliced = {
+                symbol: df.loc[:signal_ts].copy()
+                for symbol, df in market_data.bars.items()
+                if allowed_symbols is None or symbol in allowed_symbols
+            }
             benchmark = _slice_benchmark(market_data.benchmark, signal_ts)
             filter_benchmark = _slice_benchmark(market_data.filter_benchmark, signal_ts)
             plan = strategy.build_order_plan(
@@ -138,7 +145,10 @@ def run_backtest_on_data(
     if positions:
         final_ts = idx[-1]
         for symbol, position in list(positions.items()):
-            final_price = float(market_data.bars[symbol].loc[final_ts, "Close"]) * (1.0 - config.costs.slippage_rate)
+            final_close = _close_at_or_before(market_data.bars.get(symbol), final_ts)
+            if final_close is None:
+                continue
+            final_price = final_close * (1.0 - config.costs.slippage_rate)
             proceeds = position.quantity * final_price * (1.0 - config.costs.fee_rate)
             cash += proceeds
             entry_value = entry_values.pop(symbol, position.quantity * position.avg_price)
@@ -187,16 +197,32 @@ def _prepare_backtest(strategy, market_data) -> PreparedBacktest | None:
     prepare = getattr(strategy, "prepare_backtest", None)
     if not callable(prepare):
         return None
-    prepared = prepare(
-        market_data.bars,
-        benchmark=market_data.benchmark,
-        filter_benchmark=market_data.filter_benchmark,
-    )
+    kwargs = {
+        "benchmark": market_data.benchmark,
+        "filter_benchmark": market_data.filter_benchmark,
+    }
+    parameters = inspect.signature(prepare).parameters
+    if "universe_schedule" in parameters or any(
+        parameter.kind == inspect.Parameter.VAR_KEYWORD
+        for parameter in parameters.values()
+    ):
+        kwargs["universe_schedule"] = getattr(market_data, "universe_schedule", ())
+    prepared = prepare(market_data.bars, **kwargs)
     if prepared is None:
         return None
     if not callable(getattr(prepared, "build_order_plan", None)):
         raise TypeError("prepare_backtest() must return an object with build_order_plan().")
     return prepared
+
+
+def _allowed_symbols_for_signal(market_data, signal_ts, positions: dict[str, Position]) -> set[str] | None:
+    active = active_universe_symbols(
+        getattr(market_data, "universe_schedule", ()),
+        signal_ts,
+    )
+    if active is None:
+        return None
+    return active | set(positions)
 
 
 def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[str]]:
@@ -273,8 +299,23 @@ def print_backtest_result(result: BacktestResult) -> None:
 def _portfolio_value(cash: float, positions: dict[str, Position], bars: dict[str, pd.DataFrame], timestamp) -> float:
     value = cash
     for symbol, position in positions.items():
-        value += position.quantity * float(bars[symbol].loc[timestamp, "Close"])
+        close = _close_at_or_before(bars.get(symbol), timestamp)
+        if close is not None:
+            value += position.quantity * close
     return value
+
+
+def _close_at_or_before(df: pd.DataFrame | None, timestamp) -> float | None:
+    if df is None or df.empty or "Close" not in df:
+        return None
+    try:
+        available = df.loc[:timestamp]
+    except TypeError:
+        signal_date = pd.Timestamp(timestamp).date()
+        available = df.loc[[pd.Timestamp(idx).date() <= signal_date for idx in df.index]]
+    if available.empty:
+        return None
+    return float(available["Close"].iloc[-1])
 
 
 def _latest_prices(bars: dict[str, pd.DataFrame]) -> dict[str, float]:

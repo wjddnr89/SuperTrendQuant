@@ -95,6 +95,23 @@ class UniverseSnapshot:
 
 
 @dataclass(frozen=True)
+class UniverseScheduleEntry:
+    effective_date: str
+    members: tuple[UniverseMember, ...]
+
+    @property
+    def symbols(self) -> tuple[str, ...]:
+        return tuple(member.symbol for member in self.members)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "effective_date": self.effective_date,
+            "symbols": list(self.symbols),
+            "members": [member.to_dict() for member in self.members],
+        }
+
+
+@dataclass(frozen=True)
 class ResolvedUniverse:
     eligible_members: tuple[UniverseMember, ...]
     exit_only_members: tuple[UniverseMember, ...]
@@ -102,6 +119,7 @@ class ResolvedUniverse:
     snapshot: UniverseSnapshot
     entries_allowed: bool = True
     refresh_error: str | None = None
+    schedule: tuple[UniverseScheduleEntry, ...] = ()
 
     @property
     def members(self) -> tuple[UniverseMember, ...]:
@@ -138,6 +156,9 @@ class ResolvedUniverse:
         if member and member.benchmark:
             return member.benchmark
         return "^KS11" if self.snapshot.market == "KR" else "QQQ"
+
+    def schedule_as_dicts(self) -> tuple[dict[str, Any], ...]:
+        return tuple(entry.to_dict() for entry in self.schedule)
 
 
 class UniverseProvider(Protocol):
@@ -208,6 +229,30 @@ def resolve_universe(
         raise ValueError(f"No universe profiles configured for market={selected_market}.")
     selection_hash = _selection_hash(config, selected_market, source, profiles, explicit_symbols)
     snapshot_path = _snapshot_path(universe_config.snapshot_dir, selected_market, selection_hash, resolved_date)
+
+    if source == "history_file":
+        schedule = _load_history_file_schedule(
+            universe_config.history_file,
+            selected_market,
+            config.universe_file,
+        )
+        raw_members = _unique_members(
+            member
+            for entry in schedule
+            for member in entry.members
+        )
+        snapshot = _build_snapshot(
+            resolved_date,
+            selected_market,
+            source,
+            _schedule_profiles(schedule),
+            selection_hash,
+            raw_members,
+            raw_members,
+            (),
+            universe_config.filters,
+        )
+        return _with_exit_only(snapshot, held, managed_map, True, None, schedule=schedule)
 
     if source == "symbols":
         symbols = explicit_symbols or universe_config.symbols
@@ -285,6 +330,7 @@ def snapshot_summary(resolved: ResolvedUniverse) -> dict[str, Any]:
         "rejected_count": len(snapshot.rejected),
         "entries_allowed": resolved.entries_allowed,
         "refresh_error": resolved.refresh_error,
+        "rolling_schedule_count": len(resolved.schedule),
         "survivorship_bias_warning": (
             "Current constituent snapshot is applied to the full historical period."
             if snapshot.source == "profiles"
@@ -318,6 +364,7 @@ def _with_exit_only(
     managed_map: Mapping[str, UniverseMember],
     entries_allowed: bool,
     refresh_error: str | None,
+    schedule: tuple[UniverseScheduleEntry, ...] = (),
 ) -> ResolvedUniverse:
     raw_map = {member.symbol: member for member in snapshot.raw_members}
     eligible_map = {member.symbol: member for member in snapshot.eligible_members}
@@ -333,6 +380,7 @@ def _with_exit_only(
         snapshot=snapshot,
         entries_allowed=entries_allowed,
         refresh_error=refresh_error,
+        schedule=schedule,
     )
 
 
@@ -402,6 +450,128 @@ def _load_file_members(path: str, market: str) -> tuple[UniverseMember, ...]:
             benchmark=_benchmark_for_exchange(str(exchange)),
         )
         for symbol, exchange in sorted(market_map.items())
+    )
+
+
+def _load_history_file_schedule(
+    path: str,
+    market: str,
+    universe_file: str,
+) -> tuple[UniverseScheduleEntry, ...]:
+    resolved = _resolve_existing_path(path)
+    with resolved.open("r", encoding="utf-8") as handle:
+        raw = json.load(handle)
+    if isinstance(raw, list):
+        root: Mapping[str, Any] = {"snapshots": raw}
+    elif isinstance(raw, Mapping):
+        root = raw
+    else:
+        raise ValueError("universe.history_file must contain a JSON mapping or list.")
+
+    configured_market = str(root.get("market") or market).upper()
+    if configured_market != market:
+        raise ValueError(f"history_file market={configured_market} does not match market={market}.")
+    default_profiles = _history_profiles(root)
+    snapshots = root.get("snapshots") or root.get("history") or ()
+    if not isinstance(snapshots, list):
+        raise ValueError("history_file snapshots must be a list.")
+
+    entries: list[UniverseScheduleEntry] = []
+    seen_dates: set[str] = set()
+    for raw_snapshot in snapshots:
+        if not isinstance(raw_snapshot, Mapping):
+            raise ValueError("Each history_file snapshot must be a mapping.")
+        effective_date = _history_effective_date(raw_snapshot)
+        if effective_date in seen_dates:
+            raise ValueError(f"Duplicate history_file effective_date: {effective_date}")
+        seen_dates.add(effective_date)
+        profiles = _history_profiles(raw_snapshot) or default_profiles
+        raw_members = raw_snapshot.get("members", raw_snapshot.get("symbols", ()))
+        if not isinstance(raw_members, list):
+            raise ValueError(f"history_file snapshot {effective_date} members/symbols must be a list.")
+        members = _unique_members(
+            _history_member(item, market, profiles, universe_file)
+            for item in raw_members
+        )
+        if not members:
+            raise ValueError(f"history_file snapshot {effective_date} has no members.")
+        entries.append(UniverseScheduleEntry(effective_date, members))
+
+    if not entries:
+        raise ValueError("history_file must contain at least one snapshot.")
+    return tuple(sorted(entries, key=lambda item: item.effective_date))
+
+
+def _history_effective_date(raw: Mapping[str, Any]) -> str:
+    value = raw.get("effective_date") or raw.get("date") or raw.get("as_of")
+    if not value:
+        raise ValueError("Each history_file snapshot requires effective_date.")
+    try:
+        return pd.Timestamp(value).date().isoformat()
+    except Exception as exc:
+        raise ValueError(f"Invalid history_file effective_date: {value}") from exc
+
+
+def _history_profiles(raw: Mapping[str, Any]) -> tuple[str, ...]:
+    value = raw.get("profiles", raw.get("profile", ()))
+    if isinstance(value, str):
+        return (value.strip().lower(),) if value.strip() else ()
+    if value is None:
+        return ()
+    if not isinstance(value, (list, tuple)):
+        raise ValueError("history_file profiles/profile must be a string or list.")
+    return tuple(str(item).strip().lower() for item in value if str(item).strip())
+
+
+def _history_member(
+    item: Any,
+    market: str,
+    profiles: tuple[str, ...],
+    universe_file: str,
+) -> UniverseMember:
+    if isinstance(item, str):
+        return _member_for_symbol(item.strip(), market, profiles, universe_file)
+    if not isinstance(item, Mapping):
+        raise ValueError("history_file members must be ticker strings or mappings.")
+    symbol = str(item.get("symbol") or "").strip()
+    if not symbol:
+        raise ValueError("history_file member mapping requires symbol.")
+    member_market = str(item.get("market") or market).upper()
+    exchange = str(item.get("exchange") or ("KOSPI" if member_market == "KR" else member_market))
+    member_profiles = _history_profiles(item) or profiles
+    return UniverseMember(
+        symbol=symbol,
+        market=member_market,
+        exchange=exchange,
+        name=str(item.get("name") or ""),
+        security_type=str(item.get("security_type") or "STOCK"),
+        yfinance_symbol=str(item.get("yfinance_symbol") or _default_yfinance_symbol(symbol, exchange)),
+        benchmark=str(
+            item.get("benchmark")
+            or (_benchmark_for_exchange(exchange) if member_market == "KR" else _profile_benchmark(member_profiles, member_market))
+        ),
+        profiles=member_profiles,
+    )
+
+
+def _unique_members(members: Iterable[UniverseMember]) -> tuple[UniverseMember, ...]:
+    by_symbol: dict[str, UniverseMember] = {}
+    for member in members:
+        if member.symbol:
+            by_symbol[member.symbol] = member
+    return tuple(by_symbol[symbol] for symbol in sorted(by_symbol))
+
+
+def _schedule_profiles(schedule: tuple[UniverseScheduleEntry, ...]) -> tuple[str, ...]:
+    return tuple(
+        sorted(
+            {
+                profile
+                for entry in schedule
+                for member in entry.members
+                for profile in member.profiles
+            }
+        )
     )
 
 
@@ -617,6 +787,7 @@ def _selection_hash(
         "source": source,
         "profiles": profiles,
         "file": config.universe.file,
+        "history_file": config.universe.history_file,
         "symbols": explicit_symbols or config.universe.symbols,
         "filters": asdict(config.universe.filters),
     }
@@ -765,6 +936,10 @@ def _public_members(
 
 @register_universe_provider("nasdaq100")
 def _nasdaq100_provider(as_of: date) -> Iterable[UniverseMember]:
+    try:
+        return _nasdaq100_api_members()
+    except Exception:
+        pass
     return _public_members(
         (
             "https://www.nasdaq.com/solutions/global-indexes/nasdaq-100/companies",
@@ -776,6 +951,41 @@ def _nasdaq100_provider(as_of: date) -> Iterable[UniverseMember]:
         minimum_count=90,
         maximum_count=110,
     )
+
+
+def _nasdaq100_api_members() -> tuple[UniverseMember, ...]:
+    import requests
+
+    response = requests.get(
+        "https://api.nasdaq.com/api/quote/list-type/nasdaq100",
+        timeout=30,
+        headers={
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "Mozilla/5.0",
+        },
+    )
+    response.raise_for_status()
+    payload = response.json()
+    rows = (((payload.get("data") or {}).get("data") or {}).get("rows")) or ()
+    members = []
+    for row in rows:
+        symbol = str(row.get("symbol") or "").strip()
+        if not symbol:
+            continue
+        members.append(
+            UniverseMember(
+                symbol=symbol.replace("/", "-"),
+                market="US",
+                exchange="NASDAQ",
+                name=str(row.get("companyName") or ""),
+                yfinance_symbol=symbol.replace("/", "-"),
+                benchmark="QQQ",
+                profiles=("nasdaq100",),
+            )
+        )
+    if not 90 <= len(members) <= 110:
+        raise RuntimeError(f"unexpected Nasdaq-100 member count: {len(members)}")
+    return tuple(members)
 
 
 @register_universe_provider("sp500")
@@ -864,6 +1074,7 @@ __all__ = [
     "StatusLoader",
     "UniverseMember",
     "UniverseProvider",
+    "UniverseScheduleEntry",
     "UniverseSnapshot",
     "available_universe_profiles",
     "register_universe_provider",

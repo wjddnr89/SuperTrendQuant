@@ -423,6 +423,17 @@ def with_relative_strength(
     )
 
 
+def with_max_positions(config: AppConfig, count: int) -> AppConfig:
+    count = int(count)
+    if count < 1:
+        raise ValueError("max_positions must be at least one.")
+    return replace(
+        config,
+        leader_rotation=replace(config.leader_rotation, max_slots=count),
+        risk=replace(config.risk, max_position_count=count),
+    )
+
+
 def with_costs(
     config: AppConfig,
     *,
@@ -493,6 +504,13 @@ def apply_config_overlay(config: AppConfig, overlay: Mapping[str, Any]) -> AppCo
     if rs is not None:
         updated = with_relative_strength(updated, rs)
 
+    max_positions = values.pop(
+        "max_positions",
+        values.pop("leader_count", values.pop("leader_positions", None)),
+    )
+    if max_positions is not None:
+        updated = with_max_positions(updated, max_positions)
+
     costs = values.pop("costs", None)
     fee = values.pop("fee_rate", None)
     slippage = values.pop("slippage_rate", None)
@@ -527,6 +545,7 @@ __all__ = [
     "with_entry",
     "with_filter",
     "with_filters",
+    "with_max_positions",
     "with_market_filter",
     "with_relative_strength",
     "with_sell_confirmation",

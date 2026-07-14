@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Any, ClassVar, Protocol, TYPE_CHECKING
 
 import pandas as pd
@@ -33,6 +34,7 @@ class BacktestPreparableStrategy(Protocol):
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput = None,
         filter_benchmark: BenchmarkInput = None,
+        universe_schedule: tuple[Mapping[str, Any], ...] = (),
     ) -> PreparedBacktest:
         ...
 

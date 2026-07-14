@@ -195,6 +195,31 @@ class PreparedBacktestAcceptanceTest(unittest.TestCase):
                     expected_sides,
                 )
 
+    def test_leader_rotation_can_fill_multiple_top_slots(self):
+        config, market_data = leader_fixture()
+        config = replace(
+            config,
+            risk=replace(config.risk, max_position_count=2),
+            leader_rotation=replace(config.leader_rotation, max_slots=2),
+            execution=replace(config.execution, allocation_pct=1.0),
+        )
+        strategy = create_strategy(config)
+        prepared = strategy.prepare_backtest(
+            market_data.bars,
+            benchmark=market_data.benchmark,
+            filter_benchmark=market_data.filter_benchmark,
+        )
+        signal_ts = market_data.bars["AAA"].index[4]
+
+        plan = prepared.build_order_plan(
+            signal_ts,
+            AccountSnapshot(cash=10_000.0),
+            mode="backtest",
+        )
+
+        self.assertEqual(tuple(order.side for order in plan.orders), ("buy", "buy"))
+        self.assertEqual(len({order.symbol for order in plan.orders}), 2)
+
     def test_canonical_runner_prepares_once_and_never_calls_legacy_plan_path(self):
         if InstrumentedPreparableStrategy.strategy_type not in available_strategies():
             register_strategy(InstrumentedPreparableStrategy)

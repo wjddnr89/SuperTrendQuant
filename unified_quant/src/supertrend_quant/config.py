@@ -8,9 +8,19 @@ from typing import Any
 
 import yaml
 
+from .ranking import validate_scoring_config
+
 
 _PACKAGE_PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _REPOSITORY_ROOT = _PACKAGE_PROJECT_ROOT.parent
+
+UNIVERSE_PROFILE_MARKETS: dict[str, str] = {
+    "nasdaq100": "US",
+    "sp500": "US",
+    "dow30": "US",
+    "kospi200": "KR",
+    "kosdaq150": "KR",
+}
 
 
 @dataclass(frozen=True)
@@ -30,8 +40,6 @@ class MarketTrendFilterConfig:
 
 @dataclass(frozen=True)
 class LeaderRotationConfig:
-    rs_period: int = 100
-    rs_period_by_market: dict[str, int] = field(default_factory=dict)
     max_slots: int = 1
     hurdle_atr_mult: float = 1.25
     allow_late_chase: bool = True
@@ -102,9 +110,50 @@ class StrategyIdentity:
 
 
 @dataclass(frozen=True)
+class ScoringConfig:
+    type: str
+    params: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class UniverseFilterConfig:
+    enabled: bool = False
+    exclude_managed: bool = True
+    exclude_suspended: bool = True
+    exclude_delisting: bool = True
+    exclude_etf_etn: bool = True
+    exclude_spac: bool = True
+    exclude_preferred: bool = True
+    min_price: dict[str, float] = field(
+        default_factory=lambda: {"US": 5.0, "KR": 1_000.0}
+    )
+    avg_turnover_window: int = 20
+    min_avg_turnover: dict[str, float] = field(
+        default_factory=lambda: {"US": 10_000_000.0, "KR": 1_000_000_000.0}
+    )
+    min_history_daily_bars: int = 120
+
+
+@dataclass(frozen=True)
+class UniverseConfig:
+    source: str = "file"
+    profiles: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    file: str = "universe.json"
+    symbols: tuple[str, ...] = ()
+    refresh: str = "daily"
+    snapshot_dir: str = "state/universes"
+    filters: UniverseFilterConfig = field(default_factory=UniverseFilterConfig)
+
+
+@dataclass(frozen=True)
 class AppConfig:
     strategy: StrategyIdentity
+    scoring: ScoringConfig
     market: str = "US"
+    universe: UniverseConfig = field(default_factory=UniverseConfig)
+    # Compatibility fields retained for callers that still use replace(...,
+    # symbols=...) or the old CLI overrides. New serialization emits only the
+    # nested ``universe`` mapping.
     universe_file: str = "universe.json"
     symbols: tuple[str, ...] = ()
     timeframe: str = "30m"
@@ -151,14 +200,14 @@ def compose_split_config(
     costs_raw = _optional_mapping(runtime_raw, "costs")
     execution_raw = _optional_mapping(runtime_raw, "execution")
     rotation_raw = _optional_mapping(strategy_raw, "rotation")
+    scoring_raw = _required_mapping(strategy_raw, "scoring")
+    runtime_universe = runtime_raw.get("universe")
     live_raw = _optional_mapping(runtime_raw, "live")
     paper_raw = _optional_mapping(runtime_raw, "paper")
     backtest_raw = _optional_mapping(runtime_raw, "backtest")
     hurdle_raw = rotation_raw.get("hurdle", {})
     if not isinstance(hurdle_raw, dict):
         hurdle_raw = {}
-    rs_period, rs_period_by_market = _relative_strength_periods(strategy_raw)
-
     strategy_type = str(strategy_raw.get("type") or portfolio_raw.get("mode") or "").strip()
     if strategy_type == "leader":
         strategy_type = "leader_rotation"
@@ -172,11 +221,20 @@ def compose_split_config(
             "type": strategy_type,
             "params": _optional_mapping(strategy_raw, "params"),
         },
-        "market": str(runtime_raw.get("market", "US")).upper(),
-        "universe": {
-            "file": str(runtime_raw.get("universe_file") or "universe.json"),
-            "symbols": runtime_raw.get("symbols", ()) or (),
+        "scoring": {
+            "type": str(scoring_raw.get("type") or "").strip(),
+            "params": _optional_mapping(scoring_raw, "params"),
         },
+        "market": str(runtime_raw.get("market", "US")).upper(),
+        "universe": (
+            dict(runtime_universe)
+            if isinstance(runtime_universe, dict)
+            else {
+                "source": "symbols" if runtime_raw.get("symbols") else "file",
+                "file": str(runtime_raw.get("universe_file") or "universe.json"),
+                "symbols": runtime_raw.get("symbols", ()) or (),
+            }
+        ),
         "timeframe": str(data_raw.get("timeframe") or strategy_raw.get("timeframe") or "30m"),
         "period": str(data_raw.get("period") or strategy_raw.get("period") or "60d"),
         "capital": {
@@ -190,8 +248,6 @@ def compose_split_config(
         "filters": _compose_filters(strategy_raw),
         "components": _compose_components(strategy_raw),
         "leader_rotation": {
-            "rs_period": rs_period,
-            "rs_period_by_market": rs_period_by_market,
             "max_slots": max_positions,
             "hurdle_atr_mult": hurdle_raw.get("multiplier", 1.25),
             "allow_late_chase": rotation_raw.get("allow_late_chase", True),
@@ -236,21 +292,26 @@ def parse_config(raw: dict[str, Any]) -> AppConfig:
     if not strategy.name or not strategy.type:
         raise ValueError("strategy.name and strategy.type are required.")
 
+    scoring_raw = _required_mapping(raw, "scoring")
+    scoring = ScoringConfig(
+        type=str(scoring_raw.get("type") or "").strip(),
+        params=dict(_optional_mapping(scoring_raw, "params")),
+    )
+    market = str(raw.get("market", "US")).upper()
+    validate_scoring_config(scoring, market)
+
     indicators = _optional_mapping(raw, "indicators")
     filters = _optional_mapping(raw, "filters")
-    universe = raw.get("universe", {})
-    if isinstance(universe, str):
-        universe_file = universe
-        symbols: tuple[str, ...] = tuple(str(symbol) for symbol in raw.get("symbols", ()) or ())
-    elif isinstance(universe, dict):
-        universe_file = str(universe.get("file") or raw.get("universe_file") or "universe.json")
-        symbols = tuple(str(symbol) for symbol in universe.get("symbols", raw.get("symbols", ())) or ())
-    else:
-        raise ValueError("universe must be a string or mapping.")
+    universe_config = _parse_universe_config(raw)
+    _validate_universe_market_selection(universe_config, market)
+    universe_file = universe_config.file
+    symbols = universe_config.symbols
 
     return AppConfig(
         strategy=strategy,
-        market=str(raw.get("market", "US")).upper(),
+        scoring=scoring,
+        market=market,
+        universe=universe_config,
         universe_file=universe_file,
         symbols=symbols,
         timeframe=str(raw.get("timeframe", "30m")),
@@ -273,8 +334,6 @@ def parse_config(raw: dict[str, Any]) -> AppConfig:
             **_known(
                 _optional_mapping(raw, "leader_rotation"),
                 {
-                    "rs_period",
-                    "rs_period_by_market",
                     "max_slots",
                     "hurdle_atr_mult",
                     "allow_late_chase",
@@ -305,6 +364,172 @@ def parse_config(raw: dict[str, Any]) -> AppConfig:
         backtest=BacktestConfig(**_known(_optional_mapping(raw, "backtest"), {"results_dir"})),
         components=_parse_components(raw.get("components", ())),
     )
+
+
+def _parse_universe_config(raw: dict[str, Any]) -> UniverseConfig:
+    value = raw.get("universe", {})
+    legacy_file = str(raw.get("universe_file") or "universe.json")
+    legacy_symbols = tuple(str(symbol) for symbol in raw.get("symbols", ()) or ())
+    if isinstance(value, str):
+        value = {"source": "symbols" if legacy_symbols else "file", "file": value, "symbols": legacy_symbols}
+    elif not isinstance(value, dict):
+        raise ValueError("universe must be a string or mapping.")
+
+    _validate_universe_mapping(value)
+    symbols = tuple(str(symbol).strip() for symbol in value.get("symbols", legacy_symbols) or () if str(symbol).strip())
+    source = str(value.get("source") or ("symbols" if symbols else "file")).strip().lower()
+    profiles_raw = value.get("profiles", {}) or {}
+    profiles = {
+        str(market).upper(): tuple(str(profile).strip().lower() for profile in selected)
+        for market, selected in profiles_raw.items()
+    }
+    filters_raw = value.get("filters", {}) or {}
+    filters_enabled = bool(filters_raw.get("enabled", source == "profiles"))
+    filters = UniverseFilterConfig(
+        enabled=filters_enabled,
+        exclude_managed=bool(filters_raw.get("exclude_managed", True)),
+        exclude_suspended=bool(filters_raw.get("exclude_suspended", True)),
+        exclude_delisting=bool(filters_raw.get("exclude_delisting", True)),
+        exclude_etf_etn=bool(filters_raw.get("exclude_etf_etn", True)),
+        exclude_spac=bool(filters_raw.get("exclude_spac", True)),
+        exclude_preferred=bool(filters_raw.get("exclude_preferred", True)),
+        min_price=_market_number_map(
+            filters_raw.get("min_price", {"US": 5.0, "KR": 1_000.0}),
+            "universe.filters.min_price",
+        ),
+        avg_turnover_window=_positive_int(
+            filters_raw.get("avg_turnover_window", 20),
+            "universe.filters.avg_turnover_window",
+        ),
+        min_avg_turnover=_market_number_map(
+            filters_raw.get(
+                "min_avg_turnover",
+                {"US": 10_000_000.0, "KR": 1_000_000_000.0},
+            ),
+            "universe.filters.min_avg_turnover",
+        ),
+        min_history_daily_bars=_positive_int(
+            filters_raw.get("min_history_daily_bars", 120),
+            "universe.filters.min_history_daily_bars",
+        ),
+    )
+    config = UniverseConfig(
+        source=source,
+        profiles=profiles,
+        file=str(value.get("file") or legacy_file),
+        symbols=symbols,
+        refresh=str(value.get("refresh") or "daily").strip().lower(),
+        snapshot_dir=str(value.get("snapshot_dir") or "state/universes"),
+        filters=filters,
+    )
+    _validate_universe_config(config)
+    return config
+
+
+def _validate_universe_mapping(raw: dict[str, Any]) -> None:
+    _reject_unknown_keys(
+        raw,
+        {"source", "profiles", "file", "symbols", "refresh", "snapshot_dir", "filters"},
+        "universe",
+    )
+    profiles = raw.get("profiles", {}) or {}
+    if not isinstance(profiles, dict):
+        raise ValueError("universe.profiles must be a mapping.")
+    for market, selected in profiles.items():
+        if str(market).upper() not in {"US", "KR"}:
+            raise ValueError(f"Unsupported universe profile market: {market}")
+        if not isinstance(selected, (list, tuple)):
+            raise ValueError(f"universe.profiles.{market} must be a list.")
+    symbols = raw.get("symbols", ()) or ()
+    if not isinstance(symbols, (list, tuple)):
+        raise ValueError("universe.symbols must be a list.")
+    filters = raw.get("filters", {}) or {}
+    if not isinstance(filters, dict):
+        raise ValueError("universe.filters must be a mapping.")
+    _reject_unknown_keys(
+        filters,
+        {
+            "enabled",
+            "exclude_managed",
+            "exclude_suspended",
+            "exclude_delisting",
+            "exclude_etf_etn",
+            "exclude_spac",
+            "exclude_preferred",
+            "min_price",
+            "avg_turnover_window",
+            "min_avg_turnover",
+            "min_history_daily_bars",
+        },
+        "universe.filters",
+    )
+
+
+def _validate_universe_config(config: UniverseConfig) -> None:
+    if config.source not in {"profiles", "file", "symbols"}:
+        raise ValueError("universe.source must be profiles, file, or symbols.")
+    if config.refresh != "daily":
+        raise ValueError("universe.refresh must be daily.")
+    if config.source == "profiles" and not any(config.profiles.values()):
+        raise ValueError("universe.source=profiles requires at least one profile.")
+    if config.source == "symbols" and not config.symbols:
+        raise ValueError("universe.source=symbols requires universe.symbols.")
+    if config.source == "file" and not config.file.strip():
+        raise ValueError("universe.source=file requires universe.file.")
+    for market, selected in config.profiles.items():
+        seen: set[str] = set()
+        for profile in selected:
+            expected_market = UNIVERSE_PROFILE_MARKETS.get(profile)
+            if expected_market is None:
+                available = ", ".join(sorted(UNIVERSE_PROFILE_MARKETS))
+                raise ValueError(f"Unsupported universe profile: {profile}. Available profiles: {available}")
+            if expected_market != market:
+                raise ValueError(f"Universe profile {profile} belongs to {expected_market}, not {market}.")
+            if profile in seen:
+                raise ValueError(f"Duplicate universe profile for {market}: {profile}")
+            seen.add(profile)
+
+
+def _validate_universe_market_selection(config: UniverseConfig, market: str) -> None:
+    if config.source != "profiles" or market == "AUTO":
+        return
+    if market not in {"US", "KR"}:
+        raise ValueError("market must be US, KR, or AUTO.")
+    configured_markets = {key for key, profiles in config.profiles.items() if profiles}
+    if configured_markets != {market}:
+        raise ValueError(
+            f"market={market} requires universe.profiles to contain only {market}."
+        )
+
+
+def _market_number_map(value: Any, label: str) -> dict[str, float]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be a mapping.")
+    unknown = {str(key).upper() for key in value} - {"US", "KR"}
+    if unknown:
+        raise ValueError(f"Unsupported market keys for {label}: {', '.join(sorted(unknown))}")
+    parsed = {"US": 0.0, "KR": 0.0}
+    for key, raw_number in value.items():
+        try:
+            number = float(raw_number)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{label}.{key} must be a non-negative number.") from exc
+        if number < 0:
+            raise ValueError(f"{label}.{key} must be a non-negative number.")
+        parsed[str(key).upper()] = number
+    return parsed
+
+
+def _positive_int(value: Any, label: str) -> int:
+    if isinstance(value, bool):
+        raise ValueError(f"{label} must be a positive integer.")
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{label} must be a positive integer.") from exc
+    if parsed < 1 or parsed != value:
+        raise ValueError(f"{label} must be a positive integer.")
+    return parsed
 
 
 def _compose_indicators(strategy_raw: dict[str, Any]) -> dict[str, Any]:
@@ -381,18 +606,6 @@ def _find_exit_component_value(
     return default
 
 
-def _relative_strength_periods(strategy_raw: dict[str, Any]) -> tuple[int, dict[str, int]]:
-    relative_strength = _find_component(strategy_raw, "relative_strength")
-    if not relative_strength:
-        return 100, {}
-    lookback = relative_strength.get("lookback_bars", 100)
-    if isinstance(lookback, dict):
-        by_market = {str(key).upper(): int(value) for key, value in lookback.items() if key != "default"}
-        default = int(lookback.get("default", by_market.get("US", 100)))
-        return default, by_market
-    return int(lookback), {}
-
-
 def _compose_components(strategy_raw: dict[str, Any]) -> list[dict[str, Any]]:
     signals = _optional_mapping(strategy_raw, "signals")
     components: list[dict[str, Any]] = []
@@ -423,9 +636,18 @@ def _compose_components(strategy_raw: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _validate_strategy_schema(raw: dict[str, Any]) -> None:
-    _reject_unknown_keys(raw, {"name", "type", "params", "portfolio", "signals", "rotation", "timeframe", "period"}, "strategy")
+    _reject_unknown_keys(
+        raw,
+        {"name", "type", "params", "portfolio", "scoring", "signals", "rotation", "timeframe", "period"},
+        "strategy",
+    )
     _optional_mapping(raw, "params")
     _reject_unknown_keys(_optional_mapping(raw, "portfolio"), {"max_positions", "allocation_pct"}, "strategy.portfolio")
+    scoring = _required_mapping(raw, "scoring")
+    _reject_unknown_keys(scoring, {"type", "params"}, "strategy.scoring")
+    if not str(scoring.get("type") or "").strip():
+        raise ValueError("strategy.scoring.type is required.")
+    _optional_mapping(scoring, "params")
     rotation = _optional_mapping(raw, "rotation")
     _reject_unknown_keys(rotation, {"hurdle", "allow_late_chase", "min_rotation_profit_pct"}, "strategy.rotation")
     hurdle = rotation.get("hurdle", {})
@@ -441,6 +663,7 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
         {
             "name",
             "market",
+            "universe",
             "universe_file",
             "symbols",
             "data",
@@ -453,6 +676,11 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
         },
         "runtime",
     )
+    universe = raw.get("universe")
+    if universe is not None:
+        if not isinstance(universe, dict):
+            raise ValueError("runtime.universe must be a mapping.")
+        _validate_universe_mapping(universe)
     _reject_unknown_keys(_optional_mapping(raw, "data"), {"timeframe", "period"}, "runtime.data")
     _reject_unknown_keys(_optional_mapping(raw, "capital"), {"initial_cash"}, "runtime.capital")
     _reject_unknown_keys(_optional_mapping(raw, "costs"), {"fee_rate", "slippage_rate"}, "runtime.costs")
@@ -478,7 +706,6 @@ def _validate_component_keys(group_name: str, component_type: str, raw: dict[str
         ("entries", "triple_supertrend"): {"type", "enabled", "atr_method", "settings"},
         ("filters", "benchmark_trend"): {"type", "enabled", "timeframe"},
         ("filters", "market_trend"): {"type", "enabled", "timeframe"},
-        ("filters", "relative_strength"): {"type", "enabled", "lookback_bars"},
         ("filters", "ichimoku_cloud"): {"type", "enabled", "tenkan", "kijun", "span_b", "shift"},
         ("filters", "ema_trend"): {"type", "enabled", "period"},
         ("exits", "supertrend_flip"): {"type", "enabled", "confirm_bars"},
@@ -541,20 +768,9 @@ def _parse_components(raw: Any) -> tuple[ComponentConfig, ...]:
 
 
 def load_universe(config: AppConfig) -> list[str]:
-    if config.symbols:
-        return list(config.symbols)
+    from .universe import resolve_universe
 
-    path = _resolve_existing_path(config.universe_file)
-    with path.open("r", encoding="utf-8") as handle:
-        data = json.load(handle)
-
-    if config.market == "KR":
-        return list(data.get("KR_UNIVERSE_MAP", {}).keys())
-    if config.market == "US":
-        return list(data.get("US_UNIVERSE_LIST", []))
-    if config.market == "AUTO":
-        return list(data.get("US_UNIVERSE_LIST", []))
-    raise ValueError("market must be US or KR.")
+    return list(resolve_universe(config, mode="backtest").eligible_symbols)
 
 
 def load_universe_for_market(universe_file: str, market: str) -> list[str]:

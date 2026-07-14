@@ -19,6 +19,7 @@ class ResearchExportTest(unittest.TestCase):
         promoted = strict_split_roundtrip(config)
 
         self.assertEqual(promoted.strategy.type, "leader_rotation")
+        self.assertEqual(promoted.scoring, config.scoring)
         self.assertEqual(promoted.timeframe, config.timeframe)
         self.assertEqual(promoted.costs, config.costs)
         self.assertIn("triple_supertrend", {item.type for item in promoted.components})

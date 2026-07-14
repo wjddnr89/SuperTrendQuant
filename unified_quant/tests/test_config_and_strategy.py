@@ -7,12 +7,12 @@ import pandas as pd
 from supertrend_quant.brokers import PaperBroker
 from supertrend_quant.config import benchmark_for_symbol, load_split_config
 from supertrend_quant.portfolio import AccountSnapshot
+from supertrend_quant.ranking import effective_relative_strength_lookback
 from supertrend_quant.strategies import (
     _trend_down_confirmed,
     available_strategies,
     build_order_plan,
     create_strategy,
-    effective_rs_period,
     register_strategy,
 )
 
@@ -30,8 +30,8 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(simple_config.strategy.type, "simple_supertrend")
         self.assertEqual(leader_config.strategy.type, "leader_rotation")
         self.assertEqual(simple_config.supertrend.multiplier, 3.0)
-        self.assertEqual(simple_config.risk.max_position_count, 3)
-        self.assertEqual(simple_config.execution.allocation_pct, 0.9)
+        self.assertEqual(simple_config.risk.max_position_count, 5)
+        self.assertEqual(simple_config.execution.allocation_pct, 1.0)
 
     def test_all_strategy_files_load_with_a_runtime(self):
         config_paths = [
@@ -45,7 +45,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
                     "live_toss.yaml" if "main_jo" in path.name else "simulation.yaml"
                 )
                 config = load_split_config(path, runtime)
-                self.assertIn(config.strategy.type, {"simple_supertrend", "leader_rotation"})
+                self.assertIn(config.strategy.type, {"simple_supertrend", "leader_rotation", "triple_filters"})
                 self.assertGreater(config.capital.initial_cash, 0)
 
     def test_split_config_composes_strategy_universe_and_runtime(self):
@@ -59,22 +59,23 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.market, "US")
         self.assertEqual(config.universe_file, "universe.json")
         self.assertEqual(config.symbols, ())
-        self.assertEqual(config.timeframe, "30m")
-        self.assertEqual(config.period, "30d")
+        self.assertEqual(config.timeframe, "1d")
+        self.assertEqual(config.period, "max")
         self.assertFalse(hasattr(config, "benchmark"))
         self.assertEqual(config.supertrend.period, 10)
         self.assertEqual(config.supertrend.multiplier, 3.0)
         self.assertEqual(config.market_trend_filter.enabled, True)
         self.assertEqual(config.market_trend_filter.timeframe, "1d")
-        self.assertEqual(config.leader_rotation.rs_period, 100)
+        self.assertEqual(config.scoring.type, "relative_strength")
+        self.assertEqual(config.scoring.params, {"lookback_bars": 100})
         self.assertEqual(config.leader_rotation.max_slots, 1)
         self.assertEqual(config.exit.sell_confirm_bars, 1)
         self.assertEqual(config.execution.broker, "paper")
         self.assertEqual(config.paper.state_file, "state/paper.json")
         self.assertEqual(config.paper.results_dir, "results/paper")
         self.assertEqual(config.backtest.results_dir, "results/backtests")
-        self.assertIn("relative_strength", {component.type for component in config.components})
-        self.assertEqual(len(config.components), 4)
+        self.assertNotIn("relative_strength", {component.type for component in config.components})
+        self.assertEqual(len(config.components), 3)
 
     def test_strategy_registry_creates_registered_strategy(self):
         config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
@@ -82,9 +83,10 @@ class ConfigAndStrategyTest(unittest.TestCase):
         strategy = create_strategy(config)
 
         self.assertEqual(strategy.strategy_type, "simple_supertrend")
-        self.assertEqual(strategy.warmup_bars(), 2)
+        self.assertEqual(strategy.warmup_bars(), 101)
         self.assertIn("leader_rotation", available_strategies())
         self.assertIn("simple_supertrend", available_strategies())
+        self.assertIn("triple_filters", available_strategies())
 
     def test_unknown_strategy_type_lists_available_strategies(self):
         config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
@@ -145,10 +147,10 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.supertrend.atr_method, "wilder")
         self.assertEqual(config.supertrend.symbol_multipliers["SOXL"], 4.5)
         self.assertEqual(config.market_trend_filter.timeframe, "1d")
-        self.assertEqual(config.leader_rotation.rs_period, 100)
-        self.assertEqual(config.leader_rotation.rs_period_by_market, {})
-        self.assertEqual(effective_rs_period(config.__class__(**{**config.__dict__, "market": "US"})), 100)
-        self.assertEqual(effective_rs_period(config.__class__(**{**config.__dict__, "market": "KR"})), 100)
+        self.assertEqual(config.scoring.type, "relative_strength")
+        self.assertEqual(config.scoring.params, {"lookback_bars": 100})
+        self.assertEqual(effective_relative_strength_lookback(config.scoring.params, "US"), 100)
+        self.assertEqual(effective_relative_strength_lookback(config.scoring.params, "KR"), 100)
         self.assertEqual(config.execution.broker, "toss")
         self.assertEqual(config.execution.live_confirm_required, True)
 
@@ -157,7 +159,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(benchmark_for_symbol("005930", "KR", "universe.json"), "^KS11")
         self.assertEqual(benchmark_for_symbol("010170", "KR", "universe.json"), "^KQ11")
 
-    def test_unsupported_component_keys_are_rejected(self):
+    def test_legacy_relative_strength_filter_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "bad_strategy.yaml"
             path.write_text(
@@ -165,8 +167,11 @@ class ConfigAndStrategyTest(unittest.TestCase):
 name: bad
 type: leader_rotation
 portfolio:
-  mode: leader_rotation
   max_positions: 1
+scoring:
+  type: relative_strength
+  params:
+    lookback_bars: 100
 signals:
   entries:
     - type: supertrend
@@ -181,8 +186,40 @@ signals:
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(ValueError, "Unsupported keys"):
+            with self.assertRaisesRegex(ValueError, "Unsupported component"):
                 load_split_config(path, "configs/runtimes/simulation.yaml")
+
+    def test_scoring_section_is_required(self):
+        source = (CONFIG_ROOT / "strategies/simple_supertrend.yaml").read_text(encoding="utf-8")
+        missing = source.replace(
+            "scoring:\n  type: relative_strength\n  params:\n    lookback_bars: 100\n\n",
+            "",
+            1,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "missing_scoring.yaml"
+            path.write_text(missing, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "scoring"):
+                load_split_config(path, "configs/runtimes/simulation.yaml")
+
+    def test_scoring_type_and_params_are_validated_during_load(self):
+        source = (CONFIG_ROOT / "strategies/simple_supertrend.yaml").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            unknown_path = Path(tmp) / "unknown_scoring.yaml"
+            unknown_path.write_text(
+                source.replace("type: relative_strength", "type: missing_scorer", 1),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "Available scorers"):
+                load_split_config(unknown_path, "configs/runtimes/simulation.yaml")
+
+            invalid_path = Path(tmp) / "invalid_scoring.yaml"
+            invalid_path.write_text(
+                source.replace("lookback_bars: 100", "lookback_bars: 0", 1),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "positive integer"):
+                load_split_config(invalid_path, "configs/runtimes/simulation.yaml")
 
     def test_runtime_cannot_override_strategy_owned_position_sizing(self):
         with tempfile.TemporaryDirectory() as tmp:

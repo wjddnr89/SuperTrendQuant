@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from .config import benchmark_for_symbol, to_yfinance_symbol
 from .data import delay_daily_until_next_session, extract_ohlc, resample_ohlc
+
+if TYPE_CHECKING:
+    from .universe import ResolvedUniverse
 
 
 @dataclass
@@ -19,11 +23,15 @@ class YahooStateCache:
     benchmark_close_30m: dict[str, pd.Series] = field(default_factory=dict)
     benchmark_bars_1h: dict[str, pd.DataFrame] = field(default_factory=dict)
     missing_stock_targets: dict[str, pd.Timestamp] = field(default_factory=dict)
+    resolved_universe: ResolvedUniverse | None = None
 
     def configure(self, stock_timeframe: str, filter_timeframe: str, period: str = "30d") -> None:
         self.stock_timeframe = stock_timeframe
         self.filter_timeframe = filter_timeframe
         self.period = period
+
+    def configure_universe(self, resolved_universe: ResolvedUniverse) -> None:
+        self.resolved_universe = resolved_universe
 
     def sync(
         self,
@@ -38,30 +46,34 @@ class YahooStateCache:
         except ModuleNotFoundError as exc:
             raise RuntimeError("yfinance is required.") from exc
 
-        yf_symbols = [to_yfinance_symbol(symbol, market, universe_file) for symbol in symbols]
+        yf_symbols = [self._yf_symbol(symbol, market, universe_file) for symbol in symbols]
         stock_source = _source_interval(self.stock_timeframe)
-        raw_stock = yf.download(
-            yf_symbols + benchmarks,
+        raw_stock = _download_batched(
+            yf,
+            yf_symbols,
             period=self.period,
             interval=stock_source,
-            progress=False,
-            auto_adjust=False,
-            group_by="ticker",
-            threads=True,
         )
-        filter_source = _source_interval(self.filter_timeframe)
-        raw_filter = raw_stock if filter_source == stock_source else yf.download(
+        raw_benchmark_stock = _download_batched(
+            yf,
             benchmarks,
             period=self.period,
-            interval=filter_source,
-            progress=False,
-            auto_adjust=False,
-            group_by="ticker",
-            threads=True,
+            interval=stock_source,
+        )
+        filter_source = _source_interval(self.filter_timeframe)
+        raw_filter = (
+            raw_benchmark_stock
+            if filter_source == stock_source
+            else _download_batched(
+                yf,
+                benchmarks,
+                period=self.period,
+                interval=filter_source,
+            )
         )
 
         benchmark_frames_stock = {
-            benchmark: resample_ohlc(extract_ohlc(raw_stock, benchmark), self.stock_timeframe, market)
+            benchmark: resample_ohlc(extract_ohlc(raw_benchmark_stock, benchmark), self.stock_timeframe, market)
             for benchmark in benchmarks
         }
         benchmark_frames_filter = {
@@ -79,7 +91,7 @@ class YahooStateCache:
         for symbol, yf_symbol in zip(symbols, yf_symbols):
             df = resample_ohlc(extract_ohlc(raw_stock, yf_symbol), self.stock_timeframe, market)
             if not df.empty:
-                benchmark = benchmark_for_symbol(symbol, market, universe_file)
+                benchmark = self._benchmark(symbol, market, universe_file)
                 bench_df = benchmark_frames_stock.get(benchmark)
                 if (
                     self.stock_timeframe == "30m"
@@ -150,7 +162,7 @@ class YahooStateCache:
             source_map = self.benchmark_bars_1h if source == "1h" else self.benchmark_bars_30m
         out = {}
         for symbol in symbols:
-            benchmark = benchmark_for_symbol(symbol, market, universe_file)
+            benchmark = self._benchmark(symbol, market, universe_file)
             df = source_map.get(benchmark)
             if df is None or df.empty:
                 continue
@@ -193,16 +205,13 @@ class YahooStateCache:
             raise RuntimeError("yfinance is required.") from exc
 
         refreshed = []
-        yf_symbols = [to_yfinance_symbol(symbol, market, universe_file) for symbol in retry_symbols]
+        yf_symbols = [self._yf_symbol(symbol, market, universe_file) for symbol in retry_symbols]
         source_interval = _source_interval(self.stock_timeframe)
-        raw_stock = yf.download(
+        raw_stock = _download_batched(
+            yf,
             yf_symbols,
             period=self.period,
             interval=source_interval,
-            progress=False,
-            auto_adjust=False,
-            group_by="ticker",
-            threads=True,
         )
         for symbol, yf_symbol in zip(retry_symbols, yf_symbols):
             df = resample_ohlc(extract_ohlc(raw_stock, yf_symbol), self.stock_timeframe, market)
@@ -227,6 +236,43 @@ class YahooStateCache:
                 self.missing_stock_targets.pop(symbol, None)
                 refreshed.append(symbol)
         return refreshed
+
+    def _yf_symbol(self, symbol: str, market: str, universe_file: str) -> str:
+        if self.resolved_universe is not None:
+            return self.resolved_universe.yfinance_symbol_for(symbol)
+        return to_yfinance_symbol(symbol, market, universe_file)
+
+    def _benchmark(self, symbol: str, market: str, universe_file: str) -> str:
+        if self.resolved_universe is not None:
+            return self.resolved_universe.benchmark_for(symbol)
+        return benchmark_for_symbol(symbol, market, universe_file)
+
+
+def _download_batched(yf, tickers: list[str], *, period: str, interval: str, batch_size: int = 100) -> pd.DataFrame:
+    if not tickers:
+        return pd.DataFrame()
+    frames: list[pd.DataFrame] = []
+    for start in range(0, len(tickers), batch_size):
+        batch = tickers[start : start + batch_size]
+        frame = yf.download(
+            batch,
+            period=period,
+            interval=interval,
+            progress=False,
+            auto_adjust=False,
+            group_by="ticker",
+            threads=True,
+        )
+        if frame.empty:
+            continue
+        if not isinstance(frame.columns, pd.MultiIndex) and len(batch) == 1:
+            frame = frame.copy()
+            frame.columns = pd.MultiIndex.from_product([batch, frame.columns])
+        frames.append(frame)
+    if not frames:
+        return pd.DataFrame()
+    combined = pd.concat(frames, axis=1)
+    return combined.loc[:, ~combined.columns.duplicated()].sort_index()
 
 
 def normalize_timestamp(timestamp, market_tz) -> pd.Timestamp:

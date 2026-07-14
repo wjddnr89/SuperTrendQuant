@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, TYPE_CHECKING
 
 import pandas as pd
 
 from .config import AppConfig, benchmark_for_symbol, to_yfinance_symbol
+
+if TYPE_CHECKING:
+    from .universe import ResolvedUniverse
 
 
 BenchmarkData = dict[str, pd.DataFrame]
@@ -17,6 +20,7 @@ class MarketData:
     benchmark: BenchmarkData | None = None
     filter_benchmark: BenchmarkData | None = None
     skipped: tuple[str, ...] = ()
+    universe_snapshot: dict[str, object] | None = None
 
 
 class MarketDataProvider(Protocol):
@@ -35,28 +39,43 @@ def download_market_data(
     config: AppConfig,
     symbols: list[str],
     provider: MarketDataProvider | None = None,
+    resolved_universe: ResolvedUniverse | None = None,
 ) -> MarketData:
-    return (provider or YahooMarketDataProvider()).load(config, symbols)
+    if provider is not None:
+        return provider.load(config, symbols)
+    return _download_yahoo_market_data(config, symbols, resolved_universe)
 
 
-def _download_yahoo_market_data(config: AppConfig, symbols: list[str]) -> MarketData:
+def _download_yahoo_market_data(
+    config: AppConfig,
+    symbols: list[str],
+    resolved_universe: ResolvedUniverse | None = None,
+) -> MarketData:
     try:
         import yfinance as yf
     except ModuleNotFoundError as exc:
         raise RuntimeError("yfinance is required. Install project dependencies first.") from exc
 
     yf_to_symbol = {
-        to_yfinance_symbol(symbol, config.market, config.universe_file): symbol
+        (
+            resolved_universe.yfinance_symbol_for(symbol)
+            if resolved_universe is not None
+            else to_yfinance_symbol(symbol, config.market, config.universe_file)
+        ): symbol
         for symbol in symbols
     }
     benchmark_by_symbol = {
-        symbol: benchmark_for_symbol(symbol, config.market, config.universe_file)
+        symbol: (
+            resolved_universe.benchmark_for(symbol)
+            if resolved_universe is not None
+            else benchmark_for_symbol(symbol, config.market, config.universe_file)
+        )
         for symbol in symbols
     }
     benchmark_tickers = sorted(set(benchmark_by_symbol.values()))
-    tickers = sorted(set(yf_to_symbol) | set(benchmark_tickers))
     source_interval = _source_interval(config.timeframe)
-    raw = _yf_download(yf, tickers, config.period, source_interval)
+    raw = _yf_download(yf, sorted(yf_to_symbol), config.period, source_interval)
+    benchmark_raw = _yf_download(yf, benchmark_tickers, config.period, source_interval)
 
     bars: dict[str, pd.DataFrame] = {}
     skipped: list[str] = []
@@ -68,7 +87,7 @@ def _download_yahoo_market_data(config: AppConfig, symbols: list[str]) -> Market
             bars[symbol] = resample_ohlc(df, config.timeframe, config.market)
 
     benchmark = _resample_benchmark_map(
-        _extract_benchmark_map(raw, benchmark_by_symbol),
+        _extract_benchmark_map(benchmark_raw, benchmark_by_symbol),
         config.timeframe,
         config.market,
     )
@@ -97,19 +116,45 @@ def _download_yahoo_market_data(config: AppConfig, symbols: list[str]) -> Market
         benchmark=benchmark or None,
         filter_benchmark=filter_benchmark or None,
         skipped=tuple(skipped),
+        universe_snapshot=(
+            resolved_universe.snapshot.to_dict()
+            if resolved_universe is not None
+            else None
+        ),
     )
 
 
-def _yf_download(yf, tickers: list[str], period: str, interval: str) -> pd.DataFrame:
-    return yf.download(
-        tickers=tickers,
-        period=period,
-        interval=interval,
-        auto_adjust=False,
-        progress=False,
-        threads=True,
-        group_by="ticker",
-    )
+def _yf_download(
+    yf,
+    tickers: list[str],
+    period: str,
+    interval: str,
+    batch_size: int = 100,
+) -> pd.DataFrame:
+    if not tickers:
+        return pd.DataFrame()
+    frames: list[pd.DataFrame] = []
+    for start in range(0, len(tickers), batch_size):
+        batch = tickers[start : start + batch_size]
+        frame = yf.download(
+            tickers=batch,
+            period=period,
+            interval=interval,
+            auto_adjust=False,
+            progress=False,
+            threads=True,
+            group_by="ticker",
+        )
+        if frame.empty:
+            continue
+        if not isinstance(frame.columns, pd.MultiIndex) and len(batch) == 1:
+            frame = frame.copy()
+            frame.columns = pd.MultiIndex.from_product([batch, frame.columns])
+        frames.append(frame)
+    if not frames:
+        return pd.DataFrame()
+    combined = pd.concat(frames, axis=1)
+    return combined.loc[:, ~combined.columns.duplicated()].sort_index()
 
 
 def _source_interval(timeframe: str) -> str:

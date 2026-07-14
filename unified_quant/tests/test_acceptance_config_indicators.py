@@ -9,6 +9,7 @@ import pandas as pd
 
 from supertrend_quant.config import load_split_config
 from supertrend_quant.indicators import add_ema_trend, add_ichimoku, add_triple_supertrend
+from supertrend_quant.portfolio import AccountSnapshot, Position
 from supertrend_quant.strategies import create_strategy
 from supertrend_quant.strategies.common import with_strategy_components
 
@@ -16,6 +17,7 @@ from supertrend_quant.strategies.common import with_strategy_components
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 UNIFIED_ROOT = REPOSITORY_ROOT / "unified_quant"
 TRIPLE_PATH = UNIFIED_ROOT / "configs/strategies/triple_filters.yaml"
+STANDALONE_TRIPLE_PATH = UNIFIED_ROOT / "configs/strategies/triple_filters_standalone.yaml"
 RUNTIME_PATH = UNIFIED_ROOT / "configs/runtimes/research_us.yaml"
 
 
@@ -59,6 +61,56 @@ class TripleConfigAndIndicatorAcceptanceTest(unittest.TestCase):
         )
         self.assertEqual(config.exit.sell_confirm_bars, 3)
         self.assertEqual(create_strategy(config).strategy_type, "leader_rotation")
+
+    def test_standalone_triple_filters_ranks_entries_without_rotation(self):
+        config = load_split_config(STANDALONE_TRIPLE_PATH, RUNTIME_PATH)
+
+        self.assertEqual(config.strategy.type, "triple_filters")
+        self.assertEqual(config.risk.max_position_count, 5)
+        self.assertEqual(config.scoring.type, "relative_strength")
+        self.assertEqual(config.scoring.params, {"lookback_bars": 100})
+        self.assertNotIn("relative_strength", {item.type for item in config.components})
+        strategy = create_strategy(config)
+        self.assertEqual(strategy.strategy_type, "triple_filters")
+        self.assertEqual(strategy.warmup_bars(), 200)
+
+        config = config.__class__(
+            **{
+                **config.__dict__,
+                "risk": config.risk.__class__(max_position_count=1),
+                "market_trend_filter": config.market_trend_filter.__class__(
+                    enabled=False,
+                    timeframe=config.market_trend_filter.timeframe,
+                ),
+            }
+        )
+        strategy = create_strategy(config)
+        prepared = {
+            "LOW": pd.DataFrame(
+                {"Close": [100.0], "Score": [0.1], "TripleAllUp": [True],
+                 "Ichimoku_LongOk": [True], "EMA_LongOk": [True]}
+            ),
+            "HIGH": pd.DataFrame(
+                {"Close": [100.0], "Score": [0.3], "TripleAllUp": [True],
+                 "Ichimoku_LongOk": [True], "EMA_LongOk": [True]}
+            ),
+        }
+        plan = strategy._build_order_plan_from_prepared(
+            prepared,
+            AccountSnapshot(cash=10_000.0),
+            "backtest",
+        )
+        self.assertEqual([order.symbol for order in plan.orders], ["HIGH"])
+
+        held_plan = strategy._build_order_plan_from_prepared(
+            prepared,
+            AccountSnapshot(
+                cash=0.0,
+                positions={"LOW": Position("LOW", quantity=10, avg_price=100.0)},
+            ),
+            "backtest",
+        )
+        self.assertEqual(held_plan.orders, ())
 
     def test_triple_settings_reject_unknown_keys(self):
         malformed = TRIPLE_PATH.read_text(encoding="utf-8").replace(

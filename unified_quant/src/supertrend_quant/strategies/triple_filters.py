@@ -9,18 +9,20 @@ from ..portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quanti
 from ..ranking import create_scorer
 from .base import BenchmarkInput, PreparedBacktest, reject_unknown_params
 from .common import (
+    asset_filters_allow_buy,
     benchmark_for_strategy_symbol,
+    configured_exit_down_confirmed,
+    enabled_component,
     market_filter_allows_buy,
     precompute_market_filter_trends,
-    trend_down_confirmed,
-    with_supertrend,
+    with_strategy_components,
 )
 from .registry import register_strategy
 
 
 @dataclass(frozen=True)
-class PreparedSimpleBacktest(PreparedBacktest):
-    strategy: "SimpleSupertrendStrategy"
+class PreparedTripleFiltersBacktest(PreparedBacktest):
+    strategy: "TripleFiltersStrategy"
     prepared: dict[str, pd.DataFrame]
     market_filter_trends: dict[str, pd.Series]
 
@@ -47,8 +49,10 @@ class PreparedSimpleBacktest(PreparedBacktest):
 
 
 @register_strategy
-class SimpleSupertrendStrategy:
-    strategy_type = "simple_supertrend"
+class TripleFiltersStrategy:
+    """Rank eligible entries with the configured scorer without rotating holdings."""
+
+    strategy_type = "triple_filters"
 
     def __init__(self, config: AppConfig):
         self.config = config
@@ -57,28 +61,43 @@ class SimpleSupertrendStrategy:
     @classmethod
     def validate_config(cls, config: AppConfig) -> None:
         reject_unknown_params(config.strategy.params, set(), cls.strategy_type)
+        if enabled_component(config, "entries", "triple_supertrend") is None:
+            raise ValueError("triple_filters requires an enabled triple_supertrend entry.")
 
     def warmup_bars(self) -> int:
-        return max(2, self.scorer.warmup_bars())
+        warmup = self.scorer.warmup_bars()
+        triple = enabled_component(self.config, "entries", "triple_supertrend")
+        if triple is not None:
+            settings = triple.params.get("settings", ())
+            periods = [int(item.get("period", 1)) for item in settings if isinstance(item, dict)]
+            if periods:
+                warmup = max(warmup, max(periods))
+        ichimoku = enabled_component(self.config, "filters", "ichimoku_cloud")
+        if ichimoku is not None:
+            warmup = max(
+                warmup,
+                int(ichimoku.params.get("span_b", 52))
+                + int(ichimoku.params.get("shift", 26)),
+            )
+        ema = enabled_component(self.config, "filters", "ema_trend")
+        if ema is not None:
+            warmup = max(warmup, int(ema.params.get("period", 200)))
+        return warmup
 
     def prepare_backtest(
         self,
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput = None,
         filter_benchmark: BenchmarkInput = None,
-    ) -> PreparedSimpleBacktest:
+    ) -> PreparedTripleFiltersBacktest:
         market_filter_data = filter_benchmark if filter_benchmark is not None else benchmark
-        featured = {
-            symbol: with_supertrend(self.config, symbol, frame)
-            for symbol, frame in bars.items()
-        }
-        prepared = self.scorer.add_scores(featured, benchmark)
+        prepared = self._prepare_scored_data(bars, benchmark)
         market_filter_trends = precompute_market_filter_trends(
             self.config,
             list(bars),
             market_filter_data,
         )
-        return PreparedSimpleBacktest(self, prepared, market_filter_trends)
+        return PreparedTripleFiltersBacktest(self, prepared, market_filter_trends)
 
     def build_order_plan(
         self,
@@ -89,11 +108,7 @@ class SimpleSupertrendStrategy:
         filter_benchmark: BenchmarkInput = None,
     ) -> OrderPlan:
         market_filter_data = filter_benchmark if filter_benchmark is not None else benchmark
-        featured = {
-            symbol: with_supertrend(self.config, symbol, frame)
-            for symbol, frame in bars.items()
-        }
-        prepared = self.scorer.add_scores(featured, benchmark)
+        prepared = self._prepare_scored_data(bars, benchmark)
         return self._build_order_plan_from_prepared(
             prepared,
             account,
@@ -111,39 +126,40 @@ class SimpleSupertrendStrategy:
     ) -> OrderPlan:
         config = self.config
         orders: list[OrderIntent] = []
-        max_positions = config.risk.max_position_count
-        open_slots = max(0, max_positions - account.total_position_count)
+        open_slots = max(0, config.risk.max_position_count - account.total_position_count)
         per_slot_allocation = config.execution.allocation_pct / max(1, open_slots)
+
         candidate_scores: dict[str, object] = {}
         candidate_prices: dict[str, float] = {}
-
-        for symbol, st_df in prepared.items():
-            if len(st_df) < 2:
+        for symbol, feature_df in prepared.items():
+            if feature_df.empty:
                 continue
-            row = st_df.iloc[-1]
+            row = feature_df.iloc[-1]
             position = account.positions.get(symbol)
             price = float(row["Close"])
 
-            if position and position.quantity > 0 and trend_down_confirmed(st_df, config.exit.sell_confirm_bars):
-                orders.append(
-                    OrderIntent(
-                        symbol=symbol,
-                        side="sell",
-                        quantity=position.quantity,
-                        order_type=config.execution.order_type,
-                        reason="Supertrend SellSignal",
+            if position and position.quantity > 0:
+                if configured_exit_down_confirmed(config, feature_df):
+                    orders.append(
+                        OrderIntent(
+                            symbol=symbol,
+                            side="sell",
+                            quantity=position.quantity,
+                            order_type=config.execution.order_type,
+                            reason="Triple Supertrend down",
+                        )
                     )
-                )
-            elif (
+                continue
+
+            if (
                 _market_filter_allows_buy(
                     config,
                     symbol,
                     filter_benchmark,
                     market_filter_states,
                 )
-                and open_slots > 0
-                and not position
-                and bool(row["BuySignal"])
+                and asset_filters_allow_buy(config, row)
+                and bool(row.get("TripleAllUp", False))
             ):
                 candidate_scores[symbol] = row.get("Score")
                 candidate_prices[symbol] = price
@@ -151,26 +167,37 @@ class SimpleSupertrendStrategy:
         for symbol in self.scorer.rank(candidate_scores):
             if open_slots <= 0:
                 break
-            qty = estimate_quantity(
+            quantity = estimate_quantity(
                 account.cash,
                 candidate_prices[symbol],
                 per_slot_allocation,
                 fee_rate=config.costs.fee_rate,
                 slippage_rate=config.costs.slippage_rate,
             )
-            if qty > 0:
+            if quantity > 0:
                 orders.append(
                     OrderIntent(
                         symbol=symbol,
                         side="buy",
-                        quantity=qty,
+                        quantity=quantity,
                         order_type=config.execution.order_type,
-                        reason="Top-ranked Supertrend entry",
+                        reason="Top-ranked triple-filter entry",
                     )
                 )
                 open_slots -= 1
 
         return OrderPlan(strategy_name=config.strategy.name, mode=mode, orders=tuple(orders))
+
+    def _prepare_scored_data(
+        self,
+        bars: dict[str, pd.DataFrame],
+        benchmark: BenchmarkInput,
+    ) -> dict[str, pd.DataFrame]:
+        featured = {
+            symbol: with_strategy_components(self.config, symbol, frame)
+            for symbol, frame in bars.items()
+        }
+        return self.scorer.add_scores(featured, benchmark)
 
 
 def _market_filter_allows_buy(

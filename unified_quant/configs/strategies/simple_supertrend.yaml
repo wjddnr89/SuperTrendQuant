@@ -2,8 +2,13 @@ name: simple_supertrend_default
 type: simple_supertrend
 
 portfolio:
-  max_positions: 3
-  allocation_pct: 0.9
+  max_positions: 5
+  allocation_pct: 1.0
+
+scoring:
+  type: relative_strength
+  params:
+    lookback_bars: 100
 
 signals:
   entries:

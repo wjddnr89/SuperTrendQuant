@@ -1,8 +1,8 @@
-name: triple_filters_research
-type: leader_rotation
+name: triple_filters_standalone
+type: triple_filters
 
 portfolio:
-  max_positions: 1
+  max_positions: 5
   allocation_pct: 1.0
 
 scoring:
@@ -43,9 +43,3 @@ signals:
     - type: triple_supertrend_flip
       down_count: 2
       confirm_bars: 3
-
-rotation:
-  hurdle:
-    multiplier: 1.25
-  allow_late_chase: true
-  min_rotation_profit_pct: 0.0

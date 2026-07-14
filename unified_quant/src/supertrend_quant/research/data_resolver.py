@@ -3,8 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Callable, TypeAlias
 
-from ..config import AppConfig, load_universe
+from ..config import AppConfig
 from ..data import MarketData, download_market_data
+from ..universe import resolve_universe, universe_request_key
 
 
 MarketDataLoader: TypeAlias = Callable[[AppConfig], MarketData]
@@ -22,7 +23,7 @@ def data_request_key(config: AppConfig) -> tuple[object, ...]:
         config.market,
         config.timeframe,
         config.period,
-        config.universe_file,
+        universe_request_key(config),
         tuple(config.symbols),
         bool(config.market_trend_filter.enabled),
         config.market_trend_filter.timeframe,
@@ -30,7 +31,12 @@ def data_request_key(config: AppConfig) -> tuple[object, ...]:
 
 
 def download_for_config(config: AppConfig) -> MarketData:
-    return download_market_data(config, load_universe(config))
+    resolved = resolve_universe(config, mode="research")
+    return download_market_data(
+        config,
+        list(resolved.eligible_symbols),
+        resolved_universe=resolved,
+    )
 
 
 def fixed_data_supports(fixed_config: AppConfig, candidate: AppConfig) -> bool:

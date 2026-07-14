@@ -108,7 +108,7 @@ class LiveRuntimeTest(unittest.TestCase):
             strategy_name="test",
             mode="live",
             orders=(
-                OrderIntent("AMD", "buy", 10, reason="Top RS leader"),
+                OrderIntent("AMD", "buy", 10, reason="Top-ranked leader"),
                 OrderIntent("SOXL", "sell", 10, reason="Leader rotation"),
             ),
         )
@@ -184,8 +184,11 @@ class LiveRuntimeTest(unittest.TestCase):
             **{
                 **config.__dict__,
                 "market": "US",
+                "scoring": config.scoring.__class__(
+                    type="relative_strength",
+                    params={"lookback_bars": 130},
+                ),
                 "leader_rotation": config.leader_rotation.__class__(
-                    rs_period=130,
                     max_slots=1,
                     hurdle_atr_mult=0.0,
                     allow_late_chase=True,

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 import pandas as pd
 
 from ..config import AppConfig
 from ..portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quantity
+from ..ranking import create_scorer
 from .base import BenchmarkInput, PreparedBacktest, reject_unknown_params
 from .common import (
     asset_filters_allow_buy,
@@ -55,6 +57,7 @@ class LeaderRotationStrategy:
 
     def __init__(self, config: AppConfig):
         self.config = config
+        self.scorer = create_scorer(config.scoring, config.market)
 
     @classmethod
     def validate_config(cls, config: AppConfig) -> None:
@@ -63,7 +66,7 @@ class LeaderRotationStrategy:
             raise ValueError("leader_rotation currently supports portfolio.max_positions: 1 only.")
 
     def warmup_bars(self) -> int:
-        warmup = max(effective_rs_period(self.config) + 1, self.config.supertrend.period)
+        warmup = max(self.scorer.warmup_bars(), self.config.supertrend.period)
         triple = enabled_component(self.config, "entries", "triple_supertrend")
         if triple is not None:
             settings = triple.params.get("settings", ())
@@ -149,9 +152,9 @@ class LeaderRotationStrategy:
                         else "Supertrend down"
                     )
                 elif best_new:
-                    current_rs = float(held_row["RS"]) if not pd.isna(held_row["RS"]) else -999.0
+                    current_score = _finite_float(held_row.get("Score"))
                     hurdle = best_new["atr_pct"] * config.leader_rotation.hurdle_atr_mult
-                    if best_new["rs"] - current_rs > hurdle:
+                    if current_score is not None and best_new["score"] - current_score > hurdle:
                         profit_pct = (
                             (float(held_row["Close"]) - held.avg_price) / held.avg_price
                             if held.avg_price > 0
@@ -206,7 +209,7 @@ class LeaderRotationStrategy:
                         side="buy",
                         quantity=qty,
                         order_type=config.execution.order_type,
-                        reason="Top RS leader",
+                        reason="Top-ranked leader",
                     )
                 )
 
@@ -217,22 +220,11 @@ class LeaderRotationStrategy:
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput,
     ) -> dict[str, pd.DataFrame]:
-        if benchmark is None:
-            return {}
-        prepared: dict[str, pd.DataFrame] = {}
-        config = self.config
-        rs_period = effective_rs_period(config)
-
-        for symbol, df in bars.items():
-            symbol_benchmark = benchmark_for_strategy_symbol(symbol, benchmark)
-            if symbol_benchmark is None or symbol_benchmark.empty:
-                continue
-            bench_return = symbol_benchmark["Close"].pct_change(rs_period)
-            feature_df = with_strategy_components(config, symbol, df)
-            aligned_bench_return = bench_return.reindex(feature_df.index, method="ffill")
-            feature_df["RS"] = feature_df["Close"].pct_change(rs_period) - aligned_bench_return
-            prepared[symbol] = feature_df.dropna(subset=["RS", "ATR_pct"])
-        return prepared
+        featured = {
+            symbol: with_strategy_components(self.config, symbol, frame)
+            for symbol, frame in bars.items()
+        }
+        return self.scorer.add_scores(featured, benchmark)
 
     def _leader_candidates(
         self,
@@ -241,7 +233,8 @@ class LeaderRotationStrategy:
         market_filter_states: dict[str, bool] | None = None,
     ) -> list[dict[str, float | str]]:
         config = self.config
-        rows = []
+        candidate_scores: dict[str, float] = {}
+        candidates: dict[str, dict[str, float | str]] = {}
         for symbol, df in prepared.items():
             if df.empty:
                 continue
@@ -259,19 +252,27 @@ class LeaderRotationStrategy:
                 continue
             if not entry_state_allows_buy(config, row):
                 continue
-            rows.append(
-                {
-                    "symbol": symbol,
-                    "rs": float(row["RS"]),
-                    "atr_pct": float(row["ATR_pct"]),
-                    "price": float(row["Close"]),
-                }
-            )
-        return sorted(rows, key=lambda item: item["rs"], reverse=True)
+            score = _finite_float(row.get("Score"))
+            atr_pct = _finite_float(row.get("ATR_pct"))
+            price = _finite_float(row.get("Close"))
+            if score is None or atr_pct is None or price is None:
+                continue
+            candidate_scores[symbol] = score
+            candidates[symbol] = {
+                "symbol": symbol,
+                "score": score,
+                "atr_pct": atr_pct,
+                "price": price,
+            }
+        return [candidates[symbol] for symbol in self.scorer.rank(candidate_scores)]
 
 
-def effective_rs_period(config: AppConfig) -> int:
-    return int(config.leader_rotation.rs_period_by_market.get(config.market, config.leader_rotation.rs_period))
+def _finite_float(value) -> float | None:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if math.isfinite(parsed) else None
 
 
 def _trend_is_up_at(trend: pd.Series, signal_ts) -> bool:

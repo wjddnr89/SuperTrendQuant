@@ -50,7 +50,7 @@ class ExtensionProbeStrategy:
 
 
 class PackageAndRegistryAcceptanceTest(unittest.TestCase):
-    def test_root_package_and_all_six_cli_functions_exist(self):
+    def test_root_package_and_all_cli_functions_exist(self):
         package_file = Path(supertrend_quant.__file__).resolve()
         expected_source = (UNIFIED_ROOT / "src/supertrend_quant").resolve()
         self.assertTrue(
@@ -63,6 +63,7 @@ class PackageAndRegistryAcceptanceTest(unittest.TestCase):
             "quant-paper": "paper_main",
             "quant-live": "live_main",
             "quant-compare": "compare_main",
+            "quant-compare-strategies": "compare_strategies_main",
             "quant-search": "search_main",
             "quant-optimize": "optimize_main",
         }

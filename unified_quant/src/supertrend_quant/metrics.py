@@ -25,8 +25,11 @@ def calculate_metrics(equity: pd.Series, trade_returns: list[float], interval: s
     if equity.empty:
         return {
             "total_return": 0.0,
+            "cagr": 0.0,
             "mdd": 0.0,
+            "calmar": 0.0,
             "sharpe": 0.0,
+            "sortino": 0.0,
             "win_rate": 0.0,
             "payoff_ratio": 0.0,
             "trade_count": 0,
@@ -34,11 +37,31 @@ def calculate_metrics(equity: pd.Series, trade_returns: list[float], interval: s
 
     returns = equity.pct_change().replace([np.inf, -np.inf], np.nan).dropna()
     total_return = equity.iloc[-1] / equity.iloc[0] - 1.0 if equity.iloc[0] else 0.0
+    cagr = _calculate_cagr(equity, interval)
     drawdown = equity / equity.cummax() - 1.0
     mdd = float(drawdown.min())
+    calmar = 0.0
+    if mdd < 0:
+        calmar = float(cagr / abs(mdd))
+    elif cagr > 0:
+        calmar = float("inf")
+
     sharpe = 0.0
     if len(returns) > 1 and returns.std(ddof=1) > 0:
         sharpe = float(returns.mean() / returns.std(ddof=1) * math.sqrt(annualization_factor(interval)))
+
+    sortino = 0.0
+    if len(returns) > 1:
+        downside = np.minimum(returns.to_numpy(dtype=float), 0.0)
+        downside_deviation = float(np.sqrt(np.mean(np.square(downside))))
+        if downside_deviation > 0:
+            sortino = float(
+                returns.mean()
+                / downside_deviation
+                * math.sqrt(annualization_factor(interval))
+            )
+        elif returns.mean() > 0:
+            sortino = float("inf")
 
     pnl = pd.Series(trade_returns, dtype=float)
     if pnl.empty:
@@ -54,12 +77,42 @@ def calculate_metrics(equity: pd.Series, trade_returns: list[float], interval: s
 
     return {
         "total_return": float(total_return),
+        "cagr": cagr,
         "mdd": mdd,
+        "calmar": calmar,
         "sharpe": sharpe,
+        "sortino": sortino,
         "win_rate": float(win_rate),
         "payoff_ratio": float(payoff_ratio),
         "trade_count": int(len(trade_returns)),
     }
+
+
+def _calculate_cagr(equity: pd.Series, interval: str) -> float:
+    if len(equity) < 2:
+        return 0.0
+    start_value = float(equity.iloc[0])
+    end_value = float(equity.iloc[-1])
+    if start_value <= 0 or end_value < 0:
+        return 0.0
+
+    elapsed_years = _elapsed_years(equity.index, len(equity) - 1, interval)
+    if elapsed_years <= 0:
+        return 0.0
+    with np.errstate(over="ignore", invalid="ignore"):
+        annualized = np.power(end_value / start_value, 1.0 / elapsed_years) - 1.0
+    if np.isnan(annualized):
+        return 0.0
+    return float(annualized)
+
+
+def _elapsed_years(index: pd.Index, return_count: int, interval: str) -> float:
+    if isinstance(index, pd.DatetimeIndex) and len(index) >= 2:
+        elapsed = index[-1] - index[0]
+        seconds = float(elapsed.total_seconds())
+        if seconds > 0:
+            return seconds / (365.25 * 24 * 60 * 60)
+    return float(return_count) / annualization_factor(interval)
 
 
 def format_pct(value: float) -> str:

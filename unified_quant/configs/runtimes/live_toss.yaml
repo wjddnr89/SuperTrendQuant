@@ -1,7 +1,13 @@
 name: live_toss
 market: AUTO
-universe_file: universe.json
-symbols: []
+universe:
+  source: file
+  file: universe.json
+  symbols: []
+  refresh: daily
+  snapshot_dir: state/universes
+  filters:
+    enabled: false
 
 data:
   timeframe: 30m

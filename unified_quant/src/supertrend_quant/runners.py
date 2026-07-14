@@ -5,12 +5,13 @@ from dataclasses import dataclass, field
 import pandas as pd
 
 from .brokers import PaperBroker, TossBroker
-from .config import AppConfig, load_universe
+from .config import AppConfig
 from .data import common_index, download_market_data
 from .metrics import calculate_metrics, format_float, format_pct
 from .portfolio import AccountSnapshot, OrderPlan, Position, estimate_quantity
 from .strategies import build_order_plan, create_strategy
 from .strategies.base import PreparedBacktest
+from .universe import resolve_universe
 
 
 @dataclass(frozen=True)
@@ -20,11 +21,13 @@ class BacktestResult:
     trades: list[float]
     skipped: tuple[str, ...]
     trade_records: tuple[dict[str, object], ...] = field(default_factory=tuple)
+    universe_snapshot: dict[str, object] | None = None
 
 
 def run_backtest(config: AppConfig) -> BacktestResult:
-    symbols = load_universe(config)
-    market_data = download_market_data(config, symbols)
+    resolved = resolve_universe(config, mode="backtest")
+    symbols = list(resolved.eligible_symbols)
+    market_data = download_market_data(config, symbols, resolved_universe=resolved)
     return run_backtest_on_data(config, market_data)
 
 
@@ -164,6 +167,7 @@ def run_backtest_on_data(
         trades=trade_returns,
         skipped=market_data.skipped,
         trade_records=tuple(trade_records),
+        universe_snapshot=getattr(market_data, "universe_snapshot", None),
     )
 
 
@@ -196,10 +200,16 @@ def _prepare_backtest(strategy, market_data) -> PreparedBacktest | None:
 
 
 def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[str]]:
-    symbols = load_universe(config)
-    market_data = download_market_data(config, symbols)
     broker = PaperBroker(state_path=state_path, initial_cash=config.capital.initial_cash)
     account = broker.get_account()
+    resolved = resolve_universe(
+        config,
+        held_symbols=account.positions,
+        previously_managed=account.positions,
+        mode="paper",
+    )
+    symbols = list(resolved.symbols if resolved.entries_allowed else resolved.exit_only_symbols)
+    market_data = download_market_data(config, symbols, resolved_universe=resolved)
     plan = build_order_plan(
         config,
         market_data.bars,
@@ -213,10 +223,16 @@ def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[
 
 
 def run_live_once(config: AppConfig, assume_yes: bool = False) -> tuple[OrderPlan, list[str]]:
-    symbols = load_universe(config)
-    market_data = download_market_data(config, symbols)
     broker = TossBroker()
     account = broker.get_account(config.market)
+    resolved = resolve_universe(
+        config,
+        held_symbols=account.positions,
+        previously_managed=account.positions,
+        mode="live",
+    )
+    symbols = list(resolved.symbols if resolved.entries_allowed else resolved.exit_only_symbols)
+    market_data = download_market_data(config, symbols, resolved_universe=resolved)
     plan = build_order_plan(
         config,
         market_data.bars,

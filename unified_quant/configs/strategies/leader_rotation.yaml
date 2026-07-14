@@ -3,7 +3,12 @@ type: leader_rotation
 
 portfolio:
   max_positions: 1
-  allocation_pct: 0.9
+  allocation_pct: 1.0
+
+scoring:
+  type: relative_strength
+  params:
+    lookback_bars: 100
 
 signals:
   entries:
@@ -19,8 +24,6 @@ signals:
     - type: benchmark_trend
       enabled: true
       timeframe: 1d
-    - type: relative_strength
-      lookback_bars: 100
   exits:
     - type: supertrend_flip
       confirm_bars: 1

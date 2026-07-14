@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -73,21 +74,42 @@ def config_to_split_dicts(
             "max_positions": config.risk.max_position_count,
             "allocation_pct": config.execution.allocation_pct,
         },
+        "scoring": {
+            "type": config.scoring.type,
+            "params": dict(config.scoring.params),
+        },
         "signals": grouped,
-        "rotation": {
+    }
+    if config.strategy.type == "leader_rotation":
+        strategy["rotation"] = {
             "hurdle": {"multiplier": config.leader_rotation.hurdle_atr_mult},
             "allow_late_chase": config.leader_rotation.allow_late_chase,
             "min_rotation_profit_pct": config.leader_rotation.min_rotation_profit_pct,
-        },
-    }
+        }
     if config.strategy.params:
         strategy["params"] = dict(config.strategy.params)
+
+    universe = {
+        "source": config.universe.source,
+        "profiles": {
+            market: list(profiles)
+            for market, profiles in config.universe.profiles.items()
+        },
+        "file": config.universe.file,
+        "symbols": list(config.universe.symbols),
+        "refresh": config.universe.refresh,
+        "snapshot_dir": config.universe.snapshot_dir,
+        "filters": asdict(config.universe.filters),
+    }
+    if config.symbols:
+        universe.update({"source": "symbols", "symbols": list(config.symbols)})
+    elif config.universe.source == "file" and config.universe_file != config.universe.file:
+        universe["file"] = config.universe_file
 
     runtime: dict[str, Any] = {
         "name": runtime_name or f"{config.strategy.name}_runtime",
         "market": config.market,
-        "universe_file": config.universe_file,
-        "symbols": list(config.symbols),
+        "universe": universe,
         "data": {"timeframe": config.timeframe, "period": config.period},
         "capital": {"initial_cash": config.capital.initial_cash},
         "costs": {

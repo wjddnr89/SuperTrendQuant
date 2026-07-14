@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from dataclasses import replace
 
 from .config import AppConfig, load_config, load_split_config
 from .live_runtime import HybridLiveRuntime
@@ -17,6 +18,11 @@ def _add_config_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--runtime", default=None, help="Split runtime definition path.")
     parser.add_argument("--market", choices=["US", "KR", "AUTO"], default=None, help="Override runtime market.")
     parser.add_argument("--universe-file", default=None, help="Override runtime universe file.")
+    parser.add_argument(
+        "--universe-profiles",
+        default=None,
+        help="Override profiles for a single US or KR market as a comma-separated list.",
+    )
     parser.add_argument("--symbols", default=None, help="Override symbols as a comma-separated list.")
 
 
@@ -46,8 +52,38 @@ def _apply_config_overrides(config: AppConfig, args: argparse.Namespace) -> AppC
         updates["market"] = args.market
     if args.universe_file:
         updates["universe_file"] = args.universe_file
+        updates["symbols"] = ()
+        updates["universe"] = replace(
+            config.universe,
+            source="file",
+            file=args.universe_file,
+            symbols=(),
+        )
+    if args.universe_profiles:
+        selected_market = str(args.market or config.market).upper()
+        if selected_market not in {"US", "KR"}:
+            raise ValueError("--universe-profiles requires --market US or --market KR when runtime market is AUTO.")
+        profiles = tuple(
+            profile.strip().lower()
+            for profile in args.universe_profiles.split(",")
+            if profile.strip()
+        )
+        updates["symbols"] = ()
+        updates["universe"] = replace(
+            config.universe,
+            source="profiles",
+            profiles={selected_market: profiles},
+            symbols=(),
+            filters=replace(config.universe.filters, enabled=True),
+        )
     if args.symbols:
-        updates["symbols"] = tuple(symbol.strip() for symbol in args.symbols.split(",") if symbol.strip())
+        symbols = tuple(symbol.strip() for symbol in args.symbols.split(",") if symbol.strip())
+        updates["symbols"] = symbols
+        updates["universe"] = replace(
+            config.universe,
+            source="symbols",
+            symbols=symbols,
+        )
     if not updates:
         return config
     return config.__class__(**{**config.__dict__, **updates})
@@ -139,6 +175,56 @@ def compare_main() -> None:
     backtest_dir = args.backtest_dir or latest_run_dir(args.backtest_root)
     comparison = compare_paper_to_backtest(paper_dir, backtest_dir, args.interval)
     print(json.dumps(comparison, indent=2, ensure_ascii=False))
+
+
+def compare_strategies_main() -> None:
+    from pathlib import Path
+
+    from .research import (
+        MarketDataCache,
+        compare_strategies,
+        format_comparison_table,
+        save_comparison_result,
+    )
+
+    unified_root = Path(__file__).resolve().parents[2]
+    parser = argparse.ArgumentParser(
+        description="Compare every strategy YAML with one shared runtime and select the best strategy."
+    )
+    parser.add_argument(
+        "--strategies-dir",
+        default=str(unified_root / "configs" / "strategies"),
+        help="Directory recursively searched for strategy YAML files.",
+    )
+    parser.add_argument(
+        "--runtime",
+        default=str(unified_root / "configs" / "runtimes" / "simulation.yaml"),
+        help="Shared runtime YAML applied to every strategy.",
+    )
+    parser.add_argument("--rank-by", choices=["calmar", "composite"], default="calmar")
+    parser.add_argument("--results-dir", default="results/research/comparisons")
+    parser.add_argument("--run-id", default=None)
+    parser.add_argument("--no-save", action="store_true")
+    args = parser.parse_args()
+
+    result = compare_strategies(
+        args.strategies_dir,
+        args.runtime,
+        rank_by=args.rank_by,
+        market_data=MarketDataCache(),
+    )
+    print(format_comparison_table(result))
+    print(
+        f"Best strategy: {result.winner.strategy_name} "
+        f"({result.winner.strategy_path}, rank_by={result.rank_by})"
+    )
+    if result.errors:
+        print(f"Failed strategies: {len(result.errors)}")
+        for error in result.errors:
+            print(f"- {error.strategy_path}: {error.error}")
+    if not args.no_save:
+        run_dir = save_comparison_result(result, args.results_dir, args.run_id)
+        print(f"Saved       : {run_dir}")
 
 
 def search_main() -> None:

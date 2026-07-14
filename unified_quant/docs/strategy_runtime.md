@@ -18,6 +18,10 @@ uv run quant-optimize \
   --runtime unified_quant/configs/runtimes/research_us.yaml \
   --n-trials 100
 
+uv run quant-compare-strategies \
+  --runtime unified_quant/configs/runtimes/simulation.yaml \
+  --rank-by calmar
+
 uv run quant-paper \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
   --runtime unified_quant/configs/runtimes/simulation.yaml \
@@ -47,13 +51,20 @@ Strategy files define:
 Runtime files define:
 
 - US, KR, or AUTO market selection;
-- root-relative `universe.json` and optional symbol overrides;
+- an index-profile union, a manual `universe.json`, or explicit symbols;
 - timeframe and download period;
 - capital, costs, and broker;
 - paper/live state and result locations.
 
-Benchmarks are mapped automatically: US symbols use `QQQ`, KOSPI symbols use
-`^KS11`, and KOSDAQ symbols use `^KQ11`.
+Available index profiles are `nasdaq100`, `sp500`, `dow30`, `kospi200`, and
+`kosdaq150`. A single US profile maps RS to `QQQ`, `SPY`, or `DIA`; a multi-profile
+US union uses `SPY`. KOSPI and KOSDAQ symbols use `^KS11` and `^KQ11`.
+
+Profile membership and filter results are frozen in a daily JSON snapshot. The
+balanced default requires US/KR prices of `$5`/`1,000원`, 20-day average turnover
+of `$10M`/`10억원`, and 120 completed daily bars. Management, suspension,
+delisting, ETF/ETN, SPAC, and preferred-share checks are independently editable
+under `universe.filters`.
 
 ## Research promotion
 
@@ -63,9 +74,21 @@ equal-weight benchmarks. The selected strategy YAML should be re-run with
 `quant-backtest`, then with `quant-paper`, before changing only the runtime to
 `live_toss.yaml`.
 
-The `triple_filters.yaml` example combines three SuperTrend settings, an
-Ichimoku cloud filter, an EMA trend filter, benchmark trend, relative strength,
-and a confirmed Triple SuperTrend exit.
+Every strategy YAML has a required, separate scoring section:
+
+```yaml
+scoring:
+  type: relative_strength
+  params:
+    lookback_bars: 100
+```
+
+The scorer ranks eligible entry candidates; it is not a signal filter. The
+`triple_filters.yaml` example combines three SuperTrend settings, an Ichimoku
+cloud filter, an EMA trend filter, benchmark trend, this relative-strength
+scorer, and a confirmed Triple SuperTrend exit. `triple_filters_standalone.yaml`
+keeps the same signal and trend filters but supports multiple positions and
+never sells solely to rotate leaders.
 
 ## Results
 
@@ -73,12 +96,20 @@ Backtests write beneath their runtime's `backtest.results_dir`:
 
 - `summary.json`: metrics, configuration, trades, and skipped symbols;
 - `equity.csv`: historical account equity.
+- `universe_snapshot.json`: membership, filters, exclusions, and as-of hash.
+
+Strategy comparisons write beneath `results/research/comparisons/<run_id>`:
+
+- `comparison.csv`: ranked metrics for every successful strategy YAML;
+- `summary.json`: winner, comparison settings, common date range, and failures;
+- `strategies/`: the normal backtest summary and equity files for each strategy.
 
 Paper runs write beneath `paper.results_dir`:
 
 - `metadata.json`: immutable configuration snapshot;
 - `cycles.jsonl`: order plans, fills, prices, and account snapshots;
 - `equity.csv`: cycle-level equity and cash.
+- `universe_snapshot.json`: the exact daily universe used by the run.
 
 Compare saved runs with:
 
@@ -106,6 +137,7 @@ uv run quant-compare \
 ```bash
 uv run python -m unittest discover -s unified_quant/tests -v
 uv run quant-backtest --help
+uv run quant-compare-strategies --help
 uv run quant-paper --help
 uv run quant-live --help
 uv run quant-search --help

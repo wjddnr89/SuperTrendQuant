@@ -83,6 +83,9 @@ class PaperRunRecorder:
             },
         )
 
+    def write_universe_snapshot(self, snapshot: dict[str, Any]) -> None:
+        _write_json(self.run_dir / "universe_snapshot.json", snapshot)
+
     def record_cycle(
         self,
         *,
@@ -131,6 +134,7 @@ def save_backtest_result(result, config: AppConfig, root_dir: str | Path, run_id
     run_id = run_id or make_run_id(config.strategy.name, "backtest")
     run_dir = Path(root_dir) / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
+    universe_snapshot = getattr(result, "universe_snapshot", None)
     _write_json(
         run_dir / "summary.json",
         {
@@ -145,11 +149,33 @@ def save_backtest_result(result, config: AppConfig, root_dir: str | Path, run_id
             "trade_returns": result.trades,
             "trades": list(getattr(result, "trade_records", ())),
             "skipped": list(result.skipped),
+            "universe": _universe_result_summary(universe_snapshot),
             "config": config_to_dict(config),
         },
     )
+    if universe_snapshot:
+        _write_json(run_dir / "universe_snapshot.json", universe_snapshot)
     result.equity.rename("equity").to_csv(run_dir / "equity.csv", header=True)
     return run_dir
+
+
+def _universe_result_summary(snapshot: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not snapshot:
+        return None
+    return {
+        "source": snapshot.get("source"),
+        "profiles": snapshot.get("profiles", []),
+        "as_of": snapshot.get("as_of"),
+        "selection_hash": snapshot.get("selection_hash"),
+        "raw_count": len(snapshot.get("raw_members", [])),
+        "eligible_count": len(snapshot.get("eligible_members", [])),
+        "rejected_count": len(snapshot.get("rejected", [])),
+        "survivorship_bias_warning": (
+            "Current constituent snapshot is applied to the full historical period."
+            if snapshot.get("source") == "profiles"
+            else None
+        ),
+    }
 
 
 def compare_paper_to_backtest(paper_dir: str | Path, backtest_dir: str | Path, interval: str) -> dict[str, Any]:

@@ -12,6 +12,7 @@ from supertrend_quant.config import load_split_config
 from supertrend_quant.holdings import HoldingsStore
 from supertrend_quant.live_runtime import HybridLiveRuntime
 from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position
+from supertrend_quant.universe import ResolvedUniverse, UniverseMember, UniverseSnapshot
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -175,7 +176,7 @@ class LiveSafetyRegressionTest(unittest.TestCase):
         plan = OrderPlan(
             "leader",
             "live",
-            (OrderIntent("AAA", "buy", 50, reason="Top RS leader"),),
+            (OrderIntent("AAA", "buy", 50, reason="Top-ranked leader"),),
         )
 
         guarded = runtime._apply_live_guards(live_config(), plan, account, ["AAA", "BBB"])
@@ -202,6 +203,55 @@ class LiveSafetyRegressionTest(unittest.TestCase):
         guarded = runtime._apply_live_guards(live_config(), plan, account, ["AAA", "BBB"])
 
         self.assertEqual(guarded.orders, ())
+
+    def test_refresh_failure_allows_known_holding_sell_but_blocks_buy(self):
+        account = AccountSnapshot(
+            cash=1_000.0,
+            positions={"AAA": Position("AAA", 5, 100.0)},
+        )
+        broker = RecordingBroker(account)
+        broker.prices = {"AAA": 120.0, "BBB": 50.0}
+        runtime = runtime_for(broker)
+        aaa = UniverseMember("AAA", "US", "US", yfinance_symbol="AAA", benchmark="SPY")
+        bbb = UniverseMember("BBB", "US", "US", yfinance_symbol="BBB", benchmark="SPY")
+        snapshot = UniverseSnapshot(
+            schema_version=1,
+            as_of="2026-07-14",
+            created_at="2026-07-14T00:00:00+00:00",
+            market="US",
+            source="profiles",
+            profiles=("sp500",),
+            selection_hash="test",
+            raw_members=(aaa, bbb),
+            eligible_members=(aaa, bbb),
+            rejected=(),
+            filters={},
+        )
+        resolved = ResolvedUniverse(
+            eligible_members=(aaa, bbb),
+            exit_only_members=(),
+            raw_members=(aaa, bbb),
+            snapshot=snapshot,
+            entries_allowed=False,
+            refresh_error="provider down",
+        )
+        unsafe_plan = OrderPlan(
+            "leader",
+            "live",
+            (
+                OrderIntent("AAA", "sell", 5, reason="Supertrend down"),
+                OrderIntent("BBB", "buy", 10, reason="Top-ranked leader"),
+            ),
+        )
+
+        with (
+            patch("supertrend_quant.live_runtime.resolve_universe", return_value=resolved),
+            patch("supertrend_quant.live_runtime.build_order_plan", return_value=unsafe_plan),
+        ):
+            plan, _ = runtime.run_once(ignore_schedule=True, assume_yes=True)
+
+        self.assertEqual([(order.symbol, order.side) for order in plan.orders], [("AAA", "sell")])
+        self.assertEqual([(order.symbol, order.side) for order in broker.placed], [("AAA", "sell")])
 
 
 if __name__ == "__main__":

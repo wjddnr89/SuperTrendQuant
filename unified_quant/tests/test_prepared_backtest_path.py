@@ -52,9 +52,12 @@ def leader_fixture():
         ),
         leader_rotation=replace(
             config.leader_rotation,
-            rs_period=2,
             hurdle_atr_mult=0.0,
             min_rotation_profit_pct=0.0,
+        ),
+        scoring=replace(
+            config.scoring,
+            params={"lookback_bars": 2},
         ),
     )
     index = pd.date_range("2026-01-05 09:30", periods=24, freq="30min")

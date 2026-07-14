@@ -8,13 +8,14 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from .brokers import TossBroker
-from .config import AppConfig, load_universe_for_market
+from .config import AppConfig
 from .data_cache import YahooStateCache
 from .holdings import HoldingsStore
 from .notifications import TelegramNotifier
 from .portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quantity
 from .runtime import check_market_schedule, last_completed_bar_end
 from .strategies import build_order_plan
+from .universe import resolve_universe
 
 
 class HybridLiveRuntime:
@@ -51,19 +52,40 @@ class HybridLiveRuntime:
             session_timezone = session.timezone
 
         config = replace(self.config, market=session_market)
-        symbols = list(config.symbols) if config.symbols else load_universe_for_market(config.universe_file, session_market)
         account = self.broker.get_account(session_market)
-        synced_holdings = self.holdings.sync_market(session_market, account, symbols)
+        previous_members = self.holdings.member_map(session_market)
+        resolved_universe = resolve_universe(
+            config,
+            market=session_market,
+            held_symbols=account.positions,
+            previously_managed=previous_members,
+            mode="live",
+        )
+        managed_symbols = list(resolved_universe.symbols)
+        if resolved_universe.entries_allowed:
+            symbols = managed_symbols
+        else:
+            symbols = [
+                symbol
+                for symbol in account.positions
+                if resolved_universe.member_for(symbol) is not None
+            ]
+        synced_holdings = self.holdings.sync_market(
+            session_market,
+            account,
+            managed_symbols,
+            resolved_universe.member_map,
+        )
 
         if is_close_briefing:
             self._send_close_briefing(session_market, account, synced_holdings)
             return OrderPlan(config.strategy.name, "live", (), ("Close briefing sent.",)), []
 
-        account_issue = self._managed_account_issue(config, account, symbols)
+        account_issue = self._managed_account_issue(config, account, managed_symbols)
         if account_issue is not None:
             plan = OrderPlan(config.strategy.name, "live", (), (account_issue,))
             return plan, ["Live strategy execution blocked by account safety check."]
-        managed_account = self._managed_account(account, symbols)
+        managed_account = self._managed_account(account, managed_symbols)
 
         market_now = datetime.now(session_timezone) if session_timezone is not None else datetime.now()
         filter_timeframe = (
@@ -73,8 +95,12 @@ class HybridLiveRuntime:
         )
         if hasattr(self.data_cache, "configure"):
             self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
+        if hasattr(self.data_cache, "configure_universe"):
+            self.data_cache.configure_universe(resolved_universe)
         current_base = last_completed_bar_end(market_now, session_market, config.timeframe)
-        benchmarks = ["^KS11", "^KQ11", "QQQ"]
+        benchmarks = sorted(
+            {resolved_universe.benchmark_for(symbol) for symbol in symbols}
+        )
         if self.last_candle_base_time.get(session_market) != current_base:
             self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
             self.last_candle_base_time[session_market] = current_base
@@ -100,6 +126,8 @@ class HybridLiveRuntime:
         if not bars:
             return OrderPlan(config.strategy.name, "live", (), ("No fresh market data.",)), []
         notes = tuple([f"Skipped stale symbols: {', '.join(stale_symbols)}"] if stale_symbols else [])
+        if not resolved_universe.entries_allowed:
+            notes += (f"Universe refresh failed; new entries blocked: {resolved_universe.refresh_error}",)
 
         plan = build_order_plan(
             config,
@@ -111,7 +139,14 @@ class HybridLiveRuntime:
         )
         if notes:
             plan = OrderPlan(plan.strategy_name, plan.mode, plan.orders, plan.notes + notes)
-        plan = self._apply_live_guards(config, plan, managed_account, symbols)
+        if not resolved_universe.entries_allowed:
+            plan = OrderPlan(
+                plan.strategy_name,
+                plan.mode,
+                tuple(order for order in plan.orders if order.side.lower() != "buy"),
+                plan.notes,
+            )
+        plan = self._apply_live_guards(config, plan, managed_account, managed_symbols)
         if not plan.orders:
             return plan, ["No live orders."]
 
@@ -146,7 +181,7 @@ class HybridLiveRuntime:
                             f"SKIPPED BUY {order.symbol}: prerequisite sell not filled ({', '.join(sorted(remaining))})"
                         )
                         continue
-                refreshed_issue = self._managed_account_issue(config, refreshed_account, symbols)
+                refreshed_issue = self._managed_account_issue(config, refreshed_account, managed_symbols)
                 if refreshed_issue is not None:
                     results.append(f"SKIPPED BUY {order.symbol}: {refreshed_issue}")
                     continue
@@ -197,7 +232,12 @@ class HybridLiveRuntime:
             if ok:
                 self.notifier.send(self._order_message(order))
                 refreshed = self.broker.get_account(session_market)
-                self.holdings.sync_market(session_market, refreshed, symbols)
+                self.holdings.sync_market(
+                    session_market,
+                    refreshed,
+                    managed_symbols,
+                    resolved_universe.member_map,
+                )
         return plan, results
 
     async def run_loop(self) -> None:

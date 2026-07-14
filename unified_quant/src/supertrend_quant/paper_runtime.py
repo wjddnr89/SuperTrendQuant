@@ -6,13 +6,14 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from .brokers import PaperBroker
-from .config import AppConfig, load_universe_for_market
+from .config import AppConfig
 from .data_cache import YahooStateCache
 from .portfolio import OrderPlan
 from .results import PaperRunRecorder
 from .runtime import check_market_schedule, last_completed_bar_end
 from .runners import _latest_prices
 from .strategies import build_order_plan
+from .universe import resolve_universe
 
 
 class PaperRuntime:
@@ -40,7 +41,23 @@ class PaperRuntime:
         session_market, session_timezone = resolved
 
         config = replace(self.config, market=session_market)
-        symbols = list(config.symbols) if config.symbols else load_universe_for_market(config.universe_file, session_market)
+        account_before = self.broker.get_account()
+        resolved_universe = resolve_universe(
+            config,
+            market=session_market,
+            held_symbols=account_before.positions,
+            previously_managed=account_before.positions,
+            mode="paper",
+        )
+        if resolved_universe.entries_allowed:
+            symbols = list(resolved_universe.symbols)
+        else:
+            symbols = [
+                symbol
+                for symbol in account_before.positions
+                if resolved_universe.member_for(symbol) is not None
+            ]
+        self.recorder.write_universe_snapshot(resolved_universe.snapshot.to_dict())
         market_now = datetime.now(session_timezone)
         filter_timeframe = (
             config.market_trend_filter.timeframe
@@ -49,6 +66,8 @@ class PaperRuntime:
         )
         if hasattr(self.data_cache, "configure"):
             self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
+        if hasattr(self.data_cache, "configure_universe"):
+            self.data_cache.configure_universe(resolved_universe)
         current_base = last_completed_bar_end(market_now, session_market, config.timeframe)
         candle_key = f"last_candle_base:{session_market}"
         candle_value = current_base.isoformat()
@@ -56,7 +75,9 @@ class PaperRuntime:
             plan = OrderPlan(config.strategy.name, "paper", (), (f"Candle already processed: {candle_value}",))
             return plan, ["No paper orders."]
 
-        benchmarks = ["^KS11", "^KQ11", "QQQ"]
+        benchmarks = sorted(
+            {resolved_universe.benchmark_for(symbol) for symbol in symbols}
+        )
         if self.last_candle_base_time.get(session_market) != current_base:
             self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
             self.last_candle_base_time[session_market] = current_base
@@ -84,7 +105,6 @@ class PaperRuntime:
             return plan, ["No paper orders."]
 
         prices = _latest_prices(bars)
-        account_before = self.broker.get_account()
         plan = build_order_plan(
             config,
             bars,
@@ -99,6 +119,15 @@ class PaperRuntime:
                 plan.mode,
                 plan.orders,
                 plan.notes + (f"Skipped stale symbols: {', '.join(stale_symbols)}",),
+            )
+        if not resolved_universe.entries_allowed:
+            plan = OrderPlan(
+                plan.strategy_name,
+                plan.mode,
+                tuple(order for order in plan.orders if order.side.lower() != "buy"),
+                plan.notes + (
+                    f"Universe refresh failed; new entries blocked: {resolved_universe.refresh_error}",
+                ),
             )
         fills = self.broker.execute_plan(
             plan,

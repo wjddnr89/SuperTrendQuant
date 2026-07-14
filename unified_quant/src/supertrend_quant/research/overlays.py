@@ -400,29 +400,26 @@ def with_relative_strength(
         values = {str(key).upper(): int(value) for key, value in period.items()}
         if any(value < 1 for value in values.values()):
             raise ValueError("relative-strength periods must be positive.")
-        default = int(values.pop("DEFAULT", values.get("US", config.leader_rotation.rs_period)))
-        lookback: int | dict[str, int] = {"default": default, **values}
-        rotation = replace(
-            config.leader_rotation,
-            rs_period=default,
-            rs_period_by_market=values,
+        current = config.scoring.params.get("lookback_bars", 100)
+        current_default = (
+            int(current.get("default", current.get("DEFAULT", current.get("US", 100))))
+            if isinstance(current, Mapping)
+            else int(current)
         )
+        default = int(values.pop("DEFAULT", values.get("US", current_default)))
+        lookback: int | dict[str, int] = {"default": default, **values}
     else:
         default = int(period)
         if default < 1:
             raise ValueError("relative-strength period must be positive.")
         lookback = default
-        rotation = replace(
-            config.leader_rotation,
-            rs_period=default,
-            rs_period_by_market={},
-        )
-    updated = replace(config, leader_rotation=rotation)
-    return upsert_component(
-        updated,
-        group="filters",
-        component_type="relative_strength",
-        params={"lookback_bars": lookback},
+    return replace(
+        config,
+        scoring=replace(
+            config.scoring,
+            type="relative_strength",
+            params={"lookback_bars": lookback},
+        ),
     )
 
 

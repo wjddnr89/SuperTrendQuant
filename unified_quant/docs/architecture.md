@@ -34,24 +34,26 @@ strategy and backtest engine used by normal `quant-backtest`. A winning
 strategy YAML can therefore move to paper and live without being translated
 into a second configuration model.
 
-Strategies may optionally implement `prepare_backtest`. The leader strategy
-uses it to calculate causal indicators, benchmark-relative strength, and market
-filter trends once per replay; every timestamp still enters the same decision
-method and canonical fill loop. Strategies without this hook use the standard
-history-slice path automatically.
+Strategies may optionally implement `prepare_backtest`. The supplied strategies
+use it to calculate causal indicators, configured symbol scores, and market-filter
+trends once per replay. Every timestamp still enters the same decision method and
+canonical fill loop. Strategies without this hook use the standard history-slice
+path automatically.
 
 ## Package responsibilities
 
 - `config`: compose strategy/runtime YAML into `AppConfig` and reject invalid components.
-- `indicators`: SuperTrend, Triple SuperTrend, Ichimoku, EMA, ATR, and relative strength.
+- `indicators`: SuperTrend, Triple SuperTrend, Ichimoku, EMA, and ATR calculations.
+- `ranking`: scorer protocol and registry, benchmark-relative scoring, and deterministic symbol ranking.
+- `universe`: index-profile providers, tradability filters, daily snapshots, and exit-only membership.
 - `strategies`: strategy protocol, registry, and implementations that produce `OrderPlan`.
 - `data`: Yahoo data, universe/benchmark mapping, resampling, and live freshness cache.
 - `runners`: canonical backtest lifecycle and mode-independent strategy invocation.
-- `research`: train/validation/test evaluation, benchmarks, grid search, and Optuna.
+- `research`: train/validation/test evaluation, benchmarks, strategy comparison, grid search, and Optuna.
 - `brokers`: paper-state execution and Toss API execution.
 - `paper_runtime` / `live_runtime`: scheduling, data freshness, persistence, guards, and notifications.
 - `results`: backtest/paper artifacts and comparison reports.
-- `cli`: the six installed commands.
+- `cli`: the seven installed commands.
 
 ## Extension points
 
@@ -64,6 +66,11 @@ remain in runtime YAML.
 New entry, filter, or exit components must have one parameter schema and one
 calculation path shared by research and operational modes. Adding a component
 must not create a research-only signal implementation.
+
+Every strategy YAML also declares one required `scoring` type. A scorer registers
+a unique `scoring_type`, validates its own params, attaches a numeric `Score` to
+symbol frames, and ranks higher values first. Strategies retain entry and exit
+rules but delegate cross-symbol priority to this common registry.
 
 ## Execution boundaries
 
@@ -108,5 +115,6 @@ tests, and commands must import only `supertrend_quant` from
 
 Configuration file arguments include the `unified_quant/configs/...` prefix.
 The current working directory is checked first, followed by the unified project
-and repository roots. Supplied profiles use `universe_file: universe.json` and
-write `state/` and `results/` beneath the repository root when invoked as shown.
+and repository roots. Index profiles write daily snapshots beneath
+`state/universes`; the live runtime keeps the root-level `universe.json`. State
+and results are written beneath the repository root when invoked as shown.

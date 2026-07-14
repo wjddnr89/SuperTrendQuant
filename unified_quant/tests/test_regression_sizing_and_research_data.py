@@ -32,6 +32,7 @@ def all_in_config():
         costs=CostsConfig(fee_rate=0.01, slippage_rate=0.02),
         risk=RiskConfig(max_position_count=1),
         execution=replace(base.execution, allocation_pct=1.0),
+        scoring=replace(base.scoring, params={"lookback_bars": 1}),
     )
 
 
@@ -46,16 +47,15 @@ def flat_market_data(periods: int = 5) -> MarketData:
         },
         index=index,
     )
-    return MarketData(bars={"AAA": frame})
+    return MarketData(bars={"AAA": frame}, benchmark={"AAA": frame})
 
 
 def forced_buy_signal(config, symbol, frame):
     out = frame.copy()
     out["Trend"] = 1
     out["ATR_pct"] = 0.1
-    out["BuySignal"] = False
+    out["BuySignal"] = True
     out["SellSignal"] = False
-    out.loc[out.index[-1], "BuySignal"] = True
     return out
 
 
@@ -75,13 +75,15 @@ class CostAwareSizingRegressionTest(unittest.TestCase):
     @patch("supertrend_quant.strategies.simple_supertrend.with_supertrend", forced_buy_signal)
     def test_strategy_sizes_allocation_one_with_costs(self):
         config = all_in_config()
-        frame = flat_market_data(3).bars["AAA"]
+        market_data = flat_market_data(3)
+        frame = market_data.bars["AAA"]
 
         plan = build_order_plan(
             config,
             {"AAA": frame},
             AccountSnapshot(cash=1_000.0),
             mode="paper",
+            benchmark=market_data.benchmark,
         )
 
         self.assertEqual(len(plan.orders), 1)
@@ -98,12 +100,14 @@ class CostAwareSizingRegressionTest(unittest.TestCase):
     @patch("supertrend_quant.strategies.simple_supertrend.with_supertrend", forced_buy_signal)
     def test_paper_executes_the_same_affordable_allocation_one_plan(self):
         config = all_in_config()
-        frame = flat_market_data(3).bars["AAA"]
+        market_data = flat_market_data(3)
+        frame = market_data.bars["AAA"]
         plan = build_order_plan(
             config,
             {"AAA": frame},
             AccountSnapshot(cash=1_000.0),
             mode="paper",
+            benchmark=market_data.benchmark,
         )
         with tempfile.TemporaryDirectory() as tmp:
             broker = PaperBroker(Path(tmp) / "paper.json", initial_cash=1_000.0)
@@ -158,7 +162,7 @@ class ResearchDataResolutionRegressionTest(unittest.TestCase):
         self.assertEqual(
             calls,
             [
-                ("30m", False, "1d"),
+                ("1d", False, "1d"),
                 ("1h", False, "1d"),
                 ("1h", True, "4h"),
             ],

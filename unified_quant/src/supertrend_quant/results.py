@@ -149,6 +149,23 @@ def save_backtest_result(result, config: AppConfig, root_dir: str | Path, run_id
             "trade_returns": result.trades,
             "trades": list(getattr(result, "trade_records", ())),
             "skipped": list(result.skipped),
+            "data": {
+                "version": getattr(result, "data_version", ""),
+                "completed_session": getattr(result, "completed_session", ""),
+                "quality": getattr(result, "data_quality", "valid"),
+                "warnings": list(getattr(result, "data_warnings", ())),
+                "price_mode": getattr(result, "price_mode", config.data_store.price_mode),
+                "dividend_tax_rate": getattr(
+                    result, "dividend_tax_rate", config.data_store.dividend_tax_rate
+                ),
+                "corporate_action_cash": getattr(result, "corporate_action_cash", 0.0),
+                "unresolved_corporate_action_ids": list(
+                    getattr(result, "unresolved_corporate_action_ids", ())
+                ),
+                "processed_corporate_action_ids": list(
+                    getattr(result, "processed_corporate_action_ids", ())
+                ),
+            },
             "universe": _universe_result_summary(universe_snapshot),
             "config": config_to_dict(config),
         },

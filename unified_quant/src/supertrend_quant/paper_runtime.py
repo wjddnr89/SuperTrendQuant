@@ -8,10 +8,12 @@ from zoneinfo import ZoneInfo
 from .brokers import PaperBroker
 from .config import AppConfig
 from .data_cache import YahooStateCache
+from .live_runtime import _daily_data_gap
+from .market_store.provider import ensure_configured_data_ready, load_configured_market_data
+from .market_store.realtime import FrameQuoteProvider, QuoteProvider
 from .portfolio import OrderPlan
 from .results import PaperRunRecorder
 from .runtime import check_market_schedule, last_completed_bar_end
-from .runners import _latest_prices
 from .strategies import build_order_plan
 from .universe import resolve_universe
 
@@ -24,12 +26,18 @@ class PaperRuntime:
         broker: PaperBroker | None = None,
         data_cache: YahooStateCache | None = None,
         recorder: PaperRunRecorder | None = None,
+        quote_provider: QuoteProvider | None = None,
     ):
         self.config = config
         self.state_path = state_path or config.paper.state_file
         self.broker = broker or PaperBroker(self.state_path, initial_cash=config.capital.initial_cash)
-        self.data_cache = data_cache or YahooStateCache()
+        self.data_cache = (
+            data_cache
+            if data_cache is not None
+            else (YahooStateCache() if config.data_store.provider == "yahoo" else None)
+        )
         self.recorder = recorder or PaperRunRecorder(config.paper.results_dir, config.strategy.name)
+        self.quote_provider = quote_provider
         self.recorder.write_metadata(config)
         self.last_candle_base_time: dict[str, datetime | None] = {"KR": None, "US": None}
 
@@ -41,6 +49,8 @@ class PaperRuntime:
         session_market, session_timezone = resolved
 
         config = replace(self.config, market=session_market)
+        if self.data_cache is None:
+            ensure_configured_data_ready(config)
         account_before = self.broker.get_account()
         resolved_universe = resolve_universe(
             config,
@@ -59,52 +69,94 @@ class PaperRuntime:
             ]
         self.recorder.write_universe_snapshot(resolved_universe.snapshot.to_dict())
         market_now = datetime.now(session_timezone)
-        filter_timeframe = (
-            config.market_trend_filter.timeframe
-            if config.market_trend_filter.enabled
-            else config.timeframe
-        )
-        if hasattr(self.data_cache, "configure"):
-            self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
-        if hasattr(self.data_cache, "configure_universe"):
-            self.data_cache.configure_universe(resolved_universe)
         current_base = last_completed_bar_end(market_now, session_market, config.timeframe)
         candle_key = f"last_candle_base:{session_market}"
+
+        data_notes: tuple[str, ...] = ()
+        execution_bars = None
+        if self.data_cache is None:
+            market_data = load_configured_market_data(
+                config,
+                symbols,
+                resolved_universe=resolved_universe,
+            )
+            gap = _daily_data_gap(symbols, market_data)
+            if gap:
+                plan = OrderPlan(config.strategy.name, "paper", (), (gap,))
+                return plan, ["Paper orders blocked by historical data gap."]
+            bars = market_data.bars
+            execution_bars = market_data.execution_bars or market_data.bars
+            benchmark = market_data.benchmark
+            filter_benchmark = market_data.filter_benchmark
+            stale_symbols = list(market_data.skipped)
+            current_base = datetime.fromisoformat(market_data.completed_session)
+            action_notes = self.broker.apply_corporate_actions(
+                market_data.corporate_actions,
+                through=market_data.completed_session,
+                dividend_tax_rate=config.data_store.dividend_tax_rate,
+            )
+            account_before = self.broker.get_account()
+            data_notes = tuple(market_data.warnings) + tuple(action_notes) + (
+                f"Data version: {market_data.data_version}",
+            )
+        else:
+            filter_timeframe = (
+                config.market_trend_filter.timeframe
+                if config.market_trend_filter.enabled
+                else config.timeframe
+            )
+            if hasattr(self.data_cache, "configure"):
+                self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
+            if hasattr(self.data_cache, "configure_universe"):
+                self.data_cache.configure_universe(resolved_universe)
+            benchmarks = sorted(
+                {resolved_universe.benchmark_for(symbol) for symbol in symbols}
+            )
+            if self.last_candle_base_time.get(session_market) != current_base:
+                self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
+                self.last_candle_base_time[session_market] = current_base
+            self.data_cache.retry_missing(session_market, config.universe_file, session_timezone, current_base)
+            bars, stale_symbols = self.data_cache.fresh_stock_bars(symbols, session_timezone, current_base)
+            benchmark = self.data_cache.fresh_benchmark_map(
+                symbols,
+                session_market,
+                config.universe_file,
+                config.timeframe,
+                session_timezone,
+                current_base,
+            )
+            current_filter_base = last_completed_bar_end(market_now, session_market, filter_timeframe)
+            filter_benchmark = self.data_cache.fresh_benchmark_map(
+                symbols,
+                session_market,
+                config.universe_file,
+                filter_timeframe,
+                session_timezone,
+                current_filter_base,
+            )
         candle_value = current_base.isoformat()
         if config.paper.run_once_per_candle and self.broker.get_metadata(candle_key) == candle_value:
             plan = OrderPlan(config.strategy.name, "paper", (), (f"Candle already processed: {candle_value}",))
             return plan, ["No paper orders."]
-
-        benchmarks = sorted(
-            {resolved_universe.benchmark_for(symbol) for symbol in symbols}
-        )
-        if self.last_candle_base_time.get(session_market) != current_base:
-            self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
-            self.last_candle_base_time[session_market] = current_base
-        self.data_cache.retry_missing(session_market, config.universe_file, session_timezone, current_base)
-        bars, stale_symbols = self.data_cache.fresh_stock_bars(symbols, session_timezone, current_base)
-        benchmark = self.data_cache.fresh_benchmark_map(
-            symbols,
-            session_market,
-            config.universe_file,
-            config.timeframe,
-            session_timezone,
-            current_base,
-        )
-        current_filter_base = last_completed_bar_end(market_now, session_market, filter_timeframe)
-        filter_benchmark = self.data_cache.fresh_benchmark_map(
-            symbols,
-            session_market,
-            config.universe_file,
-            filter_timeframe,
-            session_timezone,
-            current_filter_base,
-        )
         if not bars:
             plan = OrderPlan(config.strategy.name, "paper", (), ("No fresh market data.",))
             return plan, ["No paper orders."]
 
-        prices = _latest_prices(bars)
+        quote_provider = self.quote_provider or FrameQuoteProvider(execution_bars or bars)
+        quotes = quote_provider.quotes(symbols)
+        missing_quotes = sorted(set(symbols) - set(quotes))
+        if missing_quotes:
+            plan = OrderPlan(
+                config.strategy.name,
+                "paper",
+                (),
+                (
+                    "Paper quote gap; all strategy orders blocked: "
+                    + ", ".join(missing_quotes),
+                ),
+            )
+            return plan, ["Paper orders blocked by quote gap."]
+        prices = {symbol: quote.price for symbol, quote in quotes.items()}
         plan = build_order_plan(
             config,
             bars,
@@ -120,6 +172,8 @@ class PaperRuntime:
                 plan.orders,
                 plan.notes + (f"Skipped stale symbols: {', '.join(stale_symbols)}",),
             )
+        if data_notes:
+            plan = OrderPlan(plan.strategy_name, plan.mode, plan.orders, plan.notes + data_notes)
         if not resolved_universe.entries_allowed:
             plan = OrderPlan(
                 plan.strategy_name,

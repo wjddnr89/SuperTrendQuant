@@ -18,11 +18,22 @@ BenchmarkData = dict[str, pd.DataFrame]
 @dataclass(frozen=True)
 class MarketData:
     bars: dict[str, pd.DataFrame]
+    execution_bars: dict[str, pd.DataFrame] | None = None
     benchmark: BenchmarkData | None = None
     filter_benchmark: BenchmarkData | None = None
+    benchmark_symbol: str = ""
+    corporate_actions: tuple[dict[str, Any], ...] = ()
+    data_version: str = ""
+    completed_session: str = ""
+    data_quality: str = "valid"
+    warnings: tuple[str, ...] = ()
     skipped: tuple[str, ...] = ()
     universe_snapshot: dict[str, object] | None = None
     universe_schedule: tuple[dict[str, Any], ...] = ()
+
+    @property
+    def validated_session(self) -> str:
+        return self.completed_session
 
 
 class MarketDataProvider(Protocol):

@@ -17,6 +17,7 @@ _REPOSITORY_ROOT = _PACKAGE_PROJECT_ROOT.parent
 UNIVERSE_PROFILE_MARKETS: dict[str, str] = {
     "nasdaq100": "US",
     "sp500": "US",
+    "russell3000": "US",
     "dow30": "US",
     "kospi200": "KR",
     "kosdaq150": "KR",
@@ -147,6 +148,38 @@ class UniverseConfig:
 
 
 @dataclass(frozen=True)
+class R2Config:
+    enabled: bool = False
+    endpoint_env: str = "R2_ENDPOINT_URL"
+    bucket: str = ""
+    prefix: str = "supertrend-quant"
+    region: str = "auto"
+    access_key_env: str = "R2_ACCESS_KEY_ID"
+    secret_key_env: str = "R2_SECRET_ACCESS_KEY"
+
+
+@dataclass(frozen=True)
+class DataStoreConfig:
+    provider: str = "parquet"
+    auto_sync: bool = True
+    price_mode: str = "total_return_adjusted"
+    dividend_tax_rate: float = 0.0
+    incomplete_action_policy: str = "warn"
+    local_cache_dir: str = "data/cache"
+    index_source_mode: str = "best_effort"
+    publish_enabled: bool = False
+    r2: R2Config = field(default_factory=R2Config)
+
+    @property
+    def signal_price_mode(self) -> str:
+        return self.price_mode
+
+    @property
+    def dividend_withholding_rate(self) -> float:
+        return self.dividend_tax_rate
+
+
+@dataclass(frozen=True)
 class AppConfig:
     strategy: StrategyIdentity
     scoring: ScoringConfig
@@ -157,8 +190,9 @@ class AppConfig:
     # nested ``universe`` mapping.
     universe_file: str = "universe.json"
     symbols: tuple[str, ...] = ()
-    timeframe: str = "30m"
-    period: str = "60d"
+    timeframe: str = "1d"
+    period: str = "max"
+    data_store: DataStoreConfig = field(default_factory=DataStoreConfig)
     capital: CapitalConfig = field(default_factory=CapitalConfig)
     costs: CostsConfig = field(default_factory=CostsConfig)
     supertrend: SupertrendConfig = field(default_factory=SupertrendConfig)
@@ -196,6 +230,7 @@ def compose_split_config(
     _validate_strategy_schema(strategy_raw)
     _validate_runtime_schema(runtime_raw)
     data_raw = _optional_mapping(runtime_raw, "data")
+    data_store_raw = _optional_mapping(runtime_raw, "data_store")
     portfolio_raw = _optional_mapping(strategy_raw, "portfolio")
     capital_raw = _optional_mapping(runtime_raw, "capital")
     costs_raw = _optional_mapping(runtime_raw, "costs")
@@ -236,8 +271,9 @@ def compose_split_config(
                 "symbols": runtime_raw.get("symbols", ()) or (),
             }
         ),
-        "timeframe": str(data_raw.get("timeframe") or strategy_raw.get("timeframe") or "30m"),
-        "period": str(data_raw.get("period") or strategy_raw.get("period") or "60d"),
+        "timeframe": str(data_raw.get("timeframe") or strategy_raw.get("timeframe") or "1d"),
+        "period": str(data_raw.get("period") or strategy_raw.get("period") or "max"),
+        "data_store": dict(data_store_raw),
         "capital": {
             "initial_cash": runtime_raw.get("initial_cash", capital_raw.get("initial_cash", 10_000.0)),
         },
@@ -315,8 +351,9 @@ def parse_config(raw: dict[str, Any]) -> AppConfig:
         universe=universe_config,
         universe_file=universe_file,
         symbols=symbols,
-        timeframe=str(raw.get("timeframe", "30m")),
-        period=str(raw.get("period", "60d")),
+        timeframe=str(raw.get("timeframe", "1d")),
+        period=str(raw.get("period", "max")),
+        data_store=_parse_data_store_config(raw),
         capital=CapitalConfig(**_known(_optional_mapping(raw, "capital"), {"initial_cash"})),
         costs=CostsConfig(**_known(_optional_mapping(raw, "costs"), {"fee_rate", "slippage_rate"})),
         supertrend=SupertrendConfig(
@@ -428,6 +465,101 @@ def _parse_universe_config(raw: dict[str, Any]) -> UniverseConfig:
     return config
 
 
+def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
+    value = raw.get("data_store", {}) or {}
+    if not isinstance(value, dict):
+        raise ValueError("data_store must be a mapping.")
+    _validate_data_store_mapping(value)
+    r2_raw = value.get("r2", {}) or {}
+    _reject_conflicting_aliases(value, "signal_price_mode", "price_mode")
+    _reject_conflicting_aliases(
+        value,
+        "dividend_withholding_rate",
+        "dividend_tax_rate",
+    )
+    config = DataStoreConfig(
+        provider=str(value.get("provider", "parquet")).strip().lower(),
+        auto_sync=bool(value.get("auto_sync", True)),
+        price_mode=str(
+            value.get("signal_price_mode", value.get("price_mode", "total_return_adjusted"))
+        ).strip().lower(),
+        dividend_tax_rate=float(
+            value.get("dividend_withholding_rate", value.get("dividend_tax_rate", 0.0))
+        ),
+        incomplete_action_policy=str(value.get("incomplete_action_policy", "warn")).strip().lower(),
+        local_cache_dir=str(value.get("local_cache_dir", "data/cache")),
+        index_source_mode=str(value.get("index_source_mode", "best_effort")).strip().lower(),
+        publish_enabled=bool(value.get("publish_enabled", False)),
+        r2=R2Config(
+            enabled=bool(r2_raw.get("enabled", False)),
+            endpoint_env=str(r2_raw.get("endpoint_env", "R2_ENDPOINT_URL")),
+            bucket=str(r2_raw.get("bucket", "")),
+            prefix=str(r2_raw.get("prefix", "supertrend-quant")).strip("/"),
+            region=str(r2_raw.get("region", "auto")),
+            access_key_env=str(r2_raw.get("access_key_env", "R2_ACCESS_KEY_ID")),
+            secret_key_env=str(r2_raw.get("secret_key_env", "R2_SECRET_ACCESS_KEY")),
+        ),
+    )
+    if config.provider not in {"parquet", "yahoo"}:
+        raise ValueError("data_store.provider must be parquet or yahoo.")
+    if config.price_mode not in {"total_return_adjusted", "split_adjusted", "raw"}:
+        raise ValueError(
+            "data_store.price_mode must be total_return_adjusted, split_adjusted, or raw."
+        )
+    if not 0.0 <= config.dividend_tax_rate <= 1.0:
+        raise ValueError("data_store.dividend_tax_rate must be between 0 and 1.")
+    if config.incomplete_action_policy not in {"warn", "block"}:
+        raise ValueError("data_store.incomplete_action_policy must be warn or block.")
+    if config.index_source_mode not in {"best_effort", "official_only"}:
+        raise ValueError("data_store.index_source_mode must be best_effort or official_only.")
+    if config.r2.enabled and (not config.r2.endpoint_env or not config.r2.bucket):
+        raise ValueError("data_store.r2 endpoint_env and bucket are required when enabled.")
+    return config
+
+
+def _validate_data_store_mapping(raw: dict[str, Any]) -> None:
+    _reject_unknown_keys(
+        raw,
+        {
+            "provider",
+            "auto_sync",
+            "signal_price_mode",
+            "dividend_withholding_rate",
+            "price_mode",
+            "dividend_tax_rate",
+            "incomplete_action_policy",
+            "local_cache_dir",
+            "index_source_mode",
+            "publish_enabled",
+            "r2",
+        },
+        "data_store",
+    )
+    r2 = raw.get("r2", {}) or {}
+    if not isinstance(r2, dict):
+        raise ValueError("data_store.r2 must be a mapping.")
+    _reject_unknown_keys(
+        r2,
+        {
+            "enabled",
+            "endpoint_env",
+            "bucket",
+            "prefix",
+            "region",
+            "access_key_env",
+            "secret_key_env",
+        },
+        "data_store.r2",
+    )
+
+
+def _reject_conflicting_aliases(raw: dict[str, Any], canonical: str, legacy: str) -> None:
+    if canonical in raw and legacy in raw and raw[canonical] != raw[legacy]:
+        raise ValueError(
+            f"data_store.{canonical} conflicts with legacy data_store.{legacy}."
+        )
+
+
 def _validate_universe_mapping(raw: dict[str, Any]) -> None:
     _reject_unknown_keys(
         raw,
@@ -477,8 +609,10 @@ def _validate_universe_mapping(raw: dict[str, Any]) -> None:
 
 
 def _validate_universe_config(config: UniverseConfig) -> None:
-    if config.source not in {"profiles", "file", "symbols", "history_file"}:
-        raise ValueError("universe.source must be profiles, file, symbols, or history_file.")
+    if config.source not in {"profiles", "file", "symbols", "history_file", "index_events"}:
+        raise ValueError(
+            "universe.source must be profiles, file, symbols, history_file, or index_events."
+        )
     if config.refresh != "daily":
         raise ValueError("universe.refresh must be daily.")
     if config.source == "profiles" and not any(config.profiles.values()):
@@ -491,6 +625,10 @@ def _validate_universe_config(config: UniverseConfig) -> None:
         raise ValueError("universe.source=history_file requires universe.history_file.")
     if config.source == "history_file" and config.filters.enabled:
         raise ValueError("universe.filters are not supported with universe.source=history_file.")
+    if config.source == "index_events" and not any(config.profiles.values()):
+        raise ValueError("universe.source=index_events requires at least one profile.")
+    if config.source == "index_events" and config.filters.enabled:
+        raise ValueError("universe.filters are not supported with universe.source=index_events.")
     for market, selected in config.profiles.items():
         seen: set[str] = set()
         for profile in selected:
@@ -506,7 +644,7 @@ def _validate_universe_config(config: UniverseConfig) -> None:
 
 
 def _validate_universe_market_selection(config: UniverseConfig, market: str) -> None:
-    if config.source != "profiles" or market == "AUTO":
+    if config.source not in {"profiles", "index_events"} or market == "AUTO":
         return
     if market not in {"US", "KR"}:
         raise ValueError("market must be US, KR, or AUTO.")
@@ -688,6 +826,7 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
             "live",
             "paper",
             "backtest",
+            "data_store",
         },
         "runtime",
     )
@@ -697,6 +836,11 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
             raise ValueError("runtime.universe must be a mapping.")
         _validate_universe_mapping(universe)
     _reject_unknown_keys(_optional_mapping(raw, "data"), {"timeframe", "period"}, "runtime.data")
+    data_store = raw.get("data_store")
+    if data_store is not None:
+        if not isinstance(data_store, dict):
+            raise ValueError("runtime.data_store must be a mapping.")
+        _validate_data_store_mapping(data_store)
     _reject_unknown_keys(_optional_mapping(raw, "capital"), {"initial_cash"}, "runtime.capital")
     _reject_unknown_keys(_optional_mapping(raw, "costs"), {"fee_rate", "slippage_rate"}, "runtime.costs")
     _reject_unknown_keys(_optional_mapping(raw, "execution"), {"order_type", "broker", "live_confirm_required"}, "runtime.execution")

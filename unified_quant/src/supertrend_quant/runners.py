@@ -7,9 +7,11 @@ import pandas as pd
 
 from .brokers import PaperBroker, TossBroker
 from .config import AppConfig
-from .data import download_market_data, market_index
+from .data import market_index
 from .metrics import calculate_metrics, format_float, format_pct
-from .portfolio import AccountSnapshot, OrderPlan, Position, estimate_quantity
+from .ledger import PortfolioLedger
+from .market_store.provider import ensure_configured_data_ready, load_configured_market_data
+from .portfolio import OrderPlan, Position, estimate_quantity
 from .strategies import build_order_plan, create_strategy
 from .strategies.base import PreparedBacktest
 from .strategies.common import active_universe_symbols
@@ -24,12 +26,30 @@ class BacktestResult:
     skipped: tuple[str, ...]
     trade_records: tuple[dict[str, object], ...] = field(default_factory=tuple)
     universe_snapshot: dict[str, object] | None = None
+    data_version: str = ""
+    completed_session: str = ""
+    data_quality: str = "valid"
+    data_warnings: tuple[str, ...] = field(default_factory=tuple)
+    processed_corporate_action_ids: tuple[str, ...] = field(default_factory=tuple)
+    price_mode: str = "total_return_adjusted"
+    dividend_tax_rate: float = 0.0
+    corporate_action_cash: float = 0.0
+    unresolved_corporate_action_ids: tuple[str, ...] = field(default_factory=tuple)
+
+    @property
+    def validated_session(self) -> str:
+        return self.completed_session
 
 
 def run_backtest(config: AppConfig) -> BacktestResult:
+    ensure_configured_data_ready(config)
     resolved = resolve_universe(config, mode="backtest")
     symbols = list(resolved.eligible_symbols)
-    market_data = download_market_data(config, symbols, resolved_universe=resolved)
+    market_data = load_configured_market_data(
+        config,
+        symbols,
+        resolved_universe=resolved,
+    )
     return run_backtest_on_data(config, market_data)
 
 
@@ -47,16 +67,28 @@ def run_backtest_on_data(
     """
     if not market_data.bars:
         raise RuntimeError("No market data was downloaded.")
+    if getattr(market_data, "data_quality", "valid") == "blocked":
+        warnings = "; ".join(getattr(market_data, "warnings", ()))
+        raise RuntimeError(
+            "Market data quality is blocked."
+            + (f" {warnings}" if warnings else "")
+        )
 
     full_idx = market_index(market_data)
     idx = _select_run_index(full_idx, run_index)
     if len(idx) < 2:
         raise RuntimeError("Not enough common bars to run a backtest.")
 
-    cash = config.capital.initial_cash
-    positions: dict[str, Position] = {}
+    ledger = PortfolioLedger(
+        cash=config.capital.initial_cash,
+        dividend_tax_rate=config.data_store.dividend_tax_rate,
+    )
+    execution_bars = getattr(market_data, "execution_bars", None) or market_data.bars
+    corporate_actions = getattr(market_data, "corporate_actions", ())
     entry_values: dict[str, float] = {}
     entry_times: dict[str, object] = {}
+    entry_distributions: dict[str, float] = {}
+    corporate_action_cash = 0.0
     equity_points: list[tuple[pd.Timestamp, float]] = []
     trade_returns: list[float] = []
     trade_records: list[dict[str, object]] = []
@@ -73,8 +105,23 @@ def run_backtest_on_data(
     for i in range(0, len(idx) - 1):
         signal_ts = idx[i]
         exec_ts = idx[i + 1]
-        equity_points.append((signal_ts, _portfolio_value(cash, positions, market_data.bars, signal_ts)))
-        account = AccountSnapshot(cash=cash, positions=positions.copy())
+        action_events = ledger.apply_actions(corporate_actions, through=signal_ts)
+        for event in action_events:
+            corporate_action_cash += event.cash_delta
+            economic_delta = event.accrual_delta or event.cash_delta
+            if event.symbol in entry_values and economic_delta:
+                entry_distributions[event.symbol] = (
+                    entry_distributions.get(event.symbol, 0.0) + economic_delta
+                )
+        positions = ledger.positions
+        equity_points.append(
+            (
+                signal_ts,
+                _portfolio_value(ledger.cash, positions, execution_bars, signal_ts)
+                + ledger.receivable_value,
+            )
+        )
+        account = ledger.snapshot()
         if prepared_backtest is not None:
             plan = prepared_backtest.build_order_plan(signal_ts, account, mode="backtest")
         else:
@@ -95,13 +142,13 @@ def run_backtest_on_data(
             )
 
         for order in plan.orders:
-            df = market_data.bars.get(order.symbol)
+            df = execution_bars.get(order.symbol)
             if df is None or exec_ts not in df.index:
                 continue
             raw_price = float(df.loc[exec_ts, "Open"])
             if order.side.lower() == "buy":
                 affordable_quantity = estimate_quantity(
-                    cash,
+                    ledger.cash,
                     raw_price,
                     1.0,
                     fee_rate=config.costs.fee_rate,
@@ -112,11 +159,11 @@ def run_backtest_on_data(
                     continue
                 fill = raw_price * (1.0 + config.costs.slippage_rate)
                 cost = quantity * fill * (1.0 + config.costs.fee_rate)
-                if cost <= cash:
-                    cash -= cost
-                    positions[order.symbol] = Position(order.symbol, quantity, fill)
+                if cost <= ledger.cash:
+                    ledger.buy(order.symbol, quantity, fill, cost)
                     entry_values[order.symbol] = cost
                     entry_times[order.symbol] = exec_ts
+                    entry_distributions[order.symbol] = 0.0
             else:
                 position = positions.get(order.symbol)
                 if not position:
@@ -124,9 +171,11 @@ def run_backtest_on_data(
                 qty = min(position.quantity, order.quantity)
                 fill = raw_price * (1.0 - config.costs.slippage_rate)
                 proceeds = qty * fill * (1.0 - config.costs.fee_rate)
-                cash += proceeds
+                ledger.sell(order.symbol, qty, proceeds)
                 entry_value = entry_values.pop(order.symbol, qty * position.avg_price)
-                pnl_pct = proceeds / entry_value - 1.0 if entry_value else 0.0
+                distributions = entry_distributions.pop(order.symbol, 0.0)
+                economic_proceeds = proceeds + distributions
+                pnl_pct = economic_proceeds / entry_value - 1.0 if entry_value else 0.0
                 trade_returns.append(pnl_pct)
                 trade_records.append(
                     {
@@ -136,23 +185,34 @@ def run_backtest_on_data(
                         "entry_price": position.avg_price,
                         "exit_price": fill,
                         "quantity": qty,
+                        "corporate_action_cash": distributions,
                         "pnl_pct": pnl_pct,
                         "exit_reason": order.reason,
                     }
                 )
-                positions.pop(order.symbol, None)
 
+    action_events = ledger.apply_actions(corporate_actions, through=idx[-1])
+    for event in action_events:
+        corporate_action_cash += event.cash_delta
+        economic_delta = event.accrual_delta or event.cash_delta
+        if event.symbol in entry_values and economic_delta:
+            entry_distributions[event.symbol] = (
+                entry_distributions.get(event.symbol, 0.0) + economic_delta
+            )
+    positions = ledger.positions
     if positions:
         final_ts = idx[-1]
         for symbol, position in list(positions.items()):
-            final_close = _close_at_or_before(market_data.bars.get(symbol), final_ts)
+            final_close = _close_at_or_before(execution_bars.get(symbol), final_ts)
             if final_close is None:
                 continue
             final_price = final_close * (1.0 - config.costs.slippage_rate)
             proceeds = position.quantity * final_price * (1.0 - config.costs.fee_rate)
-            cash += proceeds
+            ledger.sell(symbol, position.quantity, proceeds)
             entry_value = entry_values.pop(symbol, position.quantity * position.avg_price)
-            pnl_pct = proceeds / entry_value - 1.0 if entry_value else 0.0
+            distributions = entry_distributions.pop(symbol, 0.0)
+            economic_proceeds = proceeds + distributions
+            pnl_pct = economic_proceeds / entry_value - 1.0 if entry_value else 0.0
             trade_returns.append(pnl_pct)
             trade_records.append(
                 {
@@ -162,15 +222,29 @@ def run_backtest_on_data(
                     "entry_price": position.avg_price,
                     "exit_price": final_price,
                     "quantity": position.quantity,
+                    "corporate_action_cash": distributions,
                     "pnl_pct": pnl_pct,
                     "exit_reason": "FinalClose",
                 }
             )
-            positions.pop(symbol, None)
 
-    equity_points.append((idx[-1], _portfolio_value(cash, positions, market_data.bars, idx[-1])))
+    equity_points.append(
+        (
+            idx[-1],
+            _portfolio_value(ledger.cash, ledger.positions, execution_bars, idx[-1])
+            + ledger.receivable_value,
+        )
+    )
 
     equity = pd.Series([point[1] for point in equity_points], index=[point[0] for point in equity_points], name="equity")
+    unresolved_warnings = (
+        (
+            "Unresolved corporate actions were left unapplied: "
+            + ", ".join(sorted(ledger.unresolved_event_ids)),
+        )
+        if ledger.unresolved_event_ids
+        else ()
+    )
     return BacktestResult(
         equity=equity,
         metrics=calculate_metrics(equity, trade_returns, config.timeframe),
@@ -178,6 +252,20 @@ def run_backtest_on_data(
         skipped=market_data.skipped,
         trade_records=tuple(trade_records),
         universe_snapshot=getattr(market_data, "universe_snapshot", None),
+        data_version=getattr(market_data, "data_version", ""),
+        completed_session=getattr(market_data, "completed_session", ""),
+        data_quality=(
+            "degraded"
+            if ledger.unresolved_event_ids
+            and getattr(market_data, "data_quality", "valid") == "valid"
+            else getattr(market_data, "data_quality", "valid")
+        ),
+        data_warnings=tuple(getattr(market_data, "warnings", ())) + unresolved_warnings,
+        processed_corporate_action_ids=tuple(sorted(ledger.processed_event_ids)),
+        price_mode=config.data_store.price_mode,
+        dividend_tax_rate=config.data_store.dividend_tax_rate,
+        corporate_action_cash=corporate_action_cash,
+        unresolved_corporate_action_ids=tuple(sorted(ledger.unresolved_event_ids)),
     )
 
 
@@ -226,6 +314,7 @@ def _allowed_symbols_for_signal(market_data, signal_ts, positions: dict[str, Pos
 
 
 def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[str]]:
+    ensure_configured_data_ready(config)
     broker = PaperBroker(state_path=state_path, initial_cash=config.capital.initial_cash)
     account = broker.get_account()
     resolved = resolve_universe(
@@ -235,7 +324,7 @@ def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[
         mode="paper",
     )
     symbols = list(resolved.symbols if resolved.entries_allowed else resolved.exit_only_symbols)
-    market_data = download_market_data(config, symbols, resolved_universe=resolved)
+    market_data = load_configured_market_data(config, symbols, resolved_universe=resolved)
     plan = build_order_plan(
         config,
         market_data.bars,
@@ -244,11 +333,13 @@ def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[
         benchmark=market_data.benchmark,
         filter_benchmark=market_data.filter_benchmark,
     )
-    fills = broker.execute_plan(plan, _latest_prices(market_data.bars), config.costs.fee_rate, config.costs.slippage_rate)
+    execution_bars = market_data.execution_bars or market_data.bars
+    fills = broker.execute_plan(plan, _latest_prices(execution_bars), config.costs.fee_rate, config.costs.slippage_rate)
     return plan, fills
 
 
 def run_live_once(config: AppConfig, assume_yes: bool = False) -> tuple[OrderPlan, list[str]]:
+    ensure_configured_data_ready(config)
     broker = TossBroker()
     account = broker.get_account(config.market)
     resolved = resolve_universe(
@@ -258,7 +349,7 @@ def run_live_once(config: AppConfig, assume_yes: bool = False) -> tuple[OrderPla
         mode="live",
     )
     symbols = list(resolved.symbols if resolved.entries_allowed else resolved.exit_only_symbols)
-    market_data = download_market_data(config, symbols, resolved_universe=resolved)
+    market_data = load_configured_market_data(config, symbols, resolved_universe=resolved)
     plan = build_order_plan(
         config,
         market_data.bars,

@@ -1,62 +1,35 @@
-# Rolling Universe Backtests
+# Point-in-Time Index Universes
 
-This note documents the rolling-universe backtest mode added for
-survivorship-aware Nasdaq-100 research.  Static profile universes use today's
-constituents across the whole historical period; rolling universes instead read
-dated constituent snapshots and allow new buys only in the active snapshot for
-each bar.
-
-## Runtime Config
-
-Use `universe.source: history_file` in a runtime YAML:
+The authoritative US path is `universe.source: index_events`. It replaces the
+old quarterly snapshot approximation with a stable-security replay:
 
 ```yaml
 market: US
 universe:
-  source: history_file
-  history_file: unified_quant/data/universes/nasdaq100_quarterly_history.json
+  source: index_events
+  profiles:
+    US: [nasdaq100]
+  filters:
+    enabled: false
 data:
   timeframe: 1d
-  period: 3y
+  period: max
+data_store:
+  provider: parquet
+  index_source_mode: best_effort
 ```
 
-`history_file` mode is intended for backtests and research.  Current live/paper
-universe refresh still uses the normal `file` or `profiles` sources.
+For each profile, the engine selects the latest anchor on or before the target
+date, applies every actual-effective-date `ADD` and `REMOVE`, then applies active
+custom overlays. Membership carries `security_id`; `symbol_history` supplies the
+ticker that was active on each date. The resulting schedule gates new entries,
+while already-held removals remain exit-only.
 
-## History File Format
+`history_file` remains a compatibility source for existing JSON snapshots, but
+it is not used by the supplied US runtimes. A snapshot applies today's or a
+manually approximated member set between dates and therefore has weaker audit
+and effective-date guarantees.
 
-The file can be a mapping with `snapshots`:
-
-```json
-{
-  "market": "US",
-  "profile": "nasdaq100",
-  "snapshots": [
-    {
-      "effective_date": "2023-07-03",
-      "symbols": ["AAPL", "MSFT", "NVDA"]
-    },
-    {
-      "effective_date": "2023-10-02",
-      "symbols": ["AAPL", "MSFT", "NVDA", "ARM"]
-    }
-  ]
-}
-```
-
-Each snapshot applies from `effective_date` until the next snapshot.  Ticker
-strings are enough for US stocks; member mappings with `symbol`, `exchange`,
-`yfinance_symbol`, or `benchmark` are also accepted when a ticker needs custom
-metadata.
-
-## Behavior
-
-The data downloader fetches the union of all symbols across all snapshots.  The
-backtest timeline then uses bars from the symbols active in each snapshot, not
-the common intersection of every historical constituent.  Strategies keep held
-symbols visible for exit logic after removal, but removed symbols are excluded
-from new-buy candidate lists.
-
-Because Nasdaq's public API only exposes the current Nasdaq-100 list, the
-historical `history_file` must come from a separate trusted constituent-history
-source such as archived index/ETF holdings data.
+This reconstructs constituent membership, not an official vendor index level.
+See [market_data.md](market_data.md) for imports, source policy, validation, and
+the distinction between SPY/QQQ/IWV ETF benchmarks and vendor index formulas.

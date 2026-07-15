@@ -9,6 +9,7 @@ from pathlib import Path
 import requests
 
 from .env import load_env
+from .ledger import PortfolioLedger
 from .portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position
 
 
@@ -33,6 +34,53 @@ class PaperBroker:
         state = self._load_state()
         state.setdefault("metadata", {})[key] = value
         self._save_state(state)
+
+    def apply_corporate_actions(
+        self,
+        actions,
+        *,
+        through,
+        dividend_tax_rate: float = 0.0,
+    ) -> tuple[str, ...]:
+        state = self._load_state()
+        account = self.get_account()
+        metadata = state.setdefault("metadata", {})
+        ledger = PortfolioLedger.from_account(
+            account,
+            processed_event_ids=metadata.get("processed_corporate_action_ids", ()),
+            entitled_event_ids=metadata.get("entitled_corporate_action_ids", ()),
+            cash_receivables=metadata.get("corporate_action_receivables", {}),
+            unresolved_event_ids=metadata.get("unresolved_corporate_action_ids", ()),
+            dividend_tax_rate=dividend_tax_rate,
+        )
+        events = ledger.apply_actions(actions, through=through)
+        if not events:
+            return ()
+        state["cash"] = ledger.cash
+        state["positions"] = {
+            symbol: {"quantity": position.quantity, "avg_price": position.avg_price}
+            for symbol, position in ledger.positions.items()
+        }
+        metadata["processed_corporate_action_ids"] = sorted(ledger.processed_event_ids)
+        metadata["entitled_corporate_action_ids"] = sorted(ledger.entitled_event_ids)
+        metadata["unresolved_corporate_action_ids"] = sorted(ledger.unresolved_event_ids)
+        metadata["corporate_action_receivables"] = {
+            event_id: receivable.to_dict()
+            for event_id, receivable in ledger.cash_receivables.items()
+        }
+        state.setdefault("corporate_action_events", []).extend(
+            {
+                "event_id": event.event_id,
+                "action_type": event.action_type,
+                "symbol": event.symbol,
+                "message": event.message,
+                "cash_delta": event.cash_delta,
+                "accrual_delta": event.accrual_delta,
+            }
+            for event in events
+        )
+        self._save_state(state)
+        return tuple(event.message for event in events)
 
     def execute_plan(
         self,

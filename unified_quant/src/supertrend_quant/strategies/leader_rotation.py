@@ -217,7 +217,11 @@ class LeaderRotationStrategy:
                     side="buy",
                     quantity=qty,
                     order_type=config.execution.order_type,
-                    reason="Top-ranked leader",
+                    reason=(
+                        "Post-sell leader entry"
+                        if sell_symbols
+                        else "Top-ranked leader"
+                    ),
                 )
             )
             estimated_cost = _estimated_buy_cost(qty, float(candidate["price"]), config)

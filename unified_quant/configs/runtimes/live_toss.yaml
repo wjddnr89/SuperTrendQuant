@@ -10,8 +10,23 @@ universe:
     enabled: false
 
 data:
-  timeframe: 30m
-  period: 30d
+  timeframe: 1d
+  period: max
+
+data_store:
+  provider: parquet
+  auto_sync: true
+  signal_price_mode: total_return_adjusted
+  dividend_withholding_rate: 0
+  incomplete_action_policy: warn
+  local_cache_dir: data/cache
+  index_source_mode: best_effort
+  publish_enabled: false
+  r2:
+    enabled: false
+    endpoint_env: R2_ENDPOINT_URL
+    bucket: ""
+    prefix: supertrend-quant
 
 capital:
   initial_cash: 10000

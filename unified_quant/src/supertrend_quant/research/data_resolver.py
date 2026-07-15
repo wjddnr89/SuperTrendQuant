@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from typing import Callable, TypeAlias
 
 from ..config import AppConfig
-from ..data import MarketData, download_market_data
+from ..data import MarketData
+from ..market_store.provider import ensure_configured_data_ready, load_configured_market_data
 from ..universe import resolve_universe, universe_request_key
 
 
@@ -27,12 +28,17 @@ def data_request_key(config: AppConfig) -> tuple[object, ...]:
         tuple(config.symbols),
         bool(config.market_trend_filter.enabled),
         config.market_trend_filter.timeframe,
+        config.data_store.provider,
+        config.data_store.price_mode,
+        config.data_store.local_cache_dir,
+        config.data_store.index_source_mode,
     )
 
 
 def download_for_config(config: AppConfig) -> MarketData:
+    ensure_configured_data_ready(config)
     resolved = resolve_universe(config, mode="research")
-    return download_market_data(
+    return load_configured_market_data(
         config,
         list(resolved.eligible_symbols),
         resolved_universe=resolved,
@@ -40,8 +46,10 @@ def download_for_config(config: AppConfig) -> MarketData:
 
 
 def fixed_data_supports(fixed_config: AppConfig, candidate: AppConfig) -> bool:
-    fixed_base = data_request_key(fixed_config)[:5]
-    candidate_base = data_request_key(candidate)[:5]
+    fixed_key = data_request_key(fixed_config)
+    candidate_key = data_request_key(candidate)
+    fixed_base = (*fixed_key[:5], *fixed_key[7:])
+    candidate_base = (*candidate_key[:5], *candidate_key[7:])
     if fixed_base != candidate_base:
         return False
     if not candidate.market_trend_filter.enabled:

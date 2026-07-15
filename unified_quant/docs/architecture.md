@@ -45,15 +45,16 @@ path automatically.
 - `config`: compose strategy/runtime YAML into `AppConfig` and reject invalid components.
 - `indicators`: SuperTrend, Triple SuperTrend, Ichimoku, EMA, and ATR calculations.
 - `ranking`: scorer protocol and registry, benchmark-relative scoring, and deterministic symbol ranking.
-- `universe`: index-profile providers, tradability filters, daily snapshots, and exit-only membership.
+- `universe`: stable-ID index-event replay, compatibility profiles/snapshots, and exit-only membership.
 - `strategies`: strategy protocol, registry, and implementations that produce `OrderPlan`.
-- `data`: Yahoo data, universe/benchmark mapping, resampling, and live freshness cache.
+- `market_store`: versioned Parquet, DuckDB queries, validation, releases, R2 CAS, ingestion, and preflight.
+- `data`: compatibility Yahoo loading plus the shared `MarketData` contract.
 - `runners`: canonical backtest lifecycle and mode-independent strategy invocation.
 - `research`: train/validation/test evaluation, benchmarks, strategy comparison, grid search, and Optuna.
 - `brokers`: paper-state execution and Toss API execution.
 - `paper_runtime` / `live_runtime`: scheduling, data freshness, persistence, guards, and notifications.
 - `results`: backtest/paper artifacts and comparison reports.
-- `cli`: the seven installed commands.
+- `cli`: strategy/runtime commands plus `quant-data` storage administration.
 
 ## Extension points
 
@@ -79,9 +80,10 @@ current account snapshot and then return order intent. It does not call Toss,
 write paper state, save reports, or prompt a user. Those effects belong to
 brokers and runtimes.
 
-Backtest execution uses the configured fee and slippage model. Paper and live
-may use different fill sources, but all three modes must receive the same
-pre-execution order decision for the same bars and account snapshot.
+Backtest execution uses adjusted daily signal bars but raw execution bars and
+the corporate-action ledger. Paper uses the same historical signal release;
+live execution uses Toss quotes only at the execution/guard boundary. A
+historical coverage gap blocks the entire paper/live strategy plan.
 
 Research timeframes are resolved through a config-keyed `MarketDataCache`; a
 fixed data bundle is rejected if a candidate changes its timeframe or filter
@@ -91,10 +93,12 @@ Grid candidates and Optuna trials evaluate validation only; full
 overall/train/validation/test reports and benchmarks are created after a winner
 has been selected, so the test segment remains a holdout.
 
-Paper state and candle idempotency metadata are committed atomically. Live
+Paper state, processed corporate-action IDs, and candle idempotency metadata are committed atomically. Live
 orders use stable per-candle Toss client order IDs, hide incomplete candles,
 block unmanaged holdings, and treat missing quotes or an unfilled prerequisite
 sell as a hard stop for dependent orders.
+
+See [market_data.md](market_data.md) for the daily V1 storage and release design.
 
 ## Migration status
 

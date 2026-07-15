@@ -112,6 +112,7 @@ def config_to_split_dicts(
         "market": config.market,
         "universe": universe,
         "data": {"timeframe": config.timeframe, "period": config.period},
+        "data_store": asdict(config.data_store),
         "capital": {"initial_cash": config.capital.initial_cash},
         "costs": {
             "fee_rate": config.costs.fee_rate,

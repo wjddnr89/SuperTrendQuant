@@ -1,11 +1,13 @@
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 import pandas as pd
 
-from supertrend_quant.config import load_split_config
+from supertrend_quant.config import load_split_config, parse_config
+from supertrend_quant.data import MarketData
 from supertrend_quant.paper_runtime import PaperRuntime
 from supertrend_quant.results import PaperRunRecorder, compare_paper_to_backtest, save_backtest_result
 
@@ -44,7 +46,97 @@ class FakeBacktestResult:
         self.skipped = ()
 
 
+class EmptyQuoteProvider:
+    def quotes(self, symbols):
+        return {}
+
+
 class PaperRuntimeResultsTest(unittest.TestCase):
+    def test_stale_daily_history_blocks_all_paper_strategy_orders(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = parse_config(
+                {
+                    "strategy": {"name": "test", "type": "equal", "params": {}},
+                    "scoring": {"type": "relative_strength", "params": {"lookback_bars": 1}},
+                    "market": "US",
+                    "universe": {"source": "symbols", "symbols": ["AAA"]},
+                    "paper": {
+                        "state_file": str(root / "paper.json"),
+                        "results_dir": str(root / "results"),
+                    },
+                    "data_store": {
+                        "provider": "parquet",
+                        "local_cache_dir": str(root / "cache"),
+                    },
+                }
+            )
+            frame = pd.DataFrame(
+                {"Open": [10.0], "High": [10.0], "Low": [10.0], "Close": [10.0]},
+                index=[pd.Timestamp("2026-07-14")],
+            )
+            stale = MarketData(
+                bars={"AAA": frame},
+                execution_bars={"AAA": frame},
+                completed_session="2026-07-15",
+            )
+            runtime = PaperRuntime(config)
+            with (
+                patch(
+                    "supertrend_quant.paper_runtime.ensure_configured_data_ready"
+                ),
+                patch(
+                    "supertrend_quant.paper_runtime.load_configured_market_data",
+                    return_value=stale,
+                ),
+            ):
+                plan, results = runtime.run_once(ignore_schedule=True)
+
+            self.assertEqual(plan.orders, ())
+            self.assertIn("Historical data is incomplete", plan.notes[0])
+            self.assertEqual(results, ["Paper orders blocked by historical data gap."])
+
+    def test_missing_paper_quote_blocks_the_entire_strategy_plan(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config = load_split_config(
+                "configs/strategies/simple_supertrend.yaml",
+                "configs/runtimes/simulation.yaml",
+            )
+            config = config.__class__(
+                **{
+                    **config.__dict__,
+                    "symbols": ("AAA",),
+                    "paper": config.paper.__class__(
+                        state_file=str(tmp_path / "paper.json"),
+                        results_dir=str(tmp_path / "paper-results"),
+                        loop_interval_seconds=1,
+                        run_once_per_candle=True,
+                    ),
+                }
+            )
+            idx = pd.date_range("2026-01-01", periods=3, freq="D")
+            frame = pd.DataFrame(
+                {
+                    "Open": [10.0] * 3,
+                    "High": [10.0] * 3,
+                    "Low": [10.0] * 3,
+                    "Close": [10.0] * 3,
+                },
+                index=idx,
+            )
+            runtime = PaperRuntime(
+                config,
+                data_cache=FakeCache({"AAA": frame}, frame),
+                quote_provider=EmptyQuoteProvider(),
+            )
+
+            plan, results = runtime.run_once(ignore_schedule=True)
+
+            self.assertEqual(plan.orders, ())
+            self.assertIn("Paper quote gap", plan.notes[0])
+            self.assertEqual(results, ["Paper orders blocked by quote gap."])
+
     def test_paper_once_records_cycle_equity_and_skips_duplicate_candle(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)

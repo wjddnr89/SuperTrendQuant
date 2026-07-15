@@ -11,6 +11,8 @@ from .brokers import TossBroker
 from .config import AppConfig
 from .data_cache import YahooStateCache
 from .holdings import HoldingsStore
+from .market_store.provider import ensure_configured_data_ready, load_configured_market_data
+from .market_store.realtime import QuoteProvider, TossRealtimeQuoteProvider
 from .notifications import TelegramNotifier
 from .portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quantity
 from .runtime import check_market_schedule, last_completed_bar_end
@@ -26,12 +28,18 @@ class HybridLiveRuntime:
         notifier: TelegramNotifier | None = None,
         holdings: HoldingsStore | None = None,
         data_cache: YahooStateCache | None = None,
+        quote_provider: QuoteProvider | None = None,
     ):
         self.config = config
         self.broker = broker or TossBroker()
         self.notifier = notifier or TelegramNotifier()
         self.holdings = holdings or HoldingsStore(config.live.holdings_file)
-        self.data_cache = data_cache or YahooStateCache()
+        self.quote_provider = quote_provider or TossRealtimeQuoteProvider(self.broker)
+        self.data_cache = (
+            data_cache
+            if data_cache is not None
+            else (YahooStateCache() if config.data_store.provider == "yahoo" else None)
+        )
         self.last_briefing_date: dict[str, str | None] = {"KR": None, "US": None}
         self.last_candle_base_time: dict[str, datetime | None] = {"KR": None, "US": None}
 
@@ -52,6 +60,8 @@ class HybridLiveRuntime:
             session_timezone = session.timezone
 
         config = replace(self.config, market=session_market)
+        if self.data_cache is None:
+            ensure_configured_data_ready(config)
         account = self.broker.get_account(session_market)
         previous_members = self.holdings.member_map(session_market)
         resolved_universe = resolve_universe(
@@ -88,44 +98,63 @@ class HybridLiveRuntime:
         managed_account = self._managed_account(account, managed_symbols)
 
         market_now = datetime.now(session_timezone) if session_timezone is not None else datetime.now()
-        filter_timeframe = (
-            config.market_trend_filter.timeframe
-            if config.market_trend_filter.enabled
-            else config.timeframe
-        )
-        if hasattr(self.data_cache, "configure"):
-            self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
-        if hasattr(self.data_cache, "configure_universe"):
-            self.data_cache.configure_universe(resolved_universe)
-        current_base = last_completed_bar_end(market_now, session_market, config.timeframe)
-        benchmarks = sorted(
-            {resolved_universe.benchmark_for(symbol) for symbol in symbols}
-        )
-        if self.last_candle_base_time.get(session_market) != current_base:
-            self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
-            self.last_candle_base_time[session_market] = current_base
-        self.data_cache.retry_missing(session_market, config.universe_file, session_timezone, current_base)
-        bars, stale_symbols = self.data_cache.fresh_stock_bars(symbols, session_timezone, current_base)
-        benchmark = self.data_cache.fresh_benchmark_map(
-            symbols,
-            session_market,
-            config.universe_file,
-            config.timeframe,
-            session_timezone,
-            current_base,
-        )
-        current_filter_base = last_completed_bar_end(market_now, session_market, filter_timeframe)
-        filter_benchmark = self.data_cache.fresh_benchmark_map(
-            symbols,
-            session_market,
-            config.universe_file,
-            filter_timeframe,
-            session_timezone,
-            current_filter_base,
-        )
+        data_notes: tuple[str, ...] = ()
+        if self.data_cache is None:
+            market_data = load_configured_market_data(
+                config,
+                symbols,
+                resolved_universe=resolved_universe,
+            )
+            bars = market_data.bars
+            benchmark = market_data.benchmark
+            filter_benchmark = market_data.filter_benchmark
+            stale_symbols = list(market_data.skipped)
+            current_base = pd.Timestamp(market_data.completed_session).to_pydatetime()
+            gap = _daily_data_gap(symbols, market_data)
+            if gap:
+                return OrderPlan(config.strategy.name, "live", (), (gap,)), ["Live orders blocked by historical data gap."]
+            data_notes = tuple(market_data.warnings) + (
+                f"Data version: {market_data.data_version}",
+            )
+        else:
+            filter_timeframe = (
+                config.market_trend_filter.timeframe
+                if config.market_trend_filter.enabled
+                else config.timeframe
+            )
+            if hasattr(self.data_cache, "configure"):
+                self.data_cache.configure(config.timeframe, filter_timeframe, config.period)
+            if hasattr(self.data_cache, "configure_universe"):
+                self.data_cache.configure_universe(resolved_universe)
+            current_base = last_completed_bar_end(market_now, session_market, config.timeframe)
+            benchmarks = sorted(
+                {resolved_universe.benchmark_for(symbol) for symbol in symbols}
+            )
+            if self.last_candle_base_time.get(session_market) != current_base:
+                self.data_cache.sync(symbols, session_market, config.universe_file, benchmarks, current_candle_base=current_base)
+                self.last_candle_base_time[session_market] = current_base
+            self.data_cache.retry_missing(session_market, config.universe_file, session_timezone, current_base)
+            bars, stale_symbols = self.data_cache.fresh_stock_bars(symbols, session_timezone, current_base)
+            benchmark = self.data_cache.fresh_benchmark_map(
+                symbols,
+                session_market,
+                config.universe_file,
+                config.timeframe,
+                session_timezone,
+                current_base,
+            )
+            current_filter_base = last_completed_bar_end(market_now, session_market, filter_timeframe)
+            filter_benchmark = self.data_cache.fresh_benchmark_map(
+                symbols,
+                session_market,
+                config.universe_file,
+                filter_timeframe,
+                session_timezone,
+                current_filter_base,
+            )
         if not bars:
             return OrderPlan(config.strategy.name, "live", (), ("No fresh market data.",)), []
-        notes = tuple([f"Skipped stale symbols: {', '.join(stale_symbols)}"] if stale_symbols else [])
+        notes = data_notes + tuple([f"Skipped stale symbols: {', '.join(stale_symbols)}"] if stale_symbols else [])
         if not resolved_universe.entries_allowed:
             notes += (f"Universe refresh failed; new entries blocked: {resolved_universe.refresh_error}",)
 
@@ -382,7 +411,10 @@ class HybridLiveRuntime:
 
     def _safe_prices(self, symbols: list[str]) -> dict[str, float]:
         try:
-            return self.broker.get_prices(symbols)
+            return {
+                symbol: quote.price
+                for symbol, quote in self.quote_provider.quotes(symbols).items()
+            }
         except Exception as exc:
             print(f"Realtime price lookup failed: {exc}")
             return {}
@@ -412,3 +444,20 @@ class HybridLiveRuntime:
         if order.side.lower() == "buy":
             return f"🟩 *[추세 주도주 매수 주문 전송]*\n• 종목: {order.symbol} | 수량: {order.quantity:g}주"
         return f"🚨 *[매도 주문 전송]*\n• 종목: {order.symbol} | 수량: {order.quantity:g}주 | 사유: {order.reason}"
+
+
+def _daily_data_gap(symbols: list[str], market_data) -> str | None:
+    missing = sorted(set(symbols) - set(market_data.bars))
+    if missing:
+        return f"Historical data gap; all strategy orders blocked: {', '.join(missing)}"
+    if market_data.data_quality == "blocked":
+        return "Historical data quality is blocked; all strategy orders blocked."
+    completed = pd.Timestamp(market_data.completed_session).date()
+    stale = sorted(
+        symbol
+        for symbol, frame in market_data.bars.items()
+        if frame.empty or pd.Timestamp(frame.index[-1]).date() < completed
+    )
+    if stale:
+        return f"Historical data is incomplete through {completed}; all orders blocked: {', '.join(stale)}"
+    return None

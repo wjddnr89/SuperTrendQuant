@@ -24,8 +24,18 @@ universe:
     min_history_daily_bars: 120
 
 data:
-  timeframe: 30m
-  period: 60d
+  timeframe: 1d
+  period: max
+
+# US Parquet is V1. KR keeps the legacy source until the same contracts exist.
+data_store:
+  provider: yahoo
+  auto_sync: false
+  price_mode: raw
+  dividend_tax_rate: 0
+  incomplete_action_policy: warn
+  local_cache_dir: data/cache
+  index_source_mode: best_effort
 
 capital:
   initial_cash: 10000000

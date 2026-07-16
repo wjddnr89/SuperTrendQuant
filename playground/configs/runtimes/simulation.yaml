@@ -1,0 +1,49 @@
+name: simulation
+market: US
+universe:
+  source: profiles
+  profiles:
+    US: [sp500]
+  refresh: daily
+  snapshot_dir: state/universes
+  filters:
+    enabled: true
+    exclude_managed: true
+    exclude_suspended: true
+    exclude_delisting: true
+    exclude_etf_etn: true
+    exclude_spac: true
+    exclude_preferred: true
+    min_price:
+      US: 5
+      KR: 1000
+    avg_turnover_window: 20
+    min_avg_turnover:
+      US: 10000000
+      KR: 1000000000
+    min_history_daily_bars: 120
+
+data:
+  timeframe: 1d
+  period: max
+
+capital:
+  initial_cash: 10000
+
+costs:
+  fee_rate: 0.00225
+  slippage_rate: 0.0005
+
+execution:
+  order_type: market
+  broker: paper
+  live_confirm_required: true
+
+paper:
+  state_file: state/paper.json
+  results_dir: results/paper
+  loop_interval_seconds: 60
+  run_once_per_candle: true
+
+backtest:
+  results_dir: results/backtests

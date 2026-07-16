@@ -1,0 +1,45 @@
+name: triple_filters_standalone
+type: triple_filters
+
+portfolio:
+  max_positions: 5
+  allocation_pct: 1.0
+
+scoring:
+  type: relative_strength
+  params:
+    lookback_bars: 100
+
+signals:
+  entries:
+    - type: triple_supertrend
+      enabled: true
+      atr_method: wilder
+      settings:
+        - period: 10
+          multiplier: 1.0
+        - period: 11
+          multiplier: 2.0
+        - period: 12
+          multiplier: 3.0
+
+  filters:
+    - type: benchmark_trend
+      enabled: true
+      timeframe: 1d
+
+    - type: ichimoku_cloud
+      enabled: true
+      tenkan: 9
+      kijun: 26
+      span_b: 52
+      shift: 26
+
+    - type: ema_trend
+      enabled: true
+      period: 200
+
+  exits:
+    - type: triple_supertrend_flip
+      down_count: 2
+      confirm_bars: 3

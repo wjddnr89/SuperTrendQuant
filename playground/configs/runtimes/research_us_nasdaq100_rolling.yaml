@@ -1,0 +1,37 @@
+# Nasdaq-100 rolling-universe research runtime.
+# Use this for survivorship-aware daily or intraday research when you have a
+# historical quarterly constituent file.  The history file must list the
+# Nasdaq-100 members that were tradable from each effective_date onward.
+
+name: research_us_nasdaq100_rolling
+market: US
+universe:
+  source: history_file
+  history_file: unified_quant/data/universes/nasdaq100_quarterly_history.json
+  refresh: daily
+  snapshot_dir: state/universes
+
+data:
+  timeframe: 1d
+  period: 3y
+
+capital:
+  initial_cash: 10000
+
+costs:
+  fee_rate: 0.00225
+  slippage_rate: 0.0005
+
+execution:
+  order_type: market
+  broker: paper
+  live_confirm_required: true
+
+paper:
+  state_file: state/research_us_nasdaq100_rolling_paper.json
+  results_dir: results/research/us_nasdaq100_rolling/paper
+  loop_interval_seconds: 60
+  run_once_per_candle: true
+
+backtest:
+  results_dir: results/research/us_nasdaq100_rolling/backtests

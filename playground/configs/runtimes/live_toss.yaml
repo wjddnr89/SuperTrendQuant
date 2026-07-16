@@ -1,0 +1,30 @@
+name: live_toss
+market: AUTO
+universe:
+  source: file
+  file: universe.json
+  symbols: []
+  refresh: daily
+  snapshot_dir: state/universes
+  filters:
+    enabled: false
+
+data:
+  timeframe: 30m
+  period: 30d
+
+capital:
+  initial_cash: 10000
+
+costs:
+  fee_rate: 0.00225
+  slippage_rate: 0.0005
+
+execution:
+  order_type: market
+  broker: toss
+  live_confirm_required: true
+
+live:
+  holdings_file: holding.json
+  loop_interval_seconds: 60

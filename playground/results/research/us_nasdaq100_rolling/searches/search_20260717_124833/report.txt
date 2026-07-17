@@ -1,0 +1,47 @@
+Nasdaq-100 Daily Search Results
+Requested    : start=2010-01-01, period=max
+Evaluation   : 2010-03-18 00:00:00 -> 2026-07-16 00:00:00
+Total runs   : 256
+Sell confirm : 1
+Max positions: 3,4,5,6,7,8,9,10
+Skipped      : ALTR, ALXN, ANSS, APOL, ATVI, BMC, CA, CELG, CEPH, CERN, CTRX, CTXS, DISCA, DISCK, DISH, DTV, ENDP, FI, FLIR, FWLT, GMCR, HOLX, JOYG, KRFT, LLTC, LMCA, LMCK, MXIM, MYL, NIHD, NLOK, NUAN, PDCO, QRTEA, RIMM, SGEN, SIAL, SPLK, SRCL, VIAB, VIP, VMED, WBA, WCRX, WFM, XLNX, YHOO
+
+Top 5 by Return
+Rank Entry  Mkt Asset                Sell RS  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single none none                    1 100    3  10 3.0 +1297.36% +1446.48% -149.12%  -56.95%   0.66 +59.37%   0.95    763 12.54
+   2 single 1d  ichimoku_cloud+ema_trend    1 100    4  10 3.0 +963.06% +1287.63% -324.57%  -41.20%   0.70 +59.82%   1.07    652  9.32
+   3 single none ichimoku_cloud+ema_trend    1 100    3  10 3.0 +945.02% +1287.63% -342.61%  -46.58%   0.62 +59.57%   0.98    737  9.10
+   4 single 1d  ichimoku_cloud          1 100    3  10 3.0 +935.21% +1446.48% -511.27%  -45.96%   0.66 +59.72%   1.05    504  9.00
+   5 single none ichimoku_cloud          1 100    4  10 3.0 +907.03% +1446.48% -539.45%  -47.43%   0.63 +57.93%   1.07    984  8.71
+
+Top 5 by MDD
+Rank Entry  Mkt Asset                Sell RS  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 triple 1d  ichimoku_cloud+ema_trend    1 100   10   -   - +173.43% +1287.63% -1114.20%  -29.66%   0.45 +51.56%   1.14   2145  1.51
+   2 triple 1d  ichimoku_cloud          1 100   10   -   - +181.65% +1446.48% -1264.83%  -30.88%   0.45 +51.35%   1.15   2185  1.58
+   3 triple 1d  ema_trend               1 100   10   -   - +191.72% +1287.63% -1095.91%  -31.00%   0.47 +51.60%   1.15   2161  1.68
+   4 triple 1d  ichimoku_cloud+ema_trend    1  50   10   -   - +129.81% +1287.63% -1157.82%  -31.17%   0.39 +51.80%   1.12   2197  1.06
+   5 triple 1d  ichimoku_cloud+ema_trend    1 100    9   -   - +221.36% +1287.63% -1066.28%  -31.23%   0.49 +51.72%   1.16   1949  1.98
+
+Top 5 by Sharpe
+Rank Entry  Mkt Asset                Sell RS  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single 1d  ichimoku_cloud+ema_trend    1 100    4  10 3.0 +963.06% +1287.63% -324.57%  -41.20%   0.70 +59.82%   1.07    652  9.32
+   2 single 1d  ichimoku_cloud          1 100    4  10 3.0 +906.64% +1446.48% -539.84%  -44.06%   0.68 +59.58%   1.06    663  8.73
+   3 single none ichimoku_cloud          1 100    7  10 3.0 +856.06% +1446.48% -590.42%  -37.02%   0.67 +57.91%   1.04   1606  8.28
+   4 single 1d  ema_trend               1 100    5  10 3.0 +700.41% +1287.63% -587.22%  -40.00%   0.67 +59.37%   1.08    790  6.70
+   5 single 1d  ichimoku_cloud+ema_trend    1 100    5  10 3.0 +682.23% +1287.63% -605.40%  -40.57%   0.66 +59.73%   1.05    802  6.52
+
+Top 5 by Win Rate
+Rank Entry  Mkt Asset                Sell RS  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single none ichimoku_cloud+ema_trend    1  50    3  10 3.0 +481.41% +1287.63% -806.22%  -66.36%   0.51 +62.84%   0.78    775  4.30
+   2 single none ema_trend               1  50    3  10 3.0 +456.08% +1287.63% -831.55%  -65.12%   0.50 +62.77%   0.78    779  4.05
+   3 single none ichimoku_cloud+ema_trend    1  50    5  10 3.0 +445.85% +1287.63% -841.78%  -51.48%   0.53 +62.77%   0.79   1222  4.06
+   4 single none ema_trend               1  50    5  10 3.0 +443.60% +1287.63% -844.03%  -46.71%   0.53 +62.66%   0.80   1240  4.08
+   5 single 1d  ichimoku_cloud          1  50    3  10 3.0 +447.67% +1329.26% -881.59%  -44.63%   0.51 +62.66%   0.83    557  4.13
+
+Top 5 by Payoff
+Rank Entry  Mkt Asset                Sell RS  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 triple 1d  none                    1 100    6   -   - +361.74% +1446.48% -1084.74%  -38.27%   0.56 +51.41%   1.23   1387  3.33
+   2 triple 1d  ema_trend               1 100    6   -   - +356.09% +1287.63% -931.54%  -36.44%   0.56 +51.50%   1.23   1363  3.29
+   3 triple 1d  ichimoku_cloud+ema_trend    1 100    6   -   - +423.76% +1287.63% -863.87%  -35.14%   0.60 +52.25%   1.23   1353  3.97
+   4 triple 1d  ichimoku_cloud+ema_trend    1 100    7   -   - +241.92% +1287.63% -1045.71%  -36.92%   0.49 +51.07%   1.23   1541  2.14
+   5 triple 1d  none                    1 100    8   -   - +191.49% +1446.48% -1254.99%  -36.39%   0.44 +50.57%   1.22   1766  1.64

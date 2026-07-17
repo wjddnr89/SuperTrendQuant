@@ -10,6 +10,25 @@ ENTRY_COMPONENTS = frozenset({"supertrend", "single_supertrend", "triple_supertr
 EXIT_COMPONENTS = frozenset({"supertrend_flip", "triple_supertrend_flip"})
 MARKET_FILTER_COMPONENTS = frozenset({"benchmark_trend", "market_trend"})
 ASSET_FILTER_COMPONENTS = frozenset({"ichimoku_cloud", "ema_trend"})
+RS_METHOD_ALIASES = {
+    "relative_strength": "relative_strength",
+    "excess": "relative_strength",
+    "excess_rs": "relative_strength",
+    "vol_adjusted": "vol_adjusted_relative_strength",
+    "vol_adjusted_rs": "vol_adjusted_relative_strength",
+    "vol_adjusted_relative_strength": "vol_adjusted_relative_strength",
+    "composite": "composite_relative_strength",
+    "composite_rs": "composite_relative_strength",
+    "composite_relative_strength": "composite_relative_strength",
+    "skip_recent": "skip_recent_relative_strength",
+    "skip_recent_rs": "skip_recent_relative_strength",
+    "skip_1m": "skip_recent_relative_strength",
+    "skip_1m_rs": "skip_recent_relative_strength",
+    "skip_recent_relative_strength": "skip_recent_relative_strength",
+    "beta_adjusted": "beta_adjusted_alpha",
+    "beta_adjusted_alpha": "beta_adjusted_alpha",
+    "dual_momentum": "dual_momentum",
+}
 
 
 def replace_path(instance: Any, path: str, value: Any) -> Any:
@@ -396,10 +415,29 @@ def with_relative_strength(
     config: AppConfig,
     period: int | Mapping[str, int],
 ) -> AppConfig:
+    return with_rs_scoring(config, method="relative_strength", period=period)
+
+
+def with_rs_scoring(
+    config: AppConfig,
+    *,
+    method: str | None = None,
+    period: int | Mapping[str, int] | None = None,
+) -> AppConfig:
+    scoring_type = config.scoring.type
+    if method is not None:
+        raw_method = str(method).strip().lower()
+        try:
+            scoring_type = RS_METHOD_ALIASES[raw_method]
+        except KeyError as exc:
+            raise ValueError(f"Unsupported rs_method: {raw_method}") from exc
+
+    if period is None:
+        period = config.scoring.params.get("lookback_bars", 100)
     if isinstance(period, Mapping):
         values = {str(key).upper(): int(value) for key, value in period.items()}
         if any(value < 1 for value in values.values()):
-            raise ValueError("relative-strength periods must be positive.")
+            raise ValueError("RS periods must be positive.")
         current = config.scoring.params.get("lookback_bars", 100)
         current_default = (
             int(current.get("default", current.get("DEFAULT", current.get("US", 100))))
@@ -411,15 +449,25 @@ def with_relative_strength(
     else:
         default = int(period)
         if default < 1:
-            raise ValueError("relative-strength period must be positive.")
+            raise ValueError("RS period must be positive.")
         lookback = default
     return replace(
         config,
         scoring=replace(
             config.scoring,
-            type="relative_strength",
+            type=scoring_type,
             params={"lookback_bars": lookback},
         ),
+    )
+
+
+def with_rotation_hurdle(config: AppConfig, multiplier: float) -> AppConfig:
+    value = float(multiplier)
+    if value < 0:
+        raise ValueError("rotation hurdle multiplier must be non-negative.")
+    return replace(
+        config,
+        leader_rotation=replace(config.leader_rotation, hurdle_atr_mult=value),
     )
 
 
@@ -500,9 +548,14 @@ def apply_config_overlay(config: AppConfig, overlay: Mapping[str, Any]) -> AppCo
             down_count=down_count,
         )
 
+    rs_method = values.pop("rs_method", values.pop("rs_score", values.pop("scoring_type", None)))
     rs = values.pop("rs_period", values.pop("relative_strength", None))
-    if rs is not None:
-        updated = with_relative_strength(updated, rs)
+    if rs_method is not None or rs is not None:
+        updated = with_rs_scoring(updated, method=rs_method, period=rs)
+
+    hurdle = values.pop("hurdle", values.pop("rotation_hurdle", values.pop("hurdle_atr_mult", None)))
+    if hurdle is not None:
+        updated = with_rotation_hurdle(updated, hurdle)
 
     max_positions = values.pop(
         "max_positions",
@@ -548,6 +601,8 @@ __all__ = [
     "with_max_positions",
     "with_market_filter",
     "with_relative_strength",
+    "with_rotation_hurdle",
+    "with_rs_scoring",
     "with_sell_confirmation",
     "with_single_entry",
     "with_timeframe",

@@ -141,16 +141,29 @@ def _yf_download(
     if not tickers:
         return pd.DataFrame()
     frames: list[pd.DataFrame] = []
+    total_batches = (len(tickers) + batch_size - 1) // batch_size
     for start in range(0, len(tickers), batch_size):
         batch = tickers[start : start + batch_size]
+        print(
+            f"[yfinance] batch {start // batch_size + 1}/{total_batches}: "
+            f"{len(batch)} tickers, period={period}, interval={interval}",
+            flush=True,
+        )
+        download_tickers = batch[0] if len(batch) == 1 else batch
         frame = yf.download(
-            tickers=batch,
+            tickers=download_tickers,
             period=period,
             interval=interval,
             auto_adjust=False,
             progress=False,
-            threads=True,
+            threads=len(batch) > 1,
             group_by="ticker",
+            timeout=30,
+        )
+        print(
+            f"[yfinance] batch {start // batch_size + 1}/{total_batches} done: "
+            f"shape={frame.shape}",
+            flush=True,
         )
         if frame.empty:
             continue

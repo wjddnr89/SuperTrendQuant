@@ -1,0 +1,32 @@
+{
+  "params": {
+    "entry": "single",
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_method": "dual_momentum",
+    "rs_period": 150,
+    "sell_confirm_bars": 5,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0
+  },
+  "fee_rate": 0.001,
+  "slippage_rate": 0.0005,
+  "start": "2010-10-19 00:00:00",
+  "end": "2026-07-17 00:00:00",
+  "metrics": {
+    "total_return": 961.7258388355837,
+    "cagr": 0.5470960440783963,
+    "mdd": -0.5586962091162317,
+    "calmar": 0.9792370793849039,
+    "sharpe": 1.1677167162931574,
+    "sortino": 1.9532589823457518,
+    "win_rate": 0.6993006993006993,
+    "payoff_ratio": 1.4389508946475045,
+    "trade_count": 143
+  },
+  "qqq_return": 12.682212146110261,
+  "alpha": 949.0436266894734,
+  "trade_count": 143
+}

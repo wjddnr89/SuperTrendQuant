@@ -1,0 +1,62 @@
+Nasdaq-100 Daily Optuna Results
+Requested    : start=2010-01-01, period=max
+Objectives   : return,alpha,mdd,sharpe,win_rate,payoff
+Unique rows  : 10
+New backtests: 10
+Cache hits   : 0
+Entries      : single
+Market filter: none,1d
+Asset filters: none,ichimoku_cloud,ichimoku_cloud+ema_trend
+RS methods   : vol_adjusted,composite,skip_recent,beta_adjusted,dual_momentum
+RS periods   : 50,100
+Hurdles      : 1.0,1.25,1.5,2.0
+Sell confirm : 1,2,3,5,8
+Max positions: 3,4,5,6
+
+Top 5 by Return
+Rank Entry  Mkt Asset                RSMethod      Sell RS  Hurd  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single 1d  ichimoku_cloud       dual_momentum    5 100 2.00    5  10 3.0 +1244.33% +1448.11% -203.78%  -37.75%   0.78 +59.97%   1.22    617 12.16
+   2 single 1d  ichimoku_cloud       dual_momentum    5  50 1.00    4  10 3.0 +1176.92% +1330.77% -153.85%  -42.80%   0.71 +63.60%   0.94    684 11.45
+   3 single 1d  ichimoku_cloud+ema_trend vol_adjusted     3 100 2.00    3  10 3.0 +908.92% +1289.10% -380.17%  -33.38%   0.70 +63.15%   0.97    521  8.84
+   4 single none none                 dual_momentum    5 100 1.00    6  10 3.0 +845.13% +1448.11% -602.99%  -49.77%   0.65 +60.06%   1.02   1079  8.07
+   5 single none none                 dual_momentum    5  50 1.00    5  10 3.0 +837.88% +1375.94% -538.06%  -52.47%   0.61 +64.32%   0.81   1096  7.98
+
+Top 5 by Alpha
+Rank Entry  Mkt Asset                RSMethod      Sell RS  Hurd  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single 1d  ichimoku_cloud       dual_momentum    5  50 1.00    4  10 3.0 +1176.92% +1330.77% -153.85%  -42.80%   0.71 +63.60%   0.94    684 11.45
+   2 single 1d  ichimoku_cloud       dual_momentum    5 100 2.00    5  10 3.0 +1244.33% +1448.11% -203.78%  -37.75%   0.78 +59.97%   1.22    617 12.16
+   3 single 1d  ichimoku_cloud+ema_trend vol_adjusted     3 100 2.00    3  10 3.0 +908.92% +1289.10% -380.17%  -33.38%   0.70 +63.15%   0.97    521  8.84
+   4 single none none                 dual_momentum    5  50 1.00    5  10 3.0 +837.88% +1375.94% -538.06%  -52.47%   0.61 +64.32%   0.81   1096  7.98
+   5 single none none                 dual_momentum    5 100 1.00    6  10 3.0 +845.13% +1448.11% -602.99%  -49.77%   0.65 +60.06%   1.02   1079  8.07
+
+Top 5 by MDD
+Rank Entry  Mkt Asset                RSMethod      Sell RS  Hurd  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single 1d  none                 vol_adjusted     3  50 2.00    6  10 3.0 +226.28% +1375.94% -1149.66%  -32.75%   0.46 +62.99%   0.77   1151  2.01
+   2 single 1d  ichimoku_cloud+ema_trend vol_adjusted     3 100 2.00    3  10 3.0 +908.92% +1289.10% -380.17%  -33.38%   0.70 +63.15%   0.97    521  8.84
+   3 single 1d  none                 skip_recent      1 100 2.00    6  10 3.0 +243.28% +1448.11% -1204.83%  -37.28%   0.46 +54.81%   1.05   1133  2.15
+   4 single 1d  ichimoku_cloud       dual_momentum    5 100 2.00    5  10 3.0 +1244.33% +1448.11% -203.78%  -37.75%   0.78 +59.97%   1.22    617 12.16
+   5 single 1d  ichimoku_cloud       dual_momentum    5  50 1.00    4  10 3.0 +1176.92% +1330.77% -153.85%  -42.80%   0.71 +63.60%   0.94    684 11.45
+
+Top 5 by Sharpe
+Rank Entry  Mkt Asset                RSMethod      Sell RS  Hurd  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single 1d  ichimoku_cloud       dual_momentum    5 100 2.00    5  10 3.0 +1244.33% +1448.11% -203.78%  -37.75%   0.78 +59.97%   1.22    617 12.16
+   2 single 1d  ichimoku_cloud       dual_momentum    5  50 1.00    4  10 3.0 +1176.92% +1330.77% -153.85%  -42.80%   0.71 +63.60%   0.94    684 11.45
+   3 single 1d  ichimoku_cloud+ema_trend vol_adjusted     3 100 2.00    3  10 3.0 +908.92% +1289.10% -380.17%  -33.38%   0.70 +63.15%   0.97    521  8.84
+   4 single none none                 dual_momentum    5 100 1.00    6  10 3.0 +845.13% +1448.11% -602.99%  -49.77%   0.65 +60.06%   1.02   1079  8.07
+   5 single none none                 dual_momentum    5  50 1.00    5  10 3.0 +837.88% +1375.94% -538.06%  -52.47%   0.61 +64.32%   0.81   1096  7.98
+
+Top 5 by Win Rate
+Rank Entry  Mkt Asset                RSMethod      Sell RS  Hurd  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single none none                 dual_momentum    5  50 1.00    5  10 3.0 +837.88% +1375.94% -538.06%  -52.47%   0.61 +64.32%   0.81   1096  7.98
+   2 single none ichimoku_cloud       vol_adjusted     3  50 1.00    5  10 3.0 +279.88% +1330.77% -1050.89%  -44.88%   0.46 +64.26%   0.70   1360  2.45
+   3 single 1d  ichimoku_cloud       dual_momentum    5  50 1.00    4  10 3.0 +1176.92% +1330.77% -153.85%  -42.80%   0.71 +63.60%   0.94    684 11.45
+   4 single 1d  ichimoku_cloud+ema_trend vol_adjusted     3 100 2.00    3  10 3.0 +908.92% +1289.10% -380.17%  -33.38%   0.70 +63.15%   0.97    521  8.84
+   5 single 1d  none                 vol_adjusted     3  50 2.00    6  10 3.0 +226.28% +1375.94% -1149.66%  -32.75%   0.46 +62.99%   0.77   1151  2.01
+
+Top 5 by Payoff
+Rank Entry  Mkt Asset                RSMethod      Sell RS  Hurd  Pos STp STm Return      QQQ    Alpha      MDD Sharpe WinRate Payoff Trades Score
+   1 single 1d  ichimoku_cloud       dual_momentum    5 100 2.00    5  10 3.0 +1244.33% +1448.11% -203.78%  -37.75%   0.78 +59.97%   1.22    617 12.16
+   2 single 1d  none                 skip_recent      1 100 2.00    6  10 3.0 +243.28% +1448.11% -1204.83%  -37.28%   0.46 +54.81%   1.05   1133  2.15
+   3 single none none                 dual_momentum    5 100 1.00    6  10 3.0 +845.13% +1448.11% -602.99%  -49.77%   0.65 +60.06%   1.02   1079  8.07
+   4 single 1d  ichimoku_cloud+ema_trend vol_adjusted     3 100 2.00    3  10 3.0 +908.92% +1289.10% -380.17%  -33.38%   0.70 +63.15%   0.97    521  8.84
+   5 single 1d  ichimoku_cloud       dual_momentum    5  50 1.00    4  10 3.0 +1176.92% +1330.77% -153.85%  -42.80%   0.71 +63.60%   0.94    684 11.45

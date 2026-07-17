@@ -7,7 +7,7 @@ name: research_us_nasdaq100_rolling
 market: US
 universe:
   source: history_file
-  history_file: unified_quant/data/universes/nasdaq100_quarterly_history.json
+  history_file: data/universes/nasdaq100_quarterly_history.json
   refresh: daily
   snapshot_dir: state/universes
 
@@ -19,7 +19,7 @@ capital:
   initial_cash: 10000
 
 costs:
-  fee_rate: 0.00225
+  fee_rate: 0.001
   slippage_rate: 0.0005
 
 execution:

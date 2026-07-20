@@ -350,6 +350,19 @@ class LocalDatasetRepository:
             return pd.DataFrame(columns=dataset_spec(dataset).required_columns)
         frame = pd.concat((pd.read_parquet(path) for path in paths), ignore_index=True)
         spec = dataset_spec(dataset)
+        # PyArrow reconstructs Hive directory keys such as ``year`` and ``month``
+        # when a Parquet file lives below ``year=.../month=...``.  Those keys are
+        # derived storage metadata, not logical dataset columns.  Letting them
+        # escape from the repository makes a read -> rewrite depend on inferred
+        # categorical dtypes from every partition and can fail during Parquet
+        # conversion when old versions contain a different inferred dtype.
+        derived_partitions = [
+            column
+            for column in spec.partition_columns
+            if column in frame.columns and column not in spec.required_columns
+        ]
+        if derived_partitions:
+            frame = frame.drop(columns=derived_partitions)
         return frame.drop_duplicates(list(spec.primary_key), keep="last").reset_index(drop=True)
 
     def compact(self, dataset: str, *, completed_session: str | None = None) -> DatasetWriteResult:

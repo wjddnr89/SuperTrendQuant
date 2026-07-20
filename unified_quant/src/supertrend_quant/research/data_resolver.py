@@ -38,9 +38,25 @@ def data_request_key(config: AppConfig) -> tuple[object, ...]:
 def download_for_config(config: AppConfig) -> MarketData:
     ensure_configured_data_ready(config)
     resolved = resolve_universe(config, mode="research")
+    symbols = list(resolved.eligible_symbols)
+    if resolved.schedule:
+        from ..runners import _configured_completed_session, _schedule_for_period
+
+        relevant_schedule = _schedule_for_period(
+            resolved.schedule,
+            config.period,
+            _configured_completed_session(config),
+        )
+        symbols = list(
+            dict.fromkeys(
+                member.symbol
+                for entry in relevant_schedule
+                for member in entry.members
+            )
+        )
     return load_configured_market_data(
         config,
-        list(resolved.eligible_symbols),
+        symbols,
         resolved_universe=resolved,
     )
 

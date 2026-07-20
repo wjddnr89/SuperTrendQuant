@@ -9,6 +9,7 @@ DEFAULT_TRIPLE_SUPERTREND_SETTINGS: tuple[tuple[int, float], ...] = (
     (11, 2.0),
     (12, 3.0),
 )
+IDENTITY_SEGMENT_COLUMN = "IdentitySegment"
 
 
 def true_range(df: pd.DataFrame) -> pd.Series:
@@ -49,6 +50,17 @@ def calculate_supertrend(
     multiplier: float = 3.0,
     atr_method: str = "wilder",
 ) -> pd.DataFrame:
+    segmented = _per_identity_segment(
+        df,
+        lambda piece: calculate_supertrend(
+            piece,
+            period=period,
+            multiplier=multiplier,
+            atr_method=atr_method,
+        ),
+    )
+    if segmented is not None:
+        return segmented
     df = df.copy()
     if df.empty:
         return df
@@ -110,6 +122,17 @@ def add_triple_supertrend(
     keys.  Keeping the function config-free makes it usable by both the live
     strategy runtime and research workflows.
     """
+    segmented = _per_identity_segment(
+        df,
+        lambda piece: add_triple_supertrend(
+            piece,
+            settings=settings,
+            atr_method=atr_method,
+            exit_down_count=exit_down_count,
+        ),
+    )
+    if segmented is not None:
+        return segmented
     normalized = _normalize_triple_settings(settings)
     down_count = int(exit_down_count)
     if down_count < 1 or down_count > len(normalized):
@@ -155,6 +178,18 @@ def add_ichimoku(
     shift: int = 26,
 ) -> pd.DataFrame:
     """Return a copy with Ichimoku values and long/short cloud states."""
+    segmented = _per_identity_segment(
+        df,
+        lambda piece: add_ichimoku(
+            piece,
+            tenkan=tenkan,
+            kijun=kijun,
+            span_b=span_b,
+            shift=shift,
+        ),
+    )
+    if segmented is not None:
+        return segmented
     tenkan = _positive_period(tenkan, "tenkan")
     kijun = _positive_period(kijun, "kijun")
     span_b = _positive_period(span_b, "span_b")
@@ -194,6 +229,12 @@ def calculate_ichimoku(
 
 def add_ema_trend(df: pd.DataFrame, period: int = 200) -> pd.DataFrame:
     """Return a copy with an EMA and a close-above-EMA long filter."""
+    segmented = _per_identity_segment(
+        df,
+        lambda piece: add_ema_trend(piece, period=period),
+    )
+    if segmented is not None:
+        return segmented
     period = _positive_period(period, "period")
     out = df.copy()
     out["EMA"] = out["Close"].ewm(span=period, adjust=False).mean()
@@ -204,6 +245,22 @@ def add_ema_trend(df: pd.DataFrame, period: int = 200) -> pd.DataFrame:
 def calculate_ema_trend(df: pd.DataFrame, period: int = 200) -> pd.DataFrame:
     """Descriptive alias for :func:`add_ema_trend`."""
     return add_ema_trend(df, period)
+
+
+def _per_identity_segment(df: pd.DataFrame, calculator):
+    """Calculate stateful features independently for reused-ticker issuers."""
+
+    if IDENTITY_SEGMENT_COLUMN not in df:
+        return None
+    segments = df[IDENTITY_SEGMENT_COLUMN]
+    if segments.nunique(dropna=False) <= 1:
+        return None
+    output = []
+    for segment, piece in df.groupby(IDENTITY_SEGMENT_COLUMN, sort=False, dropna=False):
+        calculated = calculator(piece.drop(columns=[IDENTITY_SEGMENT_COLUMN]))
+        calculated[IDENTITY_SEGMENT_COLUMN] = segment
+        output.append(calculated)
+    return pd.concat(output).sort_index()
 
 
 def _normalize_triple_settings(settings) -> tuple[tuple[int, float], ...]:

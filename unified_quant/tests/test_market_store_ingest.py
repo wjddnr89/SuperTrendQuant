@@ -1,19 +1,43 @@
 from __future__ import annotations
 
+import json
+import multiprocessing
 import tempfile
 import unittest
+from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 
 from supertrend_quant.market_store.ingest import (
     DailyDataSynchronizer,
+    EodhdCallBudget,
+    EodhdClient,
+    EodhdDailySource,
+    EodhdQuotaExceeded,
     SecNasdaqSecurityMasterSource,
     SecuritySourceResult,
     SourceArtifact,
     YahooFetchResult,
 )
 from supertrend_quant.market_store.repository import LocalDatasetRepository
+
+
+def _claim_budget_in_process(state_path: str, start_event, result_queue) -> None:
+    try:
+        if not start_event.wait(timeout=10):
+            raise RuntimeError("budget test start event timed out")
+        used = EodhdCallBudget(
+            state_path,
+            limit=100,
+            reserve=1,
+            seed_used=0,
+            period="2026-07-18",
+        ).claim()
+        result_queue.put(("ok", used))
+    except BaseException as exc:
+        result_queue.put(("error", f"{type(exc).__name__}: {exc}"))
 
 
 class _Response:
@@ -170,6 +194,174 @@ class DailySynchronizerTest(unittest.TestCase):
             self.assertEqual(prior.iloc[0]["split_factor"], 0.5)
             self.assertTrue((Path(directory) / "archives").exists())
             self.assertIsNotNone(repository.current_manifest("source_archive"))
+
+
+class _EodhdClient:
+    def __init__(self):
+        self.endpoints = []
+
+    def get_json(self, endpoint, *, params=None):
+        self.endpoints.append(endpoint)
+        if endpoint.startswith("eod/"):
+            return [
+                {
+                    "date": "2020-08-31",
+                    "open": 127.58,
+                    "high": 131.0,
+                    "low": 126.0,
+                    "close": 129.04,
+                    "adjusted_close": 125.0,
+                    "volume": 225702700,
+                }
+            ]
+        if endpoint.startswith("div/"):
+            return [
+                {
+                    "date": "2020-08-07",
+                    "unadjustedValue": 0.82,
+                    "currency": "USD",
+                    "declarationDate": "2020-07-30",
+                    "recordDate": "2020-08-10",
+                    "paymentDate": "2020-08-13",
+                }
+            ]
+        return [{"date": "2020-08-31", "split": "4.000000/1.000000"}]
+
+    def safe_url(self, endpoint, *, params=None):
+        return f"https://eodhd.test/{endpoint}"
+
+
+class EodhdDailySourceTest(unittest.TestCase):
+    def test_raw_prices_dividends_and_splits_are_normalized(self):
+        client = _EodhdClient()
+        result = EodhdDailySource(client, workers=1).fetch(
+            {"SEC-A": "AAPL.US"},
+            start="2020-08-01",
+            end="2020-09-10",
+        )
+
+        self.assertEqual(result.prices.iloc[0]["close"], 129.04)
+        self.assertNotIn("adjusted_close", result.prices)
+        actions = result.corporate_actions.set_index("action_type")
+        self.assertEqual(actions.loc["cash_dividend", "cash_amount"], 0.82)
+        self.assertEqual(actions.loc["split", "ratio"], 4.0)
+        self.assertTrue(all("api_token" not in item.source_url for item in result.artifacts))
+
+    def test_action_symbol_override_keeps_price_and_actions_on_distinct_tickers(self):
+        client = _EodhdClient()
+        EodhdDailySource(
+            client,
+            workers=1,
+            action_symbol_overrides={"SEC-PEAK": "PEAK.US"},
+        ).fetch(
+            {"SEC-PEAK": "DOC.US"},
+            start="2021-01-01",
+            end="2021-12-31",
+        )
+
+        self.assertEqual(
+            client.endpoints,
+            ["eod/DOC.US", "div/PEAK.US", "splits/PEAK.US"],
+        )
+
+
+class EodhdCallBudgetTest(unittest.TestCase):
+    def test_default_budget_period_uses_utc_date(self):
+        class _UtcBoundaryDatetime:
+            @classmethod
+            def now(cls, timezone):
+                self.assertIs(timezone, UTC)
+                return datetime(2026, 7, 18, 17, 30, tzinfo=UTC)
+
+        with tempfile.TemporaryDirectory() as directory, patch(
+            "supertrend_quant.market_store.ingest.datetime",
+            _UtcBoundaryDatetime,
+        ):
+            budget = EodhdCallBudget(Path(directory) / "budget.json")
+
+        self.assertEqual(budget.period, "2026-07-18")
+
+    def test_persistent_budget_counts_attempts_and_blocks_before_ceiling(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state_path = Path(directory) / "budget.json"
+            session = _Session([_JsonResponse([])])
+            budget = EodhdCallBudget(
+                state_path,
+                limit=3,
+                reserve=1,
+                seed_used=1,
+                period="2026-07-18",
+            )
+            client = EodhdClient(session, token="test-token", budget=budget)
+
+            self.assertEqual(client.get_json("eod/AAA.US"), [])
+            with self.assertRaises(EodhdQuotaExceeded):
+                client.get_json("eod/BBB.US")
+
+            persisted = EodhdCallBudget(
+                state_path,
+                limit=3,
+                reserve=1,
+                period="2026-07-18",
+            )
+            with self.assertRaises(EodhdQuotaExceeded):
+                persisted.claim()
+
+    def test_persistent_budget_refuses_corrupt_current_period_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state_path = Path(directory) / "budget.json"
+            state_path.write_text("{not-json", encoding="utf-8")
+            budget = EodhdCallBudget(
+                state_path,
+                limit=100,
+                reserve=5,
+                seed_used=10,
+                period="2026-07-18",
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "state is unreadable"):
+                budget.claim()
+
+            self.assertEqual(state_path.read_text(encoding="utf-8"), "{not-json")
+
+    def test_persistent_budget_serializes_claims_across_processes(self):
+        if "fork" not in multiprocessing.get_all_start_methods():
+            self.skipTest("cross-process budget test requires the POSIX fork method")
+        with tempfile.TemporaryDirectory() as directory:
+            state_path = Path(directory) / "budget.json"
+            context = multiprocessing.get_context("fork")
+            start_event = context.Event()
+            result_queue = context.Queue()
+            processes = [
+                context.Process(
+                    target=_claim_budget_in_process,
+                    args=(str(state_path), start_event, result_queue),
+                )
+                for _ in range(12)
+            ]
+            for process in processes:
+                process.start()
+            start_event.set()
+            for process in processes:
+                process.join(timeout=15)
+                self.assertFalse(process.is_alive())
+                self.assertEqual(process.exitcode, 0)
+
+            results = [result_queue.get(timeout=5) for _ in processes]
+            self.assertEqual([status for status, _ in results], ["ok"] * 12)
+            self.assertEqual(sorted(value for _, value in results), list(range(1, 13)))
+            persisted = json.loads(state_path.read_text(encoding="utf-8"))
+            self.assertEqual(persisted["used"], 12)
+
+class _JsonResponse:
+    def __init__(self, value):
+        self.value = value
+
+    def raise_for_status(self):
+        return None
+
+    def json(self):
+        return self.value
 
 
 if __name__ == "__main__":

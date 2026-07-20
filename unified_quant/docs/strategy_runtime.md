@@ -54,9 +54,32 @@ Runtime files define:
 - point-in-time index events, a compatibility profile union, a manual
   `universe.json`, or explicit symbols;
 - timeframe and download period;
-- Parquet/Yahoo provider, price adjustment mode, cache, and optional R2 settings;
 - capital, costs, and broker;
 - paper/live state and result locations.
+
+The shared `configs/data.yaml` defines:
+
+- Parquet provider and local cache;
+- price adjustment and corporate-action policy;
+- validation/source policy;
+- optional R2 bucket and prefix. Publication is restricted to the dedicated
+  strict publisher.
+
+`quant-data` reads this file directly and therefore does not require a strategy
+or runtime:
+
+```bash
+uv run quant-data status
+uv run quant-data sync
+uv run quant-data --data-config path/to/data.yaml validate
+
+# Offline publication readiness; this never accesses R2 or EODHD.
+PYTHONPATH=unified_quant/src .venv/bin/python \
+  unified_quant/scripts/publish_and_verify_r2.py --preflight-only
+```
+
+The same data YAML keeps a `market_overrides.KR` Yahoo compatibility setting
+until the versioned Parquet contracts are implemented for Korea.
 
 Available index profiles are `nasdaq100`, `sp500`, `dow30`, `kospi200`, and
 `kosdaq150`, plus `russell3000`. US profiles map their ETF benchmark to `QQQ`,
@@ -91,7 +114,8 @@ index-import, R2/CAS, and compaction workflows.
 
 ## Research promotion
 
-Grid search and Optuna load the same YAML pair as the normal backtest. They
+Grid search and Optuna load the same strategy/runtime pair and shared data YAML
+as the normal backtest. They
 evaluate train/validation/test segments and report stable market and
 equal-weight benchmarks. The selected strategy YAML should be re-run with
 `quant-backtest`, then with `quant-paper`, before changing only the runtime to

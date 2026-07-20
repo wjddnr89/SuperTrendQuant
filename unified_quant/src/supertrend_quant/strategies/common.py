@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bisect import bisect_right
 from collections.abc import Mapping
 from typing import Any
 
@@ -178,6 +179,8 @@ def scheduled_prepared_slice(
     signal_ts,
     account: AccountSnapshot,
     universe_schedule: tuple[Mapping[str, Any], ...],
+    *,
+    tail_bars: int | None = None,
 ) -> dict[str, pd.DataFrame]:
     active = active_universe_symbols(universe_schedule, signal_ts)
     allowed = None if active is None else active | set(account.positions)
@@ -186,10 +189,14 @@ def scheduled_prepared_slice(
         if allowed is not None and symbol not in allowed:
             continue
         try:
-            selected = frame.loc[:signal_ts]
-        except TypeError:
+            position = int(frame.index.searchsorted(pd.Timestamp(signal_ts), side="right"))
+            start = 0 if tail_bars is None else max(0, position - max(1, tail_bars))
+            selected = frame.iloc[start:position]
+        except (TypeError, ValueError):
             signal_date = pd.Timestamp(signal_ts).date()
             selected = frame.loc[[pd.Timestamp(idx).date() <= signal_date for idx in frame.index]]
+            if tail_bars is not None:
+                selected = selected.tail(max(1, tail_bars))
         if not selected.empty:
             sliced[symbol] = selected
     return sliced
@@ -202,16 +209,24 @@ def active_universe_symbols(
     if not universe_schedule:
         return None
     signal_date = pd.Timestamp(signal_ts).date()
-    selected: set[str] = set()
-    for entry in sorted(universe_schedule, key=lambda item: str(item.get("effective_date", ""))):
-        try:
-            effective_date = pd.Timestamp(entry["effective_date"]).date()
-        except Exception:
-            continue
-        if effective_date > signal_date:
-            break
-        selected = _entry_symbols(entry)
-    return selected
+    cache_key = id(universe_schedule)
+    cached = _ACTIVE_UNIVERSE_CACHE.get(cache_key)
+    if cached is None or cached[0] is not universe_schedule:
+        compiled = []
+        for entry in sorted(
+            universe_schedule, key=lambda item: str(item.get("effective_date", ""))
+        ):
+            try:
+                effective_date = pd.Timestamp(entry["effective_date"]).date()
+            except Exception:
+                continue
+            compiled.append((effective_date, frozenset(_entry_symbols(entry))))
+        dates = tuple(item[0] for item in compiled)
+        symbol_sets = tuple(item[1] for item in compiled)
+        cached = (universe_schedule, dates, symbol_sets)
+        _ACTIVE_UNIVERSE_CACHE[cache_key] = cached
+    position = bisect_right(cached[1], signal_date) - 1
+    return set() if position < 0 else set(cached[2][position])
 
 
 def _entry_symbols(entry: Mapping[str, Any]) -> set[str]:
@@ -226,3 +241,11 @@ def _entry_symbols(entry: Mapping[str, Any]) -> set[str]:
             if isinstance(member, Mapping) and member.get("symbol")
         }
     return set()
+_ACTIVE_UNIVERSE_CACHE: dict[
+    int,
+    tuple[
+        tuple[Mapping[str, Any], ...],
+        tuple[object, ...],
+        tuple[frozenset[str], ...],
+    ],
+] = {}

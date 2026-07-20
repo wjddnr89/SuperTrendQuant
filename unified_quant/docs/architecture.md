@@ -8,12 +8,12 @@ mode may change data delivery or order execution, but it must not reimplement
 strategy decisions.
 
 ```text
-strategy YAML + runtime YAML
-             |
-             v
-         AppConfig
-             |
-             v
+strategy YAML + runtime YAML + shared data YAML
+                    |
+                    v
+                AppConfig
+                    |
+                    v
     Strategy registry/create
              |
       market data + account
@@ -42,7 +42,7 @@ path automatically.
 
 ## Package responsibilities
 
-- `config`: compose strategy/runtime YAML into `AppConfig` and reject invalid components.
+- `config`: compose strategy/runtime/shared-data YAML into `AppConfig` and reject invalid components.
 - `indicators`: SuperTrend, Triple SuperTrend, Ichimoku, EMA, and ATR calculations.
 - `ranking`: scorer protocol and registry, benchmark-relative scoring, and deterministic symbol ranking.
 - `universe`: stable-ID index-event replay, compatibility profiles/snapshots, and exit-only membership.
@@ -54,7 +54,7 @@ path automatically.
 - `brokers`: paper-state execution and Toss API execution.
 - `paper_runtime` / `live_runtime`: scheduling, data freshness, persistence, guards, and notifications.
 - `results`: backtest/paper artifacts and comparison reports.
-- `cli`: strategy/runtime commands plus `quant-data` storage administration.
+- `cli`: strategy/runtime/shared-data commands plus standalone `quant-data` storage administration.
 
 ## Extension points
 
@@ -62,7 +62,8 @@ A new strategy implements the strategy protocol, declares a unique
 `strategy_type`, and registers itself. Engines and runtimes resolve it through
 the registry; they do not dispatch with strategy-name conditionals. Strategy
 configuration remains under the strategy YAML, while runtime-only concerns
-remain in runtime YAML.
+remain in runtime YAML. Shared storage, validation, and R2 concerns remain in
+`configs/data.yaml`.
 
 New entry, filter, or exit components must have one parameter schema and one
 calculation path shared by research and operational modes. Adding a component
@@ -87,7 +88,7 @@ historical coverage gap blocks the entire paper/live strategy plan.
 
 Research timeframes are resolved through a config-keyed `MarketDataCache`; a
 fixed data bundle is rejected if a candidate changes its timeframe or filter
-data requirements. Selected configs are emitted as strict strategy/runtime
+data requirements. Selected configs are emitted as strict strategy/runtime/data
 YAML and reloaded through the same parser before printing or saving.
 Grid candidates and Optuna trials evaluate validation only; full
 overall/train/validation/test reports and benchmarks are created after a winner

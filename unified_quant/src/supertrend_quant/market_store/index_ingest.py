@@ -9,9 +9,9 @@ import pandas as pd
 
 from .manifest import sha256_bytes, utc_now_iso, write_atomic
 from .models import DataQuality
+from .operational_validation import validate_operational_repository_snapshot
 from .repository import DatasetWriteResult, LocalDatasetRepository
 from .schemas import DATASET_SPECS
-from .validation import validate_repository_snapshot
 
 
 @dataclass(frozen=True)
@@ -344,7 +344,7 @@ class IndexDataImporter:
             )
         if archive_result.conflict:
             raise RuntimeError(f"Index source archive was quarantined: {archive_result.conflict_path}")
-        report = validate_repository_snapshot(self.repository)
+        report = validate_operational_repository_snapshot(self.repository)
         report.raise_for_errors()
         current_release, _ = self.repository.current_release()
         completed_session = max(

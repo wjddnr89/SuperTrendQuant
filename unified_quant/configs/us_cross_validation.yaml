@@ -1,0 +1,2562 @@
+schema_version: 6
+
+provider:
+  name: yahoo_chart
+  endpoint_template: "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+  max_http_attempts: 400
+  max_attempts_per_target: 1
+  retry_count: 0
+  timeout_seconds: 30
+  max_response_bytes: 52428800
+  access_class: personal_use_only_unofficial_keyless_json
+  repository_visibility: private
+  r2_visibility: private
+  redistribution_allowed: false
+  use_restriction: >-
+    Yahoo chart data is permitted here only for the owner's personal,
+    non-commercial use. The repository and R2 bucket must remain private and
+    cached responses or derived Yahoo data must not be redistributed.
+  stability_note: >-
+    Yahoo's chart endpoint is unofficial and has no API SLA. One-attempt
+    collection and immutable exact-byte raw response caches are mandatory.
+
+events:
+  action_types:
+    - cash_merger
+    - stock_merger
+    - spinoff
+    - ticker_change
+    - delisting
+  official_hosts:
+    - sec.gov
+  # Intermediate identity/ticker actions are not terminal lifecycle candidates,
+  # so they do not have lifecycle-finalizer report records.  They must still be
+  # backed by an exact archived payload from one of these reviewed official
+  # sources and by an explicitly accepted provenance kind.
+  official_provenance_hosts:
+    - sec.gov
+    - spglobal.com
+    - investor.ovintiv.com
+    - investors.qvcgrp.com
+  official_provenance_source_kinds:
+    - official_crosscheck
+    - official_filing
+    - official_filing_exit_mark
+    - official_issuer_plus_sec_crosscheck
+    - official_issuer_market_transition
+  # Terminal actions are still required to match the lifecycle report one to
+  # one.  Both the collector's normalized crosscheck rows and an original SEC
+  # filing row are valid provenance when the URL/hash archive binding is exact.
+  terminal_official_source_kinds:
+    - official_crosscheck
+    - official_filing
+  # NTCO/NTCOY is deliberately not authorized through the broad host/source
+  # allowlists above.  These are the only two transition event IDs eligible
+  # for the separately code-pinned OCC/Cboe/BNY evidence path.
+  reviewed_ntco_transition_event_ids:
+    - 0bd231d216016d33c8d6eb1ec9bb85450a21b9298c4abda34a3399727e9b2c00
+    - d1eeadf8f4779212ff4b3162af1731bf7bfc804c10756cc4bb8074c307e1f746
+  # Event-local semantic gates for the 18 terminal rows audited after the
+  # lifecycle finalizer.  Each hash covers a normalized action, applied
+  # resolution, report row or exact archive-row list; the aggregate report SHA
+  # is therefore release binding but never sufficient on its own.
+  reviewed_terminal_event_gates:
+    - event_id: 350bb85a7395ef9272e5f2867afdd4e523c99c258752120977ec1f35e36a2c8a
+      candidate_id: 76a94b17cf5b10aed59bf7e924b1df483e3fcab9a628db9b220d8b22b269278c
+      security_id: US:EODHD:faece1b7-4b1a-5c1f-951b-b1178ed57161
+      symbol: ABMD
+      policy_code: abmd_nontradeable_cvr_lower_bound/v1
+      action_sha256: 66850fb028d4bd00f9244f4533e195362df400c8b76af6ffa8a250a706caa30a
+      resolution_sha256: 20ce8728305a4e642d27985baae2b474875199039acbd1580ad4d9d6fdb2afdf
+      report_semantic_sha256: 68e387df7431a2b1a99db32aeacc94fbb47fa5c1f46e7f1f0e60826b5355544c
+      archive_ids: [f98bc807432739e4f2447ffbc6a70f7651bd8982b901989fc31dcffaa56ec593]
+      archive_binding_sha256: 17abcc3831144f72dbd55daecf7a36cadf92e5ce45a50d8dddf6287a1d440f7a
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 50f8bfb2bb620c136dd9f3ce8699d049d5c394f3b2a447cb316019f55f6351f7
+      candidate_id: 253fc09bd15169d966e577c988220b366d95e36a851a7ce7eca91dd83123937c
+      security_id: US:EODHD:6637f59f-7ea0-5273-9fcb-9f48277650c2
+      symbol: ALXN
+      policy_code: terminal_close_before_legal_completion/v1
+      action_sha256: d527ce70216fb3d9c0118d32a545e456629f9596d6624279443afaeec30e916c
+      resolution_sha256: a6e7ed5e960eef3b253655e618b43666aad528030ddb28a26ac65c9a552ca56d
+      report_semantic_sha256: 1e4933b40bbc80aee3ee2bd4c3d139c3be4290be4be3d848e479d80574c2584b
+      archive_ids: [1bce4c27938a9fc3f8702e67b6360a1a1b3f7934927dd8d93ee832e2c9813264]
+      archive_binding_sha256: 8f8e8410803c79c2076e6724fa4378a5ead14ac226bf13351665415cef679187
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 825ea0640b20da42dcfa1c516ff921f272b0fd0a0fd4020de509674832391806
+      candidate_id: c0b08e4292606de3101f8de3234555743a348ae99ded84fdfbce3d7900e88339
+      security_id: US:EODHD:529d8af8-043b-542e-8eeb-e8651009a2a8
+      symbol: AVP
+      policy_code: legal_completion_before_market_transition_missing_report_successor/v1
+      action_sha256: 769173b0d59825f52fa37fa713139bd2371a7b1650ea924f6842459f1f6fb348
+      resolution_sha256: 126bc66a3e06c6fe2f9596c19e78b3f442f8930237fc8c04fac132ac2daf699d
+      report_semantic_sha256: a010550b9fe59c3fd235ecb64b5e4364de4a84d4b1b423ea96762fe2f3cc9271
+      archive_ids: [12ca5855e19d9c0c0542f393964ef1e9ee0b1f831c26296f389f143d4bad42a4]
+      archive_binding_sha256: 86c44015d44930e49c20415b9eab07cee22afac506574e7f2ee5c26da772b055
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 8bf08a94b34187174e451f5f9ec549ba9a4f15f9d658005e9a3bc10d45820131
+      candidate_id: 452fb15d393f705344b18b1e37795287ed287b29c5f88ac7e1222ab8ec6cb491
+      security_id: US:EODHD:1974e939-3149-5663-91d4-ef44b2761282
+      symbol: BMYRT
+      policy_code: bmyrt_official_exit_mark/v1
+      action_sha256: 2e6dc7be13384fa6ea755663780a7167314e8c20839be6529c8402db6ca0ead1
+      resolution_sha256: 2a622d4bf6a30a3c87f28661df8feb32429dbce93dd4d339260cff91c91bdc38
+      report_semantic_sha256: d2d441b0a7854b60700f78de249901844963722a2749e63e66d3a3a3d23faa39
+      archive_ids: [a86e198381d31eacf1fd4b17e93e7a09c8b7f191c1941bec43467729b4f8b055]
+      archive_binding_sha256: 4b743955b9de17db3da673c9874711377fdefd58b60a1a9265d559d3243b49cf
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: cb355a88e767bd5f557350ddf9c13f1b324da6e8f96c622a2e1f8eeea01fa36a
+      candidate_id: dcaad5c3a8565d37f4d045db599f64c56e21a4cd7897aa6fb574e69a023120f1
+      security_id: US:EODHD:0337dd23-67ad-5354-b972-50babd1ae5a0
+      symbol: CELG
+      policy_code: celg_next_session_cvr_delivery/v1
+      action_sha256: cb6b572808ef4719db147e90db244ee41e315f37d3b9a19e4654f91b36213c3e
+      resolution_sha256: 4387bda9adbd7c863e029736c603b3d43d12a911fb19ad42c312a4a3ac8c17d4
+      report_semantic_sha256: 1164f18fde5fe689eda0ab9bdb1c668c1b4d39bb957944e441cef8ff1b21cbf7
+      archive_ids: [157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211]
+      archive_binding_sha256: aa9d43730048562373be3afa60b8b413340c1f6c75f0d9fbf93b11bcb098e397
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 162dee2832998354021e79efcafa8a915d3c2f0744b939c5f570c93deb2f1a55
+      candidate_id: f326b63d0229f68816a663f468e1723b8925db58b8f21607cb3b16e72cfb531c
+      security_id: US:EODHD:b32ce08e-4158-5aea-b7ba-6175e716fa41
+      symbol: CXO
+      policy_code: provider_tail_market_transition/v1
+      action_sha256: c5a337e4b40e45041a14545b5503e9ef1bb75ad1aa033b71f297cde44e0e2865
+      resolution_sha256: e18d723feeb37b89966f0b42d0235c385cc4e6b03c018e1c43d1ee90c8728087
+      report_semantic_sha256: c541789d5e9e191a1db9c3c20343f3a186fac872d97bda707a0971fe209fa8ee
+      archive_ids: [65047e754c1838fd1c5cee20d03d8941ee6990540b5b2307beb2e9f8839bcc9e]
+      archive_binding_sha256: 67aac23d12c08bf1c6c59d9e54c2eaa0c1ba9fabf51a617fe1717d201686d871
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 7b987d3143d81db664d272eabe464941bcf22c05b0cae715662741ea0a304636
+      candidate_id: 4e0da9479e57fd1a6fffa1976f1bd9aa4247a86d5254998845eab10fc339f06b
+      security_id: US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd
+      symbol: ECA
+      policy_code: eca_dual_provenance/v1
+      action_sha256: 010f944c2589e12c44768b461ad37422b5e7fc54ee8406c66625ee8031131033
+      resolution_sha256: 3048eecaef448a795b234b56b0bb5ea395ac0069af07fe4987f7b2d26ce71b6b
+      report_semantic_sha256: a61ddf155b0847a9618eba8c06ab2f5d1546469c63e269edf6595fc6f06cd380
+      archive_ids:
+        - 3958dc0304e1449a9fd3e33d538877eddd70053c897b61e0fb6666555e05967c
+        - 5550528f1a63b94d35e6880c9c046756a64390f6675a65e2bf728dc560166474
+        - 58d199861b620211b63c846e3184baf1ff7982adb124e085c5f726e2fd06af59
+      archive_binding_sha256: 4a2874dc6fe85e0bbf5d5d4485aba287edf5d513f3bd97eeb66af5df53bc7460
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 2093c4a169a10534ac01ff370ec37aaf240cf6a26bc32c9c0746b89cbe8281d9
+      candidate_id: 3aacbaa34e19afb5ae6668b6fa4618bfbbda3e4d733a7fb5d66e5fbe22f04605
+      security_id: US:EODHD:7b14f17c-6c95-5b75-9e84-86ed9d20f5e3
+      symbol: HRS
+      policy_code: terminal_close_before_legal_completion/v1
+      action_sha256: f225e371b61572491ba858f11b47c03ed90919c272b89db6bb5718c0ca652bf9
+      resolution_sha256: 4a9099da75f3d40a1e30605ba3e2d590e0d6654b84d009519f9f650af41a42d5
+      report_semantic_sha256: d0a11b7f2a26cb9cb367c5d8410b9a81fa1a23d31619c6b6ba8c662de88db486
+      archive_ids: [65c7c2925d6d5f671185c1ae3cd9c99806ec14eae86e84758152f677d4f5aa29]
+      archive_binding_sha256: 2608e173d1b4075065c539a2f908517b8bd10b0e01870db8156e88bf09e39f17
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 39caca00fbedb7b23e8b5294cdf3bdc5aba9014f98bf72b6a6da341602651192
+      candidate_id: 8afeca7c8f24b790e6b2f234254597ae076e1d6e3d35dcd0f41299e56642e9f6
+      security_id: US:EODHD:e3b28684-f48e-582a-8836-b2f5579f2dd2
+      symbol: KRFT
+      policy_code: legal_completion_before_market_transition/v1
+      action_sha256: 50f963cb7c55c7321a95cfd5e71f557b78987344844b2816284f788f21ad41c2
+      resolution_sha256: 1f7170c66c4149b321f96d199ab92c5ae460d6b0c31ef77a9d4d7c2ea5803ae3
+      report_semantic_sha256: e523706824672a6ec20e361af39ae4d855fcadd9b6b67f416cfd85cc85f852cf
+      archive_ids: [ba6d15da235a1f5f6a186fb7b9e52b7b438c25cf76d4f28d9fac81953b7fc299]
+      archive_binding_sha256: d29207b81f8ddf89a678fb38fa385223284ae5db23d5414967ea09bbdf74a2c8
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 42934ff153b211e42af214f866f5bc4e9e6b9a020168b5a6488030a9e929b8af
+      candidate_id: f31d2e43f52e4378ed9cbe10c2f11a11f93d83049e39277c84131b538f47594e
+      security_id: US:EODHD:e91da1be-75dc-5919-9464-fa580892871a
+      symbol: LLL
+      policy_code: terminal_close_before_legal_completion/v1
+      action_sha256: b969fe69cc1e0466b875d9e6e0237f951ab2f3c64a7e90c35180b6ddce5a4ee1
+      resolution_sha256: 7c10da18902a8c037bfafe41aaf7af744b329f8ce5c63a2f5fbac2f2cacff0a0
+      report_semantic_sha256: f5a69b366b95f0372c43bc8f8dce467fc8963f0b1a86ef465b23450c82107974
+      archive_ids: [65c7c2925d6d5f671185c1ae3cd9c99806ec14eae86e84758152f677d4f5aa29]
+      archive_binding_sha256: 2608e173d1b4075065c539a2f908517b8bd10b0e01870db8156e88bf09e39f17
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: dd616ed974225aa84c3b537b9d21ce2a27e13a1f5af8c7e2488b765a007cac31
+      candidate_id: ac20b7b59563fe0b7f96a244092df17a3c5de3188d75144ff1c46cfa4ccb7955
+      security_id: US:EODHD:3dd6d6ce-e7a1-5078-b258-df5b18404c9d
+      symbol: NBL
+      policy_code: provider_tail_market_transition/v1
+      action_sha256: f8acd73950ce8e927d5d6b6ed841fb636031a66cc69cb604d95ac5ff694d01e2
+      resolution_sha256: ca9ddc101db2062248d6fb025aac397daa5fb232d584ce0c43501da6c8f982a9
+      report_semantic_sha256: fd44de67b16db83154551b6b49145156d6b183e4cf6af7d0cb9bb071496275df
+      archive_ids: [fe5554317c372cb8fe924762d304049d0605b2f335ac4a3641bf2c22945ddffc]
+      archive_binding_sha256: 9c39785106dbee502b78eb1f82df64dd33e37ab3186b165e8327b2f49bc5acd4
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: d82975bc819ca47d10c7b2e2ca963422629980682933a4ee13b355fe564e6344
+      candidate_id: 777f53ec86359bd2c6a62c385d4c1aac6bd432cf9e9c9633b4362ed49a3f54c2
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      symbol: NLOK
+      policy_code: provider_tail_market_transition/v1
+      action_sha256: 588aae601d538fe2f207fc452a2cffe152f30a4f9af67609b6af53214e7a35bc
+      resolution_sha256: 55e1bc9523b5d2c257187177c025ec1db234c8a42bc58b498fe5603d3465784b
+      report_semantic_sha256: 88875cd5cbd43749610c5dcd44c50372d3d9c0e0bd1f79463f624d911afb5af4
+      archive_ids: [a4732aaa030033aebda1d508bed1742e237694dc97fdb1a71f9af02f20d95d83]
+      archive_binding_sha256: d6111bc5377b4643874ff5fbe46dadc397e022cccb8e263a89a8647b4b7b28c2
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 2aa7c18ca6ac8f0e4680a7e5456a04ba2f401fabfb2cc7dc0a5326e298f71176
+      candidate_id: 4a4091e9f1adb59e12e4c1418588ea83c38b7110d94ba0295f3e0a3ddb2542b4
+      security_id: US:EODHD:99eac7c1-6892-5b3a-bf4b-bc8143e3bfe2
+      symbol: NLSN
+      policy_code: provider_tail_market_transition/v1
+      action_sha256: e235c4db44f259f0598588e2ab215493cfdcc055197478267f83d85401c07e6a
+      resolution_sha256: 2f115f8b9adddd207f8874893a52823e22a2c6bdb84e170d429d89376efbd1e8
+      report_semantic_sha256: e2035a688c9791b63b1f7a1a7bb7287376142d030ec4d8b5795c85abb26de26a
+      archive_ids: [893b9f658c505f40fa304c7b18c89fd7ade6d29a6dcd166590181fae4d8e11fd]
+      archive_binding_sha256: 222d5f379ecb44d807d3fd8b2ba08dc04dcb080e3491ad322bb5b65aa91d8b66
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: f553d393e8bda37561276fec20d5b9bce5f722609e466e96bc9e199c624891c1
+      candidate_id: 22590705691d87ce58407ff1748c94c2ede7747b095b2925e34d87dd36327dee
+      security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      symbol: PARA
+      policy_code: para_no_election_default_stock/v1
+      action_sha256: 3c387f130755b46cc95e7eaad710b2b5e63df400f4c5204a170acab054787cde
+      resolution_sha256: 78b2a8049fa0499eb6f350671e7e6018fe606ec24e041eb86584656a91b8f3fa
+      report_semantic_sha256: 832cc55ecf1d851cd92845267ac3b6953d31e26943c673e0799c0c6243d9b2a7
+      archive_ids: [61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be]
+      archive_binding_sha256: 9337c0bf484edd28b373c0a17e16b17152458c9b0111cee876341bf39da36138
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: f8cbecc851776e882ac85872972ac5c1680a672138276c1a9301d532c2d8ad3f
+      candidate_id: ecc7e3f3b03853a8370f40c979ad08d8167989f6a83f7c9a68d09a308a3b2e16
+      security_id: US:EODHD:181d58e2-2b82-5f5d-8c33-311c5d7b5129
+      symbol: SIVBQ
+      policy_code: sivbq_verified_legal_cancellation/v1
+      action_sha256: 721274b48e16a14ff4484ed6362ae4529dcc016bc01b0cfe38518ac43ee40f13
+      resolution_sha256: 9d0c228f153445a6868239c01b04845600da7a810bb65e64a6c4b15debdda038
+      report_semantic_sha256: 08b6bf11a7e95ed31bc9799ee8a00af3135618db9cbbdcccd47b6e58c502f152
+      archive_ids: [14371aef1566bfdcda9ca3171b1ced46d095adf34d899a8bde6d8e038d68e231]
+      archive_binding_sha256: f9f0b5aa856a8d7d6be19e91e7654fc5435025dc336c09d7756cdefc4c123fa1
+      hint_key: US:EODHD:181d58e2-2b82-5f5d-8c33-311c5d7b5129|2024-11-07
+      hint_sha256: dae74522a600950af68155614be762e2c091dce2e6191fe7c0ffc31e42ba9273
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 25bce725b19ce21cebac0fa09351a30e5b89479256f7d1ed25f9218b557754c4
+      candidate_id: 98d3b9997c6c9cab63831a97574cb9126c7db0cfeff661b447755caa60d3d97c
+      security_id: US:EODHD:c24f6a80-3a51-56f7-9c55-68916e553fad
+      symbol: WFM
+      policy_code: direct_report_exact/v1
+      action_sha256: 8b54138c234ba0037828d4ddab617f2cad56321e26f1709ae1eadb588571b573
+      resolution_sha256: acfa3a8bab3143e0f1be31b7ed8908c7ddd0a9f6b973dfc944695d33647dd49e
+      report_semantic_sha256: ce5403b8c0cab7cf95c385afe1d34ae76703f4c14ab6e8ec4bf2396d390342ee
+      archive_ids: [6e0bf4ec75189e50acd6594d2fd2e676a6ea4b4fe5a876dc38794133074bd152]
+      archive_binding_sha256: 0d48956aadf109e2b27340461db3ca1f256aba87054bcd690378fd4d137f5d3c
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: 5607a776f99741c085a54e45eddc90282d7d7fe5fe86a3b8cab2350bb7188ca7
+      candidate_id: 93d51e30eff9d6edf166c175d59a20421be00dc3790335712bd1e3ef758a08db
+      security_id: US:EODHD:597fd8aa-aa0e-5109-b7f4-8f9781e5e9a9
+      symbol: XLNX
+      policy_code: provider_tail_market_transition/v1
+      action_sha256: 99ff9df40b278436298ff358bc9e67c0ee9dab42e6995b54fa4f792ebc0c7681
+      resolution_sha256: 0e3725669958d4f9b91f85e1141088ea00d3175757a2fdab07628a73f579ca7f
+      report_semantic_sha256: b82ca86711f499eaa0f2014dce54d2fe25552dea253045df13f6914ecda54094
+      archive_ids: [f3fccce84370f2606849a031af574d221dcaed59f283533bff74ae83084bddc1]
+      archive_binding_sha256: 62b8acfb6d48c309fe5bee0c780d55b5330e7c9ecdadb214a186c5de4f1e5189
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    - event_id: ea791beeaa569aaf19b1df04e59df3710d45382cd70e5d82078d7247286272c6
+      candidate_id: 85ae0eb05557268955665853205bf4e684f1cc7317d4d6921e739aacebcfdfd2
+      security_id: US:EODHD:1dfb343a-9d83-5f7b-b683-bdf884111979
+      symbol: YHOO
+      policy_code: legal_completion_before_market_transition/v1
+      action_sha256: 17fb60af777eefede530ed19475acbfd3a967e195e1589c3366862daec5d834e
+      resolution_sha256: 13dcd8583d4f7d9178a6db639be7e64956795137af1c5e7ac357f0cc36c4c446
+      report_semantic_sha256: a2b31763fc267664e263d7917561589c31b80d88f00a7434b65bb588495ea2f4
+      archive_ids:
+        - 274d98161c66f9480a4825eae722974405fffe2e3a0b73091d22f1a9acb07ca9
+        - 58dff3a89b875bcc45982e5df928c3f981eb02cd42809880a69be3da531b6726
+      archive_binding_sha256: 7b375982c50490d35f1f64e5fbcbd4009f30400815182046c11303d8318c2c3d
+      hint_key: ""
+      hint_sha256: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+  # These two SEC-exact one-for-one replacements are allowed to override only
+  # the collector's terminal price-deviation heuristic.  The validator still
+  # requires the action, parsed report date/terms/source, archive URL/hash, and
+  # every field below to agree exactly.  The full inventory is code pinned.
+  reviewed_terminal_overrides:
+    - event_id: 52e8663611264e84d2b91d4c2eb5fd8346f001086987649d097950a420e66c05
+      security_id: US:EODHD:5c946c06-0214-5b7b-8e7c-31f91485a215
+      action_type: stock_merger
+      effective_date: "2018-01-02"
+      new_security_id: US:EODHD:1b6b9beb-42b0-5a06-81f3-23a49627565f
+      new_symbol: LILA
+      ratio: 1.0
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm"
+      source_hash: 0efad7b02b77a0daefab021c58fdbbb40f03955f069f42eac3e24d403f2813e4
+    - event_id: 94b7da742aa70fd546532862fdab23dd9bcc15b0c48efb7efdbde1f66d378630
+      security_id: US:EODHD:24bfb026-6327-5e04-9e32-15589dcb45ba
+      action_type: stock_merger
+      effective_date: "2018-01-02"
+      new_security_id: US:EODHD:7fda02a3-10dd-51a3-96cb-41695fcff341
+      new_symbol: LILAK
+      ratio: 1.0
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm"
+      source_hash: 0efad7b02b77a0daefab021c58fdbbb40f03955f069f42eac3e24d403f2813e4
+  # Separate from the LILA/LILAK raw-price heuristic exceptions.  These rows
+  # distinguish a legal/report date from the first market session on which the
+  # terminal transition is executable.  Every old/new event ID, candidate,
+  # legal/market date, action/report SEC URL+SHA pair, term and XNYS relation is
+  # exact and the complete inventory is independently code pinned.
+  reviewed_terminal_market_date_corrections:
+    - event_id: 39caca00fbedb7b23e8b5294cdf3bdc5aba9014f98bf72b6a6da341602651192
+      superseded_event_id: c3209167d547d7e8379cb316ec4910ea62d1c1d28679f137a80364fe876e9b7c
+      candidate_id: 8afeca7c8f24b790e6b2f234254597ae076e1d6e3d35dcd0f41299e56642e9f6
+      security_id: US:EODHD:e3b28684-f48e-582a-8836-b2f5579f2dd2
+      symbol: KRFT
+      action_type: stock_merger
+      report_effective_date: "2015-07-02"
+      official_completion_date: "2015-07-02"
+      effective_date: "2015-07-06"
+      ex_date: "2015-07-06"
+      announcement_date: "2015-07-02"
+      payment_date: ""
+      last_price_date: "2015-07-02"
+      date_relation: first_successor_trading_session_after_terminal_close
+      allowed_report_mismatches: [effective_date]
+      new_security_id: US:EODHD:a060087d-109e-58e9-91f9-b4c398a3d415
+      new_symbol: KHC
+      ratio: 1.0
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/1637459/000119312515244356/0001193125-15-244356.txt"
+      source_hash: ba6d15da235a1f5f6a186fb7b9e52b7b438c25cf76d4f28d9fac81953b7fc299
+      report_source_url: "https://www.sec.gov/Archives/edgar/data/1637459/000119312515244356/0001193125-15-244356.txt"
+      report_source_hash: ba6d15da235a1f5f6a186fb7b9e52b7b438c25cf76d4f28d9fac81953b7fc299
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+      filing_accession_number: 0001193125-15-244356
+      filing_date: "2015-07-02"
+    - event_id: ea791beeaa569aaf19b1df04e59df3710d45382cd70e5d82078d7247286272c6
+      superseded_event_id: b31525699f142a6ed8995b71d86b8480e19e54446ccb0694960296f753ad2be6
+      candidate_id: 85ae0eb05557268955665853205bf4e684f1cc7317d4d6921e739aacebcfdfd2
+      security_id: US:EODHD:1dfb343a-9d83-5f7b-b683-bdf884111979
+      symbol: YHOO
+      action_type: ticker_change
+      report_effective_date: "2017-06-13"
+      official_completion_date: "2017-06-16"
+      effective_date: "2017-06-19"
+      ex_date: "2017-06-19"
+      announcement_date: "2017-06-19"
+      payment_date: ""
+      last_price_date: "2017-06-16"
+      date_relation: first_successor_trading_session_after_terminal_close
+      allowed_report_mismatches: [effective_date, source_hash, source_url]
+      new_security_id: US:EODHD:9b1bbdaa-839c-5d59-8bda-99b2087022e6
+      new_symbol: AABA
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/1011006/000119312517206955/0001193125-17-206955.txt"
+      source_hash: 274d98161c66f9480a4825eae722974405fffe2e3a0b73091d22f1a9acb07ca9
+      report_source_url: "https://www.sec.gov/Archives/edgar/data/1011006/000119312517241304/0001193125-17-241304.txt"
+      report_source_hash: 58dff3a89b875bcc45982e5df928c3f981eb02cd42809880a69be3da531b6726
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+      filing_accession_number: 0001193125-17-241304
+      filing_date: "2017-07-31"
+    - event_id: 951960822646a8f972002508d162bd37a3ab3aaec42349fbff37caa1919b7b51
+      superseded_event_id: 51ffb3cf286e69bdcc2d66a6945a33cc8cc3deb41661920b5ab4a7fa7b327f36
+      candidate_id: 2a6ac318cc5c6e6c42b4788a75c400278ac09cc59abab518aff6ca44bb2b8512
+      security_id: US:EODHD:7623d5d2-1c3d-595f-8e96-408208fc7d37
+      symbol: KORS
+      action_type: ticker_change
+      report_effective_date: "2018-12-31"
+      official_completion_date: "2018-12-31"
+      effective_date: "2019-01-02"
+      ex_date: "2019-01-02"
+      announcement_date: "2018-12-31"
+      payment_date: ""
+      last_price_date: "2018-12-31"
+      date_relation: next_xnys_session_after_terminal_close
+      allowed_report_mismatches: [effective_date]
+      new_security_id: US:EODHD:27f39ea8-f202-53a2-83bf-41a211b5f3d9
+      new_symbol: CPRI
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/1530721/000119312518362322/0001193125-18-362322.txt"
+      source_hash: ff4732e714524028c56a66c96e6ac8c50a401a36a4a46037cb80b01bb8454d25
+      report_source_url: "https://www.sec.gov/Archives/edgar/data/1530721/000119312518362322/0001193125-18-362322.txt"
+      report_source_hash: ff4732e714524028c56a66c96e6ac8c50a401a36a4a46037cb80b01bb8454d25
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+      filing_accession_number: 0001193125-18-362322
+      filing_date: "2018-12-31"
+  # Exact terminal policies for consideration/date semantics the generic
+  # lifecycle parser cannot represent.  Each row binds the stored action,
+  # resolution, archived SEC evidence, parsed report drift and release warning.
+  reviewed_terminal_policy_exceptions:
+    - event_id: 350bb85a7395ef9272e5f2867afdd4e523c99c258752120977ec1f35e36a2c8a
+      security_id: US:EODHD:faece1b7-4b1a-5c1f-951b-b1178ed57161
+      action_type: cash_merger
+      effective_date: "2022-12-22"
+      new_security_id: ""
+      new_symbol: ""
+      ratio: null
+      cash_amount: 380.0
+      currency: USD
+      source_kind: official_lower_bound_policy
+      source_url: "https://www.sec.gov/Archives/edgar/data/815094/000119312522311074/0001193125-22-311074.txt"
+      source_hash: f98bc807432739e4f2447ffbc6a70f7651bd8982b901989fc31dcffaa56ec593
+      candidate_id: 76a94b17cf5b10aed59bf7e924b1df483e3fcab9a628db9b220d8b22b269278c
+      symbol: ABMD
+      last_price_date: "2022-12-21"
+      ex_date: "2022-12-22"
+      announcement_date: "2022-11-01"
+      payment_date: "2022-12-22"
+      action_metadata_sha256: d96a0c9ce94d676ea228ac2f0dc6fae86b638a5992666a3d3670b4cd7edb4f4b
+      report_effective_date: "2022-12-22"
+      report_action_type: cash_merger
+      report_new_symbol: ""
+      report_ratio: null
+      report_cash_amount: 35.0
+      report_source_url: "https://www.sec.gov/Archives/edgar/data/200406/000119312522311072/0001193125-22-311072.txt"
+      report_source_hash: 2ee8f9067eb842d175b082b80f143cfa77d99a4df037310818b3d441a5a2bdcb
+      report_candidate_active_to: "2022-12-21"
+      report_manual_review_reason: >-
+        Consideration included $380 cash plus a contingent value right worth up
+        to $35, which the action schema cannot represent.
+      report_crosscheck_passed: false
+      report_crosscheck_date_passed: true
+      report_crosscheck_economic_terms_passed: false
+      allowed_report_mismatches: [cash_amount, source_hash, source_url]
+      policy_code: abmd_nontradeable_cvr_lower_bound/v1
+      required_release_warning: >-
+        ABMD 2022-12-22 merger models only the guaranteed $380/share cash leg;
+        one non-tradeable CVR per share (up to $35 contingent cash) is marked at
+        $0 under the as-of-2026-07-15 lower-bound policy, so returns may be
+        understated; J&J still reported about $0.4bn of aggregate ABMD CVR
+        liability at 2025 year-end, so $0 is not a fair-value estimate.
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+      filing_accession_number: 0001193125-22-311072
+      filing_date: "2022-12-22"
+    - event_id: cb355a88e767bd5f557350ddf9c13f1b324da6e8f96c622a2e1f8eeea01fa36a
+      security_id: US:EODHD:0337dd23-67ad-5354-b972-50babd1ae5a0
+      action_type: stock_merger
+      effective_date: "2019-11-21"
+      new_security_id: US:EODHD:25d16784-a5a9-5eee-bf6e-81519b64ef0b
+      new_symbol: BMY
+      ratio: 1.0
+      cash_amount: 50.0
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt"
+      source_hash: 157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211
+      candidate_id: dcaad5c3a8565d37f4d045db599f64c56e21a4cd7897aa6fb574e69a023120f1
+      symbol: CELG
+      last_price_date: "2019-11-20"
+      ex_date: "2019-11-21"
+      announcement_date: "2019-11-20"
+      payment_date: "2019-11-21"
+      action_metadata_sha256: 861767e544cda076ffc7544b79acb91b57d6c81e109cd9e062b4a88ad410156d
+      report_effective_date: "2019-11-20"
+      report_action_type: stock_merger
+      report_new_symbol: BMY
+      report_ratio: 1.0
+      report_cash_amount: 50.0
+      report_source_url: "https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt"
+      report_source_hash: 157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211
+      report_candidate_active_to: "2019-11-20"
+      report_manual_review_reason: >-
+        Consideration included a separately tradable contingent value right not
+        represented by the action schema.
+      report_crosscheck_passed: true
+      report_crosscheck_date_passed: true
+      report_crosscheck_economic_terms_passed: true
+      allowed_report_mismatches: [effective_date]
+      policy_code: celg_next_session_cvr_delivery/v1
+      required_release_warning: >-
+        CELG/BMYRT official_exit_mark uses only the hash-pinned BMY 2020 10-K
+        first-trade close of USD 2.30 as a retrospective first-session close exit
+        mark for a non-index child, with cash available next session; the
+        2019-11-21..2020-12-31 280-session trading path is unsupported.
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+      filing_accession_number: 0001140361-19-021048
+      filing_date: "2019-11-20"
+    - event_id: f553d393e8bda37561276fec20d5b9bce5f722609e466e96bc9e199c624891c1
+      security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      action_type: stock_merger
+      effective_date: "2025-08-07"
+      new_security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      new_symbol: PSKY
+      ratio: 1.0
+      cash_amount: null
+      currency: USD
+      source_kind: sec_filing_default_stock_policy
+      source_url: "https://www.sec.gov/Archives/edgar/data/813828/000119312525175027/0001193125-25-175027.txt"
+      source_hash: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+      candidate_id: 22590705691d87ce58407ff1748c94c2ede7747b095b2925e34d87dd36327dee
+      symbol: PARA
+      last_price_date: "2025-08-06"
+      ex_date: "2025-08-07"
+      announcement_date: "2025-08-07"
+      payment_date: ""
+      action_metadata_sha256: d572fb834301574fb9c00c69b8e7427c66037dc0e996fea6adec200b8cd0bcb6
+      report_effective_date: "2025-08-06"
+      report_action_type: stock_merger
+      report_new_symbol: PSKY
+      report_ratio: 1.0
+      report_cash_amount: 15.0
+      report_source_url: "https://www.sec.gov/Archives/edgar/data/813828/000119312525175027/0001193125-25-175027.txt"
+      report_source_hash: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+      report_candidate_active_to: "2025-08-07"
+      report_manual_review_reason: >-
+        Shareholder election and proration made the $15 cash and one-share
+        alternatives mutually exclusive, not additive.
+      report_crosscheck_passed: false
+      report_crosscheck_date_passed: true
+      report_crosscheck_economic_terms_passed: false
+      allowed_report_mismatches: [cash_amount, effective_date]
+      policy_code: para_no_election_default_stock/v1
+      required_release_warning: ""
+      lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+      filing_accession_number: 0001193125-25-175027
+      filing_date: "2025-08-07"
+  # Exact provider-tail removals from the reviewed long- and short-tail repair
+  # planners. Publication rehashes the raw EOD/SEC artifacts, removed rows,
+  # old report candidate, corrected release rows and planner-specific manifest
+  # lineage.
+  reviewed_terminal_price_tail_corrections:
+    - symbol: NBL
+      security_id: US:EODHD:3dd6d6ce-e7a1-5078-b258-df5b18404c9d
+      old_candidate_id: c2f14e962e176ec48993b81250c074de0a22f5ba0b38a666a494e8654a907c32
+      candidate_id: ac20b7b59563fe0b7f96a244092df17a3c5de3188d75144ff1c46cfa4ccb7955
+      old_event_id: dd616ed974225aa84c3b537b9d21ce2a27e13a1f5af8c7e2488b765a007cac31
+      event_id: dd616ed974225aa84c3b537b9d21ce2a27e13a1f5af8c7e2488b765a007cac31
+      action_type: stock_merger
+      report_candidate_active_to: "2020-10-16"
+      report_candidate_last_price_date: "2020-10-16"
+      report_crosscheck_old_price_session: "2020-10-05"
+      report_effective_date: "2020-10-05"
+      official_completion_date: "2020-10-05"
+      last_real_session: "2020-10-02"
+      market_transition_session: "2020-10-05"
+      date_relation: next_xnys_session_after_terminal_close
+      new_security_id: US:EODHD:fe5efe55-952b-5929-9eb0-f61c469314e8
+      new_symbol: CVX
+      ratio: 0.1191
+      cash_amount: null
+      raw_source_url: "https://eodhd.com/api/eod/NBL.US?from=2015-01-01&to=2026-07-15"
+      raw_source_hash: f468258431303cd0278595d4457bac8af8e741cb2737cea142f28f1e25d5c5da
+      raw_source_bytes: 168139
+      removed_tail_start: "2020-10-05"
+      removed_tail_end: "2020-10-16"
+      removed_tail_count: 10
+      removed_tail_sha256: 43174e67dc9c4faedd3eb34b645f5f394c8dc83f264dfc0697525fc1661dc5ff
+      official_source_url: "https://www.sec.gov/Archives/edgar/data/72207/000119312520263378/0001193125-20-263378.txt"
+      official_source_hash: fe5554317c372cb8fe924762d304049d0605b2f335ac4a3641bf2c22945ddffc
+      official_source_bytes: 277498
+      filing_accession_number: 0001193125-20-263378
+      filing_acceptance_datetime: "20201005084839"
+      successor_source_hash: 60bf38eef9fd9c22d5d7fcde27c65a64794a426af67cce7e35c35304485cd4a9
+      index_removals_observed:
+        - index_id: sp500
+          effective_date: "2020-10-12"
+      lifecycle_evidence_report_sha256: 109813ac49e2be1b05cce11b9f042ae0cf5f23d6c317006ed1a168007768b4f9
+      registry_item_sha256: cf20c6d20008728ce01087d6e0a57307dafb37279ec5b6da5ccd1715266b0935
+    - symbol: XLNX
+      security_id: US:EODHD:597fd8aa-aa0e-5109-b7f4-8f9781e5e9a9
+      old_candidate_id: f73ff16a040088b4d9c5fc9df9c220bc19eb0a458d41f6b9fbfad0c1df00ef9a
+      candidate_id: 93d51e30eff9d6edf166c175d59a20421be00dc3790335712bd1e3ef758a08db
+      old_event_id: 5607a776f99741c085a54e45eddc90282d7d7fe5fe86a3b8cab2350bb7188ca7
+      event_id: 5607a776f99741c085a54e45eddc90282d7d7fe5fe86a3b8cab2350bb7188ca7
+      action_type: stock_merger
+      report_candidate_active_to: "2022-02-16"
+      report_candidate_last_price_date: "2022-02-16"
+      report_crosscheck_old_price_session: "2022-02-14"
+      report_effective_date: "2022-02-14"
+      official_completion_date: "2022-02-14"
+      last_real_session: "2022-02-11"
+      market_transition_session: "2022-02-14"
+      date_relation: next_xnys_session_after_terminal_close
+      new_security_id: US:EODHD:18d4628a-052b-5aba-a4e7-a620d1bd07c7
+      new_symbol: AMD
+      ratio: 1.7234
+      cash_amount: null
+      raw_source_url: "https://eodhd.com/api/eod/XLNX.US?from=2015-01-01&to=2026-07-15"
+      raw_source_hash: 5e23869bd317191de08bc0fb9c021b9cac03d1a1c0bc2d9e0d93f090888b1fb3
+      raw_source_bytes: 210148
+      removed_tail_start: "2022-02-14"
+      removed_tail_end: "2022-02-16"
+      removed_tail_count: 3
+      removed_tail_sha256: a77056ceded0f8213430f8943774378ec591c47f7efd5236b410acdade52b0ac
+      official_source_url: "https://www.sec.gov/Archives/edgar/data/2488/000000248822000031/0000002488-22-000031.txt"
+      official_source_hash: f3fccce84370f2606849a031af574d221dcaed59f283533bff74ae83084bddc1
+      official_source_bytes: 431982
+      filing_accession_number: 0000002488-22-000031
+      filing_acceptance_datetime: "20220214084109"
+      successor_source_hash: 54782a1e3ea8e551f0774a2b3034d1e5d360324874da50d41e45218a2ba2e66b
+      index_removals_observed:
+        - index_id: sp500
+          effective_date: "2022-02-15"
+        - index_id: nasdaq100
+          effective_date: "2022-02-22"
+      lifecycle_evidence_report_sha256: 109813ac49e2be1b05cce11b9f042ae0cf5f23d6c317006ed1a168007768b4f9
+      registry_item_sha256: ade981aee3d27830db606abbcc8751dbeadca945909a6ab8864f61d8fa4ea494
+    - symbol: CXO
+      security_id: US:EODHD:b32ce08e-4158-5aea-b7ba-6175e716fa41
+      old_candidate_id: 3346f9b460655bf4f5dd8405f0b24d23e905456274d5f7f0f24b9723705d2b88
+      candidate_id: f326b63d0229f68816a663f468e1723b8925db58b8f21607cb3b16e72cfb531c
+      old_event_id: db752821ea192e7c3ea7ebc90f02f8474b017b053d52334cb0cca7e6a803396b
+      event_id: 162dee2832998354021e79efcafa8a915d3c2f0744b939c5f570c93deb2f1a55
+      action_type: stock_merger
+      report_candidate_active_to: "2021-01-19"
+      report_candidate_last_price_date: "2021-01-19"
+      report_crosscheck_old_price_session: "2021-01-15"
+      report_effective_date: "2021-01-15"
+      official_completion_date: "2021-01-15"
+      last_real_session: "2021-01-15"
+      market_transition_session: "2021-01-19"
+      date_relation: next_xnys_session_after_terminal_close
+      new_security_id: US:EODHD:cfbc7973-3e6d-5334-a29f-7d0d83693ae0
+      new_symbol: COP
+      ratio: 1.46
+      cash_amount: null
+      raw_source_url: "https://eodhd.com/api/eod/CXO.US?from=2015-01-01&to=2026-07-15"
+      raw_source_hash: 59e7e2843948065b50ced2daf2012cab37061643a03e0929426b7507997a64bb
+      raw_source_bytes: 180668
+      removed_tail_start: "2021-01-19"
+      removed_tail_end: "2021-01-19"
+      removed_tail_count: 1
+      removed_tail_sha256: d50b081e7df7a511ac7a3ec685191b6e3c9af09927502da9a045cbfd999bfe17
+      official_source_url: "https://www.sec.gov/Archives/edgar/data/1163165/000110465921004775/0001104659-21-004775.txt"
+      official_source_hash: 65047e754c1838fd1c5cee20d03d8941ee6990540b5b2307beb2e9f8839bcc9e
+      official_source_bytes: 316992
+      filing_accession_number: 0001104659-21-004775
+      filing_acceptance_datetime: "20210115165006"
+      successor_source_hash: 4d0dd5898022ca5c32fb548c86be65c6d5ff115e5a7e4532a7ecedafc224841a
+      index_removals_observed:
+        - index_id: sp500
+          effective_date: "2021-01-21"
+      lifecycle_evidence_report_sha256: 109813ac49e2be1b05cce11b9f042ae0cf5f23d6c317006ed1a168007768b4f9
+      registry_item_sha256: dc86494b744ec882e1b15093c70d20d8c19f3dbe07769f682156c4911989870e
+    - symbol: NLSN
+      security_id: US:EODHD:99eac7c1-6892-5b3a-bf4b-bc8143e3bfe2
+      old_candidate_id: fecbb5633630dd39cda2b8bf9d5a3d5e9b4b1c3d7962538da588ab1fc9adf211
+      candidate_id: 4a4091e9f1adb59e12e4c1418588ea83c38b7110d94ba0295f3e0a3ddb2542b4
+      old_event_id: 0079876b484ced964d0395f5427978616ac571d778a8eff54a42c994cc459177
+      event_id: 2aa7c18ca6ac8f0e4680a7e5456a04ba2f401fabfb2cc7dc0a5326e298f71176
+      action_type: cash_merger
+      report_candidate_active_to: "2022-10-12"
+      report_candidate_last_price_date: "2022-10-12"
+      report_crosscheck_old_price_session: "2022-10-11"
+      report_effective_date: "2022-10-11"
+      official_completion_date: "2022-10-11"
+      last_real_session: "2022-10-11"
+      market_transition_session: "2022-10-12"
+      date_relation: next_xnys_session_after_terminal_close
+      new_security_id: ""
+      new_symbol: ""
+      ratio: null
+      cash_amount: 28.0
+      raw_source_url: "https://eodhd.com/api/eod/NLSN.US?from=2015-01-01&to=2026-07-15"
+      raw_source_hash: ff96ad118e42dc2c9dbebfe9d113a2424cb49ca21ff65a08cfd861e52f45c343
+      raw_source_bytes: 226517
+      removed_tail_start: "2022-10-12"
+      removed_tail_end: "2022-10-12"
+      removed_tail_count: 1
+      removed_tail_sha256: 569ff775a5e106f67c7f6efd5b48980a07e10fb8b1402bf663031a90614880d7
+      official_source_url: "https://www.sec.gov/Archives/edgar/data/1492633/000119312522260583/0001193125-22-260583.txt"
+      official_source_hash: 893b9f658c505f40fa304c7b18c89fd7ade6d29a6dcd166590181fae4d8e11fd
+      official_source_bytes: 985757
+      filing_accession_number: 0001193125-22-260583
+      filing_acceptance_datetime: "20221011160209"
+      successor_source_hash: ""
+      index_removals_observed:
+        - index_id: sp500
+          effective_date: "2022-10-12"
+      lifecycle_evidence_report_sha256: f5bc93126819503178cfb26a420173a06b63807bbb4ed9158f46cf6668c99390
+      registry_item_sha256: 04085a383c865698d47daf546907221a74ee364f6bb7ae80c4fd4aae13c26949
+    - symbol: NLOK
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      old_candidate_id: ded9b9f5f78cf788136a21b8b5899614d546208e4c7cf33eba64e66a4fd654a2
+      candidate_id: 777f53ec86359bd2c6a62c385d4c1aac6bd432cf9e9c9633b4362ed49a3f54c2
+      old_event_id: 002f1c86383d22157a2bfc5602decaf3880b85300a2c410ba1c84608eb43b967
+      event_id: d82975bc819ca47d10c7b2e2ca963422629980682933a4ee13b355fe564e6344
+      action_type: ticker_change
+      report_candidate_active_to: "2022-11-10"
+      report_candidate_last_price_date: "2022-11-10"
+      report_crosscheck_old_price_session: "2022-11-07"
+      report_effective_date: "2022-11-07"
+      official_completion_date: "2022-11-07"
+      last_real_session: "2022-11-07"
+      market_transition_session: "2022-11-08"
+      date_relation: next_xnys_session_after_terminal_close
+      new_security_id: US:EODHD:cb0b8e57-3e09-542c-adf8-fe2c98d97b55
+      new_symbol: GEN
+      ratio: null
+      cash_amount: null
+      raw_source_url: "https://eodhd.com/api/eod/NLOK.US?from=2015-01-01&to=2026-07-15"
+      raw_source_hash: 4935d389ce3dd31477c0906d12a9b8eda3e67332ec14bc715d57c6ce7a313d4a
+      raw_source_bytes: 229114
+      removed_tail_start: "2022-11-08"
+      removed_tail_end: "2022-11-10"
+      removed_tail_count: 3
+      removed_tail_sha256: 064cd8ca20688dc8ad310f40a02900a9fc21093d94f7cc01b47465147fc984ff
+      official_source_url: "https://www.sec.gov/Archives/edgar/data/849399/000110465922115277/0001104659-22-115277.txt"
+      official_source_hash: a4732aaa030033aebda1d508bed1742e237694dc97fdb1a71f9af02f20d95d83
+      official_source_bytes: 467634
+      filing_accession_number: 0001104659-22-115277
+      filing_acceptance_datetime: "20221107123441"
+      successor_source_hash: 94bc6e419cd9d30a5f494641d83a136d68f31ccb337daf6632189ef5c153eef5
+      index_removals_observed:
+        - index_id: nasdaq100
+          effective_date: "2019-12-23"
+        - index_id: sp500
+          effective_date: "2022-11-08"
+      lifecycle_evidence_report_sha256: f5bc93126819503178cfb26a420173a06b63807bbb4ed9158f46cf6668c99390
+      registry_item_sha256: 967afa24a4a30c7d6c1fffce2aa66837bc69da1c3dc4c66c61aeed0074c36085
+  # Manually reviewed, exact extractions for identity/lifecycle actions that
+  # may remain nonterminal after the lifecycle finalizer runs.  Publication
+  # compares every field below with corporate_actions and rehashes the named
+  # official artifact.  A new nonterminal event is blocked until its exact
+  # extraction is added here; URL/host/field-presence checks alone never pass.
+  reviewed_nonterminal_extractions:
+    - event_id: 2e36f74e4385480194f46c225fef943b6f55918823a749bcdf6b25e94608d12c
+      security_id: US:EODHD:9f13974d-7f81-5aac-a3a7-ed1d184bd76b
+      action_type: stock_merger
+      effective_date: "2015-03-17"
+      new_security_id: US:EODHD:79ce1c42-8ff6-5c13-b9cf-3df82c913734
+      new_symbol: ACT
+      ratio: 0.3683
+      cash_amount: 129.22
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/850693/000119312515096184/d894643d8k.htm"
+      source_hash: aa68d1a454bce099ded3bd54f982fdba31f9b70e97199591a08577bc2b6dfd0e
+    - event_id: e6768339a53c5aad1b2e882ac192bbaa8d0b1981a744b1585ff71c4d494aa2ad
+      security_id: US:EODHD:79ce1c42-8ff6-5c13-b9cf-3df82c913734
+      action_type: ticker_change
+      effective_date: "2015-06-15"
+      new_security_id: US:EODHD:79ce1c42-8ff6-5c13-b9cf-3df82c913734
+      new_symbol: AGN
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/850693/000119312515096184/d894643d8k.htm"
+      source_hash: aa68d1a454bce099ded3bd54f982fdba31f9b70e97199591a08577bc2b6dfd0e
+    - event_id: b0e9eed0c1d996817a757f9584dad0f04fdf2b1325817ee68d1cb8eeeac8e284
+      security_id: US:EODHD:3073ffd2-9115-5bf6-8bec-fddcd41749e5
+      action_type: stock_merger
+      effective_date: "2016-09-23"
+      new_security_id: US:EODHD:a1d8aa5b-adf6-5371-83fd-a370d23391ff
+      new_symbol: MAR
+      ratio: 0.8
+      cash_amount: 21.0
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/316206/000119312516718027/d244396d8k.htm"
+      source_hash: e74b8238c44a19a82cbfb3d874f9b39b9ec2499752030bf3308b451537c57bec
+    - event_id: bf4c4140f828f1dc8e8d9bcccb2be6562b3c0f17531f05cc3980b4cea3955336
+      security_id: US:EODHD:f5daeed5-d1a2-5279-aa49-8c06c902b97f
+      action_type: ticker_change
+      effective_date: "2016-11-01"
+      new_security_id: US:EODHD:f5daeed5-d1a2-5279-aa49-8c06c902b97f
+      new_symbol: ARNC
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/4281/000000428119000031/form10k_4q18.htm"
+      source_hash: 91d56adf0fbb9e55403527282600c22c3ad140838e0a037b5ff4df1d3a686a3f
+    - event_id: fb3d264732079815004e26780f47e9c816133970ad35ab903054fa5c97406a48
+      security_id: US:EODHD:f5daeed5-d1a2-5279-aa49-8c06c902b97f
+      action_type: ticker_change
+      effective_date: "2020-04-01"
+      new_security_id: US:EODHD:f5daeed5-d1a2-5279-aa49-8c06c902b97f
+      new_symbol: HWM
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://press.spglobal.com/2020-04-01-Arconic-Set-to-Join-S-P-SmallCap-600"
+      source_hash: 99bf852ed888154abdd1754398c1cc33dba31ddc6aee6bb5912c56df22ff24ee
+    - event_id: 6779cffd2aa9d9308e63eaaabafad8dcfe114bac40d1e8b7a12360576c1f1fc2
+      security_id: US:EODHD:6c98b8f3-f222-5def-92e5-a0633c3f0775
+      action_type: ticker_change
+      effective_date: "2017-01-25"
+      new_security_id: US:EODHD:6c98b8f3-f222-5def-92e5-a0633c3f0775
+      new_symbol: FWONA
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1560385/000104746917000332/a2230745z424b3.htm"
+      source_hash: 6a4fe3ee6fea801819f375c2c4426cfb3b619e659dbe93ae5cfdcfe6d4cc45ce
+    - event_id: 5a3375f1be8a4db11272a4cd03a89d0fad3a3336379d14433219ab56d3b3efa0
+      security_id: US:EODHD:8e7e0713-31d7-55a7-8878-74ba653d9090
+      action_type: ticker_change
+      effective_date: "2017-01-25"
+      new_security_id: US:EODHD:8e7e0713-31d7-55a7-8878-74ba653d9090
+      new_symbol: FWONK
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1560385/000104746917000332/a2230745z424b3.htm"
+      source_hash: 6a4fe3ee6fea801819f375c2c4426cfb3b619e659dbe93ae5cfdcfe6d4cc45ce
+    - event_id: 4a662e7caca7ed147c918e5907187b6890397ca72b9b8a2e06e7ee411cedbd7c
+      security_id: US:EODHD:8102c8e2-e5d1-5331-a987-4692d29da477
+      action_type: ticker_change
+      effective_date: "2017-03-31"
+      new_security_id: US:EODHD:8102c8e2-e5d1-5331-a987-4692d29da477
+      new_symbol: VEON
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1468091/000119312517103808/0001193125-17-103808.txt"
+      source_hash: cb257624d286b531e891aed1a9c21f0a2c1fef92023331433cdbb8b0434416aa
+    - event_id: 65fa434c0b0eed43e2f8a5195de957ea4e268a7daa0a2c64e34d1342f7ec762c
+      security_id: US:EODHD:de36b2d8-e15a-5d33-8493-4cc37d0c6ce0
+      action_type: stock_merger
+      effective_date: "2017-07-05"
+      new_security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      new_symbol: BHGE
+      ratio: 1.0
+      cash_amount: 17.5
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/808362/000119312517220863/d343454d8k12b.htm"
+      source_hash: 5715bf60c305ea00c74c2771b5810688d773cdebd9eab6a43362f27144e3e1b2
+    - event_id: 350960af29b81ec304e10cc318837f2e24c70ce2f89983bad95df38ad7f66cda
+      security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      action_type: ticker_change
+      effective_date: "2018-06-01"
+      new_security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      new_symbol: WYND
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1361658/000110465918032536/a18-13272_2ex99d1.htm"
+      source_hash: cd00a425ef8881c2683632e5443ee4f5d4d59dab46332d506a6ea1f2fdba26ec
+    - event_id: f203fb843f1ca0c6745a76af6a76021ca05053c355a4743a32ca045de7a0d58c
+      security_id: US:EODHD:b0395c88-1e0d-5135-b79f-240ac991e540
+      action_type: ticker_change
+      effective_date: "2019-07-31"
+      new_security_id: US:EODHD:b0395c88-1e0d-5135-b79f-240ac991e540
+      new_symbol: VAL
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/314808/000031480819000134/form8k_item801namechange.htm"
+      source_hash: f33bd358958f46513047a1e09afe6d91fd81b96d519df9a70cbe880a431f7de7
+    - event_id: a066f9db433eb3bce0365744b09de62e7c10a64d9d89eabed22b3ec359963718
+      security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      action_type: ticker_change
+      effective_date: "2019-10-18"
+      new_security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      new_symbol: BKR
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1701605/000170160520000019/fiscalyear2019form10-k.htm"
+      source_hash: b69b9c819e8ec2b2188a32aeb7edb54b98228d97a150fb692789d2f5dd5b5421
+    - event_id: fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      action_type: ticker_change
+      effective_date: "2019-11-04"
+      new_security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      new_symbol: NLOK
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/849399/000110465919059239/0001104659-19-059239.txt"
+      source_hash: 87a584813a438f76e5cee9ae800678771bc2df5ed6f3e50461273c1849026e18
+    - event_id: 47235ed0f22108df208fefcab63d0bb9118c5ecb58345387b1a50431e7bc388c
+      security_id: US:EODHD:6a76982a-782c-5b73-abd3-8c86f47d3a1f
+      action_type: ticker_change
+      effective_date: "2020-03-02"
+      new_security_id: US:EODHD:6a76982a-782c-5b73-abd3-8c86f47d3a1f
+      new_symbol: IR
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1699150/000114036120004816/form8k.htm"
+      source_hash: 6a7fac2b87f5f445343e95545e33fee1f528b493c2dcc6467e868b7a107af074
+    - event_id: bcf5cbe4f95ca3ee8f2b05f24fc094a0dfcd0088f3e4136a36813913bb9bfe8a
+      security_id: US:EODHD:cb64587f-5f98-5931-adbf-9804aff1bcf0
+      action_type: ticker_change
+      effective_date: "2020-03-02"
+      new_security_id: US:EODHD:cb64587f-5f98-5931-adbf-9804aff1bcf0
+      new_symbol: TT
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://press.spglobal.com/2020-02-27-Gardner-Denver-Holdings-Set-to-Join-S-P-500-Cimarex-Energy-to-Join-S-P-MidCap-400"
+      source_hash: ce657631c24510bdc9744dd2204bd1eb753538d79ea93f4340adaea88f3f1133
+    - event_id: 1eebcc8f193de474779068560d90da76961560ffd1fe459dabc10d3c1085374b
+      security_id: US:EODHD:aefd1dd7-529d-5b6a-80e9-65d0e14102a6
+      action_type: ticker_change
+      effective_date: "2020-04-03"
+      new_security_id: US:EODHD:88af8b3e-5e83-5344-9e82-923a06cf467f
+      new_symbol: RTX
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/1047122/000119312520097237/0001193125-20-097237.txt"
+      source_hash: 86de499c88aaeb73714cd648434fc88016ce47ab5fa1ed5dd770c26bb63b523d
+    - event_id: 31281f82fe09566d70782ba37514ea57e1da1a6915b68ed14c56a9569832a53e
+      security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      action_type: ticker_change
+      effective_date: "2021-02-17"
+      new_security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      new_symbol: TNL
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1361658/000136165821000025/R9.htm"
+      source_hash: 71c464267f0f6d51eece7a2b7d55cc9b422dd689d82f758c7475d563f99ac0f2
+    - event_id: 5c67b30c00cf201d6248706eabb50a89f50312ff11b445e4a612af76168d4cbf
+      security_id: US:EODHD:89fe6d28-737c-5b16-82e6-c1207561311c
+      action_type: ticker_change
+      effective_date: "2022-12-15"
+      new_security_id: US:EODHD:89fe6d28-737c-5b16-82e6-c1207561311c
+      new_symbol: FBIN
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1519751/000119312522306146/0001193125-22-306146.txt"
+      source_hash: 2c2703ed8949f1d72ceea49e655005cd39165a8020b1750c71894d185d987135
+    - event_id: 1b67e3178fe13f0048d92d5d1ac146ef02f53c2ff1e3150f77a46a0669ad4e8d
+      security_id: US:EODHD:89fe6d28-737c-5b16-82e6-c1207561311c
+      action_type: spinoff
+      effective_date: "2022-12-15"
+      new_security_id: US:EODHD:3f53d1d0-8990-5ec5-bb4b-4b72946ee66e
+      new_symbol: MBC
+      ratio: 1.0
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1519751/000119312522306146/0001193125-22-306146.txt"
+      source_hash: 2c2703ed8949f1d72ceea49e655005cd39165a8020b1750c71894d185d987135
+    - event_id: 8f6dd7b99d5cc344bb60449f3536979a54dd1737f35e9b16b99f795b1d271dc5
+      security_id: US:EODHD:3234e888-8ab8-5985-b09c-b4bb40a3ddc2
+      action_type: ticker_change
+      effective_date: "2023-08-30"
+      new_security_id: US:EODHD:3234e888-8ab8-5985-b09c-b4bb40a3ddc2
+      new_symbol: COR
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1140859/000110465923096698/tm2324358d1_8k.htm"
+      source_hash: 87aba717e7a0808699b57c6e8bccaea1933a5f645ceb45760ea6b71fe4ecb4cf
+    - event_id: 07f971ad0675a970f2c456d314bcadf7fd2cc25211759977fe9b1627a7fa7421
+      security_id: US:EODHD:acd9ed55-bf0c-5b15-b624-1a917bf6078e
+      action_type: spinoff
+      effective_date: "2019-03-19"
+      new_security_id: US:EODHD:bf3b55f9-c8af-5738-9772-2aa3f5b689b8
+      new_symbol: FOX
+      ratio: 0.3333333333333333
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1754301/000119312519079678/d721949dex991.htm"
+      source_hash: 8a6a25526fbbb0b147f4fdad28aca4a75aa864563c61d724d81d7ecc7a067509
+    - event_id: 159111a8d6f4104680ad2b5d7f553e9384649ae3bd4c32c6e6b3f3f068cbc637
+      security_id: US:EODHD:1974e939-3149-5663-91d4-ef44b2761282
+      action_type: delisting
+      effective_date: "2021-01-01"
+      new_security_id: ""
+      new_symbol: ""
+      ratio: null
+      cash_amount: 0.0
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/14272/000001427221000066/bmy-20201231.htm"
+      source_hash: a86e198381d31eacf1fd4b17e93e7a09c8b7f191c1941bec43467729b4f8b055
+    - event_id: 6daa6358e3ccc1d39093e59208fd1dd9edf3239c1c8e0b9d128819c8bce4a440
+      security_id: US:EODHD:0337dd23-67ad-5354-b972-50babd1ae5a0
+      action_type: spinoff
+      effective_date: "2019-11-21"
+      new_security_id: US:EODHD:1974e939-3149-5663-91d4-ef44b2761282
+      new_symbol: BMYRT
+      ratio: 1.0
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt"
+      source_hash: 157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211
+    - event_id: 8bf08a94b34187174e451f5f9ec549ba9a4f15f9d658005e9a3bc10d45820131
+      security_id: US:EODHD:1974e939-3149-5663-91d4-ef44b2761282
+      action_type: delisting
+      effective_date: "2019-11-21"
+      new_security_id: ""
+      new_symbol: ""
+      ratio: null
+      cash_amount: 2.3
+      currency: USD
+      source_kind: official_filing_exit_mark
+      source_url: "https://www.sec.gov/Archives/edgar/data/14272/000001427221000066/bmy-20201231.htm"
+      source_hash: a86e198381d31eacf1fd4b17e93e7a09c8b7f191c1941bec43467729b4f8b055
+    - event_id: 15d7f68b627981221f55f109696085382809e34d4abfb98163704d1b47a45b04
+      security_id: US:EODHD:f5daeed5-d1a2-5279-aa49-8c06c902b97f
+      action_type: spinoff
+      effective_date: "2020-04-01"
+      new_security_id: US:EODHD:33cf5387-6cec-598e-84a9-563ca333b0f3
+      new_symbol: ARNC
+      ratio: 0.25
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1790982/000179098221000096/arnc-20210630.htm"
+      source_hash: 6b88966f49fb2a2c7a2bbb832873aad7db2f396148ccf63484849729009adf70
+    - event_id: 3df08f0e3e4593c773a5cddf9d7ff1abc46b017110516d1fb1dc65b3d89dbd43
+      security_id: US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1
+      action_type: ticker_change
+      effective_date: "2024-10-02"
+      new_security_id: US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1
+      new_symbol: EXE
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/895126/000110465924104976/0001104659-24-104976.txt"
+      source_hash: 5112367c6043776743c2532071d2d857d77faae96c8317f77af0aa0c8e9259b1
+    - event_id: 3f84b5bc6aee3da9d1fd8c955445d9f7abd8c4cc0097f5c65058a406ab589288
+      security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      action_type: spinoff
+      effective_date: "2019-06-01"
+      new_security_id: US:EODHD:80f98754-6fdc-5892-bd6f-3361a23e5fc8
+      new_symbol: CTVA
+      ratio: 0.3333333333333333
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1666700/000119312519163322/0001193125-19-163322.txt"
+      source_hash: ae9343609e64dcd8421f11462b8782cc8db38a130e03c983714f3c10ba8db311
+    - event_id: 655fd418ed06bc94c3fa632bf00cb05197f1afb633e2a3255febff46696eaf60
+      security_id: US:EODHD:9398e16f-425d-5a51-8720-35fba7433f28
+      action_type: spinoff
+      effective_date: "2019-03-19"
+      new_security_id: US:EODHD:5c7fb4cf-793f-582b-9002-a5aa62819933
+      new_symbol: FOXA
+      ratio: 0.3333333333333333
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1754301/000119312519079678/d721949dex991.htm"
+      source_hash: 8a6a25526fbbb0b147f4fdad28aca4a75aa864563c61d724d81d7ecc7a067509
+    - event_id: 6cdae488bbfad53d85b79752afcb2c54c5b19b41b9f55800cb8ab4db51901d50
+      security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      action_type: ticker_change
+      effective_date: "2019-06-03"
+      new_security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      new_symbol: DD
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1666700/000119312519163322/0001193125-19-163322.txt"
+      source_hash: ae9343609e64dcd8421f11462b8782cc8db38a130e03c983714f3c10ba8db311
+    - event_id: a46734c98cb3cd560ca67e5bf823c3c571b6c01f539a94ab6d200604dbe79b79
+      security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+      action_type: ticker_change
+      effective_date: "2023-06-07"
+      new_security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+      new_symbol: FI
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/798354/000119312523154199/0001193125-23-154199.txt"
+      source_hash: f3f09f3deb8f242d01652d48e46077d6646052258e75a9f55752c71dd4559863
+    - event_id: 2df5c4c0298e5ff531aaa785146a20cba98d22080c970eabbd841b802ec60e7e
+      security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+      action_type: ticker_change
+      effective_date: "2025-11-11"
+      new_security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+      new_symbol: FISV
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_crosscheck
+      source_url: "https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/0001193125-25-254670.txt"
+      source_hash: d4cd0c2f981bfd0be14d2ebccfc8e852a94177e5fba86abe2c027c5510fc07d3
+    - event_id: c4352ac7ce4b7de9ed1a0bcdabd77f1822e5b3c908cd80e6c8074c066cecc5f9
+      security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      action_type: spinoff
+      effective_date: "2019-04-01"
+      new_security_id: US:EODHD:97d908f3-f2ea-52f4-b179-a5fc616014b6
+      new_symbol: DOW
+      ratio: 0.3333333333333333
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/1751788/000175178819000013/0001751788-19-000013.txt"
+      source_hash: d2b6f7fb864a447dbfedb007219123aa0ab020115df51908ff44d07a521398c3
+    - event_id: fd8e8f6bc37de73342db04090624676b30b75765657bd2867bd41fd62fffd187
+      security_id: US:EODHD:f5daeed5-d1a2-5279-aa49-8c06c902b97f
+      action_type: spinoff
+      effective_date: "2016-11-01"
+      new_security_id: US:EODHD:a0eebd04-b9d4-54bc-8682-899643216993
+      new_symbol: AA
+      ratio: 0.3333333333333333
+      cash_amount: null
+      currency: USD
+      source_kind: official_filing
+      source_url: "https://www.sec.gov/Archives/edgar/data/4281/000000428119000031/form10k_4q18.htm"
+      source_hash: 91d56adf0fbb9e55403527282600c22c3ad140838e0a037b5ff4df1d3a686a3f
+    - event_id: 7b987d3143d81db664d272eabe464941bcf22c05b0cae715662741ea0a304636
+      security_id: US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd
+      action_type: stock_merger
+      effective_date: "2020-01-27"
+      new_security_id: US:EODHD:9e7f1eca-2773-5c4d-8bb5-0443d36be2ea
+      new_symbol: OVV
+      ratio: 0.2
+      cash_amount: null
+      currency: USD
+      source_kind: official_issuer_plus_sec_crosscheck
+      source_url: "https://investor.ovintiv.com/2020-01-24-Encana-Completes-Reorganization-and-Establishes-Corporate-Domicile-in-the-U-S"
+      source_hash: cb6cdb670b3a30d38f0529d242f4ea470052c04204e3101537627f7df3955bef
+    - event_id: 958ed869cc179ffda932c0012af35439ea22b21b07691fb6c5e221844cb0a0ed
+      security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      action_type: ticker_change
+      effective_date: "2026-04-24"
+      new_security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      new_symbol: QVCAQ
+      ratio: null
+      cash_amount: null
+      currency: USD
+      source_kind: official_issuer_market_transition
+      source_url: "https://investors.qvcgrp.com/investors/stock-cost-basis"
+      source_hash: 55829c9064eee534b6f79027648172494a507f8b9be16e9598dc57cdd58c165b
+  require_exact_archived_hash: true
+  require_all_applied_resolutions: true
+
+prices:
+  # Two exact, price-only exceptions backed by the frozen local Quandl WIKI
+  # extract and its reviewed provenance object.  These entries may replace
+  # unsafe Yahoo symbol-only comparisons only for these identity intervals.
+  # They never attest corporate actions or adjustment factors.
+  reviewed_source_archive_price_only_evidence:
+    - target_id: ed969b35974af909d34adab11ace79a964e9fc06d70e543d52ef573576cfd994
+      security_id: US:EODHD:dbd287da-b35f-5aaa-873c-76f941b4d93b
+      symbol: BBBY
+      target_provider_symbol: BBBY
+      identity_active_from: "2015-01-01"
+      identity_active_to: "2023-05-02"
+      terminal_event_id: 7d150e99cfe15587e4e9994dfaebde08942117f970a7d11ce94fd05b84bc85f5
+      identity_bound_provider_symbol: BBBY_old.US
+      extract_sha256: a6a6f651265825ed9ed95a1dfb9889f70586a728aa53eeae8585b8c00e4af52f
+      provenance_sha256: d73bf90641034b56b4ce42d9cef2fd4dff23a6db8c101cc7ed9b49af4c7140c8
+      raw_price_source_sha256: 84083e814e2fafef9d71866315ef17eae16f26e4f3ced9d799637eef6b362825
+      master_source: bbby_identity_repair
+      identity_source_sha256: 7c920e8e63a7ffacfa1b4896b08d2b93d2429c9c9c56bb2afa92bbb4d00a35b6
+      relation_sha256: fecd59e84360bd2173ab0e0d30d190731cfb9f97d1a3ef3dae81292783e0ab1a
+      overlap_session_count: 650
+      overlap_start: "2015-01-02"
+      overlap_end: "2018-03-07"
+      triple_supertrend_signal_sha256: 2d964d020e6707aff59cd96ee362b131f99a68ef4ccdf2758f5e369b0f744ec2
+      wiki_dividends_missing_from_current: []
+      current_dividends_missing_from_wiki:
+        - {date: "2017-09-14", amount: 0.15}
+        - {date: "2017-12-14", amount: 0.15}
+      limitation: >-
+        Price-only reviewed exception from a frozen identity-bound WIKI overlap.
+        Corporate-action and adjustment-factor coverage remains incomplete; no
+        generic ticker reuse or action/factor pass is allowed.
+    - target_id: 849f9b435475b46a2c328f943f76697c3fe5bfaa74b3c2b3f2d4db58fcc9e40a
+      security_id: US:EODHD:aadcce22-62c7-522f-bbeb-861933af1d99
+      symbol: BBT
+      target_provider_symbol: BBT
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      terminal_event_id: bba9b3139a40f93f1b90790cdbded3fe0db106526ca9890f1c611c67ee267131
+      identity_bound_provider_symbol: BBT_old.US
+      extract_sha256: a6a6f651265825ed9ed95a1dfb9889f70586a728aa53eeae8585b8c00e4af52f
+      provenance_sha256: d73bf90641034b56b4ce42d9cef2fd4dff23a6db8c101cc7ed9b49af4c7140c8
+      raw_price_source_sha256: 4e6c9fe8f35b4e333e289791d8d89ac85b27f17f0d227b69d397249fb74d57cd
+      master_source: eodhd_exchange_symbols
+      identity_source_sha256: 2e43e71c491c2eda9e18ee156aac21149b170f84eb3f84ff107f125c269dfb99
+      relation_sha256: ed5375f9a9e4e5e83db239bc4c5e7d70af86cfd75ed703331d55efabb3c5770c
+      overlap_session_count: 813
+      overlap_start: "2015-01-02"
+      overlap_end: "2018-03-27"
+      triple_supertrend_signal_sha256: d55ecc680990a769157863997388ba4f88b71a297157f5070ae23e1241301853
+      wiki_dividends_missing_from_current:
+        - {date: "2015-05-13", amount: 0.27}
+        - {date: "2015-08-12", amount: 0.27}
+        - {date: "2015-11-10", amount: 0.27}
+        - {date: "2016-02-10", amount: 0.27}
+      current_dividends_missing_from_wiki:
+        - {date: "2018-02-08", amount: 0.33}
+        - {date: "2018-03-05", amount: 0.045}
+      limitation: >-
+        Price-only reviewed exception from a frozen identity-bound WIKI overlap.
+        Four WIKI dividends are missing from the current action ledger and factor
+        coverage remains incomplete; no generic ticker reuse or action/factor
+        pass is allowed.
+
+  # Fourteen exact, identity-bound price-only reviews from immutable local
+  # Quandl WIKI extracts. The Unknown license permits private/internal use
+  # only. These cases never attest corporate actions or adjustment factors.
+  reviewed_wiki14_price_only_evidence:
+  - target_id: 296e2d263b549d741aea400cfe59b164b8f06e7420426e95d251f7ee926e26b0
+    security_id: US:EODHD:154f8739-c6d3-59c7-8abc-f871d1a92683
+    symbol: ADT
+    target_provider_symbol: ADT
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 418defe40340005df5628364001a45f2438b7ed292a7b1196325000248aefaf7
+    identity_bound_provider_symbol: ADT_old.US
+    extract_sha256: 57ad6f387e01cf1ade18b8d4f8f52b2411277caf43bdfee856e7ec9d67b3a560
+  - target_id: d04a3aa3adfa1f2290f64d1fa9747fb1a1d59d5e106a0e4e4b2841f024ff4c08
+    security_id: US:EODHD:20f4418a-aa9a-5ede-a981-a4bda023f291
+    symbol: CAM
+    target_provider_symbol: CAM
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 5e03acf71792e61458faabda31aed6535512b1cf82bcc03fe9a3fcb73960c079
+    identity_bound_provider_symbol: CAM_old.US
+    extract_sha256: 5c102159b85a57bf953429506f2988536927925b34489d0594528d492bc27567
+  - target_id: f3e261c422fd805f271ad9104511d7a1a76e7228adbee3494a964399a2ceb235
+    security_id: US:EODHD:4ddb0638-fe2a-5f9c-97c8-691e9c42d5f3
+    symbol: COL
+    target_provider_symbol: COL
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: ff2361a64b153fa524e11b69b0bb1fce76b325343558ed17924c005420914e65
+    identity_bound_provider_symbol: COL.US
+    extract_sha256: 0564534662e44aa613027d0a1e42979422ebe82cfc8f00cc5c159095b2ab0743
+  - target_id: 1bbd0db44c10b63aa9fb4a2ee1399e83b699a97dd343d0e541682b6066af659a
+    security_id: US:EODHD:d0212dec-b333-5d7f-90ce-cd3d4c6cc035
+    symbol: EMC
+    target_provider_symbol: EMC
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 42745f23f18059ac4772c578967a56d6ba6d19f7053115b97cd3db394a3bff26
+    identity_bound_provider_symbol: EMC_old.US
+    extract_sha256: 07fdbc0505f10ada04f55796f5a65815be9663a50f40d2e203fedc301c658632
+  - target_id: 9aff0d4d65ce790b98d6f050f6323044ce01a2fbd378c93b5c0f668f9fffab44
+    security_id: US:EODHD:b5c1cb33-a560-58df-8a77-978096a5dbbf
+    symbol: EVHC
+    target_provider_symbol: EVHC
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: d693ed94d0f1468fe4455c9ccd5d8687ea36d20c33e66e2a12983904aa9e482a
+    identity_bound_provider_symbol: EVHC.US
+    extract_sha256: a745b7d5553b0dedb06652b8c41acbf536114d621e1d702c34719225c82fc697
+  - target_id: 06b8e2e6e06e71b682f4792e0bc3cff9ace1c6bea0a4d07ee4e7aa3f99afa2d7
+    security_id: US:EODHD:50992e1b-839e-528b-bf5a-8b4216b79779
+    symbol: FB
+    target_provider_symbol: FB
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 937e4b724c59ee2e5355832ae14225d50a9ba0239a9e6881b50a5ce017f0bf45
+    identity_bound_provider_symbol: FB_old.US
+    extract_sha256: 5470f808aff0e6c420769528b2100c2a45f6672c698f23bdc0e09c40b2a87203
+  - target_id: 7f1cdc57371b12e2913ee5d00f5e262c91a800648786c55d0e78bf97d08270b8
+    security_id: US:EODHD:acd9ed55-bf0c-5b15-b624-1a917bf6078e
+    symbol: FOX
+    target_provider_symbol: FOX
+    identity_active_from: '2015-01-01'
+    identity_active_to: '2019-03-18'
+    terminal_event_id: ''
+    identity_bound_provider_symbol: TFCF.US
+    extract_sha256: ac4c9bbf710cbcfa07089332dc6ab16bbe8c090023db8a66bb56dc3a0e05dceb
+  - target_id: 7516f04c6e27d612002fc1d3468720f45ccc1b141e7e8a5fe78564c261d87729
+    security_id: US:EODHD:9398e16f-425d-5a51-8720-35fba7433f28
+    symbol: FOXA
+    target_provider_symbol: FOXA
+    identity_active_from: '2015-01-01'
+    identity_active_to: '2019-03-18'
+    terminal_event_id: ''
+    identity_bound_provider_symbol: TFCFA.US
+    extract_sha256: 8ce27540be2cc5a0ec6ee8ecb264c09504f3db2504bc88205c8c65c323e6dbf4
+  - target_id: 599705d408171c2606e2a09958f8fccca2571bd1df4ca7dbadcd4074bbdeebba
+    security_id: US:EODHD:67bc140c-d643-57d1-8a4f-e44be550d27c
+    symbol: INFO
+    target_provider_symbol: INFO
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 963c907c1ffbce39087638b273b7eacc7c16a551bc1f612a63a4dfdd2e1b84f0
+    identity_bound_provider_symbol: INFO_old1.US
+    extract_sha256: 23dfb8ca1ef163d58f767563791ae4e11c597adcfa9ac00986ea4f5753fa79be
+  - target_id: da410eb4d833807a0cb86317cdd3c14011b49d06bf34528abbe7e75c6e32eafa
+    security_id: US:EODHD:5761939d-b25c-58b8-9f70-674b2b505362
+    symbol: NFX
+    target_provider_symbol: NFX
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 135d28c0ee9edf5bd26cf2f06a4ac73e034c42eaddc08b286dbb77540144a04d
+    identity_bound_provider_symbol: NFX_old.US
+    extract_sha256: 09de2f6350f3207df8d9b6b662e9a36077eb19c8c6e0bb04adbb2c145afc9189
+  - target_id: addfc00ac2573c1efd61fff6686797169ffdc2b1c6da1552521d936d80b19a03
+    security_id: US:EODHD:a839e937-8380-540e-b610-480496ece1bb
+    symbol: SCG
+    target_provider_symbol: SCG
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 729fc54f87e508f38e78684e897afe84824e7ba2787a4d681a6f7fa4f3f222c8
+    identity_bound_provider_symbol: SCG.US
+    extract_sha256: a4e7101178eba73d3d53c27b4c51dc5a92eeb4a92b5e024c5d00e4de4c3228e3
+  - target_id: 5dd6c8006be4eeb5f7947aac282769adc1239c83ec9d14169fba5eea8e564f79
+    security_id: US:EODHD:3ae520c3-9c0f-58f2-a47e-9c5b3095f8ec
+    symbol: SNDK
+    target_provider_symbol: SNDK
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 85f01c5058b4f3954bf004292c38af7f8a0b59afa382313a1efc4d34fe20c63c
+    identity_bound_provider_symbol: SNDK_old.US
+    extract_sha256: 7c78cb0618223072c2183470dce274a50a81a655aab5e16f81e6797cde32295c
+  - target_id: b5f68dcfc88bb04c75a326e0667864ba403d443ffb195c6dcab2c94d36ca576a
+    security_id: US:EODHD:3791f942-824e-5b24-b243-2aabd4cfaa56
+    symbol: STI
+    target_provider_symbol: STI
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 9a5faa316f359005cf44ebe58b35a43f1b0c5f941514887ce9e76d56ca883d29
+    identity_bound_provider_symbol: STI_old.US
+    extract_sha256: a66f7d6a39b53a2917ca3d228931dd5f7e23ea112bc172380978575aaf93dee0
+  - target_id: a17b2c14178839f2206e64fef7f77c68d90a2849d3e81b782401348c0b6e5c71
+    security_id: US:EODHD:306e4817-7ce8-5279-a033-93031e72f3f1
+    symbol: TE
+    target_provider_symbol: TE
+    identity_active_from: '2015-01-01'
+    identity_active_to: ''
+    terminal_event_id: 4412df48d95a824adb7255e7a61b8746bcc978ebe466566e3e1ea2556988bf1b
+    identity_bound_provider_symbol: TE_old1.US
+    extract_sha256: b8886f234d2ff49583aa36ac146fae29bcbd95bd051faa5334159a645c227c51
+
+  # Exact, report-independent reviews for 17 narrow provider quirks.  The
+  # publication gate reparses the immutable Yahoo bytes, recomputes every
+  # overlap/regime/mismatch and (for tiny OHLC disputes) Triple Supertrend
+  # signals, then requires the code-pinned inventory and projection hashes.
+  reviewed_price_evidence:
+    - target_id: 8da911e511165e8a8731e1a9878eaa873c931b5102f0917fd603d521f36f5eea
+      security_id: US:EODHD:080331b7-5906-5c16-9714-662992a17794
+      symbol: MTB
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: 742803e20c9c4aec486c51f325743883a0659e37233fd0c87f54c503b89f84a3
+      cache_wrapper_sha256: bf3cd5bc9435c205352c8f26aba27b2a1f473ecaa87fb9c6d2482cfcef14dd2a
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NYQ
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2017-05-17", field: high, internal: "159.75", provider: "162.3699951171875", normalized_provider: "162.3699951171875", median_scale: "1"}
+        - {session: "2017-05-17", field: open, internal: "158.03999999999999", provider: "162.3699951171875", normalized_provider: "162.3699951171875", median_scale: "1"}
+      expected_projection_sha256: 0e13aa8b21af0ec126817b3fb4125afa0b837ab069f25c882f59d007df32496a
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: b4ca2124443b0b05a5ce3fbacfcc5fc1b45dab595e5812273bd5af2ad09a1478
+      security_id: US:EODHD:0cc06130-d930-5632-887c-023597219f54
+      symbol: TCOM
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: 24ea3cbf4e6cad4bb185f36d2e45a67c187d66167100c05b12de06e43f04d61c
+      cache_wrapper_sha256: 21d9711ad1b5abc3a9a91c8887a41d0231f1a41a899940dcdbb2bc61128fc2e7
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NMS
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2017-01-19", field: open, internal: "43.939999999999998", provider: "43.459999084472656", normalized_provider: "43.459999084472656", median_scale: "1"}
+        - {session: "2017-05-01", field: open, internal: "50.450000000000003", provider: "52.229999542236328", normalized_provider: "52.229999542236328", median_scale: "1"}
+        - {session: "2017-09-14", field: open, internal: "52.850000000000001", provider: "53.930000305175781", normalized_provider: "53.930000305175781", median_scale: "1"}
+        - {session: "2019-03-14", field: high, internal: "41.479999999999997", provider: "42.189998626708984", normalized_provider: "42.189998626708984", median_scale: "1"}
+      expected_projection_sha256: d2f77f78e52564fb70637b106c3cfcd56988680187cda3e0bd72adf41e84a3cf
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: 4f99ccb72c52d48c5cef660ca6a088b0acc8275962ad53e5f1bfb9ea38301ef9
+      security_id: US:EODHD:1123af95-e37a-5697-b0a1-1a6c126fa501
+      symbol: DVMT
+      identity_active_from: "2016-09-07"
+      identity_active_to: "2018-12-27"
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: 8753a861b8e2632d058da50e3568cf1f43b8fbe91adc55c39b5cff6c907b33b6
+      cache_wrapper_sha256: 5d0b9c6590e52feab3856475093b3fdc36c3ee91015564c37ff1e2ff1cf36682
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 581
+      expected_all_null_row_count: 1
+      expected_all_null_sessions_sha256: 9c1932e8243dba595c894e3594104807fc2bc837a5d5b21e8dc0232607dc5c2d
+      allowed_invalid_rows: []
+      expected_mismatch_rows: []
+      expected_projection_sha256: c084ce42ce94cd6ccb379489156f9c30acf197c9ae0d7614b7b3f46c5cba0d4a
+      limitation: &yhd_limitation >-
+        Yahoo labels the retired response as currency NONE and MUTUALFUND/YHD.
+        Only exact numeric overlap with USD EODHD is claimed; Yahoo metadata is
+        not accepted as listing identity evidence.
+    - target_id: fc949d30859345b8e883d280a2b7a33180abae54b53baf072c9ade86d1436fac
+      security_id: US:EODHD:11fc4a4c-a2ff-5257-a781-ba2627e118de
+      symbol: ELV
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: c41c0bef3dbdba4b91991d9951652e76d244dd246b5f445c609eb3a6e289c58f
+      cache_wrapper_sha256: e1d8df0c49391605f39a4da43bc1a69cec3e9ca0fab5d8edd40833c13dc0b25a
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NYQ
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2015-08-24", field: high, internal: "145.53", provider: "143.82000732421875", normalized_provider: "143.82000732421875", median_scale: "1"}
+      expected_projection_sha256: d0c7ba27bee8f863fcfdddd6fd4f754f7d54060677d437e4df9e0f9aa12f7dba
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: b25aa525bb3fcf5b791083b1d8a694fde94e4a72ea5a12e0f4e5008571bb58f6
+      security_id: US:EODHD:12d628cb-b074-59fa-802d-39a9c41f4775
+      symbol: J
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: 305ea5c47c6442adf76e79a3b9da814cc264bdbd010eb952e01ebc540fb925e4
+      cache_wrapper_sha256: 0480a9c48b066c2668fff0da73e58a839c095dd0fac4a35d10420bdbc699a636
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NYQ
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2017-05-17", field: open, internal: "51.312899999999999", provider: "43.384037017822266", normalized_provider: "51.996978743608935", median_scale: "0.83435688122850205"}
+        - {session: "2018-08-03", field: open, internal: "66.520399999999995", provider: "54.815254211425781", normalized_provider: "65.697611471383965", median_scale: "0.83435688122850205"}
+      expected_projection_sha256: e3dfeb382a20a59b8d22b02e56355fcfd57f198b0b77885e3389329529d5f83e
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: 3893c9be614824bdd7d6dea415ed25981ff28946969dfe55d94edc54970e1ea3
+      security_id: US:EODHD:166a2cea-eea9-5a91-8a9d-ab4e02dcb59c
+      symbol: AET
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: 6c20de6596b60740a8f0bb473adff04e363e367bd81e6be6fc0071b3572a72ed
+      cache_wrapper_sha256: d8d6feed71dbe9da326ecb72213ca0f79ac0112cf75b53bf9e248a7ec0b04dd9
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: f38c1d7ce48e54f926c072df98fdb7f913624e855b9fbf41f68b3bdc36fff70d
+      official_evidence_sha256: bb8b493a49479d7fbac76cb39480664631929a8859b8b60277fca51806ed3590
+      official_effective_date: "2018-11-28"
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 1913
+      expected_all_null_sessions_sha256: 2c7c33daa0882c7d21c0ad5e3c2a9d12c1ace9f272c526099edfb9f397ce4bef
+      allowed_invalid_rows: []
+      expected_mismatch_rows: []
+      expected_projection_sha256: 490bddda3d5140a2d57e2eb63ec883a3ad5eac86e36095369913e4140c234445
+      limitation: *yhd_limitation
+    - target_id: 084ea79dbd2d403f570e8aecd780367e8e714caa408935712d7b01fda7c2b485
+      security_id: US:EODHD:24c16b24-2592-5b0e-bf8f-d57a34240e07
+      symbol: PLD
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: 38262e0a37b2976710194ee1dda0a90de525a4c41bd4bf08e553950c7b825c0f
+      cache_wrapper_sha256: ca50935ac5118d4addccce0ceab31db3274345f75d937d23fc50f4d924ef235f
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NYQ
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2017-03-10", field: open, internal: "50.079999999999998", provider: "49.299999237060547", normalized_provider: "49.299999237060547", median_scale: "1"}
+      expected_projection_sha256: 63072085df75b6f1d60d31c7648e039d49f9a9ad30cbf89227779736c6157822
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: 417f2715f9774e20fa90f071b452f7c40d2fd3aaa5e5b0c3a0debef8dc0b212e
+      security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+      symbol: FISV
+      identity_active_from: "2025-11-11"
+      identity_active_to: ""
+      case_code: single_all_null_quote_row
+      source_sha256: b717ef5089b7dab153efb20e05087f3606bea51ab1b159c10a636b7a4389e858
+      cache_wrapper_sha256: f3fd82c9fa4474630ed5c8ea260ffb225a1d932edb76dd248ffcacc2ae9e4964
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NMS
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 168
+      expected_all_null_row_count: 1
+      expected_all_null_sessions_sha256: 2b6516d57816fb64d36b72be4be11397fc946c2824f307a09852be8ac19cdbaa
+      allowed_invalid_rows: []
+      expected_mismatch_rows: []
+      expected_projection_sha256: 10ab72f611db3623e5ade11dcc12e9ed7e9ebf8b5e1e3d6b9cb613c8b509142c
+      limitation: >-
+        Exactly one all-null Yahoo quote row is omitted; every remaining bounded
+        raw quote session must pass the normal USD equity numeric checks.
+    - target_id: 1c35c20c1e50ebd119618a823b4cc49ef55aa701ec24d2a4564995022138bb3f
+      security_id: US:EODHD:330d4f9a-dd92-5e71-9843-9c3cf5dc1058
+      symbol: SHPG
+      identity_active_from: "2015-01-01"
+      identity_active_to: "2019-01-07"
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: a002547dcde26edb95a000a5db53c8c1afa99a768a3857b4178d514ab7e2a8cf
+      cache_wrapper_sha256: cc5036e2c9153134c0926b3093787aaef501acf17dc93769c69d7686f687cfd7
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: 375f908b54a09aca598a3dbe85661dc4a94e996b39ec2d733e52ccc3719aa311
+      official_evidence_sha256: 664d49ea842309e24970f447ba462504f4e7763f7dfe2c23b30f410e4cae9c6a
+      official_effective_date: "2019-01-08"
+      expected_raw_row_count: 1010
+      expected_all_null_row_count: 1
+      expected_all_null_sessions_sha256: 23098eebe7449842c570b1bea082907427e5c94b05e1fa3707118733431c9388
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2018-05-03", field: low, internal: "156.61000000000001", provider: "155", normalized_provider: "155", median_scale: "1"}
+      expected_projection_sha256: 3361a4330e83594e5d890554392266ab0de5842aecfafec90a11e2032fc2ea5f
+      limitation: *yhd_limitation
+    - target_id: 2b025b50241eff6b6d3fa48f9072b04fd8297605710302562157d08f7d36a4b8
+      security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      symbol: QVCAQ
+      identity_active_from: "2026-04-24"
+      identity_active_to: ""
+      case_code: otcid_exchange_code
+      source_sha256: 4b3c144403549de3e6b2f27a7a408facbbdbdfc57d10b0704029b519c6c4ef95
+      cache_wrapper_sha256: 3714978e5c5c32078d9b1f364c018252687a267d44d0d8cba2eae98b0511d6fc
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: OID
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: 958ed869cc179ffda932c0012af35439ea22b21b07691fb6c5e221844cb0a0ed
+      official_evidence_sha256: 55829c9064eee534b6f79027648172494a507f8b9be16e9598dc57cdd58c165b
+      official_effective_date: "2026-04-24"
+      expected_raw_row_count: 56
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows: []
+      expected_projection_sha256: 65b3d1fc11c5b562fa3d635f736b1a256ee2dc11a904663ea3e3fdfad9b49012
+      limitation: >-
+        Yahoo OID is accepted only for this exact QVCAQ OTCID interval and
+        official same-security ticker action; it is not added to the general
+        exchange allowlist.
+    - target_id: 3922fe53e0433bb1ce8cdeccef6de837c963fee64e92c26c4244832c6ff9a761
+      security_id: US:EODHD:6547ea5e-2d7e-5cee-9137-2c1f2760e0f6
+      symbol: ESRX
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: 97b1a2947a4db0b8a0b4631cbf22d0ecc554402f9dfe7b26fa6d7066d07f750f
+      cache_wrapper_sha256: 5c292f1ad72360b07c23bb21173920718fd33f8999981bd121bc24344a6e67a3
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: 85928abcb1cfb2d4df6b47abd19f52473d2b180a7370b48ea7bb36eec9bf41d5
+      official_evidence_sha256: 1e9c6bf78ea099b06e13b2758a0024819430d521c0667a39d7fc8caccd787a1f
+      official_effective_date: "2018-12-20"
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 1899
+      expected_all_null_sessions_sha256: 09ccb2f6be9df974e12e2df39e9f8819b14671c14ce892f6a4409746a380634e
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2016-10-26", field: open, internal: "71.299999999999997", provider: "72.029998779296875", normalized_provider: "72.029998779296875", median_scale: "1"}
+        - {session: "2016-12-13", field: open, internal: "72.480000000000004", provider: "71.580001831054688", normalized_provider: "71.580001831054688", median_scale: "1"}
+        - {session: "2018-05-03", field: high, internal: "72.980000000000004", provider: "73.889999389648438", normalized_provider: "73.889999389648438", median_scale: "1"}
+      expected_projection_sha256: 94e6e32c23ac86a81822cbfaa816a56721bd13e3d1f1e1440ae84ca43753a117
+      limitation: *yhd_limitation
+    - target_id: d76b90408144482b2a2156b184b6a7af16926b3a0b837bc5685e5702f033642b
+      security_id: US:EODHD:733e418d-aa65-56b3-8efb-373f90371976
+      symbol: TWX
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: c998c791dafafe7b73210bcaf1eb3b5265e838855da9cea352e98346ff47c5a5
+      cache_wrapper_sha256: bc3049aa1f7800e03729d9fdd53958665e635945663e8d2fc6949d2a83a7d73f
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: 0e63b3bd389ed3acbaf49692217643538b6184973725d7ac0771bb4c12094427
+      official_evidence_sha256: 04f3958107de5a321cb2d7c4704c27c2d035409680125ddf5a34e23b23526510
+      official_effective_date: "2018-06-14"
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 2030
+      expected_all_null_sessions_sha256: 266e6e136b5fde0c7437d74afb6599a57e8ee2f80687d6290b7d653649d98047
+      allowed_invalid_rows: []
+      expected_mismatch_rows: []
+      expected_projection_sha256: 90c12105fcf2c58b22e89b51fb264d8b02285933a19adb5fa4907c49d4ad793a
+      limitation: *yhd_limitation
+    - target_id: 69a9990fab1dc3027ca79bd5a584768b6e2bd3d8cff83b298311ed2cdab62113
+      security_id: US:EODHD:769c8fab-2b62-51a8-8b09-7b96eb64f4ab
+      symbol: ANDV
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: d9f16a5a3b93e7389a9ab07305e470123424df7e8f5de5f2ac01390e58a82a9a
+      cache_wrapper_sha256: 68ebf7991f02f9c17b8a6d73296b7d2d216377cc5ceceed4993023b9bf22dad6
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: a51b2bcbca7246a3e8b447546597dd56eae3edeea9eaf98a936c461c36cb920a
+      official_evidence_sha256: f7eddf5acd19152ab87a313292d61ccdf878f683d72962aa76acc8e755c7fb44
+      official_effective_date: "2018-10-01"
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 1956
+      expected_all_null_sessions_sha256: abe74a09779c586ad63a64cf115effee72258cc9b718ce2ec7d8f07d2d9faeac
+      allowed_invalid_rows:
+        - {session: "2018-09-20", open: "155.41999816894531", high: "153.58000183105469", low: "148.75", close: "152.55999755859375", volume: "1704192"}
+      expected_mismatch_rows:
+        - {session: "2018-04-30", field: low, internal: "129", provider: "132.17999267578125", normalized_provider: "132.17999267578125", median_scale: "1"}
+        - {session: "2018-09-20", field: open, internal: "150.5", provider: "155.41999816894531", normalized_provider: "155.41999816894531", median_scale: "1"}
+      expected_projection_sha256: 48b7c61a92cba5442be56d2c86bb07d3b1e35528863455160254dc177ca17c95
+      limitation: *yhd_limitation
+    - target_id: d5a785bc99e55a74b2595bc8c3ca1109c321b0a9c2fc2d760a725509a25e8650
+      security_id: US:EODHD:9e7f1eca-2773-5c4d-8bb5-0443d36be2ea
+      symbol: OVV
+      identity_active_from: "2020-01-27"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: aac24fbaf5d06b892f010b12a524173fa10520eba19c00b393543ffaeae5cd08
+      cache_wrapper_sha256: be45c26178c7cc960279b489f72f6ada90c7bad330a969902a7e000f6ef134a5
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NYQ
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 1625
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2020-07-31", field: open, internal: "9.8699999999999992", provider: "10.100000381469727", normalized_provider: "10.100000381469727", median_scale: "1"}
+      expected_projection_sha256: 4ea84450344a37c5308e72a13adb0227014b093a127dc6c5c36ac10772ae0e81
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: 63f956662bcd5fe8caac688ffd77f0ebb0af0ed349321836816967ba0d7988ee
+      security_id: US:EODHD:c2853e34-d7cf-531a-9d57-515135451e0e
+      symbol: MPC
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: 88b872e69506deec2e06fddb4ac900854f9bbe4b9c3acf796fdbbd78bf882264
+      cache_wrapper_sha256: be7ba154dd69c7b247c6f503f1f7d93d8d22fdbeb4ea54e485860503767d8b2f
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NYQ
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2015-08-24", field: high, internal: "47.149999999999999", provider: "46.419998168945312", normalized_provider: "46.419998168945312", median_scale: "1"}
+        - {session: "2016-04-18", field: open, internal: "37.43", provider: "37.900001525878906", normalized_provider: "37.900001525878906", median_scale: "1"}
+        - {session: "2017-05-17", field: open, internal: "51.789999999999999", provider: "52.479999542236328", normalized_provider: "52.479999542236328", median_scale: "1"}
+      expected_projection_sha256: 4b2b6150b3ef46d97a130d0117ac4c2b9cd40b56c8d2de2d205bce47d68e0346
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+    - target_id: e3c6bde376922ea4c3ffdf3d7f753e21ca1c025ab8e1e4d17ee3d03aea65ab25
+      security_id: US:EODHD:e04e443b-cfa2-568c-960e-0f3957d37a28
+      symbol: CSRA
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: retired_yhd_metadata_limitation
+      source_sha256: f0792ae7a09d2f58a596d2f3322a5b3444b378a3ca62b7961a46a4e3103f0a85
+      cache_wrapper_sha256: f04d91bc25f09d357429123b1a735423c5415490d7f2eab42d82cdf036fcd539
+      observed_currency: ""
+      observed_instrument_type: MUTUALFUND
+      observed_exchange_name: YHD
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: 2f1f3df53ad85e854f05a27ee8a4a3cc6ee3a99461aba41a97e8e91dc536321b
+      official_evidence_sha256: b58231cd11c9ac28771adcd35d7365d6557cf1ffce25b5e0cbab2afecbc8d15b
+      official_effective_date: "2018-04-03"
+      expected_raw_row_count: 2679
+      expected_all_null_row_count: 2081
+      expected_all_null_sessions_sha256: 4bc67bfc6295d7031d9d7286b0193d71eda463061e3b9f303db0a678d4db7691
+      allowed_invalid_rows: []
+      expected_mismatch_rows: []
+      expected_projection_sha256: 3def67a4258286fbc56cbe829db84569a8f13a7c1e3d3c2a2f1ff3b1a1e69c50
+      limitation: *yhd_limitation
+    - target_id: 7017c9bf4a030b9f3d08b71e7591c3f27abc5f79cfa083e3bf0469c0695f8082
+      security_id: US:EODHD:f4faf800-c52e-59c2-8b32-daa84644b511
+      symbol: DLTR
+      identity_active_from: "2015-01-01"
+      identity_active_to: ""
+      case_code: tiny_ohlc_disagreement
+      source_sha256: dd078aa6418369fb3f8da873a1f771f2d1b9842e8e7da3a177069db962e14852
+      cache_wrapper_sha256: 40484110d92a0ad5f265f81041bca1a4b7df3fa724b7f9d1765d749d6095ff42
+      observed_currency: USD
+      observed_instrument_type: EQUITY
+      observed_exchange_name: NMS
+      observed_exchange_timezone: America/New_York
+      observed_data_granularity: 1d
+      official_event_id: ""
+      official_evidence_sha256: ""
+      official_effective_date: ""
+      expected_raw_row_count: 2899
+      expected_all_null_row_count: 0
+      expected_all_null_sessions_sha256: 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570
+      allowed_invalid_rows: []
+      expected_mismatch_rows:
+        - {session: "2017-02-09", field: open, internal: "76.579999999999998", provider: "79.120002746582031", normalized_provider: "79.120002746582031", median_scale: "1"}
+      expected_projection_sha256: d82b245c57d2d14d2bab1314a243005501e9f20cc415233572e331f9c68ac3e7
+      limitation: >-
+        Exact provider disagreement only; no tolerance widening. Triple Supertrend
+        state/buy/sell must remain identical after substituting the reviewed fields.
+  # Exact unsupported-path exception only. BMYRT is a non-index child with one
+  # official retrospective valuation mark; no provider OHLCV trading path is
+  # claimed. This does not widen terminal date or calendar tolerances.
+  reviewed_no_data_unsupported_paths:
+  - target_id: abfebadbc76b0c17e2e76e4190c3a45a75b71a02dcf47d7c8a39d42d5f0f465d
+    basis: code_pinned_official_unsupported_trading_path_no_data/v1
+    security_id: US:EODHD:1974e939-3149-5663-91d4-ef44b2761282
+    provider_symbol: BMYRT
+    identity_active_from: "2019-11-21"
+    identity_active_to: "2020-12-31"
+    last_price_date: "2019-11-21"
+    candidate_id: 452fb15d393f705344b18b1e37795287ed287b29c5f88ac7e1222ab8ec6cb491
+    event_id: 8bf08a94b34187174e451f5f9ec549ba9a4f15f9d658005e9a3bc10d45820131
+    action_type: delisting
+    event_effective_date: "2019-11-21"
+    official_source_url: https://www.sec.gov/Archives/edgar/data/14272/000001427221000066/bmy-20201231.htm
+    official_evidence_sha256: a86e198381d31eacf1fd4b17e93e7a09c8b7f191c1941bec43467729b4f8b055
+    source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+    cache_wrapper_sha256: 55682269a6c799d35f1cf285fffb7755bc97455e426676842ce636a2329d2cd2
+    internal_price_source_hash: e463378cb4287a3d44387599bec9c911eeeb6857ae12f85ff2f91717a4bf815d
+    expected_internal_price_rows: 1
+    valuation_mark_close: "2.3"
+    cash_available_session: "2019-11-22"
+    price_history_supported: false
+    generic_date_tolerance: false
+    index_scope: non_index_child
+    limitation: >-
+      Official retrospective first-session valuation mark only; the
+      2019-11-21 through 2020-12-31 BMYRT trading path remains unsupported and
+      must not be treated as provider OHLCV or backcast into an index universe.
+  # Exact finite chains only. Every no-data node, official event and final
+  # immutable passed price target is pinned. Named cycle groups and unproven
+  # reused-ticker paths are absent.
+  reviewed_no_data_successor_chains:
+  - root_target_id: f9d91f6df227097a90e57cebbbb08e3c7c5e083dd8ecc1642ec3bf5e2a0625f8
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: f9d91f6df227097a90e57cebbbb08e3c7c5e083dd8ecc1642ec3bf5e2a0625f8
+      security_id: US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed
+      provider_symbol: VIAC
+      event_id: 9b5993757b6cca78060ae50c15583bd8ed83419e108e94a5864f8c17a1958175
+      official_evidence_sha256: 9d7db1953af321183b4f85d71a019e831d899c4ab312826f79878b902d3bcb2a
+      successor_security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      successor_symbol: PARA
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: ee005d986f1be1dbbeb1901b0e6c883f3ac506550e31935c0e90673994bfca26
+    - target_id: 8deb00ef721325cbf7331cf58cb8584eaccad19429246cacab209a9c7cf24f4b
+      security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      provider_symbol: PARA
+      event_id: f553d393e8bda37561276fec20d5b9bce5f722609e466e96bc9e199c624891c1
+      official_evidence_sha256: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+      successor_security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      successor_symbol: PSKY
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: d29146eb20b9b6db0857b2ac01a9b0db028d126498da4bd878e6c43aa489b92c
+    final:
+      target_id: ae6842a6fdf1df1f1353ceb9890f852ad4bf5420e6b2d04e32cf1c5e61c50bff
+      security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      provider_symbol: PSKY
+      status: passed
+      source_sha256: b6ee895f78863e3cd320d7652399e7e699be2016b319768052126b1e183a54ce
+      cache_wrapper_sha256: fc32c51f4c60e7897c81c62e559d58e5ef71feb3b9422b9f025dc287704a7541
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 72aa68de77973dc79bc38a9d9a8dd94bf3a18fd40ac6adb5f5b485f1ffd0c9bb
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 72aa68de77973dc79bc38a9d9a8dd94bf3a18fd40ac6adb5f5b485f1ffd0c9bb
+      security_id: US:EODHD:12557af7-07d7-5b37-91d2-1a35cf286522
+      provider_symbol: MWV
+      event_id: 430d4b4e70adda271b87a3d3abd600b45e69a3c5f107c616e91c14c479a35b25
+      official_evidence_sha256: b7dfba047a0266384da133126cb59a925119530981cdf5672f2b5a00be1ee204
+      successor_security_id: US:EODHD:c7d3f1e8-9ad8-5485-aac0-9cb3e653265a
+      successor_symbol: WRK
+      source_sha256: 97b63f1c2e6e51e81290e531905481b7a3194a24203410904228b6e69a56e193
+      cache_wrapper_sha256: 49a135949cbe2d4db0fd82143d11377919f26edd71240f83cdc9819cf9ff050c
+    - target_id: af5eabc42bd4515f72ca097389ed6b9a8ccf93bdd9349ed482c7804407d8d6dd
+      security_id: US:EODHD:c7d3f1e8-9ad8-5485-aac0-9cb3e653265a
+      provider_symbol: WRK
+      event_id: 9b61d5cef706973b537656fc204d389d3cfbc7ab3f8ac81c6c0c5f7eed1741bd
+      official_evidence_sha256: ac400decd19d932c80b71be8baffb359fd4005acf4b91444468617d4dc4d7be1
+      successor_security_id: US:EODHD:6dc32d69-8180-550f-a07a-a6c915f05e33
+      successor_symbol: SW
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 68e563d78ce5517d5b3dd1ef3b649788600457db042b3a2a9986ad7653ce1c31
+    final:
+      target_id: bba7b50b085b100d71d1bd899bf099752a556829f0c601601e203da64fb5a885
+      security_id: US:EODHD:6dc32d69-8180-550f-a07a-a6c915f05e33
+      provider_symbol: SW
+      status: passed
+      source_sha256: 7edeb51f23d8193d80b6d3d10b31a629642a8ba1723b04ea7504c8781b1112fd
+      cache_wrapper_sha256: 84b514432e43742a154f65c064be2178edeba7072242567e1e54ab683e69c9af
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 25e55d92b46ef655ff5c58668dc96c51bf54f4e4587b4a147cf0312b5d2af26e
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 25e55d92b46ef655ff5c58668dc96c51bf54f4e4587b4a147cf0312b5d2af26e
+      security_id: US:EODHD:359196d0-2513-5830-abdf-00d7a75bd62d
+      provider_symbol: VIAB
+      event_id: e6a5949512df17f7673f80858563b57631a9b690401754e18392acd0fba9abc1
+      official_evidence_sha256: 65e14eb8c28ebf9c1e9703488ef0fbb91b313e25abc5c7a90d8f7c3ce354c807
+      successor_security_id: US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed
+      successor_symbol: VIAC
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 4b8d2bcf53523587629f8659ffffd06e4c6551344d6c635b57ba7f8542a6f5df
+    - target_id: f9d91f6df227097a90e57cebbbb08e3c7c5e083dd8ecc1642ec3bf5e2a0625f8
+      security_id: US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed
+      provider_symbol: VIAC
+      event_id: 9b5993757b6cca78060ae50c15583bd8ed83419e108e94a5864f8c17a1958175
+      official_evidence_sha256: 9d7db1953af321183b4f85d71a019e831d899c4ab312826f79878b902d3bcb2a
+      successor_security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      successor_symbol: PARA
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: ee005d986f1be1dbbeb1901b0e6c883f3ac506550e31935c0e90673994bfca26
+    - target_id: 8deb00ef721325cbf7331cf58cb8584eaccad19429246cacab209a9c7cf24f4b
+      security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      provider_symbol: PARA
+      event_id: f553d393e8bda37561276fec20d5b9bce5f722609e466e96bc9e199c624891c1
+      official_evidence_sha256: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+      successor_security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      successor_symbol: PSKY
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: d29146eb20b9b6db0857b2ac01a9b0db028d126498da4bd878e6c43aa489b92c
+    final:
+      target_id: ae6842a6fdf1df1f1353ceb9890f852ad4bf5420e6b2d04e32cf1c5e61c50bff
+      security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      provider_symbol: PSKY
+      status: passed
+      source_sha256: b6ee895f78863e3cd320d7652399e7e699be2016b319768052126b1e183a54ce
+      cache_wrapper_sha256: fc32c51f4c60e7897c81c62e559d58e5ef71feb3b9422b9f025dc287704a7541
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 81e5768be6adec5ee6d4c86e4c735bb60177b53f9ad74c8ba56c74dd7f7db5e4
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 81e5768be6adec5ee6d4c86e4c735bb60177b53f9ad74c8ba56c74dd7f7db5e4
+      security_id: US:EODHD:48ffa56f-9ccd-5bb8-a31c-fcb324b96336
+      provider_symbol: SNI
+      event_id: ff9cfe7e03ecd9b0611ed21f25060f4029d018e56993597287690306c36ab745
+      official_evidence_sha256: 011c5fff56f6c6c7a77bae963224688c175f80b05db61c36e14b208825cee751
+      successor_security_id: US:EODHD:6fd6451c-96d2-59c6-be5d-8d1622e157d4
+      successor_symbol: DISCK
+      source_sha256: 3967fbb8a82069a56b9bfd58bcf700b88b0d9c9cc49131c1b09191983060b431
+      cache_wrapper_sha256: 7cde1b9901748628a08fa8f5101169b7ca9998252881ac2e2eab61256dbdce37
+    - target_id: f4f4fcbbce0233fbf8587c6451a24e25736c667a3fde31565541ce1cf1ca3bc4
+      security_id: US:EODHD:6fd6451c-96d2-59c6-be5d-8d1622e157d4
+      provider_symbol: DISCK
+      event_id: fdb9d14fcd70a95f3ad20b36c625486106fa0648c46684f12004c84d50d3820f
+      official_evidence_sha256: d045c127f4264bc7ffe2bb53aba95bfc7228e94c3b0fcdd0a9e381e1f72695da
+      successor_security_id: US:EODHD:a5586805-50d8-5899-a6fd-e39e3b749158
+      successor_symbol: WBD
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 17cfdf5587cf402b46c49e6a86b7c030eedfc005bf10c25428dd5f625ac598fe
+    final:
+      target_id: f242767ffacf315ce1228fa8ac1ac08ef6a18ff2db563c7eff0635ea32902ab7
+      security_id: US:EODHD:a5586805-50d8-5899-a6fd-e39e3b749158
+      provider_symbol: WBD
+      status: passed
+      source_sha256: 67dde41d32198f66f0fd35df9b4ecf90bcaafa4d1223885e3b2947754736cb87
+      cache_wrapper_sha256: 73f7162713924ee5983f10bd0ecb58323fe476786746bbc24337158846e0f290
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 1f01bc0c30fbdc4487eb9c59da93009ae7011f87c795ebb200995ee9a870d759
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 1f01bc0c30fbdc4487eb9c59da93009ae7011f87c795ebb200995ee9a870d759
+      security_id: US:EODHD:5b0fba54-201e-58fc-9a0c-6985ef098924
+      provider_symbol: QRTEA
+      event_id: 70f96f10b657a386652cd8a6b24040458d937727f1bfdcaf95c346307a8d00c9
+      official_evidence_sha256: ac0f638b80142d27d6a2d7661d1124998ab4c53a0aef5eb557332e73954c4013
+      successor_security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      successor_symbol: QVCGA
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 987f9c1362b83cfbff784ebecff0268892f366f3fb7c76ecf06266ca07556d44
+    - target_id: e8a1c89244a6f605eb465c4ab4d49c0e7ff96d792d6696eaafbadfcc68f9a4fe
+      security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      provider_symbol: QVCGA
+      event_id: 958ed869cc179ffda932c0012af35439ea22b21b07691fb6c5e221844cb0a0ed
+      official_evidence_sha256: 55829c9064eee534b6f79027648172494a507f8b9be16e9598dc57cdd58c165b
+      successor_security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      successor_symbol: QVCAQ
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 59cd8e454b3a49a0e017daeb255a0f26c42386714ba62e124afcd63e455f4e73
+    final:
+      target_id: 2b025b50241eff6b6d3fa48f9072b04fd8297605710302562157d08f7d36a4b8
+      security_id: US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc
+      provider_symbol: QVCAQ
+      status: passed
+      source_sha256: 4b3c144403549de3e6b2f27a7a408facbbdbdfc57d10b0704029b519c6c4ef95
+      cache_wrapper_sha256: 3714978e5c5c32078d9b1f364c018252687a267d44d0d8cba2eae98b0511d6fc
+      reviewed_price_evidence_sha256: 34e7d3c0b0bf655f6600742b6d5214ee5ff7091cb147b985a992976f36abc830
+  - root_target_id: f067891eacb63f1f608117430f7ce70179deed2532f92616f1e88de04044a492
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: f067891eacb63f1f608117430f7ce70179deed2532f92616f1e88de04044a492
+      security_id: US:EODHD:ba5c7ac3-be42-54f7-9a75-21e260f82f32
+      provider_symbol: LO
+      event_id: 141c5611102888bcecf5ac2851a888886f1f24fbd02e765c3fb741dc8745f4dd
+      official_evidence_sha256: 9695e31619494625b2a1a73bd68bb120cdf57512e97218d97b3006d7dcaadd7e
+      successor_security_id: US:EODHD:46e4e57b-eae7-55bb-94b5-bbc4d595fe49
+      successor_symbol: RAI
+      source_sha256: a2680b016fdc0af0d35b776088c2d1b0cf61786446fb599d1a7ae929d5b21014
+      cache_wrapper_sha256: 3a8d917c420ca1a5de054e0dfc5f1d95e525c89317a590ffe173e7ee6c98a83f
+    - target_id: b49c58da9cc420f2689d361454a5a0f082f621f8baa7f0ecfcf86d638abf2e86
+      security_id: US:EODHD:46e4e57b-eae7-55bb-94b5-bbc4d595fe49
+      provider_symbol: RAI
+      event_id: c0f178ac02312c2473c4add0d2b3ccceed32ae301b783a6accdddfe6b0caefe1
+      official_evidence_sha256: 6355c5a81d200377b7917c71e9608e0d11f73848657edf77ddb2ecc47f8ddafe
+      successor_security_id: US:EODHD:8c757a97-0875-5205-bed8-6d49e9c1719e
+      successor_symbol: BTI
+      source_sha256: af719f7ff58050141a78ad9b5a94dc8b8afcbafe4b4e033b10f4c4ad63f9ee3d
+      cache_wrapper_sha256: 4abfb489f16effe258f0e31adf5f523497cea4fec1b66456b8be9244c8e0384f
+    final:
+      target_id: 98dfa8751a558c4fda5ffb01395bf1b60e7f923e5150eea78c1b74ca28ba9bd3
+      security_id: US:EODHD:8c757a97-0875-5205-bed8-6d49e9c1719e
+      provider_symbol: BTI
+      status: passed
+      source_sha256: 46267faadfee914157a09d08e0e360cf6f19bc42ab155e1afae8305322349666
+      cache_wrapper_sha256: 8bcc4d4789d93fbb09efd362d46b2c1f9fc7c5c453b8e549658dadd9bd446dad
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 41c49f30d3fc35262e0ae9e880f48fd2270495880e1186431675148084d82ce1
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 41c49f30d3fc35262e0ae9e880f48fd2270495880e1186431675148084d82ce1
+      security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      provider_symbol: WYN
+      event_id: 350960af29b81ec304e10cc318837f2e24c70ce2f89983bad95df38ad7f66cda
+      official_evidence_sha256: cd00a425ef8881c2683632e5443ee4f5d4d59dab46332d506a6ea1f2fdba26ec
+      successor_security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      successor_symbol: WYND
+      source_sha256: 50fc67c0982856c14291df1bbab6e9e2985c0e873ed523e2d5930003184d556c
+      cache_wrapper_sha256: 60f98a4bba16d452220a806ad545a54ae5448fa58bef0551cf4360d6f90b1f87
+    - target_id: 89ae740db02af5d4361a11c27fb5658dcfa042ffd173b610abb9ab9f0b8c022b
+      security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      provider_symbol: WYND
+      event_id: 31281f82fe09566d70782ba37514ea57e1da1a6915b68ed14c56a9569832a53e
+      official_evidence_sha256: 71c464267f0f6d51eece7a2b7d55cc9b422dd689d82f758c7475d563f99ac0f2
+      successor_security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      successor_symbol: TNL
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: e4c7fe88db831f3f00cb8741f56629ced030df0012b1f823de11f548479a1aad
+    final:
+      target_id: 04dc5c10e0331a10edbaba8c47dc224af90b3cbe9f571dfdb7cadd968f45a5e7
+      security_id: US:EODHD:dc3f4283-a3cc-5bc7-916c-9ffdd71c9874
+      provider_symbol: TNL
+      status: passed
+      source_sha256: bdbbe325f74d768f21be8e033138bcdaab2a0cac7d5324489919b6c4278c23b7
+      cache_wrapper_sha256: 98edc52c60faed0cf37b4b592e27aebfd1fe603e0cf677520a79a5e29cc359db
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 68b3dae375d615c0b2055f7ac4c991f6793ca7f1fbee107d7127c4c0ad04f2d4
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 68b3dae375d615c0b2055f7ac4c991f6793ca7f1fbee107d7127c4c0ad04f2d4
+      security_id: US:EODHD:dd13fb72-936f-5bdf-bab1-d9678afe1a3b
+      provider_symbol: CBS
+      event_id: bbbe77cb1eb69fb803b3b546d0923c5114bcfe59b377000de3cb5fa725690f41
+      official_evidence_sha256: 3d959af974a0f2283f632c93c7ace8c028b30c74eafb07724d11961377bff63a
+      successor_security_id: US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed
+      successor_symbol: VIAC
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 5d07aa839a87f086a00a0bf4f7eab37cd32c940a19047ef0430ca2d85ac219ca
+    - target_id: f9d91f6df227097a90e57cebbbb08e3c7c5e083dd8ecc1642ec3bf5e2a0625f8
+      security_id: US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed
+      provider_symbol: VIAC
+      event_id: 9b5993757b6cca78060ae50c15583bd8ed83419e108e94a5864f8c17a1958175
+      official_evidence_sha256: 9d7db1953af321183b4f85d71a019e831d899c4ab312826f79878b902d3bcb2a
+      successor_security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      successor_symbol: PARA
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: ee005d986f1be1dbbeb1901b0e6c883f3ac506550e31935c0e90673994bfca26
+    - target_id: 8deb00ef721325cbf7331cf58cb8584eaccad19429246cacab209a9c7cf24f4b
+      security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+      provider_symbol: PARA
+      event_id: f553d393e8bda37561276fec20d5b9bce5f722609e466e96bc9e199c624891c1
+      official_evidence_sha256: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+      successor_security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      successor_symbol: PSKY
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: d29146eb20b9b6db0857b2ac01a9b0db028d126498da4bd878e6c43aa489b92c
+    final:
+      target_id: ae6842a6fdf1df1f1353ceb9890f852ad4bf5420e6b2d04e32cf1c5e61c50bff
+      security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+      provider_symbol: PSKY
+      status: passed
+      source_sha256: b6ee895f78863e3cd320d7652399e7e699be2016b319768052126b1e183a54ce
+      cache_wrapper_sha256: fc32c51f4c60e7897c81c62e559d58e5ef71feb3b9422b9f025dc287704a7541
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 216524a2eee30741484210db94a57a4b14ab7f93707136b78df6267875ab66ff
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 216524a2eee30741484210db94a57a4b14ab7f93707136b78df6267875ab66ff
+      security_id: US:EODHD:de36b2d8-e15a-5d33-8493-4cc37d0c6ce0
+      provider_symbol: BHI
+      event_id: 65e11dc305e6ff5464b487b52f4a1ea7bff6b69ae49b6d69b9b3b218b0d573b3
+      official_evidence_sha256: 5715bf60c305ea00c74c2771b5810688d773cdebd9eab6a43362f27144e3e1b2
+      successor_security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      successor_symbol: BHGE
+      source_sha256: 0fb89edb8ec4fb5b41a24e882d84d0ec8c35e2890c012cf2abc22f611ea51b41
+      cache_wrapper_sha256: 411ead2e51bfe0902ab9c5f27ce49a9ee793f13477560762068de75c78de5e48
+    - target_id: 2584232860aff99d29bd3553d9f8f0872fd49f7359410d01fbac3095476ae5b2
+      security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      provider_symbol: BHGE
+      event_id: a066f9db433eb3bce0365744b09de62e7c10a64d9d89eabed22b3ec359963718
+      official_evidence_sha256: b69b9c819e8ec2b2188a32aeb7edb54b98228d97a150fb692789d2f5dd5b5421
+      successor_security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      successor_symbol: BKR
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 1fcfbcb6811025ca259070718465f95953324b4fb53a9394075207d02920e727
+    final:
+      target_id: 5e5949741c0186142ffd243804ef3acf50e08f6a79e9fd7f4e96e1736d41ef3c
+      security_id: US:EODHD:a1542ac4-30f6-57dc-bf2f-79c0ea6aefd2
+      provider_symbol: BKR
+      status: passed
+      source_sha256: ec39ea85ce50e0eae16a9456bb0ca337a62c67776c864e192957a67f542c6206
+      cache_wrapper_sha256: 3a8011049440f420c5fad451563acde6d33db79734c9b363c36df31111e9d606
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 2d362833156ca2bb1051ec6e3bdd2b31d53efe60fb899aebf207d37ae8b8845b
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 2d362833156ca2bb1051ec6e3bdd2b31d53efe60fb899aebf207d37ae8b8845b
+      security_id: US:EODHD:e38dbe48-7597-54e3-b3f5-4dcc84b7a7f2
+      provider_symbol: SWN
+      event_id: ff81dd691f2f9099111eb7b60a040282e799a109706ebfc94e7eeb8ed8396657
+      official_evidence_sha256: 4c6d7ba3e086959f8740ca773ebf5ae8a2c5a8c569ea6918cf7448d8fa5c8373
+      successor_security_id: US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1
+      successor_symbol: CHK
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 6c378d88323fbbbf121c145cf5770638f347272dd27d3fbb4a97f614bbf5511f
+    - target_id: e8a6309d5fd8f74308c83b2bbeabdcd493e1bc3284f40c6d5ce5916570b12937
+      security_id: US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1
+      provider_symbol: CHK
+      event_id: 3df08f0e3e4593c773a5cddf9d7ff1abc46b017110516d1fb1dc65b3d89dbd43
+      official_evidence_sha256: 5112367c6043776743c2532071d2d857d77faae96c8317f77af0aa0c8e9259b1
+      successor_security_id: US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1
+      successor_symbol: EXE
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: cd4ee9dc9768ce627262d9fc804261fa8584c189eefe6d512e143f889befe600
+    final:
+      target_id: af7a5f93e9f258403ef18cfa423f48711071a3e6b7979f4e68ccc023daa42a13
+      security_id: US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1
+      provider_symbol: EXE
+      status: passed
+      source_sha256: 5f76cbd2dc2b225a60c7a718bd34bc3e419908fbcd2ee548ff5aa01568e861ee
+      cache_wrapper_sha256: 73ca9483d681a219e7627d05b4efebddc22c598fd1eb92bc41c7334ff86be3d5
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: ed476fc5c82bb4e87e2a13df3da9585e04d7e4a4d702265966e962fcf60f0d9d
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: ed476fc5c82bb4e87e2a13df3da9585e04d7e4a4d702265966e962fcf60f0d9d
+      security_id: US:EODHD:fddd22d5-0afa-5cd2-8edc-57c168a781e1
+      provider_symbol: LVLT
+      event_id: f1e63667dc6c63761fd17ba1d83dc8e3214a1ee67f40f4ae4451a07ad118649b
+      official_evidence_sha256: aadf5f0601be1ad44c3e9ad84fcee94782d680f2574635a2e75e0445f3f5582c
+      successor_security_id: US:EODHD:fc00ff9c-3a71-5995-968e-bc351f950cb4
+      successor_symbol: CTL
+      source_sha256: c1325312ff47f78d0d66343b25793280ce7f8f037ebc7d1019d29f091d5775b8
+      cache_wrapper_sha256: 10c1f2d2badd892e7b8ed2da0476fd8dc5cfbf564629aeb16b853efe4eecee22
+    - target_id: aec54fbabeb8e22fa9b34af648d5caa491f51bccdf0c4780f603f97e511836b1
+      security_id: US:EODHD:fc00ff9c-3a71-5995-968e-bc351f950cb4
+      provider_symbol: CTL
+      event_id: 67c829d4b6057105578c6d20fbf6231b5b22716cd68e0f637f4a80ccb894ef15
+      official_evidence_sha256: e2cec2305520d654eb7667991407dcdcd137ec6bc88b47f652c4168cc7037810
+      successor_security_id: US:EODHD:3d809999-79d0-52f9-b937-a51185539c4d
+      successor_symbol: LUMN
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 0d11960f23227f3798590c87c132543241f97ffa327320386c4de77f7931e123
+    final:
+      target_id: 8b29f2129d3aa16e7cefb88dcacac10c49fd15b7b423cdd97b7003ae7cdf7188
+      security_id: US:EODHD:3d809999-79d0-52f9-b937-a51185539c4d
+      provider_symbol: LUMN
+      status: passed
+      source_sha256: cdee278c926fb95d76a4f231ba21eab13faf64b9939a8edf9ac79c1580ff8e16
+      cache_wrapper_sha256: efe8743d8be89730f361302d91c63dc80de59474866553b50185bb883e4a5f5b
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 76cfddc97b878414119dfd9db08e356216cffc4ddc2839188451df534e11296f
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 76cfddc97b878414119dfd9db08e356216cffc4ddc2839188451df534e11296f
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      provider_symbol: SYMC
+      event_id: fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd
+      official_evidence_sha256: 87a584813a438f76e5cee9ae800678771bc2df5ed6f3e50461273c1849026e18
+      successor_security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      successor_symbol: NLOK
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/SYMC?period1=1420070400&period2=1572652800&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1572652800
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: d0a3dcdb139b2664e528c5de4d35759bb6e548fa87c338e6b8780b96a1d0b245
+    - target_id: 9648613a55f30697b2d3bb6893a3526b7d582169fc2dca21b6e2e4c9e481e1b6
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      provider_symbol: NLOK
+      event_id: d82975bc819ca47d10c7b2e2ca963422629980682933a4ee13b355fe564e6344
+      official_evidence_sha256: a4732aaa030033aebda1d508bed1742e237694dc97fdb1a71f9af02f20d95d83
+      successor_security_id: US:EODHD:cb0b8e57-3e09-542c-adf8-fe2c98d97b55
+      successor_symbol: GEN
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/NLOK?period1=1572825600&period2=1667865600&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1572825600
+      request_period2: 1667865600
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: afe8c6a11f3f9e285e0a646aefed2374a8fb662c935c27dcb667b9a68a0441b7
+    final:
+      target_id: 088a66b2d0065fea58f5c99be2836df32174d12891ad2bf4e58e309cc97c8fb7
+      security_id: US:EODHD:cb0b8e57-3e09-542c-adf8-fe2c98d97b55
+      provider_symbol: GEN
+      status: passed
+      source_sha256: 48960ed5996f22024a2d14859a2ee5a80f406b70675bcaba668fc76a90af5d8b
+      cache_wrapper_sha256: 891b01bd7c1b3f02401a856b943c1f3af6c142bdefac4289e353ffa7006ef330
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: db0b71658e5be84e59ce757b46b9c150d8d8af4e768b3fbb37e2d2f7191d3204
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: db0b71658e5be84e59ce757b46b9c150d8d8af4e768b3fbb37e2d2f7191d3204
+      security_id: US:EODHD:ad5cea39-7b69-5c0f-93a2-d20add8a8215
+      provider_symbol: HCP
+      event_id: c1fcf2e0a945029e70d7fec9b7fd1fe4594b55fb1393a7ada6779e5847865cea
+      official_evidence_sha256: 95bdb7778547e2ba5f7cffdec705fa82bca3624cdef8687c0acde96aa807aa11
+      successor_security_id: US:EODHD:e2fd43dd-fa96-5923-9657-d0debbb1624f
+      successor_symbol: PEAK
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/HCP?period1=1420070400&period2=1572912000&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1572912000
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: f6773e54612f981fc1979bd33138f874aedb12b9072639fde018a89a00dc9ce8
+    - target_id: 3f03ec2b1a12bb81f0f1c509f6332b45c4928958926828120535333341a38679
+      security_id: US:EODHD:e2fd43dd-fa96-5923-9657-d0debbb1624f
+      provider_symbol: PEAK
+      event_id: c41ed40379aa79d7a8487a3dde30a4430acc567154374a744c9e568384fb8b1d
+      official_evidence_sha256: 90cef98d6c21bfa6b8ef6a90c2cf60ca71550b7261ff75a0b1c0269f8ce9642b
+      successor_security_id: US:EODHD:8d68d53d-1e0e-5bea-b83e-4c20e4c84e46
+      successor_symbol: DOC
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/PEAK?period1=1572912000&period2=1709510400&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1572912000
+      request_period2: 1709510400
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: ad43fbd66ae5f8a34ffba49c73bd5f934b53053bcbd635380928318d28de414d
+    final:
+      target_id: 887d7806e76fe4ea34a0e036f59374179adb4eed628889ad178e138f608adbd7
+      security_id: US:EODHD:8d68d53d-1e0e-5bea-b83e-4c20e4c84e46
+      provider_symbol: DOC
+      status: passed
+      source_sha256: b0e1a5347da609434464ea6aa4216920f5e65af2188e33a1d0188ccff1e00d7c
+      cache_wrapper_sha256: 957da0f96a14979386cf89c08deba0c6d6db89d74bee400009926fa42f5b6949
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 4ab52d92c2c23f0103bd7b20979c943223107b3ff72d5ca3d42e5717ccf5bb10
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 4ab52d92c2c23f0103bd7b20979c943223107b3ff72d5ca3d42e5717ccf5bb10
+      security_id: US:EODHD:e5169183-3360-57f2-846e-da37cb18541a
+      provider_symbol: COG
+      event_id: 4a4620d5793b1264ccbe8c1d2a6467bdd0912e1a20e0c454471607541d2ae8dc
+      official_evidence_sha256: cd18f9c67f680493dce1af86c085622ce643861778066b187d64dc58771c3067
+      successor_security_id: US:EODHD:97c04993-9845-5645-a7dd-027c590e3502
+      successor_symbol: CTRA
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/COG?period1=1420070400&period2=1633132800&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1633132800
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 20c5261d2c79e1cfd488ca0ede5768fe37213091059df8139d29cf104c7344d7
+    - target_id: c2b2bae7a161d772a3d93e68d225d16b33bb171730a4190834506ac4031c4020
+      security_id: US:EODHD:97c04993-9845-5645-a7dd-027c590e3502
+      provider_symbol: CTRA
+      event_id: 5032cd35962b692c582727f327aed674bc2891855b6b0b3aebdcaf9bb5cdbb86
+      official_evidence_sha256: 9a81b57c2014e927ffdc33dce69c4e2f44f1d52388ad5629e915367bae289098
+      successor_security_id: US:EODHD:ca1ee47b-8a9a-5987-a462-3478aa1c4fcf
+      successor_symbol: DVN
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/CTRA?period1=1420070400&period2=1784160000&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1784160000
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: ae1ee0df1435a83cf869dfa72f0bb7839cb6747643086470dfed44f8c381042e
+    final:
+      target_id: d98e475b31e0e3a211d4f6816afe3c178025b54b4ff5f35330814730a705abf4
+      security_id: US:EODHD:ca1ee47b-8a9a-5987-a462-3478aa1c4fcf
+      provider_symbol: DVN
+      status: passed
+      source_sha256: b8457e4caa677e6c107295a353428ef73b9d02e7a443f2e886bc30208eda22f0
+      cache_wrapper_sha256: 1f2ab059187f954177164addbd377b2662960e301532cbcc5a231f264010c889
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: cd1e97410c98f59bfb065a2f3642cb602b77241b1bc5dd0428631f0f0ff80e31
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: cd1e97410c98f59bfb065a2f3642cb602b77241b1bc5dd0428631f0f0ff80e31
+      security_id: US:EODHD:64cd243f-ab9c-516f-967d-15b06ccfcca2
+      provider_symbol: XEC
+      event_id: 4a8be9ecafc3d03c987213c87627904a4aefcf49027d35da3ede76f3c46ffdc2
+      official_evidence_sha256: cd18f9c67f680493dce1af86c085622ce643861778066b187d64dc58771c3067
+      successor_security_id: US:EODHD:e5169183-3360-57f2-846e-da37cb18541a
+      successor_symbol: COG
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/XEC?period1=1420070400&period2=1633046400&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1633046400
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 65e565dafadfe3211e0ed943c63527e36e9c9a796b608b91e31f8d4c362a9de0
+    - target_id: 4ab52d92c2c23f0103bd7b20979c943223107b3ff72d5ca3d42e5717ccf5bb10
+      security_id: US:EODHD:e5169183-3360-57f2-846e-da37cb18541a
+      provider_symbol: COG
+      event_id: 4a4620d5793b1264ccbe8c1d2a6467bdd0912e1a20e0c454471607541d2ae8dc
+      official_evidence_sha256: cd18f9c67f680493dce1af86c085622ce643861778066b187d64dc58771c3067
+      successor_security_id: US:EODHD:97c04993-9845-5645-a7dd-027c590e3502
+      successor_symbol: CTRA
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/COG?period1=1420070400&period2=1633132800&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1633132800
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 20c5261d2c79e1cfd488ca0ede5768fe37213091059df8139d29cf104c7344d7
+    - target_id: c2b2bae7a161d772a3d93e68d225d16b33bb171730a4190834506ac4031c4020
+      security_id: US:EODHD:97c04993-9845-5645-a7dd-027c590e3502
+      provider_symbol: CTRA
+      event_id: 5032cd35962b692c582727f327aed674bc2891855b6b0b3aebdcaf9bb5cdbb86
+      official_evidence_sha256: 9a81b57c2014e927ffdc33dce69c4e2f44f1d52388ad5629e915367bae289098
+      successor_security_id: US:EODHD:ca1ee47b-8a9a-5987-a462-3478aa1c4fcf
+      successor_symbol: DVN
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/CTRA?period1=1420070400&period2=1784160000&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1784160000
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: ae1ee0df1435a83cf869dfa72f0bb7839cb6747643086470dfed44f8c381042e
+    final:
+      target_id: d98e475b31e0e3a211d4f6816afe3c178025b54b4ff5f35330814730a705abf4
+      security_id: US:EODHD:ca1ee47b-8a9a-5987-a462-3478aa1c4fcf
+      provider_symbol: DVN
+      status: passed
+      source_sha256: b8457e4caa677e6c107295a353428ef73b9d02e7a443f2e886bc30208eda22f0
+      cache_wrapper_sha256: 1f2ab059187f954177164addbd377b2662960e301532cbcc5a231f264010c889
+      reviewed_price_evidence_sha256: ''
+  - root_target_id: 0c7ccbea602b6ae66d806f0f13edfc3034b14fd7ab49b98bf8e7667b6d0be110
+    basis: code_pinned_official_finite_chain_to_passed_price/v1
+    raw_price_only: true
+    predecessor_backcast: false
+    nodes:
+    - target_id: 0c7ccbea602b6ae66d806f0f13edfc3034b14fd7ab49b98bf8e7667b6d0be110
+      security_id: US:EODHD:eeb1a471-e723-50f0-84a3-d4d5449da3e1
+      provider_symbol: DOW
+      event_id: 0304c3c0fc34b2b8fd923817fc9a23d64a1ce2cbc7e2e0660fd8c21c9f768d35
+      official_evidence_sha256: 1467ee9f95a1d21adda74d321baa6cde8b031feb97ec937b5c53ab275d94a267
+      successor_security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      successor_symbol: DWDP
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/DOW?period1=1420070400&period2=1504224000&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1420070400
+      request_period2: 1504224000
+      http_status: 400
+      no_data_evidence_kind: http_400_bounded_history_not_found
+      source_sha256: cb3b68b7a713eefc67774c442b5ef2ff612b463d5f9eea9f952ccac3f4774253
+      cache_wrapper_sha256: 6f711188374c8a1237df386fe728ae0a4699b76edb545c3851c24ff78236f72c
+    - target_id: 3e5c46bd8f6290b79c0bffec55ab97345577e371d2e3e990184b1be8aae20c98
+      security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      provider_symbol: DWDP
+      event_id: 6cdae488bbfad53d85b79752afcb2c54c5b19b41b9f55800cb8ab4db51901d50
+      official_evidence_sha256: ae9343609e64dcd8421f11462b8782cc8db38a130e03c983714f3c10ba8db311
+      successor_security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      successor_symbol: DD
+      source_url: "https://query1.finance.yahoo.com/v8/finance/chart/DWDP?period1=1504224000&period2=1559520000&events=history&includeAdjustedClose=true&interval=1d"
+      request_period1: 1504224000
+      request_period2: 1559520000
+      http_status: 404
+      no_data_evidence_kind: chart_not_found
+      source_sha256: f0b5f9feeac9f1fc93c31b1edc03fbc1fda4acb3ec5e233ebb39d6f8b66e1769
+      cache_wrapper_sha256: 950bba47cd9b77fddffd94f4ce38a81a4c8c593ffee7557a9cdacb162dfe59a9
+    final:
+      target_id: 30bf8cdc6139b20bdbdc76bbbb8d7a7ebf2b5ae40d1464fbd0c600db3c388cbf
+      security_id: US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3
+      provider_symbol: DD
+      status: passed
+      source_sha256: d5ac0d6afd79c8f99a2dc075db85a0c8d61732c4b43514f1201138eb17c9aa06
+      cache_wrapper_sha256: 7d242e3aed43349bbcd3a4ac1050af38aaa3a43a40f55d67aeb6ff9092e75bb3
+      reviewed_price_evidence_sha256: ''
+  minimum_overlap_sessions: 20
+  minimum_session_coverage_ratio: 0.98
+  close_relative_tolerance: 0.005
+  ohl_relative_tolerance: 0.01
+  absolute_price_tolerance_usd: 0.02
+  scale_stability_relative_tolerance: 0.01
+  minimum_split_regime_sessions: 3
+  terminal_calendar_window_sessions: 60
+  currency: USD
+  instrument_type: EQUITY
+  allowed_exchange_names:
+    - ASE
+    - BTS
+    - NCM
+    - NGM
+    - NMS
+    - NYQ
+    - OQB
+    - OQX
+    - PCX
+    - PNK
+  exchange_timezone: America/New_York
+  currency_basis: >-
+    Both EODHD and Yahoo chart metadata must explicitly declare USD. A missing
+    or different Yahoo currency is a mismatch and cannot be excepted.
+  adjustment_basis: >-
+    Yahoo indicators.quote raw OHLCV is used; indicators.adjclose is never
+    used. For each regime bounded only by stored EODHD split/capital-reduction/
+    stock-dividend events, the Yahoo/EODHD close ratio must be stable before
+    its median scale may normalize OHLC. Every overlapping session is then
+    checked; an unstable regime is a mismatch, never silently rescaled.
+  volume_policy: record_only_not_compared
+  # Yahoo no-data may replace an overlap only for an already verified terminal
+  # identity transition. Spinoffs are intentionally excluded because the
+  # parent security continues independently after the distribution.
+  no_data_terminal_action_types:
+    - delisting
+    - cash_merger
+    - stock_merger
+    - ticker_change
+  # These are the only legal/effective/last-price relations accepted by the
+  # no-data path. Every relation still requires a complete 60-session local
+  # terminal calendar and one exact official event/archive binding.
+  no_data_terminal_date_relations:
+    - event_on_terminal_session
+    - event_on_next_xnys_session
+    - legal_event_in_sessionless_gap_before_next_xnys
+    - stored_non_session_boundary_then_next_xnys_event
+    - event_session_after_last_trade
+  # A generic successor no-data exception never satisfies this requirement.
+  # The direct event-date/new-symbol interval must pass normally, unless the
+  # source target is one of the separately code-pinned finite chains above.
+  no_data_successor_validation_basis: exact_official_successor_identity_interval_with_passed_price_overlap
+  delisted_exception_code: delisted_provider_unsupported
+  # OLD LILA/LILAK are intentionally stored from Yahoo because EODHD has no
+  # regular-way history for these retired tracking shares.  A second Yahoo
+  # request would only compare Yahoo with itself, so publication instead
+  # recomputes the already-pinned CC0 v3 overlap check from exact archived bytes.
+  # The upstream provider behind the CC0 compilation is undisclosed; the report
+  # must preserve that limitation and the 33-session uncrosschecked tail.
+  pinned_external_overlaps:
+    - symbol: LILA
+      active_from: "2015-07-02"
+      active_to: "2017-12-29"
+      primary_source: yahoo_chart_adjusted_basis_primary
+      primary_source_url: "https://query1.finance.yahoo.com/v8/finance/chart/LILA?period1=1434931200&period2=1514764800&interval=1d&events=history"
+      external_source: boris_kaggle_cc0_v3
+      external_source_url: "https://www.kaggle.com/api/v1/datasets/download/borismarjanovic/price-volume-data-for-all-us-stocks-etfs/Data%2FStocks%2Flila.us.txt?datasetVersionNumber=3"
+      external_source_sha256: "9885111c20ca809ce8791c429cd8eb66a62470b53ab71f7c2ac6a573d576f73c"
+      raw_rows: 599
+      overlap_start: "2015-07-02"
+      overlap_end: "2017-11-10"
+      overlap_sessions: 597
+      primary_sessions: 630
+      uncrosschecked_tail_sessions: 33
+      minimum_return_correlation: 0.995
+      maximum_p99_scaled_close_error: 0.05
+      upstream_provider_disclosed: false
+      independent_provider_claimed: false
+      license: "CC0: Public Domain"
+      license_url: "https://www.kaggle.com/datasets/borismarjanovic/price-volume-data-for-all-us-stocks-etfs/versions/3"
+    - symbol: LILAK
+      active_from: "2015-07-02"
+      active_to: "2017-12-29"
+      primary_source: yahoo_chart_adjusted_basis_primary
+      primary_source_url: "https://query1.finance.yahoo.com/v8/finance/chart/LILAK?period1=1434931200&period2=1514764800&interval=1d&events=history"
+      external_source: boris_kaggle_cc0_v3
+      external_source_url: "https://www.kaggle.com/api/v1/datasets/download/borismarjanovic/price-volume-data-for-all-us-stocks-etfs/Data%2FStocks%2Flilak.us.txt?datasetVersionNumber=3"
+      external_source_sha256: "b5a56cc0c1b5a478354d85149c2370ccde6146f7f43d94566dcc76382db610e4"
+      raw_rows: 599
+      overlap_start: "2015-07-02"
+      overlap_end: "2017-11-10"
+      overlap_sessions: 597
+      primary_sessions: 630
+      uncrosschecked_tail_sessions: 33
+      minimum_return_correlation: 0.995
+      maximum_p99_scaled_close_error: 0.05
+      upstream_provider_disclosed: false
+      independent_provider_claimed: false
+      license: "CC0: Public Domain"
+      license_url: "https://www.kaggle.com/datasets/borismarjanovic/price-volume-data-for-all-us-stocks-etfs/versions/3"
+
+# A reused ticker may only be segmented when every side on which the provider
+# has out-of-identity rows is documented by an exact archived official source.
+# The Nasdaq notice proves regular-way LILA/LILAK trading starts on 2015-07-02;
+# the earlier temporary when-issued symbols are archived evidence, not an
+# investable LILA/LILAK price interval.  The SEC split-off release proves both
+# the old identity's 2017-12-29 end and the new issuer's 2018-01-02 start.
+identity_boundaries:
+  - symbol: LILA
+    boundary: active_from
+    date: "2015-07-02"
+    source_url: "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2015-79"
+    source_kind: nasdaq_trader_equity_alert
+  - symbol: LILA
+    boundary: active_to
+    date: "2017-12-29"
+    source_url: "https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm"
+    source_kind: sec_exhibit_99_1
+  - symbol: LILA
+    boundary: active_from
+    date: "2018-01-02"
+    source_url: "https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm"
+    source_kind: sec_exhibit_99_1
+  - symbol: LILAK
+    boundary: active_from
+    date: "2015-07-02"
+    source_url: "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2015-79"
+    source_kind: nasdaq_trader_equity_alert
+  - symbol: LILAK
+    boundary: active_to
+    date: "2017-12-29"
+    source_url: "https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm"
+    source_kind: sec_exhibit_99_1
+  - symbol: LILAK
+    boundary: active_from
+    date: "2018-01-02"
+    source_url: "https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm"
+    source_kind: sec_exhibit_99_1

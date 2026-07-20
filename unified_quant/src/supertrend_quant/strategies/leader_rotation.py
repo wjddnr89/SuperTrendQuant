@@ -39,11 +39,18 @@ class PreparedLeaderBacktest(PreparedBacktest):
         account: AccountSnapshot,
         mode: str = "backtest",
     ) -> OrderPlan:
+        triple_exit = enabled_component(self.strategy.config, "exits", "triple_supertrend_flip")
+        tail_bars = max(
+            1,
+            int(self.strategy.config.exit.sell_confirm_bars),
+            int(triple_exit.params.get("confirm_bars", 1)) if triple_exit is not None else 1,
+        )
         prepared = scheduled_prepared_slice(
             self.prepared,
             signal_ts,
             account,
             self.universe_schedule,
+            tail_bars=tail_bars,
         )
         market_filter_states = {
             symbol: _trend_is_up_at(trend, signal_ts)

@@ -475,6 +475,27 @@ def _load_index_event_schedule(
     repository = LocalDatasetRepository(config.data_store.local_cache_dir)
     release, _ = repository.current_release()
 
+    class _ReleaseRepositoryView:
+        """Expose only the versions pinned by the selected immutable release."""
+
+        def current_manifest(self, dataset: str):
+            version = release.dataset_versions.get(dataset) if release is not None else None
+            return (
+                repository.manifest_for_version(dataset, version)
+                if version is not None
+                else None
+            )
+
+        def read_frame(
+            self,
+            dataset: str,
+            _version: str | None = None,
+        ) -> pd.DataFrame:
+            version = release.dataset_versions.get(dataset) if release is not None else None
+            if version is None:
+                return pd.DataFrame()
+            return repository.read_frame(dataset, version)
+
     def release_frame(dataset: str) -> pd.DataFrame:
         version = release.dataset_versions.get(dataset) if release is not None else None
         if release is not None and version is None:
@@ -492,6 +513,15 @@ def _load_index_event_schedule(
         security_master = release_frame("security_master")
     except FileNotFoundError:
         security_master = pd.DataFrame()
+    from .market_store.operational_validation import (
+        reviewed_operational_index_identity_gap_fingerprints,
+    )
+
+    reviewed_identity_gaps = frozenset(
+        reviewed_operational_index_identity_gap_fingerprints(
+            _ReleaseRepositoryView()
+        )
+    )
     replayer = IndexEventReplayer(anchors, events, overlays)
     anchor_dates = pd.to_datetime(
         anchors.loc[anchors["index_id"].astype(str).isin(profiles), "anchor_date"],
@@ -512,8 +542,17 @@ def _load_index_event_schedule(
     start = max(first_by_profile).normalize()
     end = pd.Timestamp(as_of).normalize()
     change_dates = {start, end}
+    relevant_anchors = anchors.loc[
+        anchors["index_id"].astype(str).isin(profiles)
+    ]
+    relevant_events = events.loc[
+        events["index_id"].astype(str).isin(profiles)
+    ]
+    relevant_security_ids = set(relevant_anchors["security_id"].astype(str)) | set(
+        relevant_events["security_id"].astype(str)
+    )
     for value in pd.to_datetime(
-        events.loc[events["index_id"].astype(str).isin(profiles), "effective_date"],
+        relevant_events["effective_date"],
         errors="coerce",
     ).dropna():
         normalized = value.normalize()
@@ -521,14 +560,30 @@ def _load_index_event_schedule(
             change_dates.add(normalized)
     if not overlays.empty:
         relevant = overlays.loc[overlays["index_id"].astype(str).isin(profiles)]
+        if "security_id" in relevant:
+            relevant_security_ids.update(relevant["security_id"].astype(str))
         for column in ("effective_from", "effective_to"):
             for value in pd.to_datetime(relevant[column], errors="coerce").dropna():
                 normalized = value.normalize()
                 if start <= normalized <= end:
                     change_dates.add(normalized)
 
+    # Membership is keyed by stable security ID, but the strategy schedule is
+    # keyed by ticker.  A constituent can change ticker without an index event;
+    # include those symbol-history boundaries so an existing position and its
+    # corporate actions move to the new symbol on the correct session.
+    relevant_history = symbol_history.loc[
+        symbol_history["security_id"].astype(str).isin(relevant_security_ids)
+    ]
+    for value in pd.to_datetime(
+        relevant_history["effective_from"], errors="coerce"
+    ).dropna():
+        normalized = value.normalize()
+        if start <= normalized <= end:
+            change_dates.add(normalized)
+
     entries: list[UniverseScheduleEntry] = []
-    prior_symbols: tuple[str, ...] | None = None
+    prior_identity_membership: tuple[tuple[str, str], ...] | None = None
     for effective_date in sorted(change_dates):
         memberships = [
             replayer.members_on(
@@ -549,13 +604,18 @@ def _load_index_event_schedule(
                 tuple(sorted(member_profiles)),
                 symbol_history,
                 security_master,
+                events,
+                reviewed_identity_gaps,
             )
             for security_id, member_profiles in profile_by_security.items()
         )
-        symbols = tuple(member.symbol for member in members)
-        if symbols != prior_symbols:
+        identity_membership = tuple(
+            (member.symbol, member.security_id)
+            for member in members
+        )
+        if identity_membership != prior_identity_membership:
             entries.append(UniverseScheduleEntry(effective_date.date().isoformat(), members))
-            prior_symbols = symbols
+            prior_identity_membership = identity_membership
     if not entries:
         raise ValueError("Index event replay produced no universe schedule.")
     return tuple(entries)
@@ -567,14 +627,38 @@ def _index_security_member(
     profiles: tuple[str, ...],
     symbol_history: pd.DataFrame,
     security_master: pd.DataFrame,
+    index_events: pd.DataFrame | None = None,
+    reviewed_identity_gap_fingerprints: Iterable[str] = (),
 ) -> UniverseMember:
     history = symbol_history.loc[symbol_history["security_id"].astype(str) == security_id].copy()
     starts = pd.to_datetime(history["effective_from"], errors="coerce")
     ends = pd.to_datetime(history["effective_to"], errors="coerce")
     active = history.loc[(starts <= effective_date) & (ends.isna() | (ends >= effective_date))]
     if active.empty:
-        raise ValueError(f"No active symbol for security_id={security_id} on {effective_date.date()}")
-    symbol_row = active.sort_values("effective_from").iloc[-1]
+        if not _reviewed_inactive_index_member_allowed(
+            security_id=security_id,
+            effective_date=effective_date,
+            profiles=profiles,
+            index_events=index_events,
+            reviewed_identity_gap_fingerprints=reviewed_identity_gap_fingerprints,
+        ):
+            raise ValueError(
+                f"No active symbol for security_id={security_id} on {effective_date.date()}"
+            )
+        # The exact reviewed operational exception represents an index source
+        # whose REMOVE date lags a legal terminal transition.  Keep the final
+        # historical alias only as the schedule's display identity; the
+        # corporate-action ledger retires it and the runner's stale-schedule
+        # guard prevents any post-transition re-entry.
+        historical = history.loc[starts <= effective_date]
+        if historical.empty:
+            raise ValueError(
+                f"No historical symbol for reviewed security_id={security_id} "
+                f"on {effective_date.date()}"
+            )
+        symbol_row = historical.sort_values("effective_from").iloc[-1]
+    else:
+        symbol_row = active.sort_values("effective_from").iloc[-1]
     master = security_master.loc[
         security_master["security_id"].astype(str) == security_id
     ] if not security_master.empty else pd.DataFrame()
@@ -592,6 +676,78 @@ def _index_security_member(
         benchmark=_profile_benchmark(profiles, "US"),
         profiles=profiles,
     )
+
+
+def _reviewed_inactive_index_member_allowed(
+    *,
+    security_id: str,
+    effective_date: pd.Timestamp,
+    profiles: tuple[str, ...],
+    index_events: pd.DataFrame | None,
+    reviewed_identity_gap_fingerprints: Iterable[str],
+) -> bool:
+    """Allow only an exact, release-bound reviewed index identity gap."""
+
+    allowed = {
+        str(value).strip().lower()
+        for value in reviewed_identity_gap_fingerprints
+        if str(value).strip()
+    }
+    required_columns = {
+        "event_id",
+        "index_id",
+        "effective_date",
+        "operation",
+        "security_id",
+        "source",
+        "source_hash",
+    }
+    if (
+        not allowed
+        or not profiles
+        or index_events is None
+        or index_events.empty
+        or not required_columns.issubset(index_events.columns)
+    ):
+        return False
+
+    from .market_store.validation import index_member_identity_gap_fingerprint
+
+    replay_date = effective_date.date().isoformat()
+    prepared = index_events.copy()
+    prepared["_effective_date"] = pd.to_datetime(
+        prepared["effective_date"], errors="coerce"
+    ).dt.normalize()
+    prepared = prepared.loc[
+        prepared["security_id"].astype(str).eq(security_id)
+        & prepared["operation"].astype(str).str.upper().eq("REMOVE")
+        & prepared["_effective_date"].notna()
+        & (prepared["_effective_date"] > effective_date.normalize())
+    ]
+
+    for index_id in profiles:
+        removals = prepared.loc[
+            prepared["index_id"].astype(str).eq(index_id)
+        ].sort_values(["_effective_date", "event_id"], kind="stable")
+        if removals.empty:
+            return False
+        next_remove = removals.iloc[0]
+        fingerprint = index_member_identity_gap_fingerprint(
+            index_id=index_id,
+            replay_date=replay_date,
+            security_id=security_id,
+            next_remove_event_id=str(next_remove.get("event_id", "") or ""),
+            next_remove_effective_date=pd.Timestamp(
+                next_remove["_effective_date"]
+            ).date().isoformat(),
+            next_remove_source=str(next_remove.get("source", "") or ""),
+            next_remove_source_hash=str(
+                next_remove.get("source_hash", "") or ""
+            ),
+        )
+        if fingerprint not in allowed:
+            return False
+    return True
 
 
 def _load_file_members(path: str, market: str) -> tuple[UniverseMember, ...]:
@@ -721,6 +877,18 @@ def _unique_members(members: Iterable[UniverseMember]) -> tuple[UniverseMember, 
     by_symbol: dict[str, UniverseMember] = {}
     for member in members:
         if member.symbol:
+            existing = by_symbol.get(member.symbol)
+            if (
+                existing is not None
+                and existing.security_id
+                and member.security_id
+                and existing.security_id != member.security_id
+            ):
+                raise ValueError(
+                    "One ticker maps to multiple security identities in the same "
+                    f"universe snapshot: {member.symbol} -> "
+                    f"{existing.security_id}, {member.security_id}"
+                )
             by_symbol[member.symbol] = member
     return tuple(by_symbol[symbol] for symbol in sorted(by_symbol))
 

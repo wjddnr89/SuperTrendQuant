@@ -144,8 +144,17 @@ class PortfolioLedger:
             )
             if pd.isna(effective) or effective.normalize() > cutoff:
                 continue
-            eligible.append((effective.normalize(), event_id, action))
-        for _, event_id, action in sorted(eligible, key=lambda item: (item[0], item[1])):
+            eligible.append(
+                (
+                    effective.normalize(),
+                    _action_priority(action),
+                    event_id,
+                    action,
+                )
+            )
+        for _, _, event_id, action in sorted(
+            eligible, key=lambda item: (item[0], item[1], item[2])
+        ):
             events.append(self._apply_one(action, cutoff))
             if (
                 event_id not in self.cash_receivables
@@ -252,8 +261,19 @@ class PortfolioLedger:
             if not new_symbol or ratio is None or ratio <= 0:
                 self.unresolved_event_ids.add(event_id)
                 return LedgerEvent(event_id, action_type, symbol, "Missing spin-off symbol or ratio; event left unapplied.")
-            cost_fraction = float(_metadata(action).get("cost_basis_fraction", 0.0))
-            cost_fraction = min(max(cost_fraction, 0.0), 1.0)
+            raw_cost_fraction = _metadata(action).get("cost_basis_fraction")
+            try:
+                cost_fraction = float(raw_cost_fraction)
+            except (TypeError, ValueError):
+                cost_fraction = float("nan")
+            if not 0.0 <= cost_fraction <= 1.0:
+                self.unresolved_event_ids.add(event_id)
+                return LedgerEvent(
+                    event_id,
+                    action_type,
+                    symbol,
+                    "Missing or invalid spin-off cost-basis allocation; event left unapplied.",
+                )
             new_quantity = position.quantity * ratio
             cash_in_lieu, new_quantity, unresolved = _cash_in_lieu(action, new_quantity)
             if unresolved:
@@ -301,8 +321,15 @@ class PortfolioLedger:
             self.positions.pop(symbol, None)
             if new_quantity > 1e-12:
                 self._merge_position(new_symbol, new_quantity, new_average)
-            self.cash += cash_in_lieu
-            return LedgerEvent(event_id, action_type, symbol, f"Position converted to {new_symbol}.", cash_in_lieu)
+            cash_delta = position.quantity * (cash_amount or 0.0) + cash_in_lieu
+            self.cash += cash_delta
+            return LedgerEvent(
+                event_id,
+                action_type,
+                symbol,
+                f"Position converted to {new_symbol}.",
+                cash_delta,
+            )
 
         if action_type == "ticker_change":
             new_symbol = str(action.get("new_symbol") or "")
@@ -314,7 +341,37 @@ class PortfolioLedger:
             return LedgerEvent(event_id, action_type, symbol, f"Ticker changed to {new_symbol}.")
 
         if action_type == "delisting":
-            cash_delta = position.quantity * (cash_amount or 0.0)
+            if cash_amount is None:
+                self.unresolved_event_ids.add(event_id)
+                return LedgerEvent(
+                    event_id,
+                    action_type,
+                    symbol,
+                    "Missing delisting settlement amount; event left unapplied.",
+                )
+            cash_delta = position.quantity * cash_amount
+            metadata = _metadata(action)
+            raw_payment_date = action.get("payment_date") or action.get("pay_date")
+            if metadata.get("exit_only") is True and raw_payment_date:
+                payment_date = pd.Timestamp(raw_payment_date).normalize()
+                if payment_date > cutoff:
+                    self.positions.pop(symbol, None)
+                    self.cash_receivables[event_id] = CashReceivable(
+                        event_id,
+                        action_type,
+                        symbol,
+                        cash_delta,
+                        payment_date.date().isoformat(),
+                    )
+                    self.entitled_event_ids.add(event_id)
+                    return LedgerEvent(
+                        event_id,
+                        action_type,
+                        symbol,
+                        f"Exit-only liquidation receivable recorded for {payment_date.date()}.",
+                        0.0,
+                        cash_delta,
+                    )
             self.cash += cash_delta
             self.positions.pop(symbol, None)
             return LedgerEvent(event_id, action_type, symbol, "Delisted position removed.", cash_delta)
@@ -338,6 +395,22 @@ def _optional_float(value: Any) -> float | None:
     return float(value)
 
 
+def _action_priority(action: Mapping[str, Any]) -> int:
+    action_type = str(action.get("action_type") or "").lower()
+    return {
+        "spinoff": 10,
+        "split": 20,
+        "stock_dividend": 20,
+        "capital_reduction": 20,
+        # Merger-linked cash belongs to the source holder immediately before
+        # a same-session stock conversion removes that source position.
+        "cash_dividend": 30,
+        "special_dividend": 30,
+        "stock_merger": 40,
+        "ticker_change": 90,
+    }.get(action_type, 50)
+
+
 def _metadata(action: Mapping[str, Any]) -> dict[str, Any]:
     value = action.get("metadata", {})
     if isinstance(value, dict):
@@ -345,7 +418,10 @@ def _metadata(action: Mapping[str, Any]) -> dict[str, Any]:
     if isinstance(value, str) and value:
         import json
 
-        parsed = json.loads(value)
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            return {}
         return parsed if isinstance(parsed, dict) else {}
     return {}
 

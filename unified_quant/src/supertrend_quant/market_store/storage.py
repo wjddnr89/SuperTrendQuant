@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import hmac
+import json
 import os
 import tempfile
+import threading
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Callable, Mapping, Protocol
+from urllib.parse import quote, urlparse
 
 from ..config import R2Config
+from ..env import load_env
 from .manifest import CurrentPointer, DataRelease, DatasetManifest, sha256_bytes, write_atomic
 from .schemas import dataset_spec
 
@@ -17,6 +23,14 @@ class ConditionalWriteFailed(RuntimeError):
 
 class ObjectNotFound(FileNotFoundError):
     pass
+
+
+class R2PrivacyVerificationError(RuntimeError):
+    """Raised before a write when private R2 visibility is not proven."""
+
+
+class R2PrivacyVerificationUnavailable(R2PrivacyVerificationError):
+    """Raised when the authoritative Cloudflare visibility API is unavailable."""
 
 
 @dataclass(frozen=True)
@@ -47,11 +61,15 @@ class LocalObjectStore:
     """Filesystem implementation used for local operation and CAS tests."""
 
     def __init__(self, root: str | Path):
-        self.root = Path(root)
+        # Keep one canonical form.  ``_path`` resolves object keys, so retaining
+        # a relative root makes ``list`` compare absolute descendants against a
+        # relative base and raises ``ValueError`` in normal CLI configurations
+        # such as ``local_cache_dir: data/cache``.
+        self.root = Path(root).resolve()
 
     def _path(self, key: str) -> Path:
         path = (self.root / key.lstrip("/")).resolve()
-        root = self.root.resolve()
+        root = self.root
         if path != root and root not in path.parents:
             raise ValueError(f"Object key escapes store root: {key}")
         return path
@@ -95,10 +113,464 @@ class LocalObjectStore:
         )
 
 
+_CLOUDFLARE_API_BASE = "https://api.cloudflare.com/client/v4"
+_PUBLIC_ACL_URIS = (
+    "acs.amazonaws.com/groups/global/allusers",
+    "acs.amazonaws.com/groups/global/authenticatedusers",
+)
+
+
+def _r2_endpoint_identity(endpoint_url: str) -> tuple[str, str]:
+    parsed = urlparse(endpoint_url)
+    host = (parsed.hostname or "").lower()
+    suffix = ".r2.cloudflarestorage.com"
+    if parsed.scheme != "https" or not host.endswith(suffix):
+        raise R2PrivacyVerificationError(
+            "R2 privacy verification requires the official HTTPS "
+            "*.r2.cloudflarestorage.com S3 endpoint."
+        )
+    account_id = host.split(".", 1)[0]
+    if len(account_id) != 32 or any(
+        character not in "0123456789abcdef" for character in account_id
+    ):
+        raise R2PrivacyVerificationError(
+            "R2 account identity cannot be derived from the S3 endpoint."
+        )
+    return account_id, host
+
+
+def _parse_attestation_time(value: Any, field: str) -> datetime:
+    text = str(value or "").strip()
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise R2PrivacyVerificationError(
+            f"R2 privacy attestation has an invalid {field}."
+        ) from exc
+    if parsed.tzinfo is None:
+        raise R2PrivacyVerificationError(
+            f"R2 privacy attestation {field} must include a timezone."
+        )
+    return parsed.astimezone(timezone.utc)
+
+
+def _policy_allows_public_access(policy: Any) -> bool:
+    if isinstance(policy, str):
+        try:
+            policy = json.loads(policy)
+        except (TypeError, ValueError):
+            return True
+    if not isinstance(policy, dict):
+        return True
+    statements = policy.get("Statement", ())
+    if isinstance(statements, dict):
+        statements = (statements,)
+    if not isinstance(statements, (list, tuple)):
+        return True
+    for statement in statements:
+        if not isinstance(statement, dict):
+            return True
+        if str(statement.get("Effect") or "").lower() != "allow":
+            continue
+        principal = statement.get("Principal")
+        if principal is None:
+            return True
+        public = principal == "*"
+        if isinstance(principal, dict):
+            for value in principal.values():
+                if value == "*":
+                    public = True
+                    break
+                if isinstance(value, (list, tuple)):
+                    if "*" in value or any(not isinstance(item, str) for item in value):
+                        public = True
+                        break
+                elif not isinstance(value, str):
+                    public = True
+                    break
+        elif not isinstance(principal, str):
+            return True
+        if public:
+            return True
+    return False
+
+
+class R2PrivacyVerifier:
+    """Fail-closed R2 visibility verifier used before the first object write.
+
+    R2's S3-compatible API does not currently expose authoritative public
+    bucket state. We still probe its ACL/policy/public-access operations first
+    and reject any positive public finding. Final proof comes from Cloudflare's
+    managed-domain and custom-domain REST endpoints, or from a short-lived
+    hash-pinned attestation containing either those exact API checks or an
+    operator-reviewed Cloudflare dashboard screenshot.
+    """
+
+    def __init__(
+        self,
+        config: R2Config,
+        s3_client,
+        endpoint_url: str,
+        *,
+        environ: Mapping[str, str] | None = None,
+        http_session=None,
+        now: Callable[[], datetime] | None = None,
+    ):
+        self.config = config
+        self.s3_client = s3_client
+        self.endpoint_url = endpoint_url
+        self.environ = os.environ if environ is None else environ
+        self.http_session = http_session
+        self.now = now or (lambda: datetime.now(timezone.utc))
+
+    def verify(self) -> dict[str, Any]:
+        endpoint_account, endpoint_host = _r2_endpoint_identity(self.endpoint_url)
+        s3_checks = self._inspect_s3_visibility()
+        configured_account_id = str(
+            self.environ.get(self.config.account_id_env, "")
+        ).strip()
+        api_token = str(self.environ.get(self.config.api_token_env, "")).strip()
+        attestation_path = str(
+            self.environ.get(self.config.privacy_attestation_path_env, "")
+        ).strip()
+        attestation_hash = str(
+            self.environ.get(self.config.privacy_attestation_sha256_env, "")
+        ).strip()
+
+        if configured_account_id and not api_token:
+            if not (attestation_path and attestation_hash):
+                raise R2PrivacyVerificationError(
+                    "R2 private-state verification requires "
+                    f"{self.config.api_token_env} when "
+                    f"{self.config.account_id_env} is set, or both "
+                    "privacy-attestation environment values."
+                )
+        if configured_account_id and configured_account_id != endpoint_account:
+            raise R2PrivacyVerificationError(
+                "Cloudflare account ID does not match the configured R2 endpoint."
+            )
+        if api_token:
+            # The official R2 S3 endpoint is account-scoped, so a separate
+            # account-id secret is redundant.  Accept an explicit value only
+            # as a consistency assertion and otherwise derive it from the
+            # already validated HTTPS endpoint.
+            account_id = configured_account_id or endpoint_account
+            if account_id != endpoint_account:
+                raise R2PrivacyVerificationError(
+                    "Cloudflare account ID does not match the configured R2 endpoint."
+                )
+            try:
+                result = self._verify_cloudflare_api(account_id, api_token)
+            except R2PrivacyVerificationUnavailable:
+                if not (attestation_path and attestation_hash):
+                    raise
+            else:
+                return {**result, "s3_checks": s3_checks}
+
+        if not (attestation_path and attestation_hash):
+            raise R2PrivacyVerificationError(
+                "R2 public-domain state cannot be proven through the S3 API. "
+                f"Set {self.config.api_token_env} (the account ID is derived "
+                "from the R2 endpoint), or provide both hash-pinned "
+                "privacy-attestation values."
+            )
+        result = self._verify_attestation(
+            Path(attestation_path),
+            attestation_hash,
+            endpoint_account=endpoint_account,
+            endpoint_host=endpoint_host,
+        )
+        return {**result, "s3_checks": s3_checks}
+
+    def _inspect_s3_visibility(self) -> dict[str, str]:
+        try:
+            self.s3_client.head_bucket(Bucket=self.config.bucket)
+        except Exception as exc:
+            code = _client_error_code(exc) or type(exc).__name__
+            raise R2PrivacyVerificationError(
+                f"R2 bucket identity check failed before publication ({code})."
+            ) from None
+
+        checks: dict[str, str] = {"head_bucket": "passed"}
+        probes = (
+            ("public_access_block", "get_public_access_block"),
+            ("bucket_policy_status", "get_bucket_policy_status"),
+            ("bucket_policy", "get_bucket_policy"),
+            ("bucket_acl", "get_bucket_acl"),
+        )
+        for label, method_name in probes:
+            method = getattr(self.s3_client, method_name, None)
+            if not callable(method):
+                checks[label] = "unsupported"
+                continue
+            try:
+                response = method(Bucket=self.config.bucket)
+            except Exception as exc:
+                code = _client_error_code(exc) or type(exc).__name__
+                checks[label] = f"unavailable:{code}"
+                continue
+            if not isinstance(response, dict):
+                raise R2PrivacyVerificationError(
+                    f"R2 S3 {label} returned an invalid response."
+                )
+            if label == "public_access_block":
+                block = response.get("PublicAccessBlockConfiguration")
+                protected = isinstance(block, dict) and all(
+                    block.get(key) is True
+                    for key in (
+                        "BlockPublicAcls",
+                        "IgnorePublicAcls",
+                        "BlockPublicPolicy",
+                        "RestrictPublicBuckets",
+                    )
+                )
+                checks[label] = "protective" if protected else "inconclusive"
+            elif label == "bucket_policy_status":
+                status = response.get("PolicyStatus")
+                if isinstance(status, dict) and status.get("IsPublic") is True:
+                    raise R2PrivacyVerificationError(
+                        "R2 S3 bucket policy status reports public access."
+                    )
+                checks[label] = (
+                    "not_public"
+                    if isinstance(status, dict) and status.get("IsPublic") is False
+                    else "inconclusive"
+                )
+            elif label == "bucket_policy":
+                if _policy_allows_public_access(response.get("Policy")):
+                    raise R2PrivacyVerificationError(
+                        "R2 S3 bucket policy allows a public principal."
+                    )
+                checks[label] = "not_public"
+            else:
+                grants = response.get("Grants", ())
+                if not isinstance(grants, (list, tuple)):
+                    raise R2PrivacyVerificationError(
+                        "R2 S3 bucket ACL returned invalid grants."
+                    )
+                for grant in grants:
+                    if not isinstance(grant, dict) or not isinstance(
+                        grant.get("Grantee"), dict
+                    ):
+                        raise R2PrivacyVerificationError(
+                            "R2 S3 bucket ACL contains an invalid grant."
+                        )
+                    grantee = grant["Grantee"]
+                    uri = str(grantee.get("URI") or "").lower()
+                    if any(value in uri for value in _PUBLIC_ACL_URIS):
+                        raise R2PrivacyVerificationError(
+                            "R2 S3 bucket ACL contains a public group grant."
+                        )
+                checks[label] = "not_public"
+        return checks
+
+    def _api_get(self, url: str, token: str, label: str) -> dict[str, Any]:
+        if self.http_session is None:
+            try:
+                import requests
+            except ModuleNotFoundError as exc:
+                raise R2PrivacyVerificationUnavailable(
+                    "requests is required for Cloudflare R2 privacy verification."
+                ) from exc
+            self.http_session = requests.Session()
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {token}",
+            "cf-r2-jurisdiction": self.config.jurisdiction,
+        }
+        try:
+            response = self.http_session.get(
+                url,
+                headers=headers,
+                timeout=30,
+                allow_redirects=False,
+            )
+        except Exception as exc:
+            raise R2PrivacyVerificationUnavailable(
+                f"Cloudflare {label} privacy check failed ({type(exc).__name__})."
+            ) from None
+        if int(getattr(response, "status_code", 0)) != 200:
+            raise R2PrivacyVerificationUnavailable(
+                f"Cloudflare {label} privacy check returned HTTP "
+                f"{int(getattr(response, 'status_code', 0))}."
+            )
+        try:
+            payload = response.json()
+        except Exception:
+            raise R2PrivacyVerificationUnavailable(
+                f"Cloudflare {label} privacy check returned invalid JSON."
+            ) from None
+        if not isinstance(payload, dict) or payload.get("success") is not True:
+            raise R2PrivacyVerificationUnavailable(
+                f"Cloudflare {label} privacy check did not report success."
+            )
+        result = payload.get("result")
+        if not isinstance(result, dict):
+            raise R2PrivacyVerificationUnavailable(
+                f"Cloudflare {label} privacy check has no result object."
+            )
+        return result
+
+    def _verify_cloudflare_api(self, account_id: str, token: str) -> dict[str, Any]:
+        root = (
+            f"{_CLOUDFLARE_API_BASE}/accounts/{quote(account_id, safe='')}"
+            f"/r2/buckets/{quote(self.config.bucket, safe='')}/domains"
+        )
+        managed = self._api_get(f"{root}/managed", token, "r2.dev")
+        if (
+            managed.get("enabled") is not False
+            or not str(managed.get("domain") or "").strip().lower().endswith(".r2.dev")
+        ):
+            raise R2PrivacyVerificationError(
+                "Cloudflare reports the R2 r2.dev domain as public or indeterminate."
+            )
+        custom_result = self._api_get(f"{root}/custom", token, "custom-domain")
+        domains = custom_result.get("domains")
+        if not isinstance(domains, list):
+            raise R2PrivacyVerificationError(
+                "Cloudflare custom-domain privacy check returned no domain list."
+            )
+        for domain in domains:
+            if (
+                not isinstance(domain, dict)
+                or domain.get("enabled") is not False
+                or not str(domain.get("domain") or "").strip()
+            ):
+                raise R2PrivacyVerificationError(
+                    "Cloudflare reports an enabled or indeterminate R2 custom domain."
+                )
+        return {
+            "status": "verified_private",
+            "verification_method": "cloudflare_api",
+            "managed_r2_dev_enabled": False,
+            "custom_domain_count": len(domains),
+            "enabled_custom_domain_count": 0,
+            "checked_at": self.now().astimezone(timezone.utc).isoformat(),
+        }
+
+    def _verify_attestation(
+        self,
+        path: Path,
+        expected_hash: str,
+        *,
+        endpoint_account: str,
+        endpoint_host: str,
+    ) -> dict[str, Any]:
+        if not path.is_file():
+            raise R2PrivacyVerificationError("R2 privacy attestation file is missing.")
+        content = path.read_bytes()
+        if len(content) > 1_000_000:
+            raise R2PrivacyVerificationError("R2 privacy attestation is unexpectedly large.")
+        normalized_hash = expected_hash.strip().lower()
+        if len(normalized_hash) != 64 or any(
+            character not in "0123456789abcdef" for character in normalized_hash
+        ):
+            raise R2PrivacyVerificationError(
+                "R2 privacy attestation SHA-256 pin is invalid."
+            )
+        actual_hash = sha256_bytes(content)
+        if not hmac.compare_digest(actual_hash, normalized_hash):
+            raise R2PrivacyVerificationError("R2 privacy attestation hash mismatch.")
+        try:
+            value = json.loads(content)
+        except (TypeError, ValueError, UnicodeDecodeError) as exc:
+            raise R2PrivacyVerificationError(
+                "R2 privacy attestation is invalid JSON."
+            ) from exc
+        if not isinstance(value, dict):
+            raise R2PrivacyVerificationError(
+                "R2 privacy attestation must be a JSON object."
+            )
+        method = str(value.get("verification_method") or "")
+        if (
+            value.get("schema_version") != 1
+            or method not in {"cloudflare_api", "cloudflare_dashboard"}
+            or str(value.get("account_id") or "") != endpoint_account
+            or str(value.get("bucket") or "") != self.config.bucket
+            or str(value.get("s3_endpoint_host") or "").lower() != endpoint_host
+        ):
+            raise R2PrivacyVerificationError(
+                "R2 privacy attestation is not bound to this account, endpoint, and bucket."
+            )
+        managed = value.get("managed_domain")
+        domains = value.get("custom_domains")
+        if method == "cloudflare_api":
+            if value.get("api_checks") != {
+                "custom_domains": "passed",
+                "managed_r2_dev": "passed",
+            }:
+                raise R2PrivacyVerificationError(
+                    "R2 privacy attestation lacks exact Cloudflare API checks."
+                )
+            if (
+                not isinstance(managed, dict)
+                or managed.get("enabled") is not False
+                or not str(managed.get("domain") or "")
+                .strip()
+                .lower()
+                .endswith(".r2.dev")
+            ):
+                raise R2PrivacyVerificationError(
+                    "R2 privacy attestation does not prove r2.dev is disabled."
+                )
+            if not isinstance(domains, list) or any(
+                not isinstance(domain, dict)
+                or domain.get("enabled") is not False
+                or not str(domain.get("domain") or "").strip()
+                for domain in domains
+            ):
+                raise R2PrivacyVerificationError(
+                    "R2 privacy attestation contains an enabled or indeterminate custom domain."
+                )
+        else:
+            evidence = value.get("dashboard_evidence")
+            evidence_hash = (
+                str(evidence.get("screenshot_sha256") or "").strip().lower()
+                if isinstance(evidence, dict)
+                else ""
+            )
+            if (
+                value.get("dashboard_checks")
+                != {"custom_domains": "passed", "managed_r2_dev": "passed"}
+                or not isinstance(managed, dict)
+                or managed
+                != {"enabled": False, "state": "public_development_url_disabled"}
+                or domains != []
+                or not isinstance(evidence, dict)
+                or evidence.get("kind") != "user_supplied_dashboard_screenshot"
+                or len(evidence_hash) != 64
+                or any(character not in "0123456789abcdef" for character in evidence_hash)
+            ):
+                raise R2PrivacyVerificationError(
+                    "R2 dashboard attestation does not exactly prove private domain state."
+                )
+        checked_at = _parse_attestation_time(value.get("checked_at"), "checked_at")
+        expires_at = _parse_attestation_time(value.get("expires_at"), "expires_at")
+        now = self.now().astimezone(timezone.utc)
+        max_age = self.config.privacy_attestation_max_age_seconds
+        age = (now - checked_at).total_seconds()
+        validity = (expires_at - checked_at).total_seconds()
+        if age < -60 or age > max_age or expires_at < now or not 0 < validity <= max_age:
+            raise R2PrivacyVerificationError(
+                "R2 privacy attestation is stale, expired, or has excessive validity."
+            )
+        return {
+            "status": "verified_private",
+            "verification_method": "hash_pinned_attestation",
+            "managed_r2_dev_enabled": False,
+            "custom_domain_count": len(domains),
+            "enabled_custom_domain_count": 0,
+            "checked_at": checked_at.isoformat(),
+            "attestation_sha256": actual_hash,
+            "attestation_source": method,
+        }
+
+
 class R2ObjectStore:
     def __init__(self, config: R2Config):
         if not config.enabled:
             raise ValueError("R2 is disabled in configuration.")
+        load_env()
         try:
             import boto3
         except ModuleNotFoundError as exc:
@@ -120,6 +592,38 @@ class R2ObjectStore:
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
         )
+        self._privacy_verifier = R2PrivacyVerifier(
+            config,
+            self.client,
+            endpoint_url,
+        )
+        self._privacy_lock = threading.Lock()
+        self._privacy_verification: dict[str, Any] | None = None
+
+    def verify_private_access(self, *, force: bool = False) -> dict[str, Any]:
+        """Prove actual private visibility and cache it for this process."""
+
+        with self._privacy_lock:
+            if force:
+                self._privacy_verification = None
+            if self._privacy_verification is None or force:
+                result = self._privacy_verifier.verify()
+                if (
+                    not isinstance(result, dict)
+                    or result.get("status") != "verified_private"
+                    or result.get("verification_method")
+                    not in {"cloudflare_api", "hash_pinned_attestation"}
+                    or result.get("managed_r2_dev_enabled") is not False
+                    or type(result.get("enabled_custom_domain_count")) is not int
+                    or result.get("enabled_custom_domain_count") != 0
+                    or not isinstance(result.get("s3_checks"), dict)
+                    or result["s3_checks"].get("head_bucket") != "passed"
+                ):
+                    raise R2PrivacyVerificationError(
+                        "R2 private-state verifier returned an invalid result."
+                    )
+                self._privacy_verification = result
+            return dict(self._privacy_verification)
 
     def _key(self, key: str) -> str:
         return "/".join(part for part in (self.prefix, key.lstrip("/")) if part)
@@ -153,6 +657,10 @@ class R2ObjectStore:
             kwargs["IfMatch"] = if_match
         if if_none_match:
             kwargs["IfNoneMatch"] = "*"
+        # This is intentionally immediately before the first mutating S3 call.
+        # All R2 write paths therefore fail closed even if they bypass the
+        # operator publication script.
+        self.verify_private_access()
         try:
             response = self.client.put_object(**kwargs)
         except Exception as exc:
@@ -360,11 +868,21 @@ class DatasetCache:
         if "object_path" not in frame:
             return
         for object_path in frame["object_path"].dropna().astype(str).drop_duplicates():
-            local = self.root / object_path
+            local = _safe_cache_object_path(self.root, object_path)
             if local.is_file():
                 continue
             value = self.store.get(object_path)
             write_atomic(local, value.data)
+
+
+def _safe_cache_object_path(root: str | Path, object_path: str) -> Path:
+    """Resolve an archive object below a cache root before any remote read."""
+
+    resolved_root = Path(root).resolve()
+    resolved = (resolved_root / object_path).resolve()
+    if resolved == resolved_root or resolved_root not in resolved.parents:
+        raise ValueError(f"Archive object path escapes cache root: {object_path}")
+    return resolved
 
 
 @dataclass(frozen=True)
@@ -380,6 +898,8 @@ def publish_repository(
     repository,
     store: ObjectStore,
     datasets: tuple[str, ...],
+    *,
+    supersede_versions: Mapping[str, str] | None = None,
 ) -> tuple[RepositoryPublishResult, ...]:
     publisher = DatasetPublisher(store)
     output: list[RepositoryPublishResult] = []
@@ -394,7 +914,68 @@ def publish_repository(
         chain = repository.manifest_chain(dataset, local.version)
         chain_versions = {item.version for item in chain}
         if remote is not None and remote.version == local.version:
-            output.append(RepositoryPublishResult(dataset, local.version, False, detail="already current"))
+            # A previous interrupted publication may have advanced the current
+            # pointer after writing the leaf manifest while an older inherited
+            # manifest or archive payload is still absent.  Reconcile the full
+            # immutable lineage before treating an equal pointer as complete.
+            for manifest in chain:
+                root = repository.root / repository.version_prefix(
+                    dataset, manifest.version
+                )
+                publisher.upload_version(root, manifest)
+            if dataset == "source_archive":
+                archive_frame = repository.read_frame(dataset)
+                for object_path in archive_frame.get("object_path", ()):
+                    path = repository.root / str(object_path)
+                    if path.is_file():
+                        publisher._put_immutable(str(object_path), path.read_bytes())
+            output.append(
+                RepositoryPublishResult(
+                    dataset,
+                    local.version,
+                    False,
+                    detail="already current; immutable lineage reconciled",
+                )
+            )
+            continue
+        allowed_supersede = str((supersede_versions or {}).get(dataset, ""))
+        if (
+            remote is not None
+            and remote.version not in chain_versions
+            and remote.version == allowed_supersede
+        ):
+            # The operator explicitly bound this overwrite to the immutable
+            # dataset version referenced by the previously validated remote
+            # release. Preserve every old object, upload the complete new
+            # lineage, and use the pointer ETag so a concurrent writer still
+            # wins safely.
+            for manifest in chain:
+                root = repository.root / repository.version_prefix(
+                    dataset, manifest.version
+                )
+                publisher.upload_version(root, manifest)
+            if dataset == "source_archive":
+                archive_frame = repository.read_frame(dataset)
+                for object_path in archive_frame.get("object_path", ()):
+                    path = repository.root / str(object_path)
+                    if path.is_file():
+                        publisher._put_immutable(str(object_path), path.read_bytes())
+            advanced = publisher.advance_current(
+                local,
+                expected_pointer_etag=remote_etag,
+            )
+            output.append(
+                RepositoryPublishResult(
+                    dataset,
+                    local.version,
+                    not advanced.conflict,
+                    conflict=advanced.conflict,
+                    detail=(
+                        advanced.conflict_prefix
+                        or f"superseded remote release version {allowed_supersede}"
+                    ),
+                )
+            )
             continue
         if remote is not None and remote.version not in chain_versions:
             remote_manifest = DatasetManifest.from_bytes(
@@ -568,7 +1149,12 @@ def _merge_divergent_dataset(
         return None, f"cannot merge divergent versions without pandas: {exc}"
 
     local_lineage = _local_lineage(repository, dataset, local)
-    remote_lineage = _remote_lineage(store, dataset, remote)
+    remote_lineage = _remote_lineage_with_local_repair(
+        repository,
+        store,
+        dataset,
+        remote,
+    )
     remote_versions = {manifest.version for manifest in remote_lineage}
     common = next(
         (manifest for manifest in local_lineage if manifest.version in remote_versions),
@@ -660,6 +1246,44 @@ def _remote_lineage(
         output.append(current)
         seen.add(current.version)
     return output
+
+
+def _remote_lineage_with_local_repair(
+    repository,
+    store: ObjectStore,
+    dataset: str,
+    latest: DatasetManifest,
+) -> list[DatasetManifest]:
+    """Repair interrupted immutable-parent uploads before a divergent merge.
+
+    A publisher can be interrupted after advancing a child pointer but before
+    every inherited parent manifest is present remotely.  If the missing
+    parent is part of this publisher's validated local repository, restore
+    that one immutable version and retry the lineage read.  Missing versions
+    that are not available locally still fail closed.
+    """
+
+    publisher = DatasetPublisher(store)
+    repaired: set[str] = set()
+    while True:
+        try:
+            return _remote_lineage(store, dataset, latest)
+        except ObjectNotFound as exc:
+            key = str(exc)
+            prefix = f"datasets/{dataset}/versions/"
+            suffix = "/manifest.json"
+            if not key.startswith(prefix) or not key.endswith(suffix):
+                raise
+            version = key[len(prefix) : -len(suffix)]
+            if not version or version in repaired:
+                raise
+            try:
+                manifest = repository.manifest_for_version(dataset, version)
+            except (FileNotFoundError, ObjectNotFound):
+                raise exc
+            root = repository.root / repository.version_prefix(dataset, version)
+            publisher.upload_version(root, manifest)
+            repaired.add(version)
 
 
 def _frame_changes(dataset: str, base, candidate, primary_key: tuple[str, ...]):

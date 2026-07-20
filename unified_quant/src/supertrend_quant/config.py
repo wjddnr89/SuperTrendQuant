@@ -13,6 +13,7 @@ from .ranking import validate_scoring_config
 
 _PACKAGE_PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _REPOSITORY_ROOT = _PACKAGE_PROJECT_ROOT.parent
+DEFAULT_DATA_CONFIG_PATH = _PACKAGE_PROJECT_ROOT / "configs" / "data.yaml"
 
 UNIVERSE_PROFILE_MARKETS: dict[str, str] = {
     "nasdaq100": "US",
@@ -156,12 +157,19 @@ class R2Config:
     region: str = "auto"
     access_key_env: str = "R2_ACCESS_KEY_ID"
     secret_key_env: str = "R2_SECRET_ACCESS_KEY"
+    account_id_env: str = "CLOUDFLARE_ACCOUNT_ID"
+    api_token_env: str = "CLOUDFLARE_API_TOKEN"
+    privacy_attestation_path_env: str = "R2_PRIVACY_ATTESTATION_PATH"
+    privacy_attestation_sha256_env: str = "R2_PRIVACY_ATTESTATION_SHA256"
+    privacy_attestation_max_age_seconds: int = 900
+    jurisdiction: str = "default"
 
 
 @dataclass(frozen=True)
 class DataStoreConfig:
     provider: str = "parquet"
-    auto_sync: bool = True
+    ingest_source: str = "eodhd"
+    auto_sync: bool = False
     price_mode: str = "total_return_adjusted"
     dividend_tax_rate: float = 0.0
     incomplete_action_policy: str = "warn"
@@ -216,21 +224,45 @@ def load_config(path: str | Path) -> AppConfig:
 def load_split_config(
     strategy_path: str | Path,
     runtime_path: str | Path,
+    data_path: str | Path | None = None,
 ) -> AppConfig:
     strategy_raw = _load_mapping(_resolve_existing_path(strategy_path))
     runtime_raw = _load_mapping(_resolve_existing_path(runtime_path))
-    merged = compose_split_config(strategy_raw, runtime_raw)
+    data_raw = _load_mapping(_resolve_existing_path(data_path or DEFAULT_DATA_CONFIG_PATH))
+    merged = compose_split_config(strategy_raw, runtime_raw, data_raw)
     return parse_config(merged)
+
+
+def load_data_store_config(
+    path: str | Path | None = None,
+    *,
+    market: str = "US",
+) -> DataStoreConfig:
+    """Load the shared market-data configuration without a strategy/runtime."""
+
+    raw = _load_mapping(_resolve_existing_path(path or DEFAULT_DATA_CONFIG_PATH))
+    _validate_data_config_schema(raw)
+    return _parse_data_store_config(
+        {"data_store": _data_store_mapping_for_market(raw, market)}
+    )
 
 
 def compose_split_config(
     strategy_raw: dict[str, Any],
     runtime_raw: dict[str, Any],
+    shared_data_raw: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     _validate_strategy_schema(strategy_raw)
     _validate_runtime_schema(runtime_raw)
-    data_raw = _optional_mapping(runtime_raw, "data")
-    data_store_raw = _optional_mapping(runtime_raw, "data_store")
+    if shared_data_raw:
+        _validate_data_config_schema(shared_data_raw)
+    runtime_data_raw = _optional_mapping(runtime_raw, "data")
+    market = str(runtime_raw.get("market", "US")).upper()
+    data_store_raw = (
+        _data_store_mapping_for_market(shared_data_raw, market)
+        if shared_data_raw
+        else {}
+    )
     portfolio_raw = _optional_mapping(strategy_raw, "portfolio")
     capital_raw = _optional_mapping(runtime_raw, "capital")
     costs_raw = _optional_mapping(runtime_raw, "costs")
@@ -261,7 +293,7 @@ def compose_split_config(
             "type": str(scoring_raw.get("type") or "").strip(),
             "params": _optional_mapping(scoring_raw, "params"),
         },
-        "market": str(runtime_raw.get("market", "US")).upper(),
+        "market": market,
         "universe": (
             dict(runtime_universe)
             if isinstance(runtime_universe, dict)
@@ -271,8 +303,8 @@ def compose_split_config(
                 "symbols": runtime_raw.get("symbols", ()) or (),
             }
         ),
-        "timeframe": str(data_raw.get("timeframe") or strategy_raw.get("timeframe") or "1d"),
-        "period": str(data_raw.get("period") or strategy_raw.get("period") or "max"),
+        "timeframe": str(runtime_data_raw.get("timeframe") or strategy_raw.get("timeframe") or "1d"),
+        "period": str(runtime_data_raw.get("period") or strategy_raw.get("period") or "max"),
         "data_store": dict(data_store_raw),
         "capital": {
             "initial_cash": runtime_raw.get("initial_cash", capital_raw.get("initial_cash", 10_000.0)),
@@ -479,7 +511,8 @@ def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
     )
     config = DataStoreConfig(
         provider=str(value.get("provider", "parquet")).strip().lower(),
-        auto_sync=bool(value.get("auto_sync", True)),
+        ingest_source=str(value.get("ingest_source", "eodhd")).strip().lower(),
+        auto_sync=bool(value.get("auto_sync", False)),
         price_mode=str(
             value.get("signal_price_mode", value.get("price_mode", "total_return_adjusted"))
         ).strip().lower(),
@@ -498,10 +531,36 @@ def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
             region=str(r2_raw.get("region", "auto")),
             access_key_env=str(r2_raw.get("access_key_env", "R2_ACCESS_KEY_ID")),
             secret_key_env=str(r2_raw.get("secret_key_env", "R2_SECRET_ACCESS_KEY")),
+            account_id_env=str(
+                r2_raw.get("account_id_env", "CLOUDFLARE_ACCOUNT_ID")
+            ),
+            api_token_env=str(
+                r2_raw.get("api_token_env", "CLOUDFLARE_API_TOKEN")
+            ),
+            privacy_attestation_path_env=str(
+                r2_raw.get(
+                    "privacy_attestation_path_env",
+                    "R2_PRIVACY_ATTESTATION_PATH",
+                )
+            ),
+            privacy_attestation_sha256_env=str(
+                r2_raw.get(
+                    "privacy_attestation_sha256_env",
+                    "R2_PRIVACY_ATTESTATION_SHA256",
+                )
+            ),
+            privacy_attestation_max_age_seconds=int(
+                r2_raw.get("privacy_attestation_max_age_seconds", 900)
+            ),
+            jurisdiction=str(r2_raw.get("jurisdiction", "default"))
+            .strip()
+            .lower(),
         ),
     )
     if config.provider not in {"parquet", "yahoo"}:
         raise ValueError("data_store.provider must be parquet or yahoo.")
+    if config.ingest_source not in {"eodhd", "yahoo"}:
+        raise ValueError("data_store.ingest_source must be eodhd or yahoo.")
     if config.price_mode not in {"total_return_adjusted", "split_adjusted", "raw"}:
         raise ValueError(
             "data_store.price_mode must be total_return_adjusted, split_adjusted, or raw."
@@ -514,6 +573,23 @@ def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
         raise ValueError("data_store.index_source_mode must be best_effort or official_only.")
     if config.r2.enabled and (not config.r2.endpoint_env or not config.r2.bucket):
         raise ValueError("data_store.r2 endpoint_env and bucket are required when enabled.")
+    if config.r2.jurisdiction not in {"default", "eu", "fedramp"}:
+        raise ValueError("data_store.r2.jurisdiction must be default, eu, or fedramp.")
+    if not 60 <= config.r2.privacy_attestation_max_age_seconds <= 3600:
+        raise ValueError(
+            "data_store.r2.privacy_attestation_max_age_seconds must be between "
+            "60 and 3600."
+        )
+    r2_env_names = (
+        config.r2.access_key_env,
+        config.r2.secret_key_env,
+        config.r2.account_id_env,
+        config.r2.api_token_env,
+        config.r2.privacy_attestation_path_env,
+        config.r2.privacy_attestation_sha256_env,
+    )
+    if config.r2.enabled and any(not value.strip() for value in r2_env_names):
+        raise ValueError("data_store.r2 environment variable names must not be empty.")
     return config
 
 
@@ -522,6 +598,7 @@ def _validate_data_store_mapping(raw: dict[str, Any]) -> None:
         raw,
         {
             "provider",
+            "ingest_source",
             "auto_sync",
             "signal_price_mode",
             "dividend_withholding_rate",
@@ -548,6 +625,12 @@ def _validate_data_store_mapping(raw: dict[str, Any]) -> None:
             "region",
             "access_key_env",
             "secret_key_env",
+            "account_id_env",
+            "api_token_env",
+            "privacy_attestation_path_env",
+            "privacy_attestation_sha256_env",
+            "privacy_attestation_max_age_seconds",
+            "jurisdiction",
         },
         "data_store.r2",
     )
@@ -810,6 +893,31 @@ def _validate_strategy_schema(raw: dict[str, Any]) -> None:
         _reject_unknown_keys(hurdle, {"multiplier"}, "strategy.rotation.hurdle")
 
 
+def _validate_data_config_schema(raw: dict[str, Any]) -> None:
+    _reject_unknown_keys(raw, {"data_store", "market_overrides"}, "data config")
+    data_store = _required_mapping(raw, "data_store")
+    _validate_data_store_mapping(data_store)
+    overrides = _optional_mapping(raw, "market_overrides")
+    for market, override in overrides.items():
+        normalized = str(market).upper()
+        if normalized not in {"US", "KR", "AUTO"}:
+            raise ValueError(f"Unsupported data config market override: {market}")
+        if not isinstance(override, dict):
+            raise ValueError(f"data config market_overrides.{market} must be a mapping.")
+        _validate_data_store_mapping(override)
+
+
+def _data_store_mapping_for_market(raw: dict[str, Any], market: str) -> dict[str, Any]:
+    base = _required_mapping(raw, "data_store")
+    overrides = _optional_mapping(raw, "market_overrides")
+    selected = overrides.get(str(market).upper())
+    if selected is None:
+        return dict(base)
+    if not isinstance(selected, dict):
+        raise ValueError(f"data config market_overrides.{market} must be a mapping.")
+    return dict(selected)
+
+
 def _validate_runtime_schema(raw: dict[str, Any]) -> None:
     _reject_unknown_keys(
         raw,
@@ -826,7 +934,6 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
             "live",
             "paper",
             "backtest",
-            "data_store",
         },
         "runtime",
     )
@@ -836,11 +943,6 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
             raise ValueError("runtime.universe must be a mapping.")
         _validate_universe_mapping(universe)
     _reject_unknown_keys(_optional_mapping(raw, "data"), {"timeframe", "period"}, "runtime.data")
-    data_store = raw.get("data_store")
-    if data_store is not None:
-        if not isinstance(data_store, dict):
-            raise ValueError("runtime.data_store must be a mapping.")
-        _validate_data_store_mapping(data_store)
     _reject_unknown_keys(_optional_mapping(raw, "capital"), {"initial_cash"}, "runtime.capital")
     _reject_unknown_keys(_optional_mapping(raw, "costs"), {"fee_rate", "slippage_rate"}, "runtime.costs")
     _reject_unknown_keys(_optional_mapping(raw, "execution"), {"order_type", "broker", "live_confirm_required"}, "runtime.execution")

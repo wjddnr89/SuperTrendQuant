@@ -14,10 +14,10 @@ universe:
 data:
   timeframe: 1d
   period: max
-data_store:
-  provider: parquet
-  index_source_mode: best_effort
 ```
+
+The shared Parquet provider and `index_source_mode` now live in
+`configs/data.yaml`, not in each US runtime.
 
 For each profile, the engine selects the latest anchor on or before the target
 date, applies every actual-effective-date `ADD` and `REMOVE`, then applies active

@@ -26,6 +26,7 @@ from .evaluation import (
     split_index,
 )
 from .export import (
+    config_to_data_dict,
     config_to_split_dicts,
     save_split_yaml,
     split_yaml_text,
@@ -85,6 +86,7 @@ __all__ = [
     "build_benchmark_report",
     "cartesian_overlays",
     "config_to_split_dicts",
+    "config_to_data_dict",
     "compare_strategies",
     "data_request_key",
     "discover_strategy_files",

@@ -41,7 +41,7 @@ class DataStoreConfigTest(unittest.TestCase):
         self.assertEqual(config.timeframe, "1d")
         self.assertEqual(config.period, "max")
         self.assertEqual(config.data_store.provider, "parquet")
-        self.assertTrue(config.data_store.auto_sync)
+        self.assertFalse(config.data_store.auto_sync)
         self.assertEqual(config.data_store.price_mode, "total_return_adjusted")
         self.assertEqual(config.data_store.signal_price_mode, "total_return_adjusted")
         self.assertEqual(config.data_store.dividend_tax_rate, 0.0)
@@ -64,6 +64,40 @@ class DataStoreConfigTest(unittest.TestCase):
             )
         )
         self.assertEqual(config.data_store.r2.endpoint_env, "PRIVATE_R2_ENDPOINT")
+        self.assertEqual(
+            config.data_store.r2.account_id_env,
+            "CLOUDFLARE_ACCOUNT_ID",
+        )
+        self.assertEqual(
+            config.data_store.r2.api_token_env,
+            "CLOUDFLARE_API_TOKEN",
+        )
+        self.assertEqual(
+            config.data_store.r2.privacy_attestation_max_age_seconds,
+            900,
+        )
+
+    def test_r2_privacy_attestation_window_and_jurisdiction_are_strict(self):
+        for r2, message in (
+            (
+                {
+                    "enabled": True,
+                    "bucket": "market-data",
+                    "privacy_attestation_max_age_seconds": 3601,
+                },
+                "between 60 and 3600",
+            ),
+            (
+                {
+                    "enabled": True,
+                    "bucket": "market-data",
+                    "jurisdiction": "unknown",
+                },
+                "jurisdiction",
+            ),
+        ):
+            with self.subTest(r2=r2), self.assertRaisesRegex(ValueError, message):
+                parse_config(_base_config(data_store={"r2": r2}))
 
     def test_public_data_store_names_and_legacy_aliases_are_compatible(self):
         config = parse_config(
@@ -348,6 +382,17 @@ class VersionedStorageTest(unittest.TestCase):
                 store.put("current.json", b"v2", if_match="stale")
             store.put("current.json", b"v2", if_match=etag)
             self.assertEqual(store.get("current.json").data, b"v2")
+
+    def test_local_store_lists_objects_when_configured_with_relative_root(self):
+        with tempfile.TemporaryDirectory(dir=Path.cwd()) as directory:
+            relative_root = Path(directory).relative_to(Path.cwd())
+            store = LocalObjectStore(relative_root)
+            store.put("conflicts/example/manifest.json", b"manifest")
+
+            self.assertEqual(
+                store.list("conflicts"),
+                ("conflicts/example/manifest.json",),
+            )
 
 
 if __name__ == "__main__":

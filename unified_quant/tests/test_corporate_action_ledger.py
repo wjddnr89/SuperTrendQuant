@@ -180,6 +180,7 @@ class CorporateActionLedgerTest(unittest.TestCase):
                 "effective_date": "2026-01-04",
                 "new_symbol": "NEW",
                 "ratio": 0.25,
+                "cash_amount": 2.0,
             },
             {
                 "event_id": "cash-merger",
@@ -205,7 +206,96 @@ class CorporateActionLedgerTest(unittest.TestCase):
         self.assertNotIn("DEAD", ledger.positions)
         self.assertEqual(ledger.positions["NEW"].quantity, 7.5)
         self.assertAlmostEqual(ledger.positions["NEW"].quantity * ledger.positions["NEW"].avg_price, 1000.0)
-        self.assertEqual(ledger.cash, 27.0)
+        self.assertEqual(ledger.cash, 47.0)
+
+    def test_same_day_spinoff_is_applied_before_ticker_change(self):
+        ledger = PortfolioLedger(
+            cash=0.0,
+            positions={"FBHS": Position("FBHS", 10.0, 100.0)},
+        )
+        # Event IDs intentionally sort in the wrong semantic order.  The
+        # spin-off must still consume the FBHS entitlement before FBHS moves to
+        # FBIN, otherwise the MBC child is silently lost.
+        actions = [
+            {
+                "event_id": "a-rename",
+                "action_type": "ticker_change",
+                "symbol": "FBHS",
+                "effective_date": "2026-01-05",
+                "new_symbol": "FBIN",
+            },
+            {
+                "event_id": "z-spin",
+                "action_type": "spinoff",
+                "symbol": "FBHS",
+                "effective_date": "2026-01-05",
+                "new_symbol": "MBC",
+                "ratio": 1.0,
+                "metadata": {"cost_basis_fraction": 0.4},
+            },
+        ]
+
+        events = ledger.apply_actions(actions, through="2026-01-05")
+
+        self.assertEqual([event.event_id for event in events], ["z-spin", "a-rename"])
+        self.assertNotIn("FBHS", ledger.positions)
+        self.assertEqual(ledger.positions["FBIN"].quantity, 10.0)
+        self.assertEqual(ledger.positions["FBIN"].avg_price, 60.0)
+        self.assertEqual(ledger.positions["MBC"].quantity, 10.0)
+        self.assertEqual(ledger.positions["MBC"].avg_price, 40.0)
+
+    def test_missing_spinoff_basis_is_unresolved_only_for_a_held_parent(self):
+        action = {
+            "event_id": "spin-no-basis",
+            "action_type": "spinoff",
+            "symbol": "PARENT",
+            "effective_date": "2026-01-05",
+            "new_symbol": "CHILD",
+            "ratio": 1.0,
+        }
+        held = PortfolioLedger(
+            cash=0.0,
+            positions={"PARENT": Position("PARENT", 10.0, 100.0)},
+        )
+        event = held.apply_actions([action], through="2026-01-05")[0]
+        self.assertIn("spin-no-basis", held.unresolved_event_ids)
+        self.assertNotIn("spin-no-basis", held.processed_event_ids)
+        self.assertNotIn("CHILD", held.positions)
+        self.assertIn("cost-basis", event.message)
+
+        unheld = PortfolioLedger(cash=0.0, positions={})
+        unheld.apply_actions([action], through="2026-01-05")
+        self.assertIn("spin-no-basis", unheld.processed_event_ids)
+        self.assertNotIn("spin-no-basis", unheld.unresolved_event_ids)
+
+    def test_delisting_without_settlement_amount_stays_unresolved(self):
+        ledger = PortfolioLedger(
+            cash=5.0,
+            positions={"DEAD": Position("DEAD", 3.0, 8.0)},
+        )
+        action = {
+            "event_id": "delist",
+            "action_type": "delisting",
+            "symbol": "DEAD",
+            "effective_date": "2026-01-04",
+            "cash_amount": None,
+        }
+
+        event = ledger.apply_actions([action], through="2026-01-04")[0]
+
+        self.assertIn("DEAD", ledger.positions)
+        self.assertEqual(ledger.cash, 5.0)
+        self.assertIn("delist", ledger.unresolved_event_ids)
+        self.assertNotIn("delist", ledger.processed_event_ids)
+        self.assertIn("left unapplied", event.message)
+
+        corrected = {**action, "cash_amount": 0.0}
+        ledger.apply_actions([corrected], through="2026-01-05")
+
+        self.assertNotIn("DEAD", ledger.positions)
+        self.assertNotIn("delist", ledger.unresolved_event_ids)
+        self.assertIn("delist", ledger.processed_event_ids)
+        self.assertEqual(ledger.cash, 5.0)
 
     def test_capital_reduction_and_stock_dividend(self):
         ledger = PortfolioLedger(

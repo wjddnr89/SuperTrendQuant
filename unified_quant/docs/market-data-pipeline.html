@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>SuperTrendQuant 프로젝트 시스템 지도</title>
+<title>SuperTrendQuant 시장 데이터 파이프라인</title>
 <style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;max-width:736px;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
 </head>
 <body>
-<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="SuperTrendQuant 프로젝트 시스템 지도" srcdoc="&lt;!doctype html&gt;
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="SuperTrendQuant 시장 데이터 파이프라인" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;ko&quot;&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
 &lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
-&lt;title&gt;SuperTrendQuant 프로젝트 시스템 지도&lt;/title&gt;
+&lt;title&gt;SuperTrendQuant 시장 데이터 파이프라인&lt;/title&gt;
 &lt;style&gt;:root {
   color-scheme: light dark;
   background-color: var(--background) !important;
@@ -181,6 +181,71 @@ code:not(pre code) {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
 }
 
 #widget {
@@ -748,954 +813,839 @@ svg {
 html&gt;body{padding:0}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;div id=&quot;stq-system-map&quot;&gt;
+&lt;main id=&quot;stq-market-data-pipeline&quot; class=&quot;pipeline-page&quot;&gt;
   &lt;style&gt;
-    #stq-system-map {
-      color: var(--foreground);
-      display: grid;
-      gap: 2rem;
+    #stq-market-data-pipeline {
+      --stage-line: color-mix(in srgb, var(--foreground) 16%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
       width: 100%;
+      color: var(--foreground);
     }
 
-    #stq-system-map .map-section {
+    #stq-market-data-pipeline .hero {
       display: grid;
-      gap: 0.9rem;
-      padding-top: 0.25rem;
+      gap: 14px;
+      padding-block: 8px;
     }
 
-    #stq-system-map .map-section + .map-section {
-      border-top: 1px solid var(--border);
-      padding-top: 1.75rem;
+    #stq-market-data-pipeline .eyebrow {
+      color: var(--muted-foreground);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
-    #stq-system-map h2,
-    #stq-system-map h3,
-    #stq-system-map p,
-    #stq-system-map ul,
-    #stq-system-map ol,
-    #stq-system-map pre {
-      margin: 0;
+    #stq-market-data-pipeline .hero-copy {
+      max-width: 72ch;
     }
 
-    #stq-system-map .viz-controls {
+    #stq-market-data-pipeline .summary-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
       align-items: center;
-      justify-content: space-between;
     }
 
-    #stq-system-map .focus-buttons {
+    #stq-market-data-pipeline .section {
+      display: grid;
+      gap: 14px;
+      scroll-margin-top: 12px;
+    }
+
+    #stq-market-data-pipeline .section-heading {
+      display: grid;
+      gap: 5px;
+      max-width: 78ch;
+    }
+
+    #stq-market-data-pipeline .mini-nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
+      gap: 8px;
     }
 
-    #stq-system-map .selected-detail {
-      margin: 0;
+    #stq-market-data-pipeline .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      counter-reset: pipeline-step;
     }
 
-    #stq-system-map .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
+    #stq-market-data-pipeline .flow-step {
+      min-width: 0;
+      text-align: left;
+      counter-increment: pipeline-step;
+    }
+
+    #stq-market-data-pipeline .flow-step::before {
+      content: counter(pipeline-step, decimal-leading-zero) &quot; &quot;;
       color: var(--muted-foreground);
     }
 
-    #stq-system-map .legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    #stq-system-map .swatch {
-      width: 0.8rem;
-      height: 0.8rem;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    #stq-system-map .swatch-source { background: var(--viz-series-1); }
-    #stq-system-map .swatch-process { background: var(--viz-series-2); }
-    #stq-system-map .swatch-store { background: var(--viz-series-3); }
-    #stq-system-map .swatch-query { background: var(--viz-series-4); }
-    #stq-system-map .swatch-run { background: var(--viz-series-5); }
-
-    #stq-system-map .system-svg,
-    #stq-system-map .runtime-svg,
-    #stq-system-map .relation-svg {
-      display: block;
-      width: 100%;
-      height: auto;
-      color: var(--foreground);
-    }
-
-    #stq-system-map .system-svg text,
-    #stq-system-map .runtime-svg text,
-    #stq-system-map .relation-svg text {
-      fill: var(--foreground);
-      font-family: var(--font-sans);
-      font-size: var(--font-size-base);
-      font-weight: 400;
-    }
-
-    #stq-system-map .system-svg .svg-small,
-    #stq-system-map .runtime-svg .svg-small,
-    #stq-system-map .relation-svg .svg-small {
-      fill: var(--muted-foreground);
-      font-size: max(11px, calc(var(--font-size-base) - 2px));
-    }
-
-    #stq-system-map .system-svg .svg-fn,
-    #stq-system-map .runtime-svg .svg-fn,
-    #stq-system-map .relation-svg .svg-fn {
-      font-family: var(--font-mono);
-      font-weight: 500;
-    }
-
-    #stq-system-map .svg-node {
-      stroke: var(--border);
-      stroke-width: 1.5;
-    }
-
-    #stq-system-map .svg-source { fill: color-mix(in srgb, var(--viz-series-1) 13%, var(--background)); }
-    #stq-system-map .svg-process { fill: color-mix(in srgb, var(--viz-series-2) 13%, var(--background)); }
-    #stq-system-map .svg-store { fill: color-mix(in srgb, var(--viz-series-3) 13%, var(--background)); }
-    #stq-system-map .svg-query { fill: color-mix(in srgb, var(--viz-series-4) 13%, var(--background)); }
-    #stq-system-map .svg-run { fill: color-mix(in srgb, var(--viz-series-5) 13%, var(--background)); }
-    #stq-system-map .svg-live { fill: color-mix(in srgb, var(--viz-series-6) 13%, var(--background)); }
-    #stq-system-map .svg-neutral { fill: color-mix(in srgb, var(--foreground) 5%, var(--background)); }
-
-    #stq-system-map .svg-flow {
-      fill: none;
-      stroke: var(--muted-foreground);
-      stroke-width: 2;
-    }
-
-    #stq-system-map .svg-flow-dashed {
-      stroke-dasharray: 7 5;
-    }
-
-    #stq-system-map .svg-link {
-      fill: none;
-      stroke: var(--border);
-      stroke-width: 2;
-    }
-
-    #stq-system-map [data-path] {
-      transition: opacity 180ms ease, outline-color 180ms ease;
-    }
-
-    #stq-system-map .is-dimmed {
-      opacity: 0.18;
-    }
-
-    #stq-system-map .mobile-architecture,
-    #stq-system-map .runtime-mobile {
-      display: none;
-    }
-
-    #stq-system-map .mobile-flow,
-    #stq-system-map .function-chain,
-    #stq-system-map .daily-timeline {
-      list-style: none;
-      padding: 0;
+    #stq-market-data-pipeline .selected-stage {
       display: grid;
-      gap: 0.5rem;
+      gap: 12px;
     }
 
-    #stq-system-map .mobile-step,
-    #stq-system-map .chain-step,
-    #stq-system-map .timeline-step {
-      position: relative;
-      padding: 0.75rem 0.8rem;
-      border-left: 3px solid var(--border);
+    #stq-market-data-pipeline .selected-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 10px;
+    }
+
+    #stq-market-data-pipeline .handoff-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #stq-market-data-pipeline .handoff-item {
       min-width: 0;
     }
 
-    #stq-system-map .mobile-step:not(:last-child)::after,
-    #stq-system-map .chain-step:not(:last-child)::after,
-    #stq-system-map .timeline-step:not(:last-child)::after {
-      content: &quot;↓&quot;;
-      position: absolute;
-      left: 0.55rem;
-      bottom: -0.85rem;
+    #stq-market-data-pipeline .handoff-label {
+      display: block;
+      margin-bottom: 3px;
       color: var(--muted-foreground);
     }
 
-    #stq-system-map .mobile-step strong,
-    #stq-system-map .chain-step strong,
-    #stq-system-map .timeline-step strong {
-      display: block;
-      font-weight: 500;
-    }
-
-    #stq-system-map .chain-8 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0.65rem;
-    }
-
-    #stq-system-map .chain-8 .chain-step {
-      border-left: 0;
-      border-top: 3px solid var(--border);
-    }
-
-    #stq-system-map .chain-8 .chain-step:not(:last-child)::after {
-      content: &quot;→&quot;;
-      left: auto;
-      right: -0.65rem;
-      top: 0.55rem;
-      bottom: auto;
-    }
-
-    #stq-system-map .function-name {
-      display: block;
-      margin-bottom: 0.3rem;
-      overflow-wrap: anywhere;
-    }
-
-    #stq-system-map .dataset-grid,
-    #stq-system-map .object-grid,
-    #stq-system-map .critical-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.65rem 1rem;
-    }
-
-    #stq-system-map .dataset-row,
-    #stq-system-map .object-row,
-    #stq-system-map .critical-item {
-      padding: 0.6rem 0;
-      border-bottom: 1px solid var(--border);
-      min-width: 0;
-    }
-
-    #stq-system-map .dataset-row strong,
-    #stq-system-map .object-row strong,
-    #stq-system-map .critical-item strong {
-      display: block;
-      font-weight: 500;
-    }
-
-    #stq-system-map .dual-stream {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
-    }
-
-    #stq-system-map .stream {
-      padding: 0.8rem;
-      border-top: 4px solid var(--border);
-    }
-
-    #stq-system-map .stream-signal { border-top-color: var(--viz-series-4); }
-    #stq-system-map .stream-execution { border-top-color: var(--viz-series-2); }
-
-    #stq-system-map .stream strong {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 0.3rem;
-    }
-
-    #stq-system-map pre {
-      padding: 0.8rem;
-      background: var(--muted);
-      color: var(--foreground);
+    #stq-market-data-pipeline .stage-code {
+      margin: 0;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
-      border-radius: 0.5rem;
     }
 
-    #stq-system-map .data-contract {
+    #stq-market-data-pipeline .lane {
       display: grid;
-      grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
-      gap: 0.5rem 1rem;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
       align-items: start;
     }
 
-    #stq-system-map .contract-name,
-    #stq-system-map .contract-value {
-      padding: 0.55rem 0;
-      border-bottom: 1px solid var(--border);
+    #stq-market-data-pipeline .lane-label {
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .lane-track {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    #stq-market-data-pipeline .lane-node {
+      position: relative;
       min-width: 0;
     }
 
-    #stq-system-map .contract-name {
-      font-family: var(--font-mono);
-      font-weight: 500;
+    #stq-market-data-pipeline .lane-node:not(:last-child)::after {
+      content: &quot;→&quot;;
+      position: absolute;
+      right: -14px;
+      top: 0;
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .lane-node strong,
+    #stq-market-data-pipeline .lane-node span {
+      display: block;
+    }
+
+    #stq-market-data-pipeline .example-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    #stq-market-data-pipeline .journey-list,
+    #stq-market-data-pipeline .gate-list,
+    #stq-market-data-pipeline .roadmap-list,
+    #stq-market-data-pipeline .risk-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #stq-market-data-pipeline .journey-item,
+    #stq-market-data-pipeline .gate-item,
+    #stq-market-data-pipeline .roadmap-item,
+    #stq-market-data-pipeline .risk-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    #stq-market-data-pipeline .step-mark {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      color: var(--primary-foreground);
+      background: var(--primary);
+    }
+
+    #stq-market-data-pipeline .journey-copy,
+    #stq-market-data-pipeline .gate-copy,
+    #stq-market-data-pipeline .roadmap-copy,
+    #stq-market-data-pipeline .risk-copy {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    #stq-market-data-pipeline .code-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #stq-market-data-pipeline .code-block {
+      margin: 0;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    #stq-market-data-pipeline .table-responsive {
+      max-width: 100%;
+    }
+
+    #stq-market-data-pipeline .table code {
+      white-space: normal;
+    }
+
+    #stq-market-data-pipeline .storage-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #stq-market-data-pipeline .storage-column {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    #stq-market-data-pipeline .tree {
+      margin: 0;
+      white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
 
-    #stq-system-map .daily-timeline {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 0.35rem;
-    }
-
-    #stq-system-map .daily-timeline .timeline-step {
-      border-left: 0;
-      border-top: 3px solid var(--border);
-    }
-
-    #stq-system-map .daily-timeline .timeline-step:not(:last-child)::after {
-      content: &quot;→&quot;;
-      left: auto;
-      right: -0.45rem;
-      top: 0.55rem;
-      bottom: auto;
-    }
-
-    #stq-system-map .status-line {
+    #stq-market-data-pipeline .gate-grid {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      align-items: center;
-      gap: 0.6rem;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
     }
 
-    #stq-system-map .status-dot {
-      width: 0.8rem;
-      height: 0.8rem;
-      border-radius: 50%;
-      background: var(--destructive);
+    #stq-market-data-pipeline .status-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 2px;
     }
 
-    @media (max-width: 560px) {
-      #stq-system-map .system-svg.architecture,
-      #stq-system-map .runtime-svg {
+    #stq-market-data-pipeline .status-segment {
+      padding: 8px;
+      text-align: center;
+      background: color-mix(in srgb, var(--viz-series-3) 16%, transparent);
+    }
+
+    #stq-market-data-pipeline .status-segment:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    #stq-market-data-pipeline .status-segment:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    #stq-market-data-pipeline .consumer-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    #stq-market-data-pipeline .consumer-node {
+      position: relative;
+      min-width: 0;
+      text-align: center;
+    }
+
+    #stq-market-data-pipeline .consumer-node:not(:last-child)::after {
+      content: &quot;→&quot;;
+      position: absolute;
+      top: 0;
+      right: -14px;
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .consumer-node strong,
+    #stq-market-data-pipeline .consumer-node span {
+      display: block;
+    }
+
+    #stq-market-data-pipeline .appendix-note {
+      padding-left: 12px;
+      border-left: 2px solid var(--destructive);
+    }
+
+    #stq-market-data-pipeline footer {
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 760px) {
+      #stq-market-data-pipeline .flow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #stq-market-data-pipeline .handoff-grid,
+      #stq-market-data-pipeline .lane-track,
+      #stq-market-data-pipeline .status-strip,
+      #stq-market-data-pipeline .consumer-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #stq-market-data-pipeline .lane-node::after,
+      #stq-market-data-pipeline .consumer-node::after {
         display: none;
       }
 
-      #stq-system-map .mobile-architecture,
-      #stq-system-map .runtime-mobile {
-        display: block;
-      }
-
-      #stq-system-map .chain-8,
-      #stq-system-map .dataset-grid,
-      #stq-system-map .object-grid,
-      #stq-system-map .critical-grid,
-      #stq-system-map .dual-stream,
-      #stq-system-map .daily-timeline,
-      #stq-system-map .data-contract {
+      #stq-market-data-pipeline .example-grid,
+      #stq-market-data-pipeline .code-pair,
+      #stq-market-data-pipeline .storage-map,
+      #stq-market-data-pipeline .gate-grid {
         grid-template-columns: 1fr;
-      }
-
-      #stq-system-map .chain-8 .chain-step,
-      #stq-system-map .daily-timeline .timeline-step {
-        border-top: 0;
-        border-left: 3px solid var(--border);
-      }
-
-      #stq-system-map .chain-8 .chain-step:not(:last-child)::after,
-      #stq-system-map .daily-timeline .timeline-step:not(:last-child)::after {
-        content: &quot;↓&quot;;
-        left: 0.55rem;
-        right: auto;
-        top: auto;
-        bottom: -0.85rem;
-      }
-
-      #stq-system-map .contract-name {
-        border-bottom: 0;
-        padding-bottom: 0;
-      }
-
-      #stq-system-map .contract-value {
-        padding-top: 0.2rem;
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      #stq-system-map [data-path] {
-        transition: none;
+    @media (max-width: 480px) {
+      #stq-market-data-pipeline .viz-grid,
+      #stq-market-data-pipeline .flow-grid,
+      #stq-market-data-pipeline .handoff-grid,
+      #stq-market-data-pipeline .lane,
+      #stq-market-data-pipeline .lane-track,
+      #stq-market-data-pipeline .status-strip,
+      #stq-market-data-pipeline .consumer-flow {
+        grid-template-columns: 1fr;
+      }
+
+      #stq-market-data-pipeline h1 {
+        word-break: keep-all;
       }
     }
   &lt;/style&gt;
 
-  &lt;div class=&quot;viz-controls&quot; aria-label=&quot;강조할 경로 선택&quot;&gt;
-    &lt;div class=&quot;focus-buttons&quot;&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn btn-primary&quot; data-focus=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;전체&lt;/button&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-focus=&quot;collect&quot; aria-pressed=&quot;false&quot;&gt;수집·저장&lt;/button&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-focus=&quot;query&quot; aria-pressed=&quot;false&quot;&gt;SQL·가공&lt;/button&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-focus=&quot;backtest&quot; aria-pressed=&quot;false&quot;&gt;백테스트&lt;/button&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-focus=&quot;paper&quot; aria-pressed=&quot;false&quot;&gt;Paper&lt;/button&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn&quot; data-focus=&quot;live&quot; aria-pressed=&quot;false&quot;&gt;Live&lt;/button&gt;
+  &lt;header class=&quot;hero&quot;&gt;
+    &lt;p class=&quot;eyebrow text-small&quot;&gt;SuperTrendQuant · 미국 시장 데이터 · 2026-07-15 기준&lt;/p&gt;
+    &lt;h1&gt;외부 데이터가 검증된 백테스트 자산이 되기까지&lt;/h1&gt;
+    &lt;p class=&quot;hero-copy&quot;&gt;
+      공급자 응답을 바로 투자 판단에 쓰지 않습니다. 원본 보관, 기업 식별, 기업행동 보완,
+      독립 가격 비교, 버전 고정, 비공개 R2 게시, 재다운로드 검증을 모두 통과한 데이터만
+      백테스트가 읽습니다.
+    &lt;/p&gt;
+    &lt;div class=&quot;summary-line text-small&quot;&gt;
+      &lt;span class=&quot;viz-badge&quot;&gt;완료 세션 2026-07-15&lt;/span&gt;
+      &lt;span&gt;대상: S&amp;amp;P 500 · Nasdaq-100&lt;/span&gt;
+      &lt;span&gt;릴리스: &lt;code&gt;20260715-20260719T130946573430Z&lt;/code&gt;&lt;/span&gt;
     &lt;/div&gt;
-    &lt;span class=&quot;viz-badge&quot;&gt;V1: 미국 일봉 1d&lt;/span&gt;
-  &lt;/div&gt;
+    &lt;nav class=&quot;mini-nav&quot; aria-label=&quot;문서 주요 구역&quot;&gt;
+      &lt;a class=&quot;btn&quot; href=&quot;#executive-flow&quot;&gt;전체 흐름&lt;/a&gt;
+      &lt;a class=&quot;btn&quot; href=&quot;#real-example&quot;&gt;실제 사례&lt;/a&gt;
+      &lt;a class=&quot;btn&quot; href=&quot;#data-inventory&quot;&gt;데이터 목록&lt;/a&gt;
+      &lt;a class=&quot;btn&quot; href=&quot;#validation&quot;&gt;검증 게이트&lt;/a&gt;
+      &lt;a class=&quot;btn&quot; href=&quot;#appendix&quot;&gt;예외 부록&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
 
-  &lt;div class=&quot;card selected-detail&quot; aria-live=&quot;polite&quot;&gt;
-    외부 원천 → 검증된 Parquet release → DuckDB SQL → MarketData → 백테스트·Paper·Live로 이어집니다.
-  &lt;/div&gt;
-
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;architecture-heading&quot;&gt;
-    &lt;h2 id=&quot;architecture-heading&quot;&gt;1. 전체 시스템 지도&lt;/h2&gt;
-    &lt;div class=&quot;legend text-small&quot; aria-label=&quot;색상 범례&quot;&gt;
-      &lt;span class=&quot;legend-item&quot;&gt;&lt;span class=&quot;swatch swatch-source&quot;&gt;&lt;/span&gt;외부 원천&lt;/span&gt;
-      &lt;span class=&quot;legend-item&quot;&gt;&lt;span class=&quot;swatch swatch-process&quot;&gt;&lt;/span&gt;수집·검증 함수&lt;/span&gt;
-      &lt;span class=&quot;legend-item&quot;&gt;&lt;span class=&quot;swatch swatch-store&quot;&gt;&lt;/span&gt;영구 저장&lt;/span&gt;
-      &lt;span class=&quot;legend-item&quot;&gt;&lt;span class=&quot;swatch swatch-query&quot;&gt;&lt;/span&gt;SQL·가공&lt;/span&gt;
-      &lt;span class=&quot;legend-item&quot;&gt;&lt;span class=&quot;swatch swatch-run&quot;&gt;&lt;/span&gt;실행 엔진&lt;/span&gt;
-    &lt;/div&gt;
-
-    &lt;svg class=&quot;system-svg architecture&quot; viewBox=&quot;0 0 720 1060&quot; role=&quot;img&quot; aria-labelledby=&quot;arch-title arch-desc&quot;&gt;
-      &lt;title id=&quot;arch-title&quot;&gt;SuperTrendQuant 전체 데이터 및 실행 아키텍처&lt;/title&gt;
-      &lt;desc id=&quot;arch-desc&quot;&gt;SEC, Nasdaq Trader, Yahoo Finance, 공식 지수 자료를 수집하고 Parquet와 R2에 저장한 뒤 DuckDB SQL로 조회하여 MarketData를 만들고 세 실행 엔진으로 전달한다.&lt;/desc&gt;
-      &lt;defs&gt;
-        &lt;marker id=&quot;arch-arrow&quot; markerWidth=&quot;10&quot; markerHeight=&quot;8&quot; refX=&quot;9&quot; refY=&quot;4&quot; orient=&quot;auto&quot;&gt;
-          &lt;path d=&quot;M0,0 L10,4 L0,8 Z&quot; fill=&quot;var(--muted-foreground)&quot;&gt;&lt;/path&gt;
-        &lt;/marker&gt;
-      &lt;/defs&gt;
-
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;18&quot; y=&quot;18&quot; width=&quot;210&quot; height=&quot;86&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text x=&quot;123&quot; y=&quot;43&quot; text-anchor=&quot;middle&quot;&gt;SEC + Nasdaq Trader&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;123&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;company_tickers_exchange.json&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;123&quot; y=&quot;84&quot; text-anchor=&quot;middle&quot;&gt;nasdaqlisted.txt · otherlisted.txt&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;255&quot; y=&quot;18&quot; width=&quot;210&quot; height=&quot;86&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text x=&quot;360&quot; y=&quot;43&quot; text-anchor=&quot;middle&quot;&gt;Yahoo Finance&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;미조정 OHLCV&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;84&quot; text-anchor=&quot;middle&quot;&gt;배당 · 분할 등 actions&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;492&quot; y=&quot;18&quot; width=&quot;210&quot; height=&quot;86&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text x=&quot;597&quot; y=&quot;43&quot; text-anchor=&quot;middle&quot;&gt;공식 지수 원문&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;597&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;S&amp;amp;P · Nasdaq · Russell&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;597&quot; y=&quot;84&quot; text-anchor=&quot;middle&quot;&gt;anchor + ADD/REMOVE 파일&lt;/text&gt;
-      &lt;/g&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M123 104 L123 140&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M360 104 L360 140&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M597 104 L597 140&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;18&quot; y=&quot;145&quot; width=&quot;210&quot; height=&quot;92&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;123&quot; y=&quot;172&quot; text-anchor=&quot;middle&quot;&gt;SecNasdaqSecurity&lt;/text&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;123&quot; y=&quot;192&quot; text-anchor=&quot;middle&quot;&gt;MasterSource.fetch()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;123&quot; y=&quot;216&quot; text-anchor=&quot;middle&quot;&gt;security_master · symbol_history&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;255&quot; y=&quot;145&quot; width=&quot;210&quot; height=&quot;92&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;181&quot; text-anchor=&quot;middle&quot;&gt;YahooDailySource.fetch()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;206&quot; text-anchor=&quot;middle&quot;&gt;prices · corporate_actions&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;492&quot; y=&quot;145&quot; width=&quot;210&quot; height=&quot;92&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;597&quot; y=&quot;172&quot; text-anchor=&quot;middle&quot;&gt;IndexDataImporter&lt;/text&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;597&quot; y=&quot;192&quot; text-anchor=&quot;middle&quot;&gt;.import_anchor/events()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;597&quot; y=&quot;216&quot; text-anchor=&quot;middle&quot;&gt;원문 gzip + SHA-256&lt;/text&gt;
-      &lt;/g&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M123 237 C123 270 230 260 250 290&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M360 237 L360 278&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M597 237 L597 278&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;145&quot; y=&quot;282&quot; width=&quot;300&quot; height=&quot;82&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;295&quot; y=&quot;310&quot; text-anchor=&quot;middle&quot;&gt;DailyDataSynchronizer.sync()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;295&quot; y=&quot;335&quot; text-anchor=&quot;middle&quot;&gt;초기 backfill 또는 최근 7일 overlap delta&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;480&quot; y=&quot;282&quot; width=&quot;222&quot; height=&quot;82&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text x=&quot;591&quot; y=&quot;310&quot; text-anchor=&quot;middle&quot;&gt;지수 이벤트 정규화&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;591&quot; y=&quot;335&quot; text-anchor=&quot;middle&quot;&gt;historical symbol → security_id&lt;/text&gt;
-      &lt;/g&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M240 364 L185 405&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M320 364 L360 405&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M591 364 L535 405&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;g data-path=&quot;collect query&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;60&quot; y=&quot;410&quot; width=&quot;205&quot; height=&quot;82&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;162&quot; y=&quot;438&quot; text-anchor=&quot;middle&quot;&gt;build_adjustment_factors()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;162&quot; y=&quot;463&quot; text-anchor=&quot;middle&quot;&gt;split · total-return 계수&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;280&quot; y=&quot;410&quot; width=&quot;205&quot; height=&quot;82&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;382&quot; y=&quot;438&quot; text-anchor=&quot;middle&quot;&gt;validate_repository_snapshot()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;382&quot; y=&quot;463&quot; text-anchor=&quot;middle&quot;&gt;스키마 · 날짜 · 충돌 · 참조 검사&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;500&quot; y=&quot;410&quot; width=&quot;202&quot; height=&quot;82&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;601&quot; y=&quot;438&quot; text-anchor=&quot;middle&quot;&gt;commit_release()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;601&quot; y=&quot;463&quot; text-anchor=&quot;middle&quot;&gt;모든 dataset 버전 원자적 묶음&lt;/text&gt;
-      &lt;/g&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M162 492 L162 540&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M382 492 L252 540&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M601 492 L545 540&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;g data-path=&quot;collect query shared&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;45&quot; y=&quot;535&quot; width=&quot;295&quot; height=&quot;110&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text x=&quot;192&quot; y=&quot;570&quot; text-anchor=&quot;middle&quot;&gt;로컬 Parquet 캐시&lt;/text&gt;
-        &lt;text class=&quot;svg-fn svg-small&quot; x=&quot;192&quot; y=&quot;596&quot; text-anchor=&quot;middle&quot;&gt;LocalDatasetRepository&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;192&quot; y=&quot;620&quot; text-anchor=&quot;middle&quot;&gt;data/cache/datasets/.../versions/...&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;collect shared&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;380&quot; y=&quot;535&quot; width=&quot;295&quot; height=&quot;110&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text x=&quot;527&quot; y=&quot;570&quot; text-anchor=&quot;middle&quot;&gt;Cloudflare R2 공유 원본&lt;/text&gt;
-        &lt;text class=&quot;svg-fn svg-small&quot; x=&quot;527&quot; y=&quot;596&quot; text-anchor=&quot;middle&quot;&gt;DatasetCache · publish_repository()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;527&quot; y=&quot;620&quot; text-anchor=&quot;middle&quot;&gt;immutable objects + ETag CAS&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;path class=&quot;svg-flow svg-flow-dashed&quot; d=&quot;M340 585 L380 585&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;573&quot; text-anchor=&quot;middle&quot;&gt;pull/publish&lt;/text&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M527 645 C527 680 140 665 140 710&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M192 645 L192 690&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M192 645 C192 680 360 665 360 710&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M192 645 C192 680 590 665 590 710&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;g data-path=&quot;collect query backtest paper live shared&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;28&quot; y=&quot;712&quot; width=&quot;205&quot; height=&quot;92&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;130&quot; y=&quot;740&quot; text-anchor=&quot;middle&quot;&gt;ensure_configured_&lt;/text&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;130&quot; y=&quot;760&quot; text-anchor=&quot;middle&quot;&gt;data_ready()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;130&quot; y=&quot;784&quot; text-anchor=&quot;middle&quot;&gt;DailyPreflight.run() · stale 차단&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;query backtest paper live shared&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;258&quot; y=&quot;712&quot; width=&quot;205&quot; height=&quot;92&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;750&quot; text-anchor=&quot;middle&quot;&gt;resolve_universe()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;775&quot; text-anchor=&quot;middle&quot;&gt;anchor + ADD − REMOVE + overlay&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;query backtest paper live shared&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;488&quot; y=&quot;712&quot; width=&quot;205&quot; height=&quot;92&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;590&quot; y=&quot;740&quot; text-anchor=&quot;middle&quot;&gt;ParquetMarketData&lt;/text&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;590&quot; y=&quot;760&quot; text-anchor=&quot;middle&quot;&gt;Provider.load()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;590&quot; y=&quot;784&quot; text-anchor=&quot;middle&quot;&gt;DuckDB read_parquet() + filters&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M233 758 L258 758&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M463 758 L488 758&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M590 804 C590 835 410 820 410 850&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M360 804 L360 838&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;g data-path=&quot;query backtest paper live shared&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-neutral&quot; x=&quot;190&quot; y=&quot;842&quot; width=&quot;340&quot; height=&quot;105&quot; rx=&quot;14&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;870&quot; text-anchor=&quot;middle&quot;&gt;MarketData&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;895&quot; text-anchor=&quot;middle&quot;&gt;bars = 조정 신호 OHLC · execution_bars = raw OHLC&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;916&quot; text-anchor=&quot;middle&quot;&gt;benchmark · corporate_actions · universe_schedule&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;937&quot; text-anchor=&quot;middle&quot;&gt;data_version · completed_session · quality · warnings&lt;/text&gt;
-      &lt;/g&gt;
-
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M270 947 L125 982&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M360 947 L360 982&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M450 947 L595 982&quot; marker-end=&quot;url(#arch-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;g data-path=&quot;backtest&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-run&quot; x=&quot;18&quot; y=&quot;986&quot; width=&quot;214&quot; height=&quot;62&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;125&quot; y=&quot;1013&quot; text-anchor=&quot;middle&quot;&gt;run_backtest_on_data()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;125&quot; y=&quot;1034&quot; text-anchor=&quot;middle&quot;&gt;BacktestResult + results/backtests&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;paper&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-run&quot; x=&quot;253&quot; y=&quot;986&quot; width=&quot;214&quot; height=&quot;62&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;1013&quot; text-anchor=&quot;middle&quot;&gt;PaperRuntime.run_once()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;1034&quot; text-anchor=&quot;middle&quot;&gt;paper state + results/paper&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g data-path=&quot;live&quot;&gt;
-        &lt;rect class=&quot;svg-node svg-live&quot; x=&quot;488&quot; y=&quot;986&quot; width=&quot;214&quot; height=&quot;62&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;595&quot; y=&quot;1013&quot; text-anchor=&quot;middle&quot;&gt;HybridLiveRuntime.run_once()&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;595&quot; y=&quot;1034&quot; text-anchor=&quot;middle&quot;&gt;Toss 주문 + holdings + 알림&lt;/text&gt;
-      &lt;/g&gt;
-    &lt;/svg&gt;
-
-    &lt;div class=&quot;mobile-architecture&quot; aria-label=&quot;모바일용 전체 시스템 흐름&quot;&gt;
-      &lt;ol class=&quot;mobile-flow&quot;&gt;
-        &lt;li class=&quot;mobile-step&quot; data-path=&quot;collect&quot;&gt;&lt;strong&gt;외부 데이터&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;SEC·Nasdaq Trader 종목, Yahoo OHLCV·기업행동, 공식 지수 anchor·이벤트&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot; data-path=&quot;collect&quot;&gt;&lt;strong&gt;수집 함수&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;SecNasdaqSecurityMasterSource.fetch()&lt;/code&gt;, &lt;code&gt;YahooDailySource.fetch()&lt;/code&gt;, &lt;code&gt;IndexDataImporter.import_*()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot; data-path=&quot;collect&quot;&gt;&lt;strong&gt;정규화·검증&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;DailyDataSynchronizer.sync()&lt;/code&gt; → factors → repository validation → release&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot; data-path=&quot;collect query&quot;&gt;&lt;strong&gt;로컬 Parquet + R2&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;불변 버전·manifest·SHA-256·ETag CAS&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot; data-path=&quot;query&quot;&gt;&lt;strong&gt;DuckDB SQL&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;resolve_universe()&lt;/code&gt; + &lt;code&gt;ParquetMarketDataProvider.load()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot; data-path=&quot;backtest paper live&quot;&gt;&lt;strong&gt;MarketData 분기&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;백테스트 · Paper · Live가 같은 신호 데이터 계약을 사용&lt;/span&gt;&lt;/li&gt;
-      &lt;/ol&gt;
-    &lt;/div&gt;
+  &lt;section class=&quot;viz-grid&quot; aria-label=&quot;현재 릴리스 핵심 규모&quot;&gt;
+    &lt;article class=&quot;card viz-stat&quot;&gt;
+      &lt;span class=&quot;text-muted&quot;&gt;백테스트 데이터&lt;/span&gt;
+      &lt;strong class=&quot;viz-stat-value&quot;&gt;4,221,532행&lt;/strong&gt;
+      &lt;span class=&quot;text-small&quot;&gt;10개 버전 고정 데이터셋&lt;/span&gt;
+    &lt;/article&gt;
+    &lt;article class=&quot;card viz-stat&quot;&gt;
+      &lt;span class=&quot;text-muted&quot;&gt;교차검증&lt;/span&gt;
+      &lt;strong class=&quot;viz-stat-value&quot;&gt;498개 대상&lt;/strong&gt;
+      &lt;span class=&quot;text-small&quot;&gt;이벤트 202 + 가격 296, 미해결 불일치 0&lt;/span&gt;
+    &lt;/article&gt;
+    &lt;article class=&quot;card viz-stat&quot;&gt;
+      &lt;span class=&quot;text-muted&quot;&gt;원본 증거&lt;/span&gt;
+      &lt;strong class=&quot;viz-stat-value&quot;&gt;2,534개&lt;/strong&gt;
+      &lt;span class=&quot;text-small&quot;&gt;원본 831.9MB, 압축 217.4MB&lt;/span&gt;
+    &lt;/article&gt;
   &lt;/section&gt;
 
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;collect-heading&quot; data-path=&quot;collect&quot;&gt;
-    &lt;h2 id=&quot;collect-heading&quot;&gt;2. 수집·검증·발행 함수 순서&lt;/h2&gt;
-    &lt;ol class=&quot;function-chain chain-8&quot; aria-label=&quot;데이터 수집과 저장 함수 호출 순서&quot;&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;data_main()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;명시적 &lt;code&gt;quant-data sync&lt;/code&gt; 진입점&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;expected_completed_us_session()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;미국 장 마감 + 90분 후 최신 완료 세션 결정&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;DatasetCache.sync_release()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;R2가 최신이면 hash 검증 후 필요한 버전만 로컬 복사&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;DailyDataSynchronizer.sync()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;R2도 stale이면 세션당 공급자 수집 1회&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;LocalDatasetRepository.write_frame()/append_frame()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;ZSTD Parquet, year/month partition, primary-key 정렬&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;build_adjustment_factors()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;raw 가격과 기업행동에서 split/total-return 계수 재생성&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;validate_repository_snapshot()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;데이터셋 간 security_id·factor·지수 전이 검증&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;commit_release() / publish_repository()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;로컬 원자적 release 후 선택적으로 R2 조건부 발행&lt;/span&gt;&lt;/li&gt;
-    &lt;/ol&gt;
-
-    &lt;div class=&quot;dual-stream&quot;&gt;
-      &lt;div class=&quot;stream stream-signal&quot;&gt;
-        &lt;strong&gt;최초 백필&lt;/strong&gt;
-        &lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;backfill_start=2000-01-01&lt;/code&gt;부터 모든 활성 미국 종목을 Yahoo에서 배치 수집하고 전체 adjustment factor를 생성합니다.&lt;/span&gt;
+  &lt;section id=&quot;executive-flow&quot; class=&quot;section&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2&gt;1. 경영진이 알아야 할 전체 흐름&lt;/h2&gt;
+      &lt;p&gt;단계를 선택하면 입력 데이터, 실제 함수, 저장 위치, 다음 사용처가 함께 표시됩니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;flow-grid&quot; role=&quot;group&quot; aria-label=&quot;시장 데이터 처리 단계&quot;&gt;
+      &lt;button class=&quot;btn btn-primary flow-step&quot; type=&quot;button&quot; data-stage=&quot;sources&quot; aria-pressed=&quot;true&quot;&gt;외부 원천&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;archive&quot; aria-pressed=&quot;false&quot;&gt;원본 보관&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;identity&quot; aria-pressed=&quot;false&quot;&gt;기업 식별&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;normalize&quot; aria-pressed=&quot;false&quot;&gt;표준화&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;lifecycle&quot; aria-pressed=&quot;false&quot;&gt;기업행동 보완&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;factors&quot; aria-pressed=&quot;false&quot;&gt;조정계수&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;validate&quot; aria-pressed=&quot;false&quot;&gt;교차검증&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;release&quot; aria-pressed=&quot;false&quot;&gt;릴리스 고정&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;r2&quot; aria-pressed=&quot;false&quot;&gt;R2 게시&lt;/button&gt;
+      &lt;button class=&quot;btn flow-step&quot; type=&quot;button&quot; data-stage=&quot;consume&quot; aria-pressed=&quot;false&quot;&gt;백테스트 사용&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;article class=&quot;card selected-stage&quot; aria-live=&quot;polite&quot;&gt;
+      &lt;div class=&quot;selected-title&quot;&gt;
+        &lt;span id=&quot;stage-number&quot; class=&quot;viz-badge&quot;&gt;01&lt;/span&gt;
+        &lt;h3 id=&quot;stage-title&quot;&gt;외부 원천을 목적별로 분리한다&lt;/h3&gt;
       &lt;/div&gt;
-      &lt;div class=&quot;stream stream-execution&quot;&gt;
-        &lt;strong&gt;일일 최신화&lt;/strong&gt;
-        &lt;span class=&quot;text-small&quot;&gt;마지막 완료 세션에서 7일 겹쳐 다시 받아 늦은 수정·기업행동을 찾고, 새 delta와 새 release만 추가합니다.&lt;/span&gt;
+      &lt;p id=&quot;stage-summary&quot;&gt;EODHD는 주 데이터, SEC와 지수 자료는 공식 사실, Yahoo는 독립 가격 비교에 사용합니다.&lt;/p&gt;
+      &lt;div class=&quot;handoff-grid&quot;&gt;
+        &lt;div class=&quot;handoff-item&quot;&gt;&lt;span class=&quot;handoff-label text-small&quot;&gt;입력&lt;/span&gt;&lt;strong id=&quot;stage-input&quot;&gt;EODHD JSON · SEC 공시 · 지수 이력&lt;/strong&gt;&lt;/div&gt;
+        &lt;div class=&quot;handoff-item&quot;&gt;&lt;span class=&quot;handoff-label text-small&quot;&gt;실제 함수&lt;/span&gt;&lt;code id=&quot;stage-function&quot;&gt;bootstrap_us_market_data()&lt;/code&gt;&lt;/div&gt;
+        &lt;div class=&quot;handoff-item&quot;&gt;&lt;span class=&quot;handoff-label text-small&quot;&gt;출력&lt;/span&gt;&lt;strong id=&quot;stage-output&quot;&gt;공급자별 원본 응답&lt;/strong&gt;&lt;/div&gt;
+        &lt;div class=&quot;handoff-item&quot;&gt;&lt;span class=&quot;handoff-label text-small&quot;&gt;저장 위치&lt;/span&gt;&lt;code id=&quot;stage-storage&quot;&gt;data/cache/state&lt;/code&gt;&lt;/div&gt;
+        &lt;div class=&quot;handoff-item&quot;&gt;&lt;span class=&quot;handoff-label text-small&quot;&gt;다음 사용자&lt;/span&gt;&lt;strong id=&quot;stage-next&quot;&gt;원본 아카이브와 정규화 단계&lt;/strong&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;pre class=&quot;stage-code&quot;&gt;&lt;code id=&quot;stage-code&quot;&gt;history = fetch_us_index_history(...)
+catalog = build_eodhd_catalog(...)
+synced = DailyDataSynchronizer(...).sync(...)&lt;/code&gt;&lt;/pre&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+
+  &lt;section class=&quot;section&quot; aria-labelledby=&quot;lanes-heading&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2 id=&quot;lanes-heading&quot;&gt;2. 데이터는 네 개의 레인을 따라 이동한다&lt;/h2&gt;
+      &lt;p&gt;수집, 통제, 저장, 소비를 분리해 한 단계의 실수가 바로 투자 결과로 전달되지 않게 합니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;lane&quot;&gt;
+      &lt;strong class=&quot;lane-label&quot;&gt;수집 레인&lt;/strong&gt;
+      &lt;div class=&quot;lane-track&quot;&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;EODHD&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;OHLCV · 배당 · 분할 · 종목 목록&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;SEC EDGAR&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;합병 · 분사 · 티커 · 상장폐지 조건&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;지수 자료&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;anchor · 편입 · 퇴출&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;Yahoo Chart&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;독립 가격 교차검증&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;lane&quot;&gt;
+      &lt;strong class=&quot;lane-label&quot;&gt;통제 레인&lt;/strong&gt;
+      &lt;div class=&quot;lane-track&quot;&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;출처 해시&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;받은 원문을 SHA-256으로 고정&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;기업 ID&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;티커 대신 &lt;code&gt;security_id&lt;/code&gt; 사용&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;검증 게이트&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;스키마 · 날짜 · 경제 조건 · 가격 비교&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;불변 릴리스&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;검증된 버전 조합만 승인&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;lane&quot;&gt;
+      &lt;strong class=&quot;lane-label&quot;&gt;저장 레인&lt;/strong&gt;
+      &lt;div class=&quot;lane-track&quot;&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;&lt;code&gt;archives&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;공급자·공시 원본&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;&lt;code&gt;datasets&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;표준 Parquet 버전&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;&lt;code&gt;releases&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;10개 버전 묶음&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;비공개 R2&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;공유·복구·콜드 검증&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;lane&quot;&gt;
+      &lt;strong class=&quot;lane-label&quot;&gt;소비 레인&lt;/strong&gt;
+      &lt;div class=&quot;lane-track&quot;&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;DuckDB&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;필요한 종목·기간만 조회&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;MarketData&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;가격 · 지수 일정 · 기업행동 결합&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;전략 엔진&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;Triple Supertrend 신호 계산&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;lane-node&quot;&gt;&lt;strong&gt;백테스트 결과&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;수익률 · 위험 · 거래 기록&lt;/span&gt;&lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;storage-heading&quot; data-path=&quot;collect query&quot;&gt;
-    &lt;h2 id=&quot;storage-heading&quot;&gt;3. Parquet에 저장되는 데이터와 연결키&lt;/h2&gt;
-    &lt;svg class=&quot;relation-svg&quot; viewBox=&quot;0 0 720 500&quot; role=&quot;img&quot; aria-labelledby=&quot;relation-title relation-desc&quot;&gt;
-      &lt;title id=&quot;relation-title&quot;&gt;security_id 중심의 데이터셋 관계도&lt;/title&gt;
-      &lt;desc id=&quot;relation-desc&quot;&gt;모든 가격, 기업행동, 지수 구성과 티커 이력은 안정적인 security_id로 연결된다.&lt;/desc&gt;
-      &lt;path class=&quot;svg-link&quot; d=&quot;M360 250 L145 80&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-link&quot; d=&quot;M360 250 L575 80&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-link&quot; d=&quot;M360 250 L125 250&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-link&quot; d=&quot;M360 250 L595 250&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-link&quot; d=&quot;M360 250 L155 420&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-link&quot; d=&quot;M360 250 L565 420&quot;&gt;&lt;/path&gt;
-
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-neutral&quot; x=&quot;270&quot; y=&quot;205&quot; width=&quot;180&quot; height=&quot;90&quot; rx=&quot;45&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;243&quot; text-anchor=&quot;middle&quot;&gt;security_id&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;267&quot; text-anchor=&quot;middle&quot;&gt;CIK 우선 · 없으면 고정 UUID&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;25&quot; y=&quot;35&quot; width=&quot;240&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;145&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;security_master&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;145&quot; y=&quot;88&quot; text-anchor=&quot;middle&quot;&gt;symbol · exchange · asset_type&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;145&quot; y=&quot;108&quot; text-anchor=&quot;middle&quot;&gt;active_from/to&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;455&quot; y=&quot;35&quot; width=&quot;240&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;575&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;symbol_history&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;575&quot; y=&quot;88&quot; text-anchor=&quot;middle&quot;&gt;historical symbol&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;575&quot; y=&quot;108&quot; text-anchor=&quot;middle&quot;&gt;effective_from/to&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;5&quot; y=&quot;205&quot; width=&quot;240&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;125&quot; y=&quot;235&quot; text-anchor=&quot;middle&quot;&gt;daily_price_raw&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;125&quot; y=&quot;258&quot; text-anchor=&quot;middle&quot;&gt;session · unadjusted OHLCV&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;125&quot; y=&quot;278&quot; text-anchor=&quot;middle&quot;&gt;PK: security_id + session&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;475&quot; y=&quot;205&quot; width=&quot;240&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;595&quot; y=&quot;235&quot; text-anchor=&quot;middle&quot;&gt;corporate_actions&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;595&quot; y=&quot;258&quot; text-anchor=&quot;middle&quot;&gt;event_id · ex/payment date&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;595&quot; y=&quot;278&quot; text-anchor=&quot;middle&quot;&gt;cash · ratio · new_security_id&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;35&quot; y=&quot;375&quot; width=&quot;240&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;155&quot; y=&quot;405&quot; text-anchor=&quot;middle&quot;&gt;adjustment_factors&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;155&quot; y=&quot;428&quot; text-anchor=&quot;middle&quot;&gt;split_factor&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;155&quot; y=&quot;448&quot; text-anchor=&quot;middle&quot;&gt;total_return_factor&lt;/text&gt;
-      &lt;/g&gt;
-      &lt;g&gt;
-        &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;445&quot; y=&quot;375&quot; width=&quot;240&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-        &lt;text class=&quot;svg-fn&quot; x=&quot;565&quot; y=&quot;402&quot; text-anchor=&quot;middle&quot;&gt;index anchors/events&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;565&quot; y=&quot;425&quot; text-anchor=&quot;middle&quot;&gt;index_id · effective_date&lt;/text&gt;
-        &lt;text class=&quot;svg-small&quot; x=&quot;565&quot; y=&quot;445&quot; text-anchor=&quot;middle&quot;&gt;ADD/REMOVE + overlay&lt;/text&gt;
-      &lt;/g&gt;
-    &lt;/svg&gt;
-
-    &lt;div class=&quot;dataset-grid&quot;&gt;
-      &lt;div class=&quot;dataset-row&quot;&gt;&lt;strong&gt;&lt;code&gt;source_archive&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;다운로드한 CSV·JSON·HTML·PDF 원문을 gzip 보관하고 SHA-256으로 연결&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;dataset-row&quot;&gt;&lt;strong&gt;&lt;code&gt;index_constituent_anchors&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;특정 날짜의 전체 구성종목 기준점&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;dataset-row&quot;&gt;&lt;strong&gt;&lt;code&gt;index_membership_events&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;실제 발표·적용일의 ADD/REMOVE와 공식 여부&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;dataset-row&quot;&gt;&lt;strong&gt;&lt;code&gt;custom_universe_overlays&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;사용자 임의 추가·제외를 공식 이력과 분리&lt;/span&gt;&lt;/div&gt;
+  &lt;section id=&quot;real-example&quot; class=&quot;section&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2&gt;3. 실제 사례: HCBK 주식이 MTB 주식으로 바뀌는 과정&lt;/h2&gt;
+      &lt;p&gt;하나의 주식교환 합병이 공시 원문에서 백테스트 포지션 전환까지 이동한 실제 데이터입니다.&lt;/p&gt;
     &lt;/div&gt;
-
-    &lt;pre&gt;&lt;code&gt;data/cache/
-├─ datasets/{dataset}/versions/{version}/year=YYYY/month=MM/*.parquet
-├─ datasets/{dataset}/versions/{version}/manifest.json
-├─ datasets/{dataset}/current.json
-├─ releases/{release_version}.json
-├─ releases/current.json
-├─ archives/.../*.gz
-└─ conflicts/...&lt;/code&gt;&lt;/pre&gt;
-  &lt;/section&gt;
-
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;query-heading&quot; data-path=&quot;query&quot;&gt;
-    &lt;h2 id=&quot;query-heading&quot;&gt;4. DuckDB SQL 조회와 MarketData 가공&lt;/h2&gt;
-    &lt;ol class=&quot;function-chain chain-8&quot; aria-label=&quot;Parquet 조회와 가공 함수 순서&quot;&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;ParquetMarketDataProvider.load()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;release 버전과 요청 symbols를 고정&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;_resolve_security_ids()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;현재·과거 ticker를 안정적인 ID로 변환&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;_period_bounds()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;period를 시작·종료 session으로 변환&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;repository.parquet_paths()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;manifest min/max session으로 불필요한 연도 파일 제거&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;_query_dataset()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;DuckDB projection + security_id/date predicate&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;apply_adjustment_factors()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;raw OHLC에 선택한 factor를 적용&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;_frames_by_requested_symbol()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;한 번 pandas DataFrame으로 변환&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;MarketData(...)&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;세 엔진이 공유할 불변 입력 묶음&lt;/span&gt;&lt;/li&gt;
-    &lt;/ol&gt;
-
-    &lt;pre&gt;&lt;code&gt;SELECT security_id, session, open, high, low, close, volume
-FROM read_parquet([선택된 Parquet 파일들], hive_partitioning=false)
-WHERE security_id IN (?, ...)
-  AND CAST(session AS DATE) BETWEEN ? AND ?;&lt;/code&gt;&lt;/pre&gt;
-
-    &lt;div class=&quot;dual-stream&quot;&gt;
-      &lt;div class=&quot;stream stream-signal&quot;&gt;
-        &lt;strong&gt;신호 스트림: &lt;code&gt;MarketData.bars&lt;/code&gt;&lt;/strong&gt;
-        &lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;daily_price_raw + adjustment_factors&lt;/code&gt; → total-return-adjusted 또는 split-adjusted OHLC. SuperTrend·랭킹·시장필터가 사용합니다.&lt;/span&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;stream stream-execution&quot;&gt;
-        &lt;strong&gt;경제 현실 스트림: &lt;code&gt;MarketData.execution_bars&lt;/code&gt;&lt;/strong&gt;
-        &lt;span class=&quot;text-small&quot;&gt;미조정 raw OHLC + &lt;code&gt;corporate_actions&lt;/code&gt;. 체결가·계좌평가·배당·분할·합병 처리가 사용합니다.&lt;/span&gt;
+    &lt;div class=&quot;example-grid&quot;&gt;
+      &lt;ol class=&quot;journey-list&quot; aria-label=&quot;HCBK 주식교환 합병 처리 순서&quot;&gt;
+        &lt;li class=&quot;journey-item&quot;&gt;
+          &lt;span class=&quot;step-mark&quot;&gt;1&lt;/span&gt;
+          &lt;div class=&quot;journey-copy&quot;&gt;&lt;strong&gt;마지막 가격과 기업을 찾는다&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;EODHD의 HCBK 가격과 종목 목록을 동일한 &lt;code&gt;security_id&lt;/code&gt;에 연결합니다.&lt;/span&gt;&lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;journey-item&quot;&gt;
+          &lt;span class=&quot;step-mark&quot;&gt;2&lt;/span&gt;
+          &lt;div class=&quot;journey-copy&quot;&gt;&lt;strong&gt;SEC 공시 원문을 내려받는다&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;SecEdgarLifecycleSource.fetch_filing()&lt;/code&gt;이 공시 원문과 해시를 보관합니다.&lt;/span&gt;&lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;journey-item&quot;&gt;
+          &lt;span class=&quot;step-mark&quot;&gt;3&lt;/span&gt;
+          &lt;div class=&quot;journey-copy&quot;&gt;&lt;strong&gt;합병 조건을 구조화한다&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;parse_sec_lifecycle_filing()&lt;/code&gt;이 완료일, 교환비율, 후속 티커를 추출합니다.&lt;/span&gt;&lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;journey-item&quot;&gt;
+          &lt;span class=&quot;step-mark&quot;&gt;4&lt;/span&gt;
+          &lt;div class=&quot;journey-copy&quot;&gt;&lt;strong&gt;독립 가격으로 경제성을 확인한다&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;기존 HCBK 가치와 &lt;code&gt;0.08403 × MTB 가격&lt;/code&gt;의 연결을 비교합니다.&lt;/span&gt;&lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;journey-item&quot;&gt;
+          &lt;span class=&quot;step-mark&quot;&gt;5&lt;/span&gt;
+          &lt;div class=&quot;journey-copy&quot;&gt;&lt;strong&gt;백테스트 포지션을 전환한다&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;PortfolioLedger.apply_actions()&lt;/code&gt;가 HCBK 수량을 MTB 수량으로 바꿉니다.&lt;/span&gt;&lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ol&gt;
+      &lt;div class=&quot;code-pair&quot;&gt;
+        &lt;pre class=&quot;card code-block&quot; aria-label=&quot;실제 corporate_actions 데이터 예시&quot;&gt;&lt;code&gt;{
+  &quot;action_type&quot;: &quot;stock_merger&quot;,
+  &quot;effective_date&quot;: &quot;2015-11-02&quot;,
+  &quot;security&quot;: &quot;HCBK&quot;,
+  &quot;ratio&quot;: 0.08403,
+  &quot;new_symbol&quot;: &quot;MTB&quot;,
+  &quot;official&quot;: true,
+  &quot;source_kind&quot;: &quot;official_crosscheck&quot;
+}&lt;/code&gt;&lt;/pre&gt;
+        &lt;pre class=&quot;card code-block&quot; aria-label=&quot;실제 처리 코드 축약 예시&quot;&gt;&lt;code&gt;evidence = sec_source.collect(candidate)
+event = parse_sec_lifecycle_filing(
+    evidence.content, candidate, evidence.filing
+)
+repository.append_frame(
+    &quot;corporate_actions&quot;,
+    lifecycle_action_record(event, ...)
+)
+ledger.apply_actions(actions, through=session)&lt;/code&gt;&lt;/pre&gt;
       &lt;/div&gt;
     &lt;/div&gt;
+  &lt;/section&gt;
 
-    &lt;div class=&quot;data-contract&quot; aria-label=&quot;MarketData 내부 정보&quot;&gt;
-      &lt;div class=&quot;contract-name&quot;&gt;bars&lt;/div&gt;&lt;div class=&quot;contract-value text-small&quot;&gt;종목별 조정 OHLC DataFrame, 전략 신호 입력&lt;/div&gt;
-      &lt;div class=&quot;contract-name&quot;&gt;execution_bars&lt;/div&gt;&lt;div class=&quot;contract-value text-small&quot;&gt;종목별 미조정 OHLC DataFrame, 체결·평가 입력&lt;/div&gt;
-      &lt;div class=&quot;contract-name&quot;&gt;benchmark&lt;/div&gt;&lt;div class=&quot;contract-value text-small&quot;&gt;S&amp;amp;P500→SPY, Nasdaq100→QQQ, Russell3000→IWV ETF 총수익 series&lt;/div&gt;
-      &lt;div class=&quot;contract-name&quot;&gt;corporate_actions&lt;/div&gt;&lt;div class=&quot;contract-value text-small&quot;&gt;배당·분할·감자·분사·합병·티커 변경·상장폐지 사건&lt;/div&gt;
-      &lt;div class=&quot;contract-name&quot;&gt;universe_schedule&lt;/div&gt;&lt;div class=&quot;contract-value text-small&quot;&gt;&lt;code&gt;resolve_universe()&lt;/code&gt;가 만든 날짜별 구성종목 변경표&lt;/div&gt;
-      &lt;div class=&quot;contract-name&quot;&gt;data_version / quality&lt;/div&gt;&lt;div class=&quot;contract-value text-small&quot;&gt;재현 가능한 release·dataset 버전, 완료 세션, 경고·차단 상태&lt;/div&gt;
+  &lt;section id=&quot;data-inventory&quot; class=&quot;section&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2&gt;4. 최종 릴리스를 구성하는 10개 데이터셋&lt;/h2&gt;
+      &lt;p&gt;행 수는 2026-07-15 완료 세션을 고정한 릴리스 기준입니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;&lt;th&gt;데이터셋&lt;/th&gt;&lt;th&gt;역할&lt;/th&gt;&lt;th class=&quot;text-end&quot;&gt;행 수&lt;/th&gt;&lt;th&gt;주요 생산 함수&lt;/th&gt;&lt;th&gt;주요 사용처&lt;/th&gt;&lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;security_master&lt;/code&gt;&lt;/td&gt;&lt;td&gt;기업의 변하지 않는 식별자와 기본 속성&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;876&lt;/td&gt;&lt;td&gt;&lt;code&gt;build_eodhd_catalog()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;모든 데이터의 기업 연결&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;symbol_history&lt;/code&gt;&lt;/td&gt;&lt;td&gt;한 기업이 사용한 과거 티커 구간&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;903&lt;/td&gt;&lt;td&gt;&lt;code&gt;resolve_new_security_id()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;티커 변경과 이름 재사용 분리&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;daily_price_raw&lt;/code&gt;&lt;/td&gt;&lt;td&gt;조정 전 일봉 OHLCV&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;2,095,793&lt;/td&gt;&lt;td&gt;&lt;code&gt;EodhdDailySource.fetch()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;신호 가격과 체결 가격의 원재료&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;corporate_actions&lt;/code&gt;&lt;/td&gt;&lt;td&gt;배당·분할·합병·분사·티커·상장폐지&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;24,053&lt;/td&gt;&lt;td&gt;&lt;code&gt;parse_sec_lifecycle_filing()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;조정계수와 포지션 전환&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;adjustment_factors&lt;/code&gt;&lt;/td&gt;&lt;td&gt;분할 및 총수익 조정계수&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;2,095,793&lt;/td&gt;&lt;td&gt;&lt;code&gt;build_adjustment_factors()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;비교 가능한 장기 수익률&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;index_constituent_anchors&lt;/code&gt;&lt;/td&gt;&lt;td&gt;특정 기준일의 지수 구성원&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;605&lt;/td&gt;&lt;td&gt;&lt;code&gt;IndexDataImporter.import_anchor()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;과거 지수 복원의 시작점&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;index_membership_events&lt;/code&gt;&lt;/td&gt;&lt;td&gt;지수 편입·퇴출 이벤트&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;793&lt;/td&gt;&lt;td&gt;&lt;code&gt;IndexDataImporter.import_events()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;시점별 투자 가능 종목&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;lifecycle_resolutions&lt;/code&gt;&lt;/td&gt;&lt;td&gt;가격이 끝난 종목의 처리 결론&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;181&lt;/td&gt;&lt;td&gt;&lt;code&gt;build_lifecycle_candidates()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;방치된 상장폐지·합병 방지&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;cross_validation_reports&lt;/code&gt;&lt;/td&gt;&lt;td&gt;검증 결과와 정책 해시&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;1&lt;/td&gt;&lt;td&gt;&lt;code&gt;validate_cross_validation_gate()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;릴리스·R2 게시 허가&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;source_archive&lt;/code&gt;&lt;/td&gt;&lt;td&gt;원본 파일의 위치와 해시 색인&lt;/td&gt;&lt;td class=&quot;text-end&quot;&gt;2,534&lt;/td&gt;&lt;td&gt;&lt;code&gt;DailyDataSynchronizer._archive()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;재현·감사·분쟁 확인&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+        &lt;tfoot&gt;
+          &lt;tr&gt;&lt;th colspan=&quot;2&quot;&gt;합계&lt;/th&gt;&lt;th class=&quot;text-end&quot;&gt;4,221,532&lt;/th&gt;&lt;th colspan=&quot;2&quot;&gt;하나의 불변 릴리스로 묶음&lt;/th&gt;&lt;/tr&gt;
+        &lt;/tfoot&gt;
+      &lt;/table&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;backtest-heading&quot; data-path=&quot;backtest&quot;&gt;
-    &lt;h2 id=&quot;backtest-heading&quot;&gt;5. 백테스트: 신호일과 체결일을 분리&lt;/h2&gt;
-    &lt;svg class=&quot;runtime-svg&quot; viewBox=&quot;0 0 720 380&quot; role=&quot;img&quot; aria-labelledby=&quot;back-title back-desc&quot;&gt;
-      &lt;title id=&quot;back-title&quot;&gt;백테스트 데이터와 함수 흐름&lt;/title&gt;
-      &lt;desc id=&quot;back-desc&quot;&gt;조정 가격으로 신호를 계산하고 다음 날 raw 시가로 체결하며 기업행동 원장으로 현금과 수량을 관리한다.&lt;/desc&gt;
-      &lt;defs&gt;&lt;marker id=&quot;back-arrow&quot; markerWidth=&quot;10&quot; markerHeight=&quot;8&quot; refX=&quot;9&quot; refY=&quot;4&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M0,0 L10,4 L0,8 Z&quot; fill=&quot;var(--muted-foreground)&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
-      &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;20&quot; y=&quot;35&quot; width=&quot;190&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;115&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;MarketData.bars&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;115&quot; y=&quot;90&quot; text-anchor=&quot;middle&quot;&gt;조정 OHLC · signal t&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;265&quot; y=&quot;35&quot; width=&quot;190&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;64&quot; text-anchor=&quot;middle&quot;&gt;prepare_backtest()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;88&quot; text-anchor=&quot;middle&quot;&gt;또는 strategy.build_order_plan()&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-run&quot; x=&quot;510&quot; y=&quot;35&quot; width=&quot;190&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;605&quot; y=&quot;65&quot; text-anchor=&quot;middle&quot;&gt;OrderPlan&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;605&quot; y=&quot;90&quot; text-anchor=&quot;middle&quot;&gt;OrderIntent buy/sell&lt;/text&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M210 72 L265 72&quot; marker-end=&quot;url(#back-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M455 72 L510 72&quot; marker-end=&quot;url(#back-arrow)&quot;&gt;&lt;/path&gt;
-
-      &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;20&quot; y=&quot;170&quot; width=&quot;190&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;115&quot; y=&quot;200&quot; text-anchor=&quot;middle&quot;&gt;execution_bars&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;115&quot; y=&quot;225&quot; text-anchor=&quot;middle&quot;&gt;raw Open · execution t+1&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;265&quot; y=&quot;170&quot; width=&quot;190&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;200&quot; text-anchor=&quot;middle&quot;&gt;PortfolioLedger&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;225&quot; text-anchor=&quot;middle&quot;&gt;buy()/sell()/apply_actions()&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;20&quot; y=&quot;285&quot; width=&quot;190&quot; height=&quot;65&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;115&quot; y=&quot;313&quot; text-anchor=&quot;middle&quot;&gt;corporate_actions&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;115&quot; y=&quot;335&quot; text-anchor=&quot;middle&quot;&gt;ex-date 미수금 · payment 현금&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-run&quot; x=&quot;510&quot; y=&quot;170&quot; width=&quot;190&quot; height=&quot;180&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;605&quot; y=&quot;202&quot; text-anchor=&quot;middle&quot;&gt;BacktestResult&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;605&quot; y=&quot;230&quot; text-anchor=&quot;middle&quot;&gt;equity · trade_records&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;605&quot; y=&quot;252&quot; text-anchor=&quot;middle&quot;&gt;total_return · MDD&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;605&quot; y=&quot;274&quot; text-anchor=&quot;middle&quot;&gt;Sharpe · win_rate&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;605&quot; y=&quot;296&quot; text-anchor=&quot;middle&quot;&gt;corporate_action_cash&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;605&quot; y=&quot;318&quot; text-anchor=&quot;middle&quot;&gt;data_version · quality&lt;/text&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M605 110 L605 170&quot; marker-end=&quot;url(#back-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M210 207 L265 207&quot; marker-end=&quot;url(#back-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M210 317 L265 230&quot; marker-end=&quot;url(#back-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M455 207 L510 207&quot; marker-end=&quot;url(#back-arrow)&quot;&gt;&lt;/path&gt;
-    &lt;/svg&gt;
-    &lt;div class=&quot;runtime-mobile&quot;&gt;
-      &lt;ol class=&quot;mobile-flow&quot;&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;&lt;code&gt;run_backtest()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;preflight → universe → MarketData&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;signal t&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;조정 bars로 &lt;code&gt;prepare_backtest()/build_order_plan()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;execution t+1&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;raw 다음 시가 + fee/slippage로 &lt;code&gt;PortfolioLedger.buy()/sell()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;기업행동&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;PortfolioLedger.apply_actions()&lt;/code&gt;가 수량·현금·미수금 처리&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;결과&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;calculate_metrics()&lt;/code&gt; → &lt;code&gt;save_backtest_result()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-      &lt;/ol&gt;
+  &lt;section class=&quot;section&quot; aria-labelledby=&quot;storage-heading&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2 id=&quot;storage-heading&quot;&gt;5. 어디에 저장되고 무엇이 다음에 읽는가&lt;/h2&gt;
+      &lt;p&gt;로컬은 작업과 검증을 담당하고, R2는 승인된 릴리스의 공유·복구·독립 재검증을 담당합니다.&lt;/p&gt;
     &lt;/div&gt;
-    &lt;ol class=&quot;function-chain chain-8&quot;&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;backtest_main()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;CLI 설정 로드&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;run_backtest()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;preflight·universe·data&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;run_backtest_on_data()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;공통 엔진 루프&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;PortfolioLedger.apply_actions()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;경제 사건 처리&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;PreparedBacktest.build_order_plan()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;lookahead 없이 signal t&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;ledger.buy()/sell()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;raw open t+1 체결&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;calculate_metrics()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;성과 계산&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;chain-step&quot;&gt;&lt;code class=&quot;function-name&quot;&gt;save_backtest_result()&lt;/code&gt;&lt;span class=&quot;text-small&quot;&gt;JSON·CSV·equity 저장&lt;/span&gt;&lt;/li&gt;
+    &lt;div class=&quot;storage-map&quot;&gt;
+      &lt;article class=&quot;storage-column&quot;&gt;
+        &lt;h3&gt;로컬 작업 저장소&lt;/h3&gt;
+        &lt;pre class=&quot;tree&quot;&gt;&lt;code&gt;data/cache/
+├─ state/          수집 중간 상태
+├─ archives/       압축 원본 증거
+├─ datasets/       Parquet 버전
+├─ transactions/   수정 작업 기록
+├─ conflicts/      충돌 격리
+└─ releases/       승인된 버전 묶음&lt;/code&gt;&lt;/pre&gt;
+        &lt;p class=&quot;text-small&quot;&gt;&lt;strong&gt;쓰는 쪽:&lt;/strong&gt; 수집·보정·검증 함수&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;article class=&quot;storage-column&quot;&gt;
+        &lt;h3&gt;비공개 Cloudflare R2&lt;/h3&gt;
+        &lt;pre class=&quot;tree&quot;&gt;&lt;code&gt;super-trend-quant-parquet/
+└─ supertrend-quant/
+   ├─ datasets/.../versions/
+   ├─ datasets/.../current.json
+   ├─ archives/
+   └─ releases/current.json&lt;/code&gt;&lt;/pre&gt;
+        &lt;p class=&quot;text-small&quot;&gt;&lt;strong&gt;쓰는 쪽:&lt;/strong&gt; &lt;code&gt;publish_and_verify()&lt;/code&gt; 전용 경로&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;article class=&quot;storage-column&quot;&gt;
+        &lt;h3&gt;연구 실행 저장소&lt;/h3&gt;
+        &lt;pre class=&quot;tree&quot;&gt;&lt;code&gt;Parquet release
+  ↓ DuckDB SQL
+MarketData
+  ↓ strategy engine
+BacktestResult
+  ↓ save_backtest_result()
+results/...&lt;/code&gt;&lt;/pre&gt;
+        &lt;p class=&quot;text-small&quot;&gt;&lt;strong&gt;읽는 쪽:&lt;/strong&gt; 백테스트·연구·향후 Paper/Live&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section id=&quot;validation&quot; class=&quot;section&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2&gt;6. 여섯 개 검증 게이트를 모두 통과해야 게시된다&lt;/h2&gt;
+      &lt;p&gt;“파일이 존재한다”가 아니라 내용, 관계, 경제적 의미, 원격 복구 가능성까지 확인합니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;status-strip&quot; aria-label=&quot;6개 검증 게이트 모두 통과&quot;&gt;
+      &lt;div class=&quot;status-segment&quot;&gt;&lt;strong&gt;1&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;스키마&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;status-segment&quot;&gt;&lt;strong&gt;2&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;기업 관계&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;status-segment&quot;&gt;&lt;strong&gt;3&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;라이프사이클&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;status-segment&quot;&gt;&lt;strong&gt;4&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;독립 가격&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;status-segment&quot;&gt;&lt;strong&gt;5&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;릴리스 해시&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;status-segment&quot;&gt;&lt;strong&gt;6&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;콜드 복원&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;gate-grid&quot;&gt;
+      &lt;ol class=&quot;gate-list&quot; aria-label=&quot;검증 게이트 상세 설명&quot;&gt;
+        &lt;li class=&quot;gate-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;1&lt;/span&gt;&lt;div class=&quot;gate-copy&quot;&gt;&lt;strong&gt;&lt;code&gt;validate_dataset()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;필수 열, 기본키 중복, 날짜, OHLC 관계, 출처 메타데이터를 검사합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class=&quot;gate-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;2&lt;/span&gt;&lt;div class=&quot;gate-copy&quot;&gt;&lt;strong&gt;&lt;code&gt;validate_repository_snapshot()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;가격·티커·기업행동·지수 이벤트가 같은 기업 ID와 시점을 가리키는지 검사합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class=&quot;gate-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;3&lt;/span&gt;&lt;div class=&quot;gate-copy&quot;&gt;&lt;strong&gt;라이프사이클 커버리지&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;후보 181건 중 169건 적용, 12건 영구 예외, 열린 항목 0건을 확인합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class=&quot;gate-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;4&lt;/span&gt;&lt;div class=&quot;gate-copy&quot;&gt;&lt;strong&gt;&lt;code&gt;validate_cross_validation_gate()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;이벤트 202건과 가격 대상 296건을 검증해 불일치·미해결 0건을 확인합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class=&quot;gate-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;5&lt;/span&gt;&lt;div class=&quot;gate-copy&quot;&gt;&lt;strong&gt;&lt;code&gt;commit_release()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;10개 데이터셋의 정확한 버전과 SHA-256을 하나의 릴리스로 고정합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class=&quot;gate-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;6&lt;/span&gt;&lt;div class=&quot;gate-copy&quot;&gt;&lt;strong&gt;&lt;code&gt;publish_and_verify()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;R2 비공개 확인 후 게시하고 새 임시 폴더로 전부 다시 내려받아 해시를 비교합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;/ol&gt;
+      &lt;article class=&quot;card&quot;&gt;
+        &lt;h3&gt;이번 릴리스의 검증 결과&lt;/h3&gt;
+        &lt;table class=&quot;table table-sm&quot;&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;&lt;th&gt;이벤트 검사&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;202건&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th&gt;가격 검사&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;296건&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th&gt;검증 증거&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;657건&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th&gt;가격 비교 세션&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;245,523개&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th&gt;최종 불일치&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;0건&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th&gt;최종 미해결&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;0건&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th&gt;콜드 재다운로드&lt;/th&gt;&lt;td class=&quot;text-end&quot;&gt;통과&lt;/td&gt;&lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+        &lt;p class=&quot;text-small&quot;&gt;스냅샷 SHA-256: &lt;code&gt;d65978ce27669c906b3dcacfa4f1a40f31e9ed68abf51d293e41ac07ed88a29e&lt;/code&gt;&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class=&quot;section&quot; aria-labelledby=&quot;code-heading&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2 id=&quot;code-heading&quot;&gt;7. 실제 코드에서의 호출 순서&lt;/h2&gt;
+      &lt;p&gt;아래는 구현을 읽기 쉽게 축약한 것이며 함수 이름과 데이터셋 이름은 실제 코드와 같습니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;code-pair&quot;&gt;
+      &lt;pre class=&quot;card code-block&quot; aria-label=&quot;수집부터 릴리스까지 코드 예시&quot;&gt;&lt;code&gt;# 1. 종목·지수·가격 수집
+history = fetch_us_index_history(start_date=&quot;2015-01-01&quot;)
+catalog = build_eodhd_catalog(history.symbols, ...)
+synced = DailyDataSynchronizer(
+    repository,
+    price_source=EodhdDailySource()
+).sync(&quot;2026-07-15&quot;)
+
+# 2. 조정계수와 로컬 릴리스
+factors = build_adjustment_factors(prices, actions)
+repository.write_frame(&quot;adjustment_factors&quot;, factors, ...)
+release = repository.commit_release(
+    &quot;2026-07-15&quot;, dataset_versions, quality=&quot;degraded&quot;
+)&lt;/code&gt;&lt;/pre&gt;
+      &lt;pre class=&quot;card code-block&quot; aria-label=&quot;검증부터 백테스트까지 코드 예시&quot;&gt;&lt;code&gt;# 3. 교차검증과 R2 게시
+validate_cross_validation_gate(repository, release)
+summary = publish_and_verify(
+    repository, r2_store,
+    verify_only=False,
+    keep_verify_cache=False
+)
+
+# 4. 백테스트 소비
+data = ParquetMarketDataProvider(&quot;data/cache&quot;).load(
+    config, symbols, universe_schedule=schedule
+)
+result = run_backtest_on_data(config, data)&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class=&quot;section&quot; aria-labelledby=&quot;consumer-heading&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2 id=&quot;consumer-heading&quot;&gt;8. 백테스트는 승인된 릴리스만 읽는다&lt;/h2&gt;
+      &lt;p&gt;전략이 공급자 API를 직접 호출하지 않기 때문에 같은 릴리스로 같은 연구를 반복할 수 있습니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;consumer-flow&quot; aria-label=&quot;릴리스에서 백테스트 결과까지의 흐름&quot;&gt;
+      &lt;div class=&quot;consumer-node&quot;&gt;&lt;strong&gt;&lt;code&gt;resolve_universe()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;당시 지수 구성 복원&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;consumer-node&quot;&gt;&lt;strong&gt;&lt;code&gt;ParquetMarketDataProvider.load()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;DuckDB로 필요한 행만 조회&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;consumer-node&quot;&gt;&lt;strong&gt;&lt;code&gt;MarketData&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;가격·행동·일정 결합&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;consumer-node&quot;&gt;&lt;strong&gt;&lt;code&gt;run_backtest_on_data()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;전략 신호·주문·체결&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;consumer-node&quot;&gt;&lt;strong&gt;&lt;code&gt;BacktestResult&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;성과·위험·경고·릴리스 기록&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;p class=&quot;text-small&quot;&gt;
+      일반화하면 매일 새 완료 세션에 대해 같은 절차를 반복합니다. 달라지는 것은 날짜와 데이터 버전뿐이며,
+      원본 보관 → 검증 → 릴리스 → 게시 → 소비라는 계약은 유지됩니다.
+    &lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;section class=&quot;section&quot; aria-labelledby=&quot;roadmap-heading&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2 id=&quot;roadmap-heading&quot;&gt;9. 다음 확장 계획&lt;/h2&gt;
+      &lt;p&gt;현재 미국 S&amp;amp;P 500·Nasdaq-100에서 검증한 구조를 유지하면서 범위만 단계적으로 넓힙니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;ol class=&quot;roadmap-list&quot;&gt;
+      &lt;li class=&quot;roadmap-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;1&lt;/span&gt;&lt;div class=&quot;roadmap-copy&quot;&gt;&lt;strong&gt;Russell 3000&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;종목 수와 상장폐지 비중이 크게 늘어나므로 지수 이력 공급자와 라이프사이클 자동화부터 보강합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;roadmap-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;2&lt;/span&gt;&lt;div class=&quot;roadmap-copy&quot;&gt;&lt;strong&gt;KOSPI 200 · KOSDAQ 150&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;KRX 종목·지수·기업행동 자료를 같은 10개 데이터 계약에 맞추고 한국 시장 달력과 권리락 규칙을 추가합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;roadmap-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;3&lt;/span&gt;&lt;div class=&quot;roadmap-copy&quot;&gt;&lt;strong&gt;일봉 운영 자동화&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;EODHD 호출 예산, 완료 세션, 검증 게이트, 비공개 R2 게시를 정해진 운영 절차로 자동화합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;roadmap-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;4&lt;/span&gt;&lt;div class=&quot;roadmap-copy&quot;&gt;&lt;strong&gt;검증 공급자 다변화&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;Yahoo 단일 가격 비교 의존도를 낮추고 공식 거래소 또는 추가 가격 공급자를 중요 이벤트부터 연결합니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
     &lt;/ol&gt;
   &lt;/section&gt;
 
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;paper-heading&quot; data-path=&quot;paper&quot;&gt;
-    &lt;h2 id=&quot;paper-heading&quot;&gt;6. Paper: 같은 신호, 모의 계좌·모의 체결&lt;/h2&gt;
-    &lt;svg class=&quot;runtime-svg&quot; viewBox=&quot;0 0 720 390&quot; role=&quot;img&quot; aria-labelledby=&quot;paper-title paper-desc&quot;&gt;
-      &lt;title id=&quot;paper-title&quot;&gt;Paper 실행 흐름&lt;/title&gt;
-      &lt;desc id=&quot;paper-desc&quot;&gt;완료된 Parquet 일봉과 모의 계좌를 이용해 주문계획을 만든 뒤 QuoteProvider 가격으로 PaperBroker가 상태 파일에 체결한다.&lt;/desc&gt;
-      &lt;defs&gt;&lt;marker id=&quot;paper-arrow&quot; markerWidth=&quot;10&quot; markerHeight=&quot;8&quot; refX=&quot;9&quot; refY=&quot;4&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M0,0 L10,4 L0,8 Z&quot; fill=&quot;var(--muted-foreground)&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
-      &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;20&quot; y=&quot;30&quot; width=&quot;200&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;120&quot; y=&quot;60&quot; text-anchor=&quot;middle&quot;&gt;MarketData.bars&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;120&quot; y=&quot;84&quot; text-anchor=&quot;middle&quot;&gt;최신 완료 조정 일봉&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-store&quot; x=&quot;20&quot; y=&quot;155&quot; width=&quot;200&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;120&quot; y=&quot;185&quot; text-anchor=&quot;middle&quot;&gt;PaperBroker.get_account()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;120&quot; y=&quot;209&quot; text-anchor=&quot;middle&quot;&gt;cash · positions · event_id&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;120&quot; y=&quot;229&quot; text-anchor=&quot;middle&quot;&gt;state/paper.json&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;270&quot; y=&quot;30&quot; width=&quot;200&quot; height=&quot;75&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;370&quot; y=&quot;60&quot; text-anchor=&quot;middle&quot;&gt;build_order_plan()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;370&quot; y=&quot;84&quot; text-anchor=&quot;middle&quot;&gt;bars + account + benchmark&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;270&quot; y=&quot;155&quot; width=&quot;200&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;370&quot; y=&quot;185&quot; text-anchor=&quot;middle&quot;&gt;FrameQuoteProvider&lt;/text&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;370&quot; y=&quot;205&quot; text-anchor=&quot;middle&quot;&gt;.quotes()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;370&quot; y=&quot;229&quot; text-anchor=&quot;middle&quot;&gt;기본: 최신 raw 완료봉 Close&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-run&quot; x=&quot;520&quot; y=&quot;30&quot; width=&quot;180&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;610&quot; y=&quot;62&quot; text-anchor=&quot;middle&quot;&gt;OrderPlan&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;610&quot; y=&quot;86&quot; text-anchor=&quot;middle&quot;&gt;quote gap이면 0건&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-run&quot; x=&quot;520&quot; y=&quot;155&quot; width=&quot;180&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;610&quot; y=&quot;185&quot; text-anchor=&quot;middle&quot;&gt;execute_plan()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;610&quot; y=&quot;209&quot; text-anchor=&quot;middle&quot;&gt;fee · slippage · fill&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-neutral&quot; x=&quot;270&quot; y=&quot;300&quot; width=&quot;430&quot; height=&quot;65&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;485&quot; y=&quot;327&quot; text-anchor=&quot;middle&quot;&gt;PaperRunRecorder.record_cycle()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;485&quot; y=&quot;349&quot; text-anchor=&quot;middle&quot;&gt;account_before/after · plan · fills · prices · cycle equity&lt;/text&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M220 67 L270 67&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M220 200 C245 200 245 80 270 80&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M470 67 L520 67&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M470 200 L520 200&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M610 120 L610 155&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M610 245 L610 300&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M120 245 C120 335 230 332 270 332&quot; marker-end=&quot;url(#paper-arrow)&quot;&gt;&lt;/path&gt;
-    &lt;/svg&gt;
-    &lt;div class=&quot;runtime-mobile&quot;&gt;
-      &lt;ol class=&quot;mobile-flow&quot;&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;&lt;code&gt;PaperRuntime.run_once()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;시장 일정 → preflight → account → universe&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;데이터 안전 검사&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;load_configured_market_data()&lt;/code&gt; → &lt;code&gt;_daily_data_gap()&lt;/code&gt;; gap이면 전 주문 차단&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;기업행동 반영&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;PaperBroker.apply_corporate_actions()&lt;/code&gt;가 event_id를 상태에 저장&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;신호·호가 분리&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;adjusted bars로 계획, &lt;code&gt;FrameQuoteProvider.quotes()&lt;/code&gt;로 체결 가격&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;모의 체결·기록&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;execute_plan()&lt;/code&gt; → &lt;code&gt;record_cycle()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-      &lt;/ol&gt;
+  &lt;section id=&quot;appendix&quot; class=&quot;section&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2&gt;부록 A. 알려진 한계와 영구 예외&lt;/h2&gt;
+      &lt;p&gt;현재 릴리스의 &lt;code&gt;quality=degraded&lt;/code&gt;는 검증 실패가 아니라 아래 한계를 숨기지 않고 표시한 결과입니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;appendix-note&quot;&gt;
+      &lt;p&gt;&lt;strong&gt;영구 예외 12건은 검증을 통과한 정상 이벤트로 위장하지 않습니다.&lt;/strong&gt; 각 예외는 이유, 근거 URL, 원본 해시, 적용 정책을 별도로 고정하며 내용이 바뀌면 게시가 중단됩니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;ul class=&quot;risk-list&quot;&gt;
+      &lt;li class=&quot;risk-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;!&lt;/span&gt;&lt;div class=&quot;risk-copy&quot;&gt;&lt;strong&gt;UTX 분사 대가&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;정확한 CARR 1.0주와 OTIS 0.5주 분배가 현재 표준 행동 모델에 완전히 반영되지 않아 지원되지 않는 대가로 남습니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;risk-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;!&lt;/span&gt;&lt;div class=&quot;risk-copy&quot;&gt;&lt;strong&gt;ABMD 조건부가치권리&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;보장된 주당 380달러만 반영하며 최대 35달러 CVR은 0달러 하한으로 처리해 수익이 과소평가될 수 있습니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;risk-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;!&lt;/span&gt;&lt;div class=&quot;risk-copy&quot;&gt;&lt;strong&gt;CELG/BMYRT 거래 경로&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;공식 첫 거래 종가 2.30달러를 청산 표식으로 사용하며 전체 280세션 거래 경로는 지원하지 않습니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;risk-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;!&lt;/span&gt;&lt;div class=&quot;risk-copy&quot;&gt;&lt;strong&gt;FRCB 공급자 원본 수정&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;2024-12-30 저가 0을 0.003으로 해시 고정 교정했으며 다른 필드는 그대로 유지했습니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;risk-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;!&lt;/span&gt;&lt;div class=&quot;risk-copy&quot;&gt;&lt;strong&gt;NTCO/NTCOY 경계&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;가격·티커·최종 현금 지급은 공식 자료로 보완했지만 충돌한 공급자 배당 두 건은 채택하지 않았습니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+      &lt;li class=&quot;risk-item&quot;&gt;&lt;span class=&quot;step-mark&quot;&gt;!&lt;/span&gt;&lt;div class=&quot;risk-copy&quot;&gt;&lt;strong&gt;Quandl WIKI 증거의 이용 범위&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;정식 라이선스가 불명확한 동결 자료는 개인·내부 검증에만 사용하며 공개 재배포하지 않습니다.&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
+
+  &lt;section class=&quot;section&quot; aria-labelledby=&quot;technical-heading&quot;&gt;
+    &lt;div class=&quot;section-heading&quot;&gt;
+      &lt;h2 id=&quot;technical-heading&quot;&gt;부록 B. 함수별 입력·출력·저장·사용처&lt;/h2&gt;
+      &lt;p&gt;운영 담당자가 장애나 데이터 질문을 추적할 때 사용하는 빠른 참조표입니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;table-responsive&quot;&gt;
+      &lt;table class=&quot;table table-sm&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;함수&lt;/th&gt;&lt;th&gt;받는 것&lt;/th&gt;&lt;th&gt;만드는 것&lt;/th&gt;&lt;th&gt;저장 위치&lt;/th&gt;&lt;th&gt;다음 호출&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;fetch_us_index_history()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;시작일&lt;/td&gt;&lt;td&gt;지수 anchor·편입·퇴출 원본&lt;/td&gt;&lt;td&gt;&lt;code&gt;state&lt;/code&gt;·&lt;code&gt;archives&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;IndexDataImporter&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;build_eodhd_catalog()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;지수 티커 목록&lt;/td&gt;&lt;td&gt;기업 ID·티커 이력&lt;/td&gt;&lt;td&gt;&lt;code&gt;security_master&lt;/code&gt;·&lt;code&gt;symbol_history&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;DailyDataSynchronizer&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;EodhdDailySource.fetch()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;기업 ID와 공급자 티커&lt;/td&gt;&lt;td&gt;OHLCV·배당·분할·원본&lt;/td&gt;&lt;td&gt;&lt;code&gt;daily_price_raw&lt;/code&gt;·&lt;code&gt;corporate_actions&lt;/code&gt;·&lt;code&gt;archives&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;build_adjustment_factors()&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;SecEdgarLifecycleSource.collect()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;가격이 끝난 기업 후보&lt;/td&gt;&lt;td&gt;관련 공시와 파싱 결과&lt;/td&gt;&lt;td&gt;&lt;code&gt;archives&lt;/code&gt;·수집 보고서&lt;/td&gt;&lt;td&gt;&lt;code&gt;lifecycle_action_record()&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;build_adjustment_factors()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;가격과 기업행동&lt;/td&gt;&lt;td&gt;분할·총수익 계수&lt;/td&gt;&lt;td&gt;&lt;code&gt;adjustment_factors&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;ParquetMarketDataProvider.load()&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;validate_cross_validation_gate()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;릴리스와 검증 증거&lt;/td&gt;&lt;td&gt;불일치·예외·가격 비교 결과&lt;/td&gt;&lt;td&gt;&lt;code&gt;cross_validation_reports&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;publish_and_verify()&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;publish_repository()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;로컬 불변 버전&lt;/td&gt;&lt;td&gt;R2 객체와 조건부 current 포인터&lt;/td&gt;&lt;td&gt;비공개 R2&lt;/td&gt;&lt;td&gt;&lt;code&gt;DatasetCache.sync_release()&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;ParquetMarketDataProvider.load()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;릴리스·종목·기간·지수 일정&lt;/td&gt;&lt;td&gt;&lt;code&gt;MarketData&lt;/code&gt;&lt;/td&gt;&lt;td&gt;메모리&lt;/td&gt;&lt;td&gt;&lt;code&gt;run_backtest_on_data()&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;&lt;code&gt;PortfolioLedger.apply_actions()&lt;/code&gt;&lt;/td&gt;&lt;td&gt;포지션과 기업행동&lt;/td&gt;&lt;td&gt;현금·후속 주식·종목 전환&lt;/td&gt;&lt;td&gt;백테스트 원장&lt;/td&gt;&lt;td&gt;성과 계산&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;live-heading&quot; data-path=&quot;live&quot;&gt;
-    &lt;h2 id=&quot;live-heading&quot;&gt;7. Live: Parquet 신호와 Toss 실시간 계좌·호가 결합&lt;/h2&gt;
-    &lt;svg class=&quot;runtime-svg&quot; viewBox=&quot;0 0 720 430&quot; role=&quot;img&quot; aria-labelledby=&quot;live-title live-desc&quot;&gt;
-      &lt;title id=&quot;live-title&quot;&gt;Live 거래 데이터와 안전 검사 흐름&lt;/title&gt;
-      &lt;desc id=&quot;live-desc&quot;&gt;완료된 조정 일봉으로 주문계획을 만들고 Toss 계좌와 실시간 호가로 안전검사를 한 뒤 사용자 확인 후 실제 주문을 보낸다.&lt;/desc&gt;
-      &lt;defs&gt;&lt;marker id=&quot;live-arrow&quot; markerWidth=&quot;10&quot; markerHeight=&quot;8&quot; refX=&quot;9&quot; refY=&quot;4&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M0,0 L10,4 L0,8 Z&quot; fill=&quot;var(--muted-foreground)&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
-      &lt;rect class=&quot;svg-node svg-query&quot; x=&quot;20&quot; y=&quot;25&quot; width=&quot;200&quot; height=&quot;80&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;120&quot; y=&quot;55&quot; text-anchor=&quot;middle&quot;&gt;MarketData.bars&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;120&quot; y=&quot;79&quot; text-anchor=&quot;middle&quot;&gt;완료 조정 일봉 · benchmark&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;20&quot; y=&quot;150&quot; width=&quot;200&quot; height=&quot;95&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;120&quot; y=&quot;180&quot; text-anchor=&quot;middle&quot;&gt;TossBroker.get_account()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;120&quot; y=&quot;204&quot; text-anchor=&quot;middle&quot;&gt;실제 cash · positions&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;120&quot; y=&quot;224&quot; text-anchor=&quot;middle&quot;&gt;브로커 계좌가 기준&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;260&quot; y=&quot;25&quot; width=&quot;200&quot; height=&quot;80&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;55&quot; text-anchor=&quot;middle&quot;&gt;build_order_plan()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;79&quot; text-anchor=&quot;middle&quot;&gt;공통 전략 → OrderIntent&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-source&quot; x=&quot;260&quot; y=&quot;150&quot; width=&quot;200&quot; height=&quot;95&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;180&quot; text-anchor=&quot;middle&quot;&gt;TossRealtimeQuote&lt;/text&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;360&quot; y=&quot;200&quot; text-anchor=&quot;middle&quot;&gt;Provider.quotes()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;360&quot; y=&quot;224&quot; text-anchor=&quot;middle&quot;&gt;실시간 주문·수량 가격&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-process&quot; x=&quot;500&quot; y=&quot;25&quot; width=&quot;200&quot; height=&quot;220&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;600&quot; y=&quot;55&quot; text-anchor=&quot;middle&quot;&gt;_apply_live_guards()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;84&quot; text-anchor=&quot;middle&quot;&gt;historical stale/gap&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;106&quot; text-anchor=&quot;middle&quot;&gt;unmanaged holding&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;128&quot; text-anchor=&quot;middle&quot;&gt;open order&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;150&quot; text-anchor=&quot;middle&quot;&gt;missing realtime quote&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;172&quot; text-anchor=&quot;middle&quot;&gt;cost basis · risk limit&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;194&quot; text-anchor=&quot;middle&quot;&gt;cash · prerequisite sell fill&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;600&quot; y=&quot;222&quot; text-anchor=&quot;middle&quot;&gt;실패 시 OrderPlan.orders = 0&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-neutral&quot; x=&quot;150&quot; y=&quot;300&quot; width=&quot;190&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text x=&quot;245&quot; y=&quot;330&quot; text-anchor=&quot;middle&quot;&gt;사용자 확인&lt;/text&gt;
-      &lt;text class=&quot;svg-fn svg-small&quot; x=&quot;245&quot; y=&quot;354&quot; text-anchor=&quot;middle&quot;&gt;live_confirm_required&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;245&quot; y=&quot;375&quot; text-anchor=&quot;middle&quot;&gt;yes 또는 --yes&lt;/text&gt;
-      &lt;rect class=&quot;svg-node svg-live&quot; x=&quot;380&quot; y=&quot;300&quot; width=&quot;190&quot; height=&quot;90&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;
-      &lt;text class=&quot;svg-fn&quot; x=&quot;475&quot; y=&quot;330&quot; text-anchor=&quot;middle&quot;&gt;TossBroker.place_order()&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;475&quot; y=&quot;354&quot; text-anchor=&quot;middle&quot;&gt;client_order_id로 중복 방지&lt;/text&gt;
-      &lt;text class=&quot;svg-small&quot; x=&quot;475&quot; y=&quot;375&quot; text-anchor=&quot;middle&quot;&gt;holdings sync + Telegram&lt;/text&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M220 65 L260 65&quot; marker-end=&quot;url(#live-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M220 197 L260 197&quot; marker-end=&quot;url(#live-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M460 65 L500 65&quot; marker-end=&quot;url(#live-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M460 197 L500 197&quot; marker-end=&quot;url(#live-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M600 245 C600 278 245 270 245 300&quot; marker-end=&quot;url(#live-arrow)&quot;&gt;&lt;/path&gt;
-      &lt;path class=&quot;svg-flow&quot; d=&quot;M340 345 L380 345&quot; marker-end=&quot;url(#live-arrow)&quot;&gt;&lt;/path&gt;
-    &lt;/svg&gt;
-    &lt;div class=&quot;runtime-mobile&quot;&gt;
-      &lt;ol class=&quot;mobile-flow&quot;&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;&lt;code&gt;HybridLiveRuntime.run_once()&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;시장 일정·preflight·Toss 계좌·holdings 동기화&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;신호 생성&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;Parquet adjusted bars → &lt;code&gt;build_order_plan()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;실시간 안전 검사&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;Toss account + &lt;code&gt;TossRealtimeQuoteProvider.quotes()&lt;/code&gt; → &lt;code&gt;_apply_live_guards()&lt;/code&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;사용자 확인&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;차단 사유가 없고 확인을 받은 주문만 통과&lt;/span&gt;&lt;/li&gt;
-        &lt;li class=&quot;mobile-step&quot;&gt;&lt;strong&gt;실제 주문&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;TossBroker.place_order()&lt;/code&gt; → 계좌 재조회 → holdings·알림 갱신&lt;/span&gt;&lt;/li&gt;
-      &lt;/ol&gt;
-    &lt;/div&gt;
-  &lt;/section&gt;
-
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;contract-heading&quot;&gt;
-    &lt;h2 id=&quot;contract-heading&quot;&gt;8. 함수 사이에서 오가는 핵심 객체&lt;/h2&gt;
-    &lt;div class=&quot;object-grid&quot;&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;ResolvedUniverse&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;&lt;code&gt;members&lt;/code&gt;, &lt;code&gt;eligible_symbols&lt;/code&gt;, &lt;code&gt;exit_only_symbols&lt;/code&gt;, &lt;code&gt;schedule&lt;/code&gt;, &lt;code&gt;entries_allowed&lt;/code&gt;, snapshot&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;MarketData&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;adjusted/raw bars, benchmark, actions, universe schedule, version, quality, warnings&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;AccountSnapshot&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;cash, positions(symbol·quantity·avg_price), total_asset_value&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;OrderPlan&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;strategy_name, mode, &lt;code&gt;OrderIntent[]&lt;/code&gt;, 안전·품질 notes&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;OrderIntent&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;symbol, buy/sell, quantity, order_type, reason, client_order_id&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;PortfolioLedger&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;cash, positions, receivables, processed/entitled/unresolved event IDs&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;DatasetManifest&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;version, parent, files·hash·rows·date range, quality, publisher, coverage&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;object-row&quot;&gt;&lt;strong&gt;&lt;code&gt;DataRelease&lt;/code&gt;&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;서로 일관된 모든 dataset_version과 completed_session 묶음&lt;/span&gt;&lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/section&gt;
-
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;daily-heading&quot;&gt;
-    &lt;h2 id=&quot;daily-heading&quot;&gt;9. 개인 PC의 실제 일일 운영 순서&lt;/h2&gt;
-    &lt;ol class=&quot;daily-timeline&quot;&gt;
-      &lt;li class=&quot;timeline-step&quot;&gt;&lt;strong&gt;① 미국 장 마감&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;XNYS session 종료&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;timeline-step&quot;&gt;&lt;strong&gt;② +90분&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;완료 세션 확정&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;timeline-step&quot;&gt;&lt;strong&gt;③ Preflight&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;local/R2 session 비교&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;timeline-step&quot;&gt;&lt;strong&gt;④ Pull 또는 Sync&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;R2 우선, stale이면 공급자 1회&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;timeline-step&quot;&gt;&lt;strong&gt;⑤ Validate·Release&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;오류면 이전 release 유지&lt;/span&gt;&lt;/li&gt;
-      &lt;li class=&quot;timeline-step&quot;&gt;&lt;strong&gt;⑥ 실행&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;backtest/research/paper/live&lt;/span&gt;&lt;/li&gt;
-    &lt;/ol&gt;
-    &lt;pre&gt;&lt;code&gt;# 최초 또는 강제 최신화
-uv run quant-data --strategy ... --runtime ... sync --backfill-start 2000-01-01
-
-# 공식 지수 자료 입력
-uv run quant-data --strategy ... --runtime ... import-index --kind anchor ... --official
-uv run quant-data --strategy ... --runtime ... import-index --kind events ... --official
-
-# 무결성 확인과 R2 발행
-uv run quant-data --strategy ... --runtime ... validate
-uv run quant-data --strategy ... --runtime ... sync --publish&lt;/code&gt;&lt;/pre&gt;
-  &lt;/section&gt;
-
-  &lt;section class=&quot;map-section&quot; aria-labelledby=&quot;critical-heading&quot;&gt;
-    &lt;h2 id=&quot;critical-heading&quot;&gt;10. 이 프로젝트를 이해할 때 놓치면 안 되는 사항&lt;/h2&gt;
-    &lt;div class=&quot;critical-grid&quot;&gt;
-      &lt;div class=&quot;critical-item&quot;&gt;&lt;strong&gt;SQL은 저장소가 아니라 조회 언어&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;원본은 Parquet에 남고 DuckDB는 메모리에서 &lt;code&gt;read_parquet()&lt;/code&gt;로 직접 조회합니다. Parquet→SQL DB→Parquet 변환은 없습니다.&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;critical-item&quot;&gt;&lt;strong&gt;지수 구성 복원과 지수값 복제는 다름&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;anchor와 실제 ADD/REMOVE로 구성종목을 복원하지만 divisor·float weight·공식 index level까지 재현하지는 않습니다.&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;critical-item&quot;&gt;&lt;strong&gt;신호 가격과 경제 현실 가격은 다름&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;조정 OHLC는 전략 신호용, raw OHLC와 기업행동 원장은 체결·계좌·성과용입니다.&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;critical-item&quot;&gt;&lt;strong&gt;Live 잔고의 진실은 Toss&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;로컬 기업행동 계산으로 주문을 만들지 않고 실제 브로커 cash·position을 기준으로 안전 검사를 합니다.&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;critical-item&quot;&gt;&lt;strong&gt;현재 실제 데이터는 아직 비어 있음&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;2026-07-16 확인 기준 코드와 테스트는 준비됐지만 &lt;code&gt;data/cache&lt;/code&gt;와 최초 release는 없습니다. 환경변수와 백필·공식 지수 입력이 필요합니다.&lt;/span&gt;&lt;/div&gt;
-      &lt;div class=&quot;critical-item&quot;&gt;&lt;strong&gt;V1은 미국 완료 일봉만&lt;/strong&gt;&lt;span class=&quot;text-small&quot;&gt;Parquet provider는 &lt;code&gt;timeframe=1d&lt;/code&gt;만 지원합니다. 분봉은 &lt;code&gt;BarSource&lt;/code&gt;·메모리 overlay 인터페이스만 준비되어 있습니다.&lt;/span&gt;&lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;status-line card&quot;&gt;
-      &lt;span class=&quot;status-dot&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;
-      &lt;span&gt;&lt;strong&gt;현재 운영 상태:&lt;/strong&gt; 코드 구현·143개 테스트 통과 / 실제 백필·공식 지수 데이터·R2 최초 발행은 미실행&lt;/span&gt;
-    &lt;/div&gt;
-  &lt;/section&gt;
+  &lt;footer class=&quot;text-small text-muted&quot;&gt;
+    &lt;p&gt;수치는 완료 세션 2026-07-15 및 릴리스 &lt;code&gt;20260715-20260719T130946573430Z&lt;/code&gt;의 고정 스냅샷입니다. 이후 릴리스에서도 동일한 데이터 계약과 검증 순서를 반복합니다.&lt;/p&gt;
+  &lt;/footer&gt;
 
   &lt;script&gt;
     (() =&gt; {
-      const root = document.getElementById(&#x27;stq-system-map&#x27;);
-      if (!root) return;
-
-      const buttons = Array.from(root.querySelectorAll(&#x27;[data-focus]&#x27;));
-      const pathItems = Array.from(root.querySelectorAll(&#x27;[data-path]&#x27;));
-      const detail = root.querySelector(&#x27;.selected-detail&#x27;);
-      const messages = {
-        all: &#x27;외부 원천 → 검증된 Parquet release → DuckDB SQL → MarketData → 백테스트·Paper·Live로 이어집니다.&#x27;,
-        collect: &#x27;SEC·Nasdaq Trader·Yahoo·공식 지수 파일을 정규화하고 검증한 뒤, 불변 Parquet 버전과 release로 저장·발행합니다.&#x27;,
-        query: &#x27;DuckDB가 release에 고정된 Parquet 파일에서 종목·기간·열만 읽고 조정 신호와 raw 실행 스트림을 동시에 만듭니다.&#x27;,
-        backtest: &#x27;과거 시점별 universe와 조정 bars로 신호를 만들고 다음 raw 시가와 기업행동 원장으로 체결·성과를 계산합니다.&#x27;,
-        paper: &#x27;완료 일봉 신호, 별도 QuoteProvider 가격, 지속되는 PaperBroker 상태를 결합해 실제 주문 없이 같은 전략 경로를 검증합니다.&#x27;,
-        live: &#x27;완료 Parquet 일봉은 신호에만 쓰고 Toss의 실제 계좌·실시간 호가·안전 검사를 통과한 주문만 API로 전송합니다.&#x27;
+      const root = document.getElementById(&#x27;stq-market-data-pipeline&#x27;);
+      const buttons = Array.from(root.querySelectorAll(&#x27;[data-stage]&#x27;));
+      const fields = {
+        number: root.querySelector(&#x27;#stage-number&#x27;),
+        title: root.querySelector(&#x27;#stage-title&#x27;),
+        summary: root.querySelector(&#x27;#stage-summary&#x27;),
+        input: root.querySelector(&#x27;#stage-input&#x27;),
+        functionName: root.querySelector(&#x27;#stage-function&#x27;),
+        output: root.querySelector(&#x27;#stage-output&#x27;),
+        storage: root.querySelector(&#x27;#stage-storage&#x27;),
+        next: root.querySelector(&#x27;#stage-next&#x27;),
+        code: root.querySelector(&#x27;#stage-code&#x27;)
+      };
+      const stages = {
+        sources: {
+          number: &#x27;01&#x27;, title: &#x27;외부 원천을 목적별로 분리한다&#x27;,
+          summary: &#x27;EODHD는 주 데이터, SEC와 지수 자료는 공식 사실, Yahoo는 독립 가격 비교에 사용합니다.&#x27;,
+          input: &#x27;EODHD JSON · SEC 공시 · 지수 이력&#x27;, functionName: &#x27;bootstrap_us_market_data()&#x27;,
+          output: &#x27;공급자별 원본 응답&#x27;, storage: &#x27;data/cache/state&#x27;, next: &#x27;원본 아카이브와 정규화 단계&#x27;,
+          code: &#x27;history = fetch_us_index_history(...)\ncatalog = build_eodhd_catalog(...)\nsynced = DailyDataSynchronizer(...).sync(...)&#x27;
+        },
+        archive: {
+          number: &#x27;02&#x27;, title: &#x27;받은 원문을 내용 해시로 보존한다&#x27;,
+          summary: &#x27;나중에 공급자 데이터가 바뀌어도 당시 판단의 근거를 동일한 바이트로 다시 확인할 수 있습니다.&#x27;,
+          input: &#x27;JSON · HTML · TXT · PDF · CSV&#x27;, functionName: &#x27;DailyDataSynchronizer._archive()&#x27;,
+          output: &#x27;gzip 원본 + source_archive 색인&#x27;, storage: &#x27;data/cache/archives&#x27;, next: &#x27;재현·감사·교차검증&#x27;,
+          code: &#x27;archive_id = sha256(raw_content)\nobject_path = f&quot;archives/{date}/{archive_id}.json.gz&quot;\nrepository.append_frame(&quot;source_archive&quot;, index_rows, ...)&#x27;
+        },
+        identity: {
+          number: &#x27;03&#x27;, title: &#x27;티커가 아니라 기업을 식별한다&#x27;,
+          summary: &#x27;같은 티커를 다른 회사가 재사용하거나 회사가 티커를 바꿔도 가격 이력을 잘못 이어 붙이지 않습니다.&#x27;,
+          input: &#x27;종목 목록 · ISIN · 티커 구간 · SEC 사실&#x27;, functionName: &#x27;build_eodhd_catalog() / resolve_new_security_id()&#x27;,
+          output: &#x27;security_master + symbol_history&#x27;, storage: &#x27;data/cache/datasets&#x27;, next: &#x27;가격·기업행동·지수 이벤트 연결&#x27;,
+          code: &#x27;security_id = &quot;US:EODHD:&lt;stable-uuid&gt;&quot;\n# display symbol may change, security_id does not\nrepository.write_frame(&quot;symbol_history&quot;, history, ...)&#x27;
+        },
+        normalize: {
+          number: &#x27;04&#x27;, title: &#x27;공급자 형식을 표준 Parquet으로 바꾼다&#x27;,
+          summary: &#x27;모든 행에 기본키, 날짜, 출처, 검색 시점, 원본 해시를 붙여 같은 계약으로 저장합니다.&#x27;,
+          input: &#x27;공급자별 서로 다른 필드&#x27;, functionName: &#x27;EodhdDailySource.fetch() / LocalDatasetRepository.write_frame()&#x27;,
+          output: &#x27;표준화된 DataFrame과 Parquet&#x27;, storage: &#x27;datasets/&lt;name&gt;/versions/&lt;version&gt;&#x27;, next: &#x27;검증·조정계수·백테스트&#x27;,
+          code: &#x27;repository.write_frame(\n    &quot;daily_price_raw&quot;, prices,\n    completed_session=&quot;2026-07-15&quot;\n)&#x27;
+        },
+        lifecycle: {
+          number: &#x27;05&#x27;, title: &#x27;가격이 끝난 이유와 경제 조건을 보완한다&#x27;,
+          summary: &#x27;SEC 공시를 파싱해 현금합병, 주식교환, 분사, 티커 변경, 상장폐지를 구조화합니다.&#x27;,
+          input: &#x27;말단 가격 후보 + SEC EDGAR 원문&#x27;, functionName: &#x27;SecEdgarLifecycleSource.collect() / parse_sec_lifecycle_filing()&#x27;,
+          output: &#x27;corporate_actions + lifecycle_resolutions&#x27;, storage: &#x27;datasets/corporate_actions · lifecycle_resolutions&#x27;, next: &#x27;경제성 비교와 원장 반영&#x27;,
+          code: &#x27;candidate = build_lifecycle_candidates(...)\nevidence = sec_source.collect(candidate)\naction = lifecycle_action_record(evidence, ...)&#x27;
+        },
+        factors: {
+          number: &#x27;06&#x27;, title: &#x27;장기 수익률을 비교할 조정계수를 계산한다&#x27;,
+          summary: &#x27;배당, 분할, 합병, 분사 효과를 반영해 과거와 현재 가격을 같은 경제적 기준으로 비교합니다.&#x27;,
+          input: &#x27;daily_price_raw + corporate_actions&#x27;, functionName: &#x27;build_adjustment_factors()&#x27;,
+          output: &#x27;split_factor + total_return_factor&#x27;, storage: &#x27;datasets/adjustment_factors&#x27;, next: &#x27;지표 계산과 성과 측정&#x27;,
+          code: &#x27;factors = build_adjustment_factors(\n    all_prices, all_actions,\n    source_version=source_versions\n)&#x27;
+        },
+        validate: {
+          number: &#x27;07&#x27;, title: &#x27;내부 관계와 외부 가격을 함께 검증한다&#x27;,
+          summary: &#x27;스키마, 기업 연결, 지수 전이, SEC 조건, Yahoo 가격을 비교하고 임시 미해결 항목이 있으면 중단합니다.&#x27;,
+          input: &#x27;10개 데이터셋 + 657개 검증 증거&#x27;, functionName: &#x27;validate_repository_snapshot() / validate_cross_validation_gate()&#x27;,
+          output: &#x27;검증 보고서와 예외 목록&#x27;, storage: &#x27;cross_validation_reports + archives&#x27;, next: &#x27;릴리스 승인 여부&#x27;,
+          code: &#x27;snapshot_report.raise_for_errors()\ncross = validate_cross_validation_gate(repository, release)\nassert cross[&quot;price_unresolved_count&quot;] == 0&#x27;
+        },
+        release: {
+          number: &#x27;08&#x27;, title: &#x27;정확한 버전 조합을 하나의 릴리스로 고정한다&#x27;,
+          summary: &#x27;각 데이터셋의 current 파일만 보는 대신 검증 당시의 10개 버전을 불변 JSON으로 묶습니다.&#x27;,
+          input: &#x27;검증된 데이터셋 버전 10개&#x27;, functionName: &#x27;LocalDatasetRepository.commit_release()&#x27;,
+          output: &#x27;DataRelease JSON&#x27;, storage: &#x27;data/cache/releases&#x27;, next: &#x27;R2 게시와 백테스트 재현&#x27;,
+          code: &#x27;release = repository.commit_release(\n    completed_session, dataset_versions,\n    quality=&quot;degraded&quot;, warnings=known_limits\n)&#x27;
+        },
+        r2: {
+          number: &#x27;09&#x27;, title: &#x27;비공개 R2에 게시하고 새로 내려받아 확인한다&#x27;,
+          summary: &#x27;공개 URL과 커스텀 도메인이 꺼진 상태를 확인한 뒤 조건부 포인터로 게시하고 콜드 캐시에서 전체 해시를 비교합니다.&#x27;,
+          input: &#x27;로컬 불변 릴리스 + 비공개 증명&#x27;, functionName: &#x27;publish_and_verify() / DatasetCache.sync_release()&#x27;,
+          output: &#x27;R2 릴리스 + 콜드 검증 결과&#x27;, storage: &#x27;R2 supertrend-quant prefix&#x27;, next: &#x27;공유·복구·독립 실행&#x27;,
+          code: &#x27;publish_repository(repository, r2, datasets)\ndownloaded = DatasetCache(tmp, r2).sync_release()\ncompare_repository_snapshots(local, fresh, release, ...)&#x27;
+        },
+        consume: {
+          number: &#x27;10&#x27;, title: &#x27;백테스트는 공급자가 아니라 릴리스를 읽는다&#x27;,
+          summary: &#x27;DuckDB가 필요한 버전·기업·기간만 읽어 MarketData를 만들고 전략과 원장에 전달합니다.&#x27;,
+          input: &#x27;릴리스 + 전략 설정 + 당시 지수 일정&#x27;, functionName: &#x27;ParquetMarketDataProvider.load() / run_backtest_on_data()&#x27;,
+          output: &#x27;MarketData + BacktestResult&#x27;, storage: &#x27;메모리 + results&#x27;, next: &#x27;성과 비교와 투자 연구&#x27;,
+          code: &#x27;data = ParquetMarketDataProvider(cache).load(config, symbols, ...)\nresult = run_backtest_on_data(config, data)\nsave_backtest_result(result, config, results_dir)&#x27;
+        }
       };
 
-      function selectFocus(focus) {
+      const selectStage = (key) =&gt; {
+        const stage = stages[key];
+        if (!stage) return;
         buttons.forEach((button) =&gt; {
-          const active = button.dataset.focus === focus;
+          const active = button.dataset.stage === key;
           button.setAttribute(&#x27;aria-pressed&#x27;, String(active));
           button.classList.toggle(&#x27;btn-primary&#x27;, active);
         });
-
-        pathItems.forEach((item) =&gt; {
-          const paths = (item.dataset.path || &#x27;&#x27;).split(/\s+/).filter(Boolean);
-          const visible = focus === &#x27;all&#x27; || paths.includes(&#x27;shared&#x27;) || paths.includes(focus);
-          item.classList.toggle(&#x27;is-dimmed&#x27;, !visible);
-        });
-
-        if (detail) detail.textContent = messages[focus] || messages.all;
-      }
+        fields.number.textContent = stage.number;
+        fields.title.textContent = stage.title;
+        fields.summary.textContent = stage.summary;
+        fields.input.textContent = stage.input;
+        fields.functionName.textContent = stage.functionName;
+        fields.output.textContent = stage.output;
+        fields.storage.textContent = stage.storage;
+        fields.next.textContent = stage.next;
+        fields.code.textContent = stage.code;
+      };
 
       buttons.forEach((button) =&gt; {
-        button.addEventListener(&#x27;click&#x27;, () =&gt; selectFocus(button.dataset.focus || &#x27;all&#x27;));
+        button.addEventListener(&#x27;click&#x27;, () =&gt; selectStage(button.dataset.stage));
       });
     })();
   &lt;/script&gt;
-&lt;/div&gt;
+&lt;/main&gt;
 
 &lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;

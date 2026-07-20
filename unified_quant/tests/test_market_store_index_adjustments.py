@@ -242,6 +242,146 @@ class AdjustmentFactorTest(unittest.TestCase):
         self.assertAlmostEqual(gross_first, 0.9)
         self.assertAlmostEqual(taxed_first, 0.95)
 
+    def test_multiple_same_date_actions_and_later_actions_accumulate_in_date_order(self):
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "same-date-stock-dividend",
+                    "security_id": "A",
+                    "action_type": "stock_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": 1.25,
+                    "cash_amount": None,
+                },
+                {
+                    "event_id": "later-split",
+                    "security_id": "A",
+                    "action_type": "split",
+                    "effective_date": "2020-01-03",
+                    "ex_date": "2020-01-03",
+                    "ratio": 4.0,
+                    "cash_amount": None,
+                },
+                {
+                    "event_id": "same-date-split",
+                    "security_id": "A",
+                    "action_type": "split",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": 2.0,
+                    "cash_amount": None,
+                },
+                {
+                    "event_id": "same-date-cash",
+                    "security_id": "A",
+                    "action_type": "cash_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": None,
+                    "cash_amount": 10.0,
+                },
+            ]
+        )
+
+        factors = build_adjustment_factors(self.prices, actions, source_version="v1")
+
+        self.assertEqual(list(factors["session"]), list(pd.to_datetime(["2020-01-01", "2020-01-02", "2020-01-03"])))
+        self.assertAlmostEqual(factors.iloc[0]["split_factor"], 0.1)
+        self.assertAlmostEqual(factors.iloc[1]["split_factor"], 0.25)
+        self.assertAlmostEqual(factors.iloc[2]["split_factor"], 1.0)
+        self.assertAlmostEqual(factors.iloc[0]["total_return_factor"], 0.09)
+        self.assertAlmostEqual(factors.iloc[1]["total_return_factor"], 0.25)
+        self.assertAlmostEqual(factors.iloc[2]["total_return_factor"], 1.0)
+
+    def test_blank_or_missing_ex_date_falls_back_to_effective_date(self):
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "blank-ex-date-split",
+                    "security_id": "A",
+                    "action_type": "split",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "",
+                    "ratio": 2.0,
+                    "cash_amount": None,
+                },
+                {
+                    "event_id": "missing-ex-date-dividend",
+                    "security_id": "A",
+                    "action_type": "cash_dividend",
+                    "effective_date": "2020-01-03",
+                    "ex_date": None,
+                    "ratio": None,
+                    "cash_amount": 4.0,
+                },
+            ]
+        )
+
+        factors = build_adjustment_factors(self.prices, actions, source_version="v1")
+
+        self.assertAlmostEqual(factors.iloc[0]["split_factor"], 0.5)
+        self.assertAlmostEqual(factors.iloc[1]["split_factor"], 1.0)
+        self.assertAlmostEqual(factors.iloc[0]["total_return_factor"], 0.46)
+        self.assertAlmostEqual(factors.iloc[1]["total_return_factor"], 0.92)
+        self.assertAlmostEqual(factors.iloc[2]["total_return_factor"], 1.0)
+
+    def test_special_dividends_use_cash_distribution_factor_and_tax(self):
+        prices = self.prices.assign(close=[20.0, 19.0, 18.0])
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "special-2",
+                    "security_id": "A",
+                    "action_type": "special_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": None,
+                    "cash_amount": 0.1462,
+                },
+                {
+                    "event_id": "special-1",
+                    "security_id": "A",
+                    "action_type": "special_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": None,
+                    "cash_amount": 0.25,
+                },
+            ]
+        )
+
+        gross = build_adjustment_factors(prices, actions, source_version="v1")
+        taxed = build_adjustment_factors(prices, actions, source_version="v1", dividend_tax_rate=0.5)
+
+        self.assertAlmostEqual(
+            gross.iloc[0]["total_return_factor"],
+            ((20.0 - 0.25) / 20.0) * ((20.0 - 0.1462) / 20.0),
+        )
+        self.assertAlmostEqual(
+            taxed.iloc[0]["total_return_factor"],
+            ((20.0 - 0.125) / 20.0) * ((20.0 - 0.0731) / 20.0),
+        )
+        self.assertEqual(gross.iloc[0]["split_factor"], 1.0)
+
+    def test_no_actions_produces_identity_factors(self):
+        actions = pd.DataFrame(
+            columns=[
+                "event_id",
+                "security_id",
+                "action_type",
+                "effective_date",
+                "ex_date",
+                "ratio",
+                "cash_amount",
+            ]
+        )
+
+        factors = build_adjustment_factors(self.prices, actions, source_version="v1")
+
+        self.assertEqual(list(factors["split_factor"]), [1.0, 1.0, 1.0])
+        self.assertEqual(list(factors["total_return_factor"]), [1.0, 1.0, 1.0])
+
 
 if __name__ == "__main__":
     unittest.main()

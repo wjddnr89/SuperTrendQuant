@@ -28,6 +28,11 @@ class MarketData:
     data_quality: str = "valid"
     warnings: tuple[str, ...] = ()
     skipped: tuple[str, ...] = ()
+    # Symbols eligible for a strategy-initiated entry.  ``bars`` may also
+    # contain action-linked securities (for example a spin-off child) so an
+    # existing position can be valued and exited without making that child a
+    # new-buy candidate.
+    entry_symbols: tuple[str, ...] = ()
     universe_snapshot: dict[str, object] | None = None
     universe_schedule: tuple[dict[str, Any], ...] = ()
 
@@ -129,6 +134,7 @@ def _download_yahoo_market_data(
         benchmark=benchmark or None,
         filter_benchmark=filter_benchmark or None,
         skipped=tuple(skipped),
+        entry_symbols=tuple(symbols),
         universe_snapshot=(
             resolved_universe.snapshot.to_dict()
             if resolved_universe is not None
@@ -278,6 +284,17 @@ def market_index(market_data: MarketData) -> pd.Index:
     """Return the canonical simulation timeline for static or rolling universes."""
     if market_data.universe_schedule:
         return scheduled_index(market_data.bars, market_data.universe_schedule)
+    if market_data.entry_symbols:
+        entry_bars = {
+            symbol: market_data.bars[symbol]
+            for symbol in market_data.entry_symbols
+            if symbol in market_data.bars
+        }
+        if entry_bars:
+            # Action-linked children can begin trading years after the requested
+            # static universe.  They are needed for valuation and exits after
+            # entitlement, but must not truncate the simulation's start date.
+            return common_index(entry_bars)
     return common_index(market_data.bars)
 
 

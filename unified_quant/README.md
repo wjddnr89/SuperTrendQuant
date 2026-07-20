@@ -3,7 +3,8 @@
 `unified_quant` is the authoritative package that combines the extensible
 strategy and paper/live runtime from `jo_factory` with the research workflow
 from `module`. Backtest, grid search, Optuna optimization, paper trading, and
-live trading all load the same strategy/runtime YAML pair.
+live trading all load the same strategy/runtime YAML pair plus the shared
+`configs/data.yaml` market-data settings.
 
 Run every command below from the repository root so paths such as
 `universe.json`, `state/`, and `results/` resolve consistently.
@@ -56,10 +57,7 @@ uv run quant-live \
   --runtime unified_quant/configs/runtimes/live_toss.yaml
 
 # Inspect the local versioned market-data cache
-uv run quant-data \
-  --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml \
-  status
+uv run quant-data status
 ```
 
 Do not add `--yes` to the live command until the generated order plan has been
@@ -81,6 +79,7 @@ position has disappeared from the refreshed account.
 - `configs/strategies/leader_rotation.yaml`: current operational leader strategy.
 - `configs/strategies/triple_filters.yaml`: leader rotation with Triple SuperTrend, Ichimoku, and EMA filters.
 - `configs/strategies/triple_filters_standalone.yaml`: independent multi-position version that ranks new entries by relative strength without rotating existing holdings.
+- `configs/data.yaml`: shared Parquet, validation, local-cache, and optional R2 settings.
 - `configs/runtimes/simulation.yaml`: backtest and paper defaults.
 - `configs/runtimes/research_us.yaml`: US research defaults.
 - `configs/runtimes/research_kr.yaml`: KR research defaults.
@@ -93,7 +92,9 @@ percentile score. Results are saved beneath `results/research/comparisons` with
 the comparison table, summary, and each strategy's normal backtest artifacts.
 
 Strategy YAML owns signal and portfolio behavior. Runtime YAML owns market,
-universe, data period, capital, costs, broker, and output paths. Research uses
+universe, data period, capital, costs, broker, and output paths. Data YAML owns
+the shared Parquet/Yahoo provider, cache, adjustment, validation, and R2 policy.
+Research uses
 the point-in-time `sp500` event history in the US and the `kospi200` +
 `kosdaq150` compatibility profiles in Korea.
 The live runtime deliberately keeps the existing manual `universe.json` list.
@@ -114,6 +115,11 @@ universe:
 data:
   timeframe: 1d
   period: max
+```
+
+The separate `configs/data.yaml` owns the shared storage contract:
+
+```yaml
 data_store:
   provider: parquet
   local_cache_dir: data/cache

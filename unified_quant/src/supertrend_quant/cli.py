@@ -5,7 +5,13 @@ import asyncio
 import json
 from dataclasses import replace
 
-from .config import AppConfig, load_config, load_split_config
+from .config import (
+    DEFAULT_DATA_CONFIG_PATH,
+    AppConfig,
+    load_config,
+    load_data_store_config,
+    load_split_config,
+)
 from .live_runtime import HybridLiveRuntime
 from .paper_runtime import PaperRuntime
 from .results import PaperRunRecorder, compare_paper_to_backtest, latest_run_dir, save_backtest_result
@@ -16,6 +22,11 @@ def _add_config_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config", default=None, help="Legacy single-file config path.")
     parser.add_argument("--strategy", default=None, help="Split strategy definition path.")
     parser.add_argument("--runtime", default=None, help="Split runtime definition path.")
+    parser.add_argument(
+        "--data-config",
+        default=None,
+        help="Shared market-data config path. Defaults to unified_quant/configs/data.yaml.",
+    )
     parser.add_argument("--market", choices=["US", "KR", "AUTO"], default=None, help="Override runtime market.")
     parser.add_argument("--universe-file", default=None, help="Override runtime universe file.")
     parser.add_argument(
@@ -29,8 +40,8 @@ def _add_config_args(parser: argparse.ArgumentParser) -> None:
 def _load_cli_config(args: argparse.Namespace, parser: argparse.ArgumentParser) -> AppConfig:
     split_paths = [args.strategy, args.runtime]
     if args.config:
-        if any(split_paths):
-            parser.error("--config cannot be combined with --strategy or --runtime.")
+        if any(split_paths) or args.data_config:
+            parser.error("--config cannot be combined with --strategy, --runtime, or --data-config.")
         return _apply_config_overrides(load_config(args.config), args)
 
     missing = [
@@ -43,7 +54,10 @@ def _load_cli_config(args: argparse.Namespace, parser: argparse.ArgumentParser) 
     ]
     if missing:
         parser.error("Provide either --config or all split config paths: " + ", ".join(missing))
-    return _apply_config_overrides(load_split_config(args.strategy, args.runtime), args)
+    return _apply_config_overrides(
+        load_split_config(args.strategy, args.runtime, args.data_config),
+        args,
+    )
 
 
 def _apply_config_overrides(config: AppConfig, args: argparse.Namespace) -> AppConfig:
@@ -279,32 +293,49 @@ def data_main() -> None:
     """Manage the versioned local Parquet cache and optional R2 remote."""
     from pathlib import Path
 
+    from .env import load_env
     from .market_store.repository import LocalDatasetRepository
     from .market_store.schemas import DATASET_SPECS
     from .market_store.storage import DatasetCache, R2ObjectStore
+    from .market_store.operational_validation import (
+        validate_operational_repository_snapshot,
+    )
     from .market_store.validation import (
         validate_dataset,
         validate_manifest_files,
-        validate_repository_snapshot,
     )
 
     parser = argparse.ArgumentParser(description="Manage versioned SuperTrendQuant market data.")
-    _add_config_args(parser)
+    parser.add_argument(
+        "--data-config",
+        default=None,
+        help=f"Market-data config path. Defaults to {DEFAULT_DATA_CONFIG_PATH}.",
+    )
     parser.add_argument(
         "command",
-        choices=["sync", "validate", "status", "compact", "conflicts", "import-index"],
+        choices=["sync", "bootstrap-us", "validate", "status", "compact", "conflicts", "import-index"],
     )
     parser.add_argument(
         "--dataset",
         action="append",
         choices=sorted(DATASET_SPECS),
-        help="Dataset to process. Repeatable; defaults to every dataset.",
+        help=(
+            "Dataset to process. Repeatable; validate defaults to the current "
+            "release inventory and other commands default to every dataset."
+        ),
     )
     parser.add_argument("--force", action="store_true", help="Force an explicit sync attempt.")
     parser.add_argument("--remote-only", action="store_true", help="Only pull immutable versions from R2.")
     parser.add_argument("--source-only", action="store_true", help="Skip the initial R2 pull and update from sources.")
-    parser.add_argument("--publish", action="store_true", help="Publish validated local versions to R2.")
-    parser.add_argument("--backfill-start", default="2000-01-01", help="Initial Yahoo backfill start date.")
+    parser.add_argument(
+        "--publish",
+        action="store_true",
+        help=(
+            "Disabled fail-closed. R2 publication must use "
+            "unified_quant/scripts/publish_and_verify_r2.py."
+        ),
+    )
+    parser.add_argument("--backfill-start", default="2015-01-01", help="Initial provider backfill start date.")
     parser.add_argument(
         "--skip-security-refresh",
         action="store_true",
@@ -318,18 +349,61 @@ def data_main() -> None:
     parser.add_argument("--source-url", default="", help="Original source URL for audit metadata.")
     parser.add_argument("--official", action="store_true", help="Mark imported index records as official.")
     args = parser.parse_args()
-    config = _load_cli_config(args, parser)
-    cache_root = Path(config.data_store.local_cache_dir)
+    load_env()
+    data_store = load_data_store_config(args.data_config)
+    if args.command in {"sync", "bootstrap-us"} and (
+        args.publish or data_store.publish_enabled
+    ):
+        trigger = (
+            "--publish"
+            if args.publish
+            else "data_store.publish_enabled=true"
+        )
+        parser.error(
+            f"Direct R2 publication is disabled for quant-data ({trigger}). "
+            "Run unified_quant/scripts/publish_and_verify_r2.py "
+            "--preflight-only first, then use that same script for the "
+            "privacy-checked publish and cold-cache verification."
+        )
+    cache_root = Path(data_store.local_cache_dir)
     repository = LocalDatasetRepository(cache_root)
     selected = tuple(args.dataset or DATASET_SPECS)
+
+    if args.command == "bootstrap-us":
+        from .market_store.preflight import expected_completed_us_session
+        from .market_store.us_bootstrap import bootstrap_us_market_data
+
+        expected = expected_completed_us_session()
+        history, catalog, index_results, synced = bootstrap_us_market_data(
+            repository,
+            start_date=args.backfill_start,
+            end_date=expected,
+        )
+        print(
+            json.dumps(
+                {
+                    "completed_session": synced.completed_session,
+                    "security_identities": len(catalog.source_result.security_master),
+                    "index_symbols": len(history.symbols),
+                    "index_imports": [item.__dict__ for item in index_results],
+                    "row_counts": synced.row_counts,
+                    "missing_symbols": list(synced.missing_symbols),
+                    "warnings": list(synced.warnings),
+                    "publish": [],
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+        return
 
     if args.command == "status":
         print(json.dumps(repository.status(), indent=2, ensure_ascii=False))
         return
     if args.command == "conflicts":
         conflicts = list(repository.conflicts())
-        if config.data_store.r2.enabled:
-            remote = R2ObjectStore(config.data_store.r2)
+        if data_store.r2.enabled:
+            remote = R2ObjectStore(data_store.r2)
             conflicts.extend(
                 {"scope": "remote", "path": key}
                 for key in remote.list("conflicts")
@@ -383,14 +457,14 @@ def data_main() -> None:
         print(json.dumps(result.__dict__, indent=2, ensure_ascii=False))
         return
     if args.command == "sync":
-        from .market_store.ingest import DailyDataSynchronizer
+        from .market_store.ingest import configured_daily_synchronizer
         from .market_store.preflight import expected_completed_us_session
-        from .market_store.storage import ObjectNotFound, publish_repository
+        from .market_store.storage import ObjectNotFound
 
         if args.remote_only and args.source_only:
             parser.error("--remote-only and --source-only cannot be combined.")
         outcomes: dict[str, object] = {"remote_pull": [], "source_sync": None, "publish": []}
-        remote_store = R2ObjectStore(config.data_store.r2) if config.data_store.r2.enabled else None
+        remote_store = R2ObjectStore(data_store.r2) if data_store.r2.enabled else None
         if args.remote_only and remote_store is None:
             parser.error("data_store.r2.enabled must be true for --remote-only.")
         if remote_store is not None and not args.source_only:
@@ -431,7 +505,7 @@ def data_main() -> None:
                     "status": "already_current",
                 }
             else:
-                synced = DailyDataSynchronizer(repository).sync(
+                synced = configured_daily_synchronizer(repository, data_store.ingest_source).sync(
                     expected,
                     backfill_start=args.backfill_start,
                     refresh_security_master=not args.skip_security_refresh,
@@ -445,11 +519,6 @@ def data_main() -> None:
                     "warnings": list(synced.warnings),
                     "conflicts": list(synced.conflicts),
                 }
-        if args.publish or config.data_store.publish_enabled:
-            if remote_store is None:
-                parser.error("data_store.r2.enabled must be true to publish.")
-            publish_results = publish_repository(repository, remote_store, tuple(DATASET_SPECS))
-            outcomes["publish"] = [item.__dict__ for item in publish_results]
         print(json.dumps(outcomes, indent=2, ensure_ascii=False))
         return
     if args.command == "compact":
@@ -466,6 +535,16 @@ def data_main() -> None:
         print(json.dumps(outcomes, indent=2, ensure_ascii=False))
         return
 
+    # ``DATASET_SPECS`` also contains optional datasets such as custom
+    # overlays.  A coherent release need not materialize those datasets, so a
+    # default validation run must validate the release inventory rather than
+    # fail merely because an optional current pointer does not exist.  An
+    # explicitly requested missing dataset remains an error below.
+    if not args.dataset:
+        current_release, _ = repository.current_release()
+        if current_release is not None:
+            selected = tuple(current_release.dataset_versions)
+
     outcomes = []
     failed = False
     for dataset in selected:
@@ -481,14 +560,14 @@ def data_main() -> None:
         frame_report = validate_dataset(
             dataset,
             repository.read_frame(dataset, manifest.version),
-            incomplete_action_policy=config.data_store.incomplete_action_policy,
+            incomplete_action_policy=data_store.incomplete_action_policy,
             completed_session=manifest.completed_session,
         )
         issues = [issue.__dict__ for issue in (*file_report.issues, *frame_report.issues)]
         valid = file_report.valid and frame_report.valid
         failed = failed or not valid
         outcomes.append({"dataset": dataset, "valid": valid, "issues": issues})
-    cross_report = validate_repository_snapshot(repository)
+    cross_report = validate_operational_repository_snapshot(repository)
     outcomes.append(
         {
             "dataset": cross_report.dataset,

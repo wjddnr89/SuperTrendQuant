@@ -75,15 +75,11 @@ Copy `.env.example` to `.env`, fill `SEC_USER_AGENT`, then run:
 ```bash
 # Initial local backfill. Default start is 2000-01-01.
 uv run quant-data \
-  --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml \
   sync --backfill-start 2000-01-01
 
-uv run quant-data --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml status
+uv run quant-data status
 
-uv run quant-data --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml validate
+uv run quant-data validate
 ```
 
 Before a run, preflight calculates the latest completed XNYS session and waits
@@ -136,12 +132,12 @@ selection rules:
 
 ```bash
 # Anchor file: security_id or historical symbol column
-uv run quant-data --strategy ... --runtime ... import-index \
+uv run quant-data import-index \
   --kind anchor --index-id sp500 --effective-date 2020-01-02 \
   --input anchor.csv --source-name sp_global --official
 
 # Event file: effective_date, operation, and security_id or symbol
-uv run quant-data --strategy ... --runtime ... import-index \
+uv run quant-data import-index \
   --kind events --index-id sp500 --input events.csv \
   --source-name sp_global --official
 ```
@@ -166,7 +162,7 @@ is placed under `conflicts/` and never silently overwrites the winner.
 Cloudflare documents R2's S3-compatible conditional `PutObject` operations:
 <https://developers.cloudflare.com/r2/api/s3/api/>.
 
-Configure the non-secret bucket/prefix in runtime YAML. The endpoint and
+Configure the non-secret bucket/prefix in `configs/data.yaml`. The endpoint and
 credentials are referenced by environment-variable name only:
 
 ```yaml
@@ -182,10 +178,29 @@ data_store:
     secret_key_env: R2_SECRET_ACCESS_KEY
 ```
 
-Use `sync --remote-only` to pull, `sync --publish` to publish a validated local
-release, and `conflicts` to inspect quarantined candidates. Every teammate may
-publish, but merge validation plus CAS makes concurrent publication
-deterministic.
+Use `sync --remote-only` to pull and `conflicts` to inspect quarantined
+candidates. Direct publication through `quant-data sync --publish`,
+`quant-data bootstrap-us --publish`, or `publish_enabled: true` is blocked
+fail-closed because those paths cannot prove the complete lifecycle,
+cross-validation, private-archive acknowledgement, and cold-download gates.
+
+Run the dedicated operator path instead. `--preflight-only` executes every
+local gate, reports all independent blockers in one JSON result, and never
+constructs an R2 client or uses the network:
+
+```bash
+PYTHONPATH=unified_quant/src .venv/bin/python \
+  unified_quant/scripts/publish_and_verify_r2.py --preflight-only
+
+# Required when the preflight identifies private/internal-only source archives.
+PYTHONPATH=unified_quant/src .venv/bin/python \
+  unified_quant/scripts/publish_and_verify_r2.py \
+  --ack-private-internal-only-source-archives
+```
+
+The second command verifies Cloudflare's private bucket state before its first
+write, publishes with conflict-aware conditional writes, then redownloads the
+release into a cold cache and verifies hashes and local gates again.
 
 ## Validation and compaction
 
@@ -203,7 +218,7 @@ Run `validate` after any manual import and before publish. Compact when status
 shows a long chain (for example monthly or after roughly 30 daily deltas):
 
 ```bash
-uv run quant-data --strategy ... --runtime ... compact --dataset daily_price_raw
+uv run quant-data compact --dataset daily_price_raw
 ```
 
 DuckDB supports direct multi-file Parquet scans plus filter/projection pushdown,

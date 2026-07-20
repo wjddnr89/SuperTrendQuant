@@ -1,0 +1,72 @@
+{
+  "period": "max",
+  "start": "2010-01-01",
+  "objective": "total_return",
+  "costs": {
+    "fee_rate": 0.001,
+    "slippage_rate": 0.0005
+  },
+  "base_combo": {
+    "entry": "single",
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_method": "dual_momentum",
+    "rs_period": 150,
+    "sell_confirm_bars": 5,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0
+  },
+  "validation_space": {
+    "entry": ["single"],
+    "market_filter": ["1d"],
+    "asset_filter": ["ichimoku_cloud+ema_trend"],
+    "rs_method": ["dual_momentum"],
+    "rs_period": [125, 150],
+    "sell_confirm_bars": [4, 5, 6],
+    "hurdle": [1.5, 2.0, 2.5, 3.0],
+    "max_positions": [1, 2],
+    "st_period": [10],
+    "st_multiplier": [3.0]
+  },
+  "parameter_stability": {
+    "max_candidates": 48
+  },
+  "trade_contribution": {
+    "remove_top_counts": [1, 3, 5, 10]
+  },
+  "cost_execution_stress": {
+    "adverse_open_rate": 0.005
+  },
+  "fixed_walk_forward": {
+    "objective": "total_return",
+    "first_train_year": 2010,
+    "train_years": 6,
+    "test_years": 1,
+    "first_test_year": 2016,
+    "last_test_year": 2026,
+    "save_train_candidates": true,
+    "max_candidates": 48
+  },
+  "expanding_walk_forward": {
+    "objective": "total_return",
+    "first_train_year": 2010,
+    "train_years": 6,
+    "test_years": 1,
+    "first_test_year": 2016,
+    "last_test_year": 2026,
+    "save_train_candidates": true,
+    "max_candidates": 48
+  },
+  "purged_embargoed_cv": {
+    "objective": "total_return",
+    "first_year": 2010,
+    "last_year": 2026,
+    "fold_years": 1,
+    "purge_days": 200,
+    "embargo_days": 20,
+    "save_train_candidates": true,
+    "max_candidates": 48
+  }
+}

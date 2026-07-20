@@ -1,0 +1,27 @@
+{
+  "config": "SuperTrendQuant\\verification\\configs\\dual_momentum_top_remaining_12.json",
+  "objective": "total_return",
+  "base_combo": {
+    "entry": "single",
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_method": "dual_momentum",
+    "rs_period": 150,
+    "sell_confirm_bars": 5,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0
+  },
+  "tests": {
+    "expanding_walk_forward": {
+      "folds": 11,
+      "candidates": 12
+    },
+    "purged_embargoed_cv": {
+      "folds": 17,
+      "candidates": 12
+    }
+  },
+  "run_dir": "C:\\Users\\wjddn\\OneDrive\\바탕 화면\\trading_bot\\SuperTrendQuant\\verification\\results\\dual_momentum_top_remaining_12_verification"
+}

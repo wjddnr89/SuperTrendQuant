@@ -1,0 +1,9 @@
+Combo Verification Report
+
+Generated: 2026-07-19T07:22:46
+Objective: total_return
+Config   : SuperTrendQuant\verification\configs\dual_momentum_top_remaining_12.json
+
+Completed Tests
+- expanding_walk_forward: {'folds': 11, 'candidates': 12}
+- purged_embargoed_cv: {'folds': 17, 'candidates': 12}

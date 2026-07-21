@@ -2,7 +2,7 @@
 #
 # This script is a research runner for the conversation-built unified_quant
 # engine.  It keeps the daily Nasdaq-100 rolling universe fixed,
-# downloads Yahoo Finance data once, then tests combinations of:
+# loads the selected market-data source once, then tests combinations of:
 # entry type, QQQ market filter, asset filters, relative-strength formula,
 # relative-strength lookback, rotation hurdle, and leader position count.  It
 # prints and saves Top-N result tables for the requested metrics, including
@@ -24,15 +24,17 @@ import numpy as np
 import pandas as pd
 
 
-UNIFIED_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(UNIFIED_ROOT / "src"))
+SCRIPT_DIR = Path(__file__).resolve().parent
+PLAYGROUND_ROOT = SCRIPT_DIR.parent
+sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(PLAYGROUND_ROOT / "src"))
 
+from market_data_source import load_experiment_market_data
 from supertrend_quant.config import AppConfig, load_split_config
 from supertrend_quant.data import MarketData, market_index
 from supertrend_quant.metrics import calculate_metrics, format_float, format_pct
 from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position, estimate_quantity
 from supertrend_quant.research import apply_config_overlay
-from supertrend_quant.research.data_resolver import download_for_config
 from supertrend_quant.research.scoring import score_metrics
 from supertrend_quant.runners import (
     BacktestResult,
@@ -59,14 +61,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Search daily Nasdaq-100 strategy combinations.")
     parser.add_argument(
         "--strategy",
-        default=str(UNIFIED_ROOT / "configs" / "strategies" / "leader_rotation.yaml"),
+        default=str(PLAYGROUND_ROOT / "configs" / "strategies" / "leader_rotation.yaml"),
     )
     parser.add_argument(
         "--runtime",
-        default=str(UNIFIED_ROOT / "configs" / "runtimes" / "research_us_nasdaq100_rolling.yaml"),
+        default=str(PLAYGROUND_ROOT / "configs" / "runtimes" / "research_us_nasdaq100_rolling.yaml"),
     )
     parser.add_argument("--period", default="max")
     parser.add_argument("--start", default="2010-01-01")
+    parser.add_argument("--data-source", choices=("local", "yahoo"), default="local")
     parser.add_argument("--entries", default="single")
     parser.add_argument("--market-filters", default="none,1d")
     parser.add_argument("--asset-filters", default="none,ichimoku_cloud,ichimoku_cloud+ema_trend")
@@ -89,7 +92,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--progress-every", type=int, default=10)
     parser.add_argument(
         "--results-dir",
-        default=str(UNIFIED_ROOT / "results" / "research" / "us_nasdaq100_rolling" / "searches"),
+        default=str(PLAYGROUND_ROOT / "results" / "research" / "us_nasdaq100_rolling" / "searches"),
     )
     parser.add_argument("--run-id", default="")
     return parser
@@ -928,6 +931,7 @@ def flat_row(row: dict[str, Any]) -> dict[str, Any]:
     metrics = row["metrics"]
     return {
         **{f"param_{key}": value for key, value in params.items()},
+        "data_source": row.get("data_source", ""),
         "start": str(row["start"]),
         "end": str(row["end"]),
         "total_return": metrics.get("total_return", 0.0),
@@ -998,14 +1002,20 @@ def main() -> None:
     total_runs = len(groups) * len(sell_confirm_values) * len(hurdles) * len(max_positions)
 
     print("Nasdaq-100 Daily Exhaustive Strategy Search")
+    print(f"Data source  : {args.data_source}")
     print(f"Groups       : {len(groups)}")
     print(f"Total runs   : {total_runs}")
     print(f"Requested    : start={args.start}, period={args.period}, sell_confirm={args.sell_confirm_bars}")
     print(f"RS methods   : {args.rs_methods}")
     print(f"Hurdles      : {args.hurdles}")
     print(f"Max positions: {args.max_positions}")
-    print("Downloading shared market data...", flush=True)
-    market_data = download_for_config(base)
+    print("Loading shared market data...", flush=True)
+    market_data = load_experiment_market_data(
+        base,
+        data_source=args.data_source,
+        strategy_path=args.strategy,
+        runtime_path=args.runtime,
+    )
     print("Preparing market timeline...", flush=True)
     full_idx = market_index(market_data)
     requested_idx = run_index_from_start(full_idx, args.start)
@@ -1091,6 +1101,7 @@ def main() -> None:
                             "score": score_metrics(result.metrics),
                             "qqq_return": qqq_return,
                             "alpha": total_return - qqq_return,
+                            "data_source": args.data_source,
                             "start": result.equity.index[0],
                             "end": result.equity.index[-1],
                         }
@@ -1124,6 +1135,7 @@ def main() -> None:
     metadata = {
         "strategy": args.strategy,
         "runtime": args.runtime,
+        "data_source": args.data_source,
         "requested_start": args.start,
         "download_period": args.period,
         "timeframe": "1d",
@@ -1140,6 +1152,7 @@ def main() -> None:
     }
     report_lines = [
         "Nasdaq-100 Daily Search Results",
+        f"Data source  : {args.data_source}",
         f"Requested    : start={args.start}, period={args.period}",
         f"Evaluation   : {metadata['actual_start']} -> {metadata['actual_end']}",
         f"Total runs   : {total_runs}",

@@ -1456,13 +1456,15 @@ def load_configured_market_data(
     *,
     resolved_universe=None,
     force_sync: bool = False,
+    allow_stale: bool = False,
 ) -> MarketData:
-    """Load the configured source and enforce daily Parquet freshness."""
+    """Load the configured source, normally enforcing daily Parquet freshness."""
     if config.data_store.provider == "yahoo" or config.market == "KR":
         from ..data import download_market_data
 
         return download_market_data(config, symbols, resolved_universe=resolved_universe)
-    ensure_configured_data_ready(config, force_sync=force_sync)
+    if not allow_stale:
+        ensure_configured_data_ready(config, force_sync=force_sync)
     schedule = resolved_universe.schedule_as_dicts() if resolved_universe is not None else ()
     market_data = ParquetMarketDataProvider(config.data_store.local_cache_dir).load(
         config,

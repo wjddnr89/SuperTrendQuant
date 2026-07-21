@@ -36,10 +36,10 @@ from search_nasdaq100_daily_3y_grid import (  # noqa: E402
     run_index_from_start,
     run_prepared_backtest,
 )
+from market_data_source import load_experiment_market_data  # noqa: E402
 from supertrend_quant.config import AppConfig, load_split_config  # noqa: E402
 from supertrend_quant.data import MarketData, market_index  # noqa: E402
 from supertrend_quant.research import apply_config_overlay  # noqa: E402
-from supertrend_quant.research.data_resolver import download_for_config  # noqa: E402
 from supertrend_quant.research.scoring import score_metrics  # noqa: E402
 from supertrend_quant.strategies.common import (  # noqa: E402
     precompute_market_filter_trends,
@@ -75,6 +75,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--period", default="max")
     parser.add_argument("--start", default="2010-01-01")
+    parser.add_argument("--data-source", choices=("local", "yahoo"), default="local")
     parser.add_argument("--entries", default="single")
     parser.add_argument("--market-filters", default="none,1d")
     parser.add_argument("--asset-filters", default="none,ichimoku_cloud,ichimoku_cloud+ema_trend")
@@ -191,6 +192,7 @@ def row_from_flat(raw: dict[str, Any], source: str) -> dict[str, Any] | None:
             "score": float(raw.get("score", 0.0)),
             "qqq_return": float(raw.get("qqq_return", 0.0)),
             "alpha": float(raw.get("alpha", 0.0)),
+            "data_source": str(raw.get("data_source", "")).strip().lower(),
             "start": str(raw.get("start", "")),
             "end": str(raw.get("end", "")),
             "source": source,
@@ -220,9 +222,16 @@ class OptunaBacktestRunner:
         self.trial_counter = 0
 
         base = load_split_config(args.strategy, args.runtime)
-        self.base = base.__class__(**{**base.__dict__, "period": args.period, "timeframe": "1d"})
-        print("[optuna] Downloading shared market data...", flush=True)
-        self.market_data = download_for_config(self.base)
+        self.base = base.__class__(
+            **{**base.__dict__, "period": args.period, "timeframe": "1d"}
+        )
+        print(f"[optuna] Loading shared {args.data_source} market data...", flush=True)
+        self.market_data = load_experiment_market_data(
+            self.base,
+            data_source=args.data_source,
+            strategy_path=args.strategy,
+            runtime_path=args.runtime,
+        )
         print("[optuna] Preparing market timeline...", flush=True)
         self.full_idx = market_index(self.market_data)
         self.requested_idx = run_index_from_start(self.full_idx, args.start)
@@ -240,6 +249,8 @@ class OptunaBacktestRunner:
                 continue
             frame = pd.read_csv(path)
             for raw in frame.to_dict("records"):
+                if str(raw.get("data_source", "")).strip().lower() != self.args.data_source:
+                    continue
                 row = row_from_flat(raw, source)
                 if row is None:
                     continue
@@ -254,6 +265,8 @@ class OptunaBacktestRunner:
         count = self.load_cache_files([path], source="resume")
         frame = pd.read_csv(path)
         for raw in frame.to_dict("records"):
+            if str(raw.get("data_source", "")).strip().lower() != self.args.data_source:
+                continue
             row = row_from_flat(raw, "resume")
             if row is not None:
                 self.run_keys.add(param_key(row["params"]))
@@ -392,6 +405,7 @@ class OptunaBacktestRunner:
             "score": score_metrics(result.metrics),
             "qqq_return": qqq_return,
             "alpha": total_return - qqq_return,
+            "data_source": self.args.data_source,
             "start": result.equity.index[0],
             "end": result.equity.index[-1],
             "source": "optuna",
@@ -426,6 +440,7 @@ class OptunaBacktestRunner:
         }
         report_lines = [
             "Nasdaq-100 Daily Optuna Results",
+            f"Data source  : {self.args.data_source}",
             f"Requested    : start={self.args.start}, period={self.args.period}",
             f"Objectives   : {','.join(objectives)}",
             f"Unique rows  : {len(rows)}",
@@ -519,6 +534,7 @@ def main() -> None:
     )
     metadata = {
         "run_id": run_id,
+        "data_source": args.data_source,
         "search_space_size": search_space_size,
         "group_count": len(search_space_groups),
         "objectives": objectives,
@@ -529,6 +545,7 @@ def main() -> None:
         "storage": str(run_dir / "optuna.sqlite3"),
     }
     print("Nasdaq-100 Daily Optuna Search")
+    print(f"Data source  : {args.data_source}")
     print(f"Run dir      : {run_dir}")
     print(f"Search space : {search_space_size} candidates ({len(search_space_groups)} prep groups)")
     print(f"Objectives   : {','.join(objectives)}")
@@ -540,7 +557,7 @@ def main() -> None:
     storage = f"sqlite:///{(run_dir / 'optuna.sqlite3').as_posix()}"
     studies = {
         objective: optuna.create_study(
-            study_name=f"nasdaq100_{objective}",
+            study_name=f"nasdaq100_{args.data_source}_{objective}",
             direction="maximize",
             storage=storage,
             load_if_exists=True,

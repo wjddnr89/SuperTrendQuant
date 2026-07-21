@@ -35,8 +35,13 @@ def data_request_key(config: AppConfig) -> tuple[object, ...]:
     )
 
 
-def download_for_config(config: AppConfig) -> MarketData:
-    ensure_configured_data_ready(config)
+def download_for_config(
+    config: AppConfig,
+    *,
+    allow_stale: bool = False,
+) -> MarketData:
+    if not allow_stale:
+        ensure_configured_data_ready(config)
     resolved = resolve_universe(config, mode="research")
     symbols = list(resolved.eligible_symbols)
     if resolved.schedule:
@@ -58,6 +63,7 @@ def download_for_config(config: AppConfig) -> MarketData:
         config,
         symbols,
         resolved_universe=resolved,
+        allow_stale=allow_stale,
     )
 
 

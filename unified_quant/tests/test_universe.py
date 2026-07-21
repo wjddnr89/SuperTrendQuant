@@ -76,7 +76,7 @@ class UniverseRegistryAndResolutionTest(unittest.TestCase):
     def test_builtin_profiles_are_registered_and_duplicates_rejected(self):
         self.assertEqual(
             available_universe_profiles(),
-            ("dow30", "kosdaq150", "kospi200", "nasdaq100", "sp500"),
+            ("dow30", "kosdaq150", "kospi200", "nasdaq100", "russell3000", "sp500"),
         )
         with self.assertRaisesRegex(ValueError, "already registered"):
             register_universe_provider("sp500", lambda as_of: ())

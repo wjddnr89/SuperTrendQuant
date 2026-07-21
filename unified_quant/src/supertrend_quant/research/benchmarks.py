@@ -146,9 +146,10 @@ def build_benchmark_report(
         )
         report["market"] = result
         if config.market.upper() == "US":
-            report["qqq"] = BenchmarkResult(
-                name="qqq",
-                equity=market.rename("qqq_buy_and_hold"),
+            benchmark_name = (market_data.benchmark_symbol or "QQQ").lower()
+            report[benchmark_name] = BenchmarkResult(
+                name=benchmark_name,
+                equity=market.rename(f"{benchmark_name}_buy_and_hold"),
                 metrics=result.metrics,
             )
     return report

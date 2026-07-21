@@ -34,8 +34,8 @@ uv run quant-live \
 
 `quant-paper` and `quant-live` loop unless `--once` is provided. Paper uses a
 persistent JSON account and avoids processing the same candle twice. Live uses
-the Toss broker, synchronizes holdings, rejects stale data and duplicate open
-orders, sends Telegram notifications, and asks for confirmation when
+the Toss broker, synchronizes holdings, rejects incomplete historical coverage
+and duplicate open orders, sends Telegram notifications, and asks for confirmation when
 `execution.live_confirm_required` is true.
 
 ## Split configuration
@@ -51,24 +51,71 @@ Strategy files define:
 Runtime files define:
 
 - US, KR, or AUTO market selection;
-- an index-profile union, a manual `universe.json`, or explicit symbols;
+- point-in-time index events, a compatibility profile union, a manual
+  `universe.json`, or explicit symbols;
 - timeframe and download period;
 - capital, costs, and broker;
 - paper/live state and result locations.
 
-Available index profiles are `nasdaq100`, `sp500`, `dow30`, `kospi200`, and
-`kosdaq150`. A single US profile maps RS to `QQQ`, `SPY`, or `DIA`; a multi-profile
-US union uses `SPY`. KOSPI and KOSDAQ symbols use `^KS11` and `^KQ11`.
+The shared `configs/data.yaml` defines:
 
-Profile membership and filter results are frozen in a daily JSON snapshot. The
-balanced default requires US/KR prices of `$5`/`1,000원`, 20-day average turnover
-of `$10M`/`10억원`, and 120 completed daily bars. Management, suspension,
-delisting, ETF/ETN, SPAC, and preferred-share checks are independently editable
-under `universe.filters`.
+- Parquet provider and local cache;
+- price adjustment and corporate-action policy;
+- validation/source policy;
+- optional R2 bucket and prefix. Publication is restricted to the dedicated
+  strict publisher.
+
+`quant-data` reads this file directly and therefore does not require a strategy
+or runtime:
+
+```bash
+uv run quant-data status
+uv run quant-data sync
+uv run quant-data --data-config path/to/data.yaml validate
+
+# Offline publication readiness; this never accesses R2 or EODHD.
+PYTHONPATH=unified_quant/src .venv/bin/python \
+  unified_quant/scripts/publish_and_verify_r2.py --preflight-only
+```
+
+The same data YAML keeps a `market_overrides.KR` Yahoo compatibility setting
+until the versioned Parquet contracts are implemented for Korea.
+
+Available index profiles are `nasdaq100`, `sp500`, `dow30`, `kospi200`, and
+`kosdaq150`, plus `russell3000`. US profiles map their ETF benchmark to `QQQ`,
+`SPY`, `DIA`, or `IWV`; a multi-profile US union uses `SPY`. KOSPI and KOSDAQ
+symbols use `^KS11` and `^KQ11`.
+
+For `universe.source: index_events`, a stored anchor plus every effective-date
+event reconstructs the exact member set for the requested date. Stable
+`security_id` values survive ticker changes; custom overlays are applied last.
+Compatibility profile membership and optional filters can still be frozen in a
+daily JSON snapshot for KR or legacy runs.
+
+## Market-data contract
+
+V1 stores US completed daily sessions in immutable, Zstandard-compressed
+Parquet versions. DuckDB reads only the requested securities and dates directly
+from those files. A release records one mutually consistent version for raw
+prices, actions, factors, identifiers, and any imported index datasets.
+
+- signals use `total_return_adjusted` OHLC by default;
+- fills and account valuation use raw OHLC;
+- dividends, splits, mergers, ticker changes, and delistings are applied by an
+  exactly-once portfolio ledger;
+- paper/live block the entire order plan when historical coverage is incomplete;
+- US live signal history comes from the same daily release as research and
+  backtest, while Toss quotes remain the execution boundary;
+- KR uses the legacy Yahoo path until the same Parquet contracts are implemented.
+
+Run `quant-data sync`, `validate`, and `status` before research or execution as
+needed on a personal machine. See [market_data.md](market_data.md) for source,
+index-import, R2/CAS, and compaction workflows.
 
 ## Research promotion
 
-Grid search and Optuna load the same YAML pair as the normal backtest. They
+Grid search and Optuna load the same strategy/runtime pair and shared data YAML
+as the normal backtest. They
 evaluate train/validation/test segments and report stable market and
 equal-weight benchmarks. The selected strategy YAML should be re-run with
 `quant-backtest`, then with `quant-paper`, before changing only the runtime to
@@ -94,7 +141,8 @@ never sells solely to rotate leaders.
 
 Backtests write beneath their runtime's `backtest.results_dir`:
 
-- `summary.json`: metrics, configuration, trades, and skipped symbols;
+- `summary.json`: metrics, configuration, trades, skipped symbols, data release,
+  completed session, quality/warnings, and processed corporate-action IDs;
 - `equity.csv`: historical account equity.
 - `universe_snapshot.json`: membership, filters, exclusions, and as-of hash.
 
@@ -107,7 +155,7 @@ Strategy comparisons write beneath `results/research/comparisons/<run_id>`:
 Paper runs write beneath `paper.results_dir`:
 
 - `metadata.json`: immutable configuration snapshot;
-- `cycles.jsonl`: order plans, fills, prices, and account snapshots;
+- `cycles.jsonl`: order plans, fills, raw execution prices, and account snapshots;
 - `equity.csv`: cycle-level equity and cash.
 - `universe_snapshot.json`: the exact daily universe used by the run.
 
@@ -126,7 +174,8 @@ uv run quant-compare \
 - AUTO routing between KR and US market sessions;
 - Toss execution with interactive confirmation enabled;
 - `holding.json` synchronization and a 60-second loop;
-- 30-minute stock data, benchmark trend filtering, and stale-symbol retries;
+- completed daily US Parquet signals and raw Toss execution quotes;
+- Yahoo compatibility data for KR;
 - SOXL/SOXS multiplier `4.5`;
 - one-position, 90% allocation leader rotation;
 - 1% minimum-profit brake before a rotation sale;
@@ -142,4 +191,5 @@ uv run quant-paper --help
 uv run quant-live --help
 uv run quant-search --help
 uv run quant-optimize --help
+uv run quant-data --help
 ```

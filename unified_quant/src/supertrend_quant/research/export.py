@@ -137,36 +137,47 @@ def config_to_split_dicts(
     return strategy, runtime
 
 
+def config_to_data_dict(config: AppConfig) -> dict[str, Any]:
+    """Serialize shared market-data settings independently of runtime."""
+
+    return {"data_store": asdict(config.data_store)}
+
+
 def strict_split_roundtrip(config: AppConfig) -> AppConfig:
     """Serialize and immediately reload through the public strict parser."""
 
     strategy, runtime = config_to_split_dicts(config)
-    return parse_config(compose_split_config(strategy, runtime))
+    return parse_config(compose_split_config(strategy, runtime, config_to_data_dict(config)))
 
 
-def split_yaml_text(config: AppConfig) -> tuple[str, str]:
+def split_yaml_text(config: AppConfig) -> tuple[str, str, str]:
     strategy, runtime = config_to_split_dicts(config)
+    data = config_to_data_dict(config)
     # Keep stdout/save paths on the same strict schema gate as normal runtime
     # loading. This catches unsupported research components before promotion.
-    parse_config(compose_split_config(strategy, runtime))
+    parse_config(compose_split_config(strategy, runtime, data))
     return (
         yaml.safe_dump(strategy, sort_keys=False, allow_unicode=True).strip() + "\n",
         yaml.safe_dump(runtime, sort_keys=False, allow_unicode=True).strip() + "\n",
+        yaml.safe_dump(data, sort_keys=False, allow_unicode=True).strip() + "\n",
     )
 
 
-def save_split_yaml(config: AppConfig, directory: str | Path) -> tuple[Path, Path]:
+def save_split_yaml(config: AppConfig, directory: str | Path) -> tuple[Path, Path, Path]:
     target = Path(directory)
     target.mkdir(parents=True, exist_ok=True)
     strategy_path = target / "strategy.yaml"
     runtime_path = target / "runtime.yaml"
-    strategy_text, runtime_text = split_yaml_text(config)
+    data_path = target / "data.yaml"
+    strategy_text, runtime_text, data_text = split_yaml_text(config)
     strategy_path.write_text(strategy_text, encoding="utf-8")
     runtime_path.write_text(runtime_text, encoding="utf-8")
-    return strategy_path, runtime_path
+    data_path.write_text(data_text, encoding="utf-8")
+    return strategy_path, runtime_path, data_path
 
 
 __all__ = [
+    "config_to_data_dict",
     "config_to_split_dicts",
     "save_split_yaml",
     "split_yaml_text",

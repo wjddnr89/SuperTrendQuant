@@ -1,0 +1,833 @@
+<main id="stq-market-data-pipeline" class="pipeline-page">
+  <style>
+    #stq-market-data-pipeline {
+      --stage-line: color-mix(in srgb, var(--foreground) 16%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      width: 100%;
+      color: var(--foreground);
+    }
+
+    #stq-market-data-pipeline .hero {
+      display: grid;
+      gap: 14px;
+      padding-block: 8px;
+    }
+
+    #stq-market-data-pipeline .eyebrow {
+      color: var(--muted-foreground);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    #stq-market-data-pipeline .hero-copy {
+      max-width: 72ch;
+    }
+
+    #stq-market-data-pipeline .summary-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: center;
+    }
+
+    #stq-market-data-pipeline .section {
+      display: grid;
+      gap: 14px;
+      scroll-margin-top: 12px;
+    }
+
+    #stq-market-data-pipeline .section-heading {
+      display: grid;
+      gap: 5px;
+      max-width: 78ch;
+    }
+
+    #stq-market-data-pipeline .mini-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #stq-market-data-pipeline .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      counter-reset: pipeline-step;
+    }
+
+    #stq-market-data-pipeline .flow-step {
+      min-width: 0;
+      text-align: left;
+      counter-increment: pipeline-step;
+    }
+
+    #stq-market-data-pipeline .flow-step::before {
+      content: counter(pipeline-step, decimal-leading-zero) " ";
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .selected-stage {
+      display: grid;
+      gap: 12px;
+    }
+
+    #stq-market-data-pipeline .selected-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 10px;
+    }
+
+    #stq-market-data-pipeline .handoff-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #stq-market-data-pipeline .handoff-item {
+      min-width: 0;
+    }
+
+    #stq-market-data-pipeline .handoff-label {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .stage-code {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #stq-market-data-pipeline .lane {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    #stq-market-data-pipeline .lane-label {
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .lane-track {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    #stq-market-data-pipeline .lane-node {
+      position: relative;
+      min-width: 0;
+    }
+
+    #stq-market-data-pipeline .lane-node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -14px;
+      top: 0;
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .lane-node strong,
+    #stq-market-data-pipeline .lane-node span {
+      display: block;
+    }
+
+    #stq-market-data-pipeline .example-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    #stq-market-data-pipeline .journey-list,
+    #stq-market-data-pipeline .gate-list,
+    #stq-market-data-pipeline .roadmap-list,
+    #stq-market-data-pipeline .risk-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #stq-market-data-pipeline .journey-item,
+    #stq-market-data-pipeline .gate-item,
+    #stq-market-data-pipeline .roadmap-item,
+    #stq-market-data-pipeline .risk-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    #stq-market-data-pipeline .step-mark {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      color: var(--primary-foreground);
+      background: var(--primary);
+    }
+
+    #stq-market-data-pipeline .journey-copy,
+    #stq-market-data-pipeline .gate-copy,
+    #stq-market-data-pipeline .roadmap-copy,
+    #stq-market-data-pipeline .risk-copy {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    #stq-market-data-pipeline .code-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #stq-market-data-pipeline .code-block {
+      margin: 0;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    #stq-market-data-pipeline .table-responsive {
+      max-width: 100%;
+    }
+
+    #stq-market-data-pipeline .table code {
+      white-space: normal;
+    }
+
+    #stq-market-data-pipeline .storage-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #stq-market-data-pipeline .storage-column {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    #stq-market-data-pipeline .tree {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #stq-market-data-pipeline .gate-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    #stq-market-data-pipeline .status-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    #stq-market-data-pipeline .status-segment {
+      padding: 8px;
+      text-align: center;
+      background: color-mix(in srgb, var(--viz-series-3) 16%, transparent);
+    }
+
+    #stq-market-data-pipeline .status-segment:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    #stq-market-data-pipeline .status-segment:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    #stq-market-data-pipeline .consumer-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    #stq-market-data-pipeline .consumer-node {
+      position: relative;
+      min-width: 0;
+      text-align: center;
+    }
+
+    #stq-market-data-pipeline .consumer-node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 0;
+      right: -14px;
+      color: var(--muted-foreground);
+    }
+
+    #stq-market-data-pipeline .consumer-node strong,
+    #stq-market-data-pipeline .consumer-node span {
+      display: block;
+    }
+
+    #stq-market-data-pipeline .appendix-note {
+      padding-left: 12px;
+      border-left: 2px solid var(--destructive);
+    }
+
+    #stq-market-data-pipeline footer {
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 760px) {
+      #stq-market-data-pipeline .flow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #stq-market-data-pipeline .handoff-grid,
+      #stq-market-data-pipeline .lane-track,
+      #stq-market-data-pipeline .status-strip,
+      #stq-market-data-pipeline .consumer-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #stq-market-data-pipeline .lane-node::after,
+      #stq-market-data-pipeline .consumer-node::after {
+        display: none;
+      }
+
+      #stq-market-data-pipeline .example-grid,
+      #stq-market-data-pipeline .code-pair,
+      #stq-market-data-pipeline .storage-map,
+      #stq-market-data-pipeline .gate-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #stq-market-data-pipeline .viz-grid,
+      #stq-market-data-pipeline .flow-grid,
+      #stq-market-data-pipeline .handoff-grid,
+      #stq-market-data-pipeline .lane,
+      #stq-market-data-pipeline .lane-track,
+      #stq-market-data-pipeline .status-strip,
+      #stq-market-data-pipeline .consumer-flow {
+        grid-template-columns: 1fr;
+      }
+
+      #stq-market-data-pipeline h1 {
+        word-break: keep-all;
+      }
+    }
+  </style>
+
+  <header class="hero">
+    <p class="eyebrow text-small">SuperTrendQuant · 미국 시장 데이터 · 2026-07-15 기준</p>
+    <h1>외부 데이터가 검증된 백테스트 자산이 되기까지</h1>
+    <p class="hero-copy">
+      공급자 응답을 바로 투자 판단에 쓰지 않습니다. 원본 보관, 기업 식별, 기업행동 보완,
+      독립 가격 비교, 버전 고정, 비공개 R2 게시, 재다운로드 검증을 모두 통과한 데이터만
+      백테스트가 읽습니다.
+    </p>
+    <div class="summary-line text-small">
+      <span class="viz-badge">완료 세션 2026-07-15</span>
+      <span>대상: S&amp;P 500 · Nasdaq-100</span>
+      <span>릴리스: <code>20260715-20260719T130946573430Z</code></span>
+    </div>
+    <nav class="mini-nav" aria-label="문서 주요 구역">
+      <a class="btn" href="#executive-flow">전체 흐름</a>
+      <a class="btn" href="#real-example">실제 사례</a>
+      <a class="btn" href="#data-inventory">데이터 목록</a>
+      <a class="btn" href="#validation">검증 게이트</a>
+      <a class="btn" href="#appendix">예외 부록</a>
+    </nav>
+  </header>
+
+  <section class="viz-grid" aria-label="현재 릴리스 핵심 규모">
+    <article class="card viz-stat">
+      <span class="text-muted">백테스트 데이터</span>
+      <strong class="viz-stat-value">4,221,532행</strong>
+      <span class="text-small">10개 버전 고정 데이터셋</span>
+    </article>
+    <article class="card viz-stat">
+      <span class="text-muted">교차검증</span>
+      <strong class="viz-stat-value">498개 대상</strong>
+      <span class="text-small">이벤트 202 + 가격 296, 미해결 불일치 0</span>
+    </article>
+    <article class="card viz-stat">
+      <span class="text-muted">원본 증거</span>
+      <strong class="viz-stat-value">2,534개</strong>
+      <span class="text-small">원본 831.9MB, 압축 217.4MB</span>
+    </article>
+  </section>
+
+  <section id="executive-flow" class="section">
+    <div class="section-heading">
+      <h2>1. 경영진이 알아야 할 전체 흐름</h2>
+      <p>단계를 선택하면 입력 데이터, 실제 함수, 저장 위치, 다음 사용처가 함께 표시됩니다.</p>
+    </div>
+    <div class="flow-grid" role="group" aria-label="시장 데이터 처리 단계">
+      <button class="btn btn-primary flow-step" type="button" data-stage="sources" aria-pressed="true">외부 원천</button>
+      <button class="btn flow-step" type="button" data-stage="archive" aria-pressed="false">원본 보관</button>
+      <button class="btn flow-step" type="button" data-stage="identity" aria-pressed="false">기업 식별</button>
+      <button class="btn flow-step" type="button" data-stage="normalize" aria-pressed="false">표준화</button>
+      <button class="btn flow-step" type="button" data-stage="lifecycle" aria-pressed="false">기업행동 보완</button>
+      <button class="btn flow-step" type="button" data-stage="factors" aria-pressed="false">조정계수</button>
+      <button class="btn flow-step" type="button" data-stage="validate" aria-pressed="false">교차검증</button>
+      <button class="btn flow-step" type="button" data-stage="release" aria-pressed="false">릴리스 고정</button>
+      <button class="btn flow-step" type="button" data-stage="r2" aria-pressed="false">R2 게시</button>
+      <button class="btn flow-step" type="button" data-stage="consume" aria-pressed="false">백테스트 사용</button>
+    </div>
+    <article class="card selected-stage" aria-live="polite">
+      <div class="selected-title">
+        <span id="stage-number" class="viz-badge">01</span>
+        <h3 id="stage-title">외부 원천을 목적별로 분리한다</h3>
+      </div>
+      <p id="stage-summary">EODHD는 주 데이터, SEC와 지수 자료는 공식 사실, Yahoo는 독립 가격 비교에 사용합니다.</p>
+      <div class="handoff-grid">
+        <div class="handoff-item"><span class="handoff-label text-small">입력</span><strong id="stage-input">EODHD JSON · SEC 공시 · 지수 이력</strong></div>
+        <div class="handoff-item"><span class="handoff-label text-small">실제 함수</span><code id="stage-function">bootstrap_us_market_data()</code></div>
+        <div class="handoff-item"><span class="handoff-label text-small">출력</span><strong id="stage-output">공급자별 원본 응답</strong></div>
+        <div class="handoff-item"><span class="handoff-label text-small">저장 위치</span><code id="stage-storage">data/cache/state</code></div>
+        <div class="handoff-item"><span class="handoff-label text-small">다음 사용자</span><strong id="stage-next">원본 아카이브와 정규화 단계</strong></div>
+      </div>
+      <pre class="stage-code"><code id="stage-code">history = fetch_us_index_history(...)
+catalog = build_eodhd_catalog(...)
+synced = DailyDataSynchronizer(...).sync(...)</code></pre>
+    </article>
+  </section>
+
+  <section class="section" aria-labelledby="lanes-heading">
+    <div class="section-heading">
+      <h2 id="lanes-heading">2. 데이터는 네 개의 레인을 따라 이동한다</h2>
+      <p>수집, 통제, 저장, 소비를 분리해 한 단계의 실수가 바로 투자 결과로 전달되지 않게 합니다.</p>
+    </div>
+    <div class="lane">
+      <strong class="lane-label">수집 레인</strong>
+      <div class="lane-track">
+        <div class="lane-node"><strong>EODHD</strong><span class="text-small">OHLCV · 배당 · 분할 · 종목 목록</span></div>
+        <div class="lane-node"><strong>SEC EDGAR</strong><span class="text-small">합병 · 분사 · 티커 · 상장폐지 조건</span></div>
+        <div class="lane-node"><strong>지수 자료</strong><span class="text-small">anchor · 편입 · 퇴출</span></div>
+        <div class="lane-node"><strong>Yahoo Chart</strong><span class="text-small">독립 가격 교차검증</span></div>
+      </div>
+    </div>
+    <div class="lane">
+      <strong class="lane-label">통제 레인</strong>
+      <div class="lane-track">
+        <div class="lane-node"><strong>출처 해시</strong><span class="text-small">받은 원문을 SHA-256으로 고정</span></div>
+        <div class="lane-node"><strong>기업 ID</strong><span class="text-small">티커 대신 <code>security_id</code> 사용</span></div>
+        <div class="lane-node"><strong>검증 게이트</strong><span class="text-small">스키마 · 날짜 · 경제 조건 · 가격 비교</span></div>
+        <div class="lane-node"><strong>불변 릴리스</strong><span class="text-small">검증된 버전 조합만 승인</span></div>
+      </div>
+    </div>
+    <div class="lane">
+      <strong class="lane-label">저장 레인</strong>
+      <div class="lane-track">
+        <div class="lane-node"><strong><code>archives</code></strong><span class="text-small">공급자·공시 원본</span></div>
+        <div class="lane-node"><strong><code>datasets</code></strong><span class="text-small">표준 Parquet 버전</span></div>
+        <div class="lane-node"><strong><code>releases</code></strong><span class="text-small">10개 버전 묶음</span></div>
+        <div class="lane-node"><strong>비공개 R2</strong><span class="text-small">공유·복구·콜드 검증</span></div>
+      </div>
+    </div>
+    <div class="lane">
+      <strong class="lane-label">소비 레인</strong>
+      <div class="lane-track">
+        <div class="lane-node"><strong>DuckDB</strong><span class="text-small">필요한 종목·기간만 조회</span></div>
+        <div class="lane-node"><strong>MarketData</strong><span class="text-small">가격 · 지수 일정 · 기업행동 결합</span></div>
+        <div class="lane-node"><strong>전략 엔진</strong><span class="text-small">Triple Supertrend 신호 계산</span></div>
+        <div class="lane-node"><strong>백테스트 결과</strong><span class="text-small">수익률 · 위험 · 거래 기록</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="real-example" class="section">
+    <div class="section-heading">
+      <h2>3. 실제 사례: HCBK 주식이 MTB 주식으로 바뀌는 과정</h2>
+      <p>하나의 주식교환 합병이 공시 원문에서 백테스트 포지션 전환까지 이동한 실제 데이터입니다.</p>
+    </div>
+    <div class="example-grid">
+      <ol class="journey-list" aria-label="HCBK 주식교환 합병 처리 순서">
+        <li class="journey-item">
+          <span class="step-mark">1</span>
+          <div class="journey-copy"><strong>마지막 가격과 기업을 찾는다</strong><span class="text-small">EODHD의 HCBK 가격과 종목 목록을 동일한 <code>security_id</code>에 연결합니다.</span></div>
+        </li>
+        <li class="journey-item">
+          <span class="step-mark">2</span>
+          <div class="journey-copy"><strong>SEC 공시 원문을 내려받는다</strong><span class="text-small"><code>SecEdgarLifecycleSource.fetch_filing()</code>이 공시 원문과 해시를 보관합니다.</span></div>
+        </li>
+        <li class="journey-item">
+          <span class="step-mark">3</span>
+          <div class="journey-copy"><strong>합병 조건을 구조화한다</strong><span class="text-small"><code>parse_sec_lifecycle_filing()</code>이 완료일, 교환비율, 후속 티커를 추출합니다.</span></div>
+        </li>
+        <li class="journey-item">
+          <span class="step-mark">4</span>
+          <div class="journey-copy"><strong>독립 가격으로 경제성을 확인한다</strong><span class="text-small">기존 HCBK 가치와 <code>0.08403 × MTB 가격</code>의 연결을 비교합니다.</span></div>
+        </li>
+        <li class="journey-item">
+          <span class="step-mark">5</span>
+          <div class="journey-copy"><strong>백테스트 포지션을 전환한다</strong><span class="text-small"><code>PortfolioLedger.apply_actions()</code>가 HCBK 수량을 MTB 수량으로 바꿉니다.</span></div>
+        </li>
+      </ol>
+      <div class="code-pair">
+        <pre class="card code-block" aria-label="실제 corporate_actions 데이터 예시"><code>{
+  "action_type": "stock_merger",
+  "effective_date": "2015-11-02",
+  "security": "HCBK",
+  "ratio": 0.08403,
+  "new_symbol": "MTB",
+  "official": true,
+  "source_kind": "official_crosscheck"
+}</code></pre>
+        <pre class="card code-block" aria-label="실제 처리 코드 축약 예시"><code>evidence = sec_source.collect(candidate)
+event = parse_sec_lifecycle_filing(
+    evidence.content, candidate, evidence.filing
+)
+repository.append_frame(
+    "corporate_actions",
+    lifecycle_action_record(event, ...)
+)
+ledger.apply_actions(actions, through=session)</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="data-inventory" class="section">
+    <div class="section-heading">
+      <h2>4. 최종 릴리스를 구성하는 10개 데이터셋</h2>
+      <p>행 수는 2026-07-15 완료 세션을 고정한 릴리스 기준입니다.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr><th>데이터셋</th><th>역할</th><th class="text-end">행 수</th><th>주요 생산 함수</th><th>주요 사용처</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>security_master</code></td><td>기업의 변하지 않는 식별자와 기본 속성</td><td class="text-end">876</td><td><code>build_eodhd_catalog()</code></td><td>모든 데이터의 기업 연결</td></tr>
+          <tr><td><code>symbol_history</code></td><td>한 기업이 사용한 과거 티커 구간</td><td class="text-end">903</td><td><code>resolve_new_security_id()</code></td><td>티커 변경과 이름 재사용 분리</td></tr>
+          <tr><td><code>daily_price_raw</code></td><td>조정 전 일봉 OHLCV</td><td class="text-end">2,095,793</td><td><code>EodhdDailySource.fetch()</code></td><td>신호 가격과 체결 가격의 원재료</td></tr>
+          <tr><td><code>corporate_actions</code></td><td>배당·분할·합병·분사·티커·상장폐지</td><td class="text-end">24,053</td><td><code>parse_sec_lifecycle_filing()</code></td><td>조정계수와 포지션 전환</td></tr>
+          <tr><td><code>adjustment_factors</code></td><td>분할 및 총수익 조정계수</td><td class="text-end">2,095,793</td><td><code>build_adjustment_factors()</code></td><td>비교 가능한 장기 수익률</td></tr>
+          <tr><td><code>index_constituent_anchors</code></td><td>특정 기준일의 지수 구성원</td><td class="text-end">605</td><td><code>IndexDataImporter.import_anchor()</code></td><td>과거 지수 복원의 시작점</td></tr>
+          <tr><td><code>index_membership_events</code></td><td>지수 편입·퇴출 이벤트</td><td class="text-end">793</td><td><code>IndexDataImporter.import_events()</code></td><td>시점별 투자 가능 종목</td></tr>
+          <tr><td><code>lifecycle_resolutions</code></td><td>가격이 끝난 종목의 처리 결론</td><td class="text-end">181</td><td><code>build_lifecycle_candidates()</code></td><td>방치된 상장폐지·합병 방지</td></tr>
+          <tr><td><code>cross_validation_reports</code></td><td>검증 결과와 정책 해시</td><td class="text-end">1</td><td><code>validate_cross_validation_gate()</code></td><td>릴리스·R2 게시 허가</td></tr>
+          <tr><td><code>source_archive</code></td><td>원본 파일의 위치와 해시 색인</td><td class="text-end">2,534</td><td><code>DailyDataSynchronizer._archive()</code></td><td>재현·감사·분쟁 확인</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><th colspan="2">합계</th><th class="text-end">4,221,532</th><th colspan="2">하나의 불변 릴리스로 묶음</th></tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="storage-heading">
+    <div class="section-heading">
+      <h2 id="storage-heading">5. 어디에 저장되고 무엇이 다음에 읽는가</h2>
+      <p>로컬은 작업과 검증을 담당하고, R2는 승인된 릴리스의 공유·복구·독립 재검증을 담당합니다.</p>
+    </div>
+    <div class="storage-map">
+      <article class="storage-column">
+        <h3>로컬 작업 저장소</h3>
+        <pre class="tree"><code>data/cache/
+├─ state/          수집 중간 상태
+├─ archives/       압축 원본 증거
+├─ datasets/       Parquet 버전
+├─ transactions/   수정 작업 기록
+├─ conflicts/      충돌 격리
+└─ releases/       승인된 버전 묶음</code></pre>
+        <p class="text-small"><strong>쓰는 쪽:</strong> 수집·보정·검증 함수</p>
+      </article>
+      <article class="storage-column">
+        <h3>비공개 Cloudflare R2</h3>
+        <pre class="tree"><code>super-trend-quant-parquet/
+└─ supertrend-quant/
+   ├─ datasets/.../versions/
+   ├─ datasets/.../current.json
+   ├─ archives/
+   └─ releases/current.json</code></pre>
+        <p class="text-small"><strong>쓰는 쪽:</strong> <code>publish_and_verify()</code> 전용 경로</p>
+      </article>
+      <article class="storage-column">
+        <h3>연구 실행 저장소</h3>
+        <pre class="tree"><code>Parquet release
+  ↓ DuckDB SQL
+MarketData
+  ↓ strategy engine
+BacktestResult
+  ↓ save_backtest_result()
+results/...</code></pre>
+        <p class="text-small"><strong>읽는 쪽:</strong> 백테스트·연구·향후 Paper/Live</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="validation" class="section">
+    <div class="section-heading">
+      <h2>6. 여섯 개 검증 게이트를 모두 통과해야 게시된다</h2>
+      <p>“파일이 존재한다”가 아니라 내용, 관계, 경제적 의미, 원격 복구 가능성까지 확인합니다.</p>
+    </div>
+    <div class="status-strip" aria-label="6개 검증 게이트 모두 통과">
+      <div class="status-segment"><strong>1</strong><span class="text-small">스키마</span></div>
+      <div class="status-segment"><strong>2</strong><span class="text-small">기업 관계</span></div>
+      <div class="status-segment"><strong>3</strong><span class="text-small">라이프사이클</span></div>
+      <div class="status-segment"><strong>4</strong><span class="text-small">독립 가격</span></div>
+      <div class="status-segment"><strong>5</strong><span class="text-small">릴리스 해시</span></div>
+      <div class="status-segment"><strong>6</strong><span class="text-small">콜드 복원</span></div>
+    </div>
+    <div class="gate-grid">
+      <ol class="gate-list" aria-label="검증 게이트 상세 설명">
+        <li class="gate-item"><span class="step-mark">1</span><div class="gate-copy"><strong><code>validate_dataset()</code></strong><span class="text-small">필수 열, 기본키 중복, 날짜, OHLC 관계, 출처 메타데이터를 검사합니다.</span></div></li>
+        <li class="gate-item"><span class="step-mark">2</span><div class="gate-copy"><strong><code>validate_repository_snapshot()</code></strong><span class="text-small">가격·티커·기업행동·지수 이벤트가 같은 기업 ID와 시점을 가리키는지 검사합니다.</span></div></li>
+        <li class="gate-item"><span class="step-mark">3</span><div class="gate-copy"><strong>라이프사이클 커버리지</strong><span class="text-small">후보 181건 중 169건 적용, 12건 영구 예외, 열린 항목 0건을 확인합니다.</span></div></li>
+        <li class="gate-item"><span class="step-mark">4</span><div class="gate-copy"><strong><code>validate_cross_validation_gate()</code></strong><span class="text-small">이벤트 202건과 가격 대상 296건을 검증해 불일치·미해결 0건을 확인합니다.</span></div></li>
+        <li class="gate-item"><span class="step-mark">5</span><div class="gate-copy"><strong><code>commit_release()</code></strong><span class="text-small">10개 데이터셋의 정확한 버전과 SHA-256을 하나의 릴리스로 고정합니다.</span></div></li>
+        <li class="gate-item"><span class="step-mark">6</span><div class="gate-copy"><strong><code>publish_and_verify()</code></strong><span class="text-small">R2 비공개 확인 후 게시하고 새 임시 폴더로 전부 다시 내려받아 해시를 비교합니다.</span></div></li>
+      </ol>
+      <article class="card">
+        <h3>이번 릴리스의 검증 결과</h3>
+        <table class="table table-sm">
+          <tbody>
+            <tr><th>이벤트 검사</th><td class="text-end">202건</td></tr>
+            <tr><th>가격 검사</th><td class="text-end">296건</td></tr>
+            <tr><th>검증 증거</th><td class="text-end">657건</td></tr>
+            <tr><th>가격 비교 세션</th><td class="text-end">245,523개</td></tr>
+            <tr><th>최종 불일치</th><td class="text-end">0건</td></tr>
+            <tr><th>최종 미해결</th><td class="text-end">0건</td></tr>
+            <tr><th>콜드 재다운로드</th><td class="text-end">통과</td></tr>
+          </tbody>
+        </table>
+        <p class="text-small">스냅샷 SHA-256: <code>d65978ce27669c906b3dcacfa4f1a40f31e9ed68abf51d293e41ac07ed88a29e</code></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="code-heading">
+    <div class="section-heading">
+      <h2 id="code-heading">7. 실제 코드에서의 호출 순서</h2>
+      <p>아래는 구현을 읽기 쉽게 축약한 것이며 함수 이름과 데이터셋 이름은 실제 코드와 같습니다.</p>
+    </div>
+    <div class="code-pair">
+      <pre class="card code-block" aria-label="수집부터 릴리스까지 코드 예시"><code># 1. 종목·지수·가격 수집
+history = fetch_us_index_history(start_date="2015-01-01")
+catalog = build_eodhd_catalog(history.symbols, ...)
+synced = DailyDataSynchronizer(
+    repository,
+    price_source=EodhdDailySource()
+).sync("2026-07-15")
+
+# 2. 조정계수와 로컬 릴리스
+factors = build_adjustment_factors(prices, actions)
+repository.write_frame("adjustment_factors", factors, ...)
+release = repository.commit_release(
+    "2026-07-15", dataset_versions, quality="degraded"
+)</code></pre>
+      <pre class="card code-block" aria-label="검증부터 백테스트까지 코드 예시"><code># 3. 교차검증과 R2 게시
+validate_cross_validation_gate(repository, release)
+summary = publish_and_verify(
+    repository, r2_store,
+    verify_only=False,
+    keep_verify_cache=False
+)
+
+# 4. 백테스트 소비
+data = ParquetMarketDataProvider("data/cache").load(
+    config, symbols, universe_schedule=schedule
+)
+result = run_backtest_on_data(config, data)</code></pre>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="consumer-heading">
+    <div class="section-heading">
+      <h2 id="consumer-heading">8. 백테스트는 승인된 릴리스만 읽는다</h2>
+      <p>전략이 공급자 API를 직접 호출하지 않기 때문에 같은 릴리스로 같은 연구를 반복할 수 있습니다.</p>
+    </div>
+    <div class="consumer-flow" aria-label="릴리스에서 백테스트 결과까지의 흐름">
+      <div class="consumer-node"><strong><code>resolve_universe()</code></strong><span class="text-small">당시 지수 구성 복원</span></div>
+      <div class="consumer-node"><strong><code>ParquetMarketDataProvider.load()</code></strong><span class="text-small">DuckDB로 필요한 행만 조회</span></div>
+      <div class="consumer-node"><strong><code>MarketData</code></strong><span class="text-small">가격·행동·일정 결합</span></div>
+      <div class="consumer-node"><strong><code>run_backtest_on_data()</code></strong><span class="text-small">전략 신호·주문·체결</span></div>
+      <div class="consumer-node"><strong><code>BacktestResult</code></strong><span class="text-small">성과·위험·경고·릴리스 기록</span></div>
+    </div>
+    <p class="text-small">
+      일반화하면 매일 새 완료 세션에 대해 같은 절차를 반복합니다. 달라지는 것은 날짜와 데이터 버전뿐이며,
+      원본 보관 → 검증 → 릴리스 → 게시 → 소비라는 계약은 유지됩니다.
+    </p>
+  </section>
+
+  <section class="section" aria-labelledby="roadmap-heading">
+    <div class="section-heading">
+      <h2 id="roadmap-heading">9. 다음 확장 계획</h2>
+      <p>현재 미국 S&amp;P 500·Nasdaq-100에서 검증한 구조를 유지하면서 범위만 단계적으로 넓힙니다.</p>
+    </div>
+    <ol class="roadmap-list">
+      <li class="roadmap-item"><span class="step-mark">1</span><div class="roadmap-copy"><strong>Russell 3000</strong><span class="text-small">종목 수와 상장폐지 비중이 크게 늘어나므로 지수 이력 공급자와 라이프사이클 자동화부터 보강합니다.</span></div></li>
+      <li class="roadmap-item"><span class="step-mark">2</span><div class="roadmap-copy"><strong>KOSPI 200 · KOSDAQ 150</strong><span class="text-small">KRX 종목·지수·기업행동 자료를 같은 10개 데이터 계약에 맞추고 한국 시장 달력과 권리락 규칙을 추가합니다.</span></div></li>
+      <li class="roadmap-item"><span class="step-mark">3</span><div class="roadmap-copy"><strong>일봉 운영 자동화</strong><span class="text-small">EODHD 호출 예산, 완료 세션, 검증 게이트, 비공개 R2 게시를 정해진 운영 절차로 자동화합니다.</span></div></li>
+      <li class="roadmap-item"><span class="step-mark">4</span><div class="roadmap-copy"><strong>검증 공급자 다변화</strong><span class="text-small">Yahoo 단일 가격 비교 의존도를 낮추고 공식 거래소 또는 추가 가격 공급자를 중요 이벤트부터 연결합니다.</span></div></li>
+    </ol>
+  </section>
+
+  <section id="appendix" class="section">
+    <div class="section-heading">
+      <h2>부록 A. 알려진 한계와 영구 예외</h2>
+      <p>현재 릴리스의 <code>quality=degraded</code>는 검증 실패가 아니라 아래 한계를 숨기지 않고 표시한 결과입니다.</p>
+    </div>
+    <div class="appendix-note">
+      <p><strong>영구 예외 12건은 검증을 통과한 정상 이벤트로 위장하지 않습니다.</strong> 각 예외는 이유, 근거 URL, 원본 해시, 적용 정책을 별도로 고정하며 내용이 바뀌면 게시가 중단됩니다.</p>
+    </div>
+    <ul class="risk-list">
+      <li class="risk-item"><span class="step-mark">!</span><div class="risk-copy"><strong>UTX 분사 대가</strong><span class="text-small">정확한 CARR 1.0주와 OTIS 0.5주 분배가 현재 표준 행동 모델에 완전히 반영되지 않아 지원되지 않는 대가로 남습니다.</span></div></li>
+      <li class="risk-item"><span class="step-mark">!</span><div class="risk-copy"><strong>ABMD 조건부가치권리</strong><span class="text-small">보장된 주당 380달러만 반영하며 최대 35달러 CVR은 0달러 하한으로 처리해 수익이 과소평가될 수 있습니다.</span></div></li>
+      <li class="risk-item"><span class="step-mark">!</span><div class="risk-copy"><strong>CELG/BMYRT 거래 경로</strong><span class="text-small">공식 첫 거래 종가 2.30달러를 청산 표식으로 사용하며 전체 280세션 거래 경로는 지원하지 않습니다.</span></div></li>
+      <li class="risk-item"><span class="step-mark">!</span><div class="risk-copy"><strong>FRCB 공급자 원본 수정</strong><span class="text-small">2024-12-30 저가 0을 0.003으로 해시 고정 교정했으며 다른 필드는 그대로 유지했습니다.</span></div></li>
+      <li class="risk-item"><span class="step-mark">!</span><div class="risk-copy"><strong>NTCO/NTCOY 경계</strong><span class="text-small">가격·티커·최종 현금 지급은 공식 자료로 보완했지만 충돌한 공급자 배당 두 건은 채택하지 않았습니다.</span></div></li>
+      <li class="risk-item"><span class="step-mark">!</span><div class="risk-copy"><strong>Quandl WIKI 증거의 이용 범위</strong><span class="text-small">정식 라이선스가 불명확한 동결 자료는 개인·내부 검증에만 사용하며 공개 재배포하지 않습니다.</span></div></li>
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="technical-heading">
+    <div class="section-heading">
+      <h2 id="technical-heading">부록 B. 함수별 입력·출력·저장·사용처</h2>
+      <p>운영 담당자가 장애나 데이터 질문을 추적할 때 사용하는 빠른 참조표입니다.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead><tr><th>함수</th><th>받는 것</th><th>만드는 것</th><th>저장 위치</th><th>다음 호출</th></tr></thead>
+        <tbody>
+          <tr><td><code>fetch_us_index_history()</code></td><td>시작일</td><td>지수 anchor·편입·퇴출 원본</td><td><code>state</code>·<code>archives</code></td><td><code>IndexDataImporter</code></td></tr>
+          <tr><td><code>build_eodhd_catalog()</code></td><td>지수 티커 목록</td><td>기업 ID·티커 이력</td><td><code>security_master</code>·<code>symbol_history</code></td><td><code>DailyDataSynchronizer</code></td></tr>
+          <tr><td><code>EodhdDailySource.fetch()</code></td><td>기업 ID와 공급자 티커</td><td>OHLCV·배당·분할·원본</td><td><code>daily_price_raw</code>·<code>corporate_actions</code>·<code>archives</code></td><td><code>build_adjustment_factors()</code></td></tr>
+          <tr><td><code>SecEdgarLifecycleSource.collect()</code></td><td>가격이 끝난 기업 후보</td><td>관련 공시와 파싱 결과</td><td><code>archives</code>·수집 보고서</td><td><code>lifecycle_action_record()</code></td></tr>
+          <tr><td><code>build_adjustment_factors()</code></td><td>가격과 기업행동</td><td>분할·총수익 계수</td><td><code>adjustment_factors</code></td><td><code>ParquetMarketDataProvider.load()</code></td></tr>
+          <tr><td><code>validate_cross_validation_gate()</code></td><td>릴리스와 검증 증거</td><td>불일치·예외·가격 비교 결과</td><td><code>cross_validation_reports</code></td><td><code>publish_and_verify()</code></td></tr>
+          <tr><td><code>publish_repository()</code></td><td>로컬 불변 버전</td><td>R2 객체와 조건부 current 포인터</td><td>비공개 R2</td><td><code>DatasetCache.sync_release()</code></td></tr>
+          <tr><td><code>ParquetMarketDataProvider.load()</code></td><td>릴리스·종목·기간·지수 일정</td><td><code>MarketData</code></td><td>메모리</td><td><code>run_backtest_on_data()</code></td></tr>
+          <tr><td><code>PortfolioLedger.apply_actions()</code></td><td>포지션과 기업행동</td><td>현금·후속 주식·종목 전환</td><td>백테스트 원장</td><td>성과 계산</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="text-small text-muted">
+    <p>수치는 완료 세션 2026-07-15 및 릴리스 <code>20260715-20260719T130946573430Z</code>의 고정 스냅샷입니다. 이후 릴리스에서도 동일한 데이터 계약과 검증 순서를 반복합니다.</p>
+  </footer>
+
+  <script>
+    (() => {
+      const root = document.getElementById('stq-market-data-pipeline');
+      const buttons = Array.from(root.querySelectorAll('[data-stage]'));
+      const fields = {
+        number: root.querySelector('#stage-number'),
+        title: root.querySelector('#stage-title'),
+        summary: root.querySelector('#stage-summary'),
+        input: root.querySelector('#stage-input'),
+        functionName: root.querySelector('#stage-function'),
+        output: root.querySelector('#stage-output'),
+        storage: root.querySelector('#stage-storage'),
+        next: root.querySelector('#stage-next'),
+        code: root.querySelector('#stage-code')
+      };
+      const stages = {
+        sources: {
+          number: '01', title: '외부 원천을 목적별로 분리한다',
+          summary: 'EODHD는 주 데이터, SEC와 지수 자료는 공식 사실, Yahoo는 독립 가격 비교에 사용합니다.',
+          input: 'EODHD JSON · SEC 공시 · 지수 이력', functionName: 'bootstrap_us_market_data()',
+          output: '공급자별 원본 응답', storage: 'data/cache/state', next: '원본 아카이브와 정규화 단계',
+          code: 'history = fetch_us_index_history(...)\ncatalog = build_eodhd_catalog(...)\nsynced = DailyDataSynchronizer(...).sync(...)'
+        },
+        archive: {
+          number: '02', title: '받은 원문을 내용 해시로 보존한다',
+          summary: '나중에 공급자 데이터가 바뀌어도 당시 판단의 근거를 동일한 바이트로 다시 확인할 수 있습니다.',
+          input: 'JSON · HTML · TXT · PDF · CSV', functionName: 'DailyDataSynchronizer._archive()',
+          output: 'gzip 원본 + source_archive 색인', storage: 'data/cache/archives', next: '재현·감사·교차검증',
+          code: 'archive_id = sha256(raw_content)\nobject_path = f"archives/{date}/{archive_id}.json.gz"\nrepository.append_frame("source_archive", index_rows, ...)'
+        },
+        identity: {
+          number: '03', title: '티커가 아니라 기업을 식별한다',
+          summary: '같은 티커를 다른 회사가 재사용하거나 회사가 티커를 바꿔도 가격 이력을 잘못 이어 붙이지 않습니다.',
+          input: '종목 목록 · ISIN · 티커 구간 · SEC 사실', functionName: 'build_eodhd_catalog() / resolve_new_security_id()',
+          output: 'security_master + symbol_history', storage: 'data/cache/datasets', next: '가격·기업행동·지수 이벤트 연결',
+          code: 'security_id = "US:EODHD:<stable-uuid>"\n# display symbol may change, security_id does not\nrepository.write_frame("symbol_history", history, ...)'
+        },
+        normalize: {
+          number: '04', title: '공급자 형식을 표준 Parquet으로 바꾼다',
+          summary: '모든 행에 기본키, 날짜, 출처, 검색 시점, 원본 해시를 붙여 같은 계약으로 저장합니다.',
+          input: '공급자별 서로 다른 필드', functionName: 'EodhdDailySource.fetch() / LocalDatasetRepository.write_frame()',
+          output: '표준화된 DataFrame과 Parquet', storage: 'datasets/<name>/versions/<version>', next: '검증·조정계수·백테스트',
+          code: 'repository.write_frame(\n    "daily_price_raw", prices,\n    completed_session="2026-07-15"\n)'
+        },
+        lifecycle: {
+          number: '05', title: '가격이 끝난 이유와 경제 조건을 보완한다',
+          summary: 'SEC 공시를 파싱해 현금합병, 주식교환, 분사, 티커 변경, 상장폐지를 구조화합니다.',
+          input: '말단 가격 후보 + SEC EDGAR 원문', functionName: 'SecEdgarLifecycleSource.collect() / parse_sec_lifecycle_filing()',
+          output: 'corporate_actions + lifecycle_resolutions', storage: 'datasets/corporate_actions · lifecycle_resolutions', next: '경제성 비교와 원장 반영',
+          code: 'candidate = build_lifecycle_candidates(...)\nevidence = sec_source.collect(candidate)\naction = lifecycle_action_record(evidence, ...)'
+        },
+        factors: {
+          number: '06', title: '장기 수익률을 비교할 조정계수를 계산한다',
+          summary: '배당, 분할, 합병, 분사 효과를 반영해 과거와 현재 가격을 같은 경제적 기준으로 비교합니다.',
+          input: 'daily_price_raw + corporate_actions', functionName: 'build_adjustment_factors()',
+          output: 'split_factor + total_return_factor', storage: 'datasets/adjustment_factors', next: '지표 계산과 성과 측정',
+          code: 'factors = build_adjustment_factors(\n    all_prices, all_actions,\n    source_version=source_versions\n)'
+        },
+        validate: {
+          number: '07', title: '내부 관계와 외부 가격을 함께 검증한다',
+          summary: '스키마, 기업 연결, 지수 전이, SEC 조건, Yahoo 가격을 비교하고 임시 미해결 항목이 있으면 중단합니다.',
+          input: '10개 데이터셋 + 657개 검증 증거', functionName: 'validate_repository_snapshot() / validate_cross_validation_gate()',
+          output: '검증 보고서와 예외 목록', storage: 'cross_validation_reports + archives', next: '릴리스 승인 여부',
+          code: 'snapshot_report.raise_for_errors()\ncross = validate_cross_validation_gate(repository, release)\nassert cross["price_unresolved_count"] == 0'
+        },
+        release: {
+          number: '08', title: '정확한 버전 조합을 하나의 릴리스로 고정한다',
+          summary: '각 데이터셋의 current 파일만 보는 대신 검증 당시의 10개 버전을 불변 JSON으로 묶습니다.',
+          input: '검증된 데이터셋 버전 10개', functionName: 'LocalDatasetRepository.commit_release()',
+          output: 'DataRelease JSON', storage: 'data/cache/releases', next: 'R2 게시와 백테스트 재현',
+          code: 'release = repository.commit_release(\n    completed_session, dataset_versions,\n    quality="degraded", warnings=known_limits\n)'
+        },
+        r2: {
+          number: '09', title: '비공개 R2에 게시하고 새로 내려받아 확인한다',
+          summary: '공개 URL과 커스텀 도메인이 꺼진 상태를 확인한 뒤 조건부 포인터로 게시하고 콜드 캐시에서 전체 해시를 비교합니다.',
+          input: '로컬 불변 릴리스 + 비공개 증명', functionName: 'publish_and_verify() / DatasetCache.sync_release()',
+          output: 'R2 릴리스 + 콜드 검증 결과', storage: 'R2 supertrend-quant prefix', next: '공유·복구·독립 실행',
+          code: 'publish_repository(repository, r2, datasets)\ndownloaded = DatasetCache(tmp, r2).sync_release()\ncompare_repository_snapshots(local, fresh, release, ...)'
+        },
+        consume: {
+          number: '10', title: '백테스트는 공급자가 아니라 릴리스를 읽는다',
+          summary: 'DuckDB가 필요한 버전·기업·기간만 읽어 MarketData를 만들고 전략과 원장에 전달합니다.',
+          input: '릴리스 + 전략 설정 + 당시 지수 일정', functionName: 'ParquetMarketDataProvider.load() / run_backtest_on_data()',
+          output: 'MarketData + BacktestResult', storage: '메모리 + results', next: '성과 비교와 투자 연구',
+          code: 'data = ParquetMarketDataProvider(cache).load(config, symbols, ...)\nresult = run_backtest_on_data(config, data)\nsave_backtest_result(result, config, results_dir)'
+        }
+      };
+
+      const selectStage = (key) => {
+        const stage = stages[key];
+        if (!stage) return;
+        buttons.forEach((button) => {
+          const active = button.dataset.stage === key;
+          button.setAttribute('aria-pressed', String(active));
+          button.classList.toggle('btn-primary', active);
+        });
+        fields.number.textContent = stage.number;
+        fields.title.textContent = stage.title;
+        fields.summary.textContent = stage.summary;
+        fields.input.textContent = stage.input;
+        fields.functionName.textContent = stage.functionName;
+        fields.output.textContent = stage.output;
+        fields.storage.textContent = stage.storage;
+        fields.next.textContent = stage.next;
+        fields.code.textContent = stage.code;
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => selectStage(button.dataset.stage));
+      });
+    })();
+  </script>
+</main>

@@ -1,0 +1,39 @@
+data_store:
+  provider: parquet
+  ingest_source: eodhd
+  # EODHD is quota-limited. Refreshes must be started explicitly with quant-data sync.
+  auto_sync: false
+  signal_price_mode: total_return_adjusted
+  dividend_withholding_rate: 0
+  incomplete_action_policy: warn
+  local_cache_dir: data/cache
+  index_source_mode: best_effort
+  # Keep background/ordinary syncs local. Production publication must go
+  # through scripts/publish_and_verify_r2.py so lifecycle coverage and a cold
+  # redownload/hash verification cannot be bypassed.
+  publish_enabled: false
+  r2:
+    enabled: true
+    endpoint_env: R2_ENDPOINT_URL
+    bucket: super-trend-quant-parquet
+    prefix: supertrend-quant
+    # Publication is fail-closed until Cloudflare's management API confirms
+    # that both r2.dev and every custom domain are disabled. A short-lived,
+    # hash-pinned attestation may be used only when that API is unavailable.
+    account_id_env: CLOUDFLARE_ACCOUNT_ID
+    api_token_env: CLOUDFLARE_API_TOKEN
+    privacy_attestation_path_env: R2_PRIVACY_ATTESTATION_PATH
+    privacy_attestation_sha256_env: R2_PRIVACY_ATTESTATION_SHA256
+    privacy_attestation_max_age_seconds: 900
+    jurisdiction: default
+
+market_overrides:
+  KR:
+    provider: yahoo
+    auto_sync: false
+    price_mode: raw
+    dividend_tax_rate: 0
+    incomplete_action_policy: warn
+    local_cache_dir: data/cache
+    index_source_mode: best_effort
+    publish_enabled: false

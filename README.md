@@ -15,6 +15,7 @@ uv run quant-search --help
 uv run quant-optimize --help
 uv run quant-paper --help
 uv run quant-live --help
+uv run quant-data --help
 ```
 
 설정 예시와 안전한 실행 순서는

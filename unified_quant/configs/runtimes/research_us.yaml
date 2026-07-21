@@ -1,31 +1,17 @@
 name: research_us
 market: US
 universe:
-  source: profiles
+  source: index_events
   profiles:
     US: [sp500]
   refresh: daily
   snapshot_dir: state/universes
   filters:
-    enabled: true
-    exclude_managed: true
-    exclude_suspended: true
-    exclude_delisting: true
-    exclude_etf_etn: true
-    exclude_spac: true
-    exclude_preferred: true
-    min_price:
-      US: 5
-      KR: 1000
-    avg_turnover_window: 20
-    min_avg_turnover:
-      US: 10000000
-      KR: 1000000000
-    min_history_daily_bars: 120
+    enabled: false
 
 data:
-  timeframe: 30m
-  period: 60d
+  timeframe: 1d
+  period: max
 
 capital:
   initial_cash: 10000

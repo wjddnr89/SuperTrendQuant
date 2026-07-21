@@ -24,9 +24,10 @@ universe:
     min_history_daily_bars: 120
 
 data:
-  timeframe: 30m
-  period: 60d
+  timeframe: 1d
+  period: max
 
+# US Parquet is V1. KR keeps the legacy source until the same contracts exist.
 capital:
   initial_cash: 10000000
 

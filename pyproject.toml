@@ -13,6 +13,11 @@ dependencies = [
     "finance-datareader",
     "pykrx",
     "lxml",
+    "duckdb>=1.2",
+    "pyarrow>=18",
+    "boto3>=1.35",
+    "exchange-calendars>=4.7",
+    "pypdf>=6.0,<7",
     "setuptools<81",
 ]
 
@@ -24,6 +29,7 @@ quant-compare = "supertrend_quant.cli:compare_main"
 quant-compare-strategies = "supertrend_quant.cli:compare_strategies_main"
 quant-search = "supertrend_quant.cli:search_main"
 quant-optimize = "supertrend_quant.cli:optimize_main"
+quant-data = "supertrend_quant.cli:data_main"
 
 [build-system]
 requires = ["setuptools>=68"]

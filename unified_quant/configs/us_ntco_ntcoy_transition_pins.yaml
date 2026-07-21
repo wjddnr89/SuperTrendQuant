@@ -1,0 +1,108 @@
+schema: us_ntco_ntcoy_transition_pins/v1
+
+# Acquisition records only the observed SHA-256. These three values were
+# filled only after a reviewer inspected each exact official raw document.
+official_sources:
+  cboe:
+    source_url: https://cdn.cboe.com/resources/product_restriction/2024/Cboe-Options-Exchanges-Restrictions-on-Transactions-in-Options-on-Natura-Co-Holding-S-A.pdf
+    source_sha256: "e67d8046a4c532daa11dac1faacb9e573238812c90d15be9792b5d6a46e67928"
+    reviewed_claims:
+      notice_id: C2024020910
+      old_symbol: NTCO
+      new_symbol: NTCOY
+      transition_date: 2024-02-12
+      destination_market: Other-OTC
+  occ:
+    source_url: https://infomemo.theocc.com/infomemos?number=54105
+    source_sha256: "5eb3c0058195d6d6c22361e362f1623c4eae7dd7262e9497ef7b53f8a564e913"
+    reviewed_claims:
+      memo_number: "54105"
+      old_symbol: NTCO
+      new_symbol: NTCOY
+      cusip: 63884N108
+      deliverable: 100 American Depositary Shares
+  bny:
+    source_url: https://www.adrbny.com/content/dam/adr/documents/corporate-actions-dr/files/ad1145447.pdf
+    source_sha256: "057a95798bd3b9ff4f0f0be6fd34d7ed42d6ad1d27a12ad1c41e30700c8da28b"
+    reviewed_claims:
+      action: mandatory cash exchange
+      ads_symbol: NTCOY
+      ads_to_underlying_ratio: "1:2"
+      effective_date: 2024-09-04
+      gross_cash_usd_per_ads: "5.043659"
+      fee_usd_per_ads: "0"
+      net_cash_usd_per_ads: "5.043659"
+
+# This separately staged BNY notice proves the ADR-facility termination
+# boundary. It is not part of the original six-raw acquisition signature.
+supplemental_official_sources:
+  bny_termination:
+    source_url: https://www.adrbny.com/content/dam/adr/documents/corporate-actions-dr/files/ad1140774.pdf
+    source_sha256: "abc23f86378f82f5efb475fc23e0a82e398db4201dc7e52fd4064d088eb47b83"
+    reviewed_claims:
+      notice_id: ad1140774
+      action: ADR facility termination
+      ads_symbol: NTCOY
+      termination_date: 2024-08-07
+      termination_time: 5:00 PM ET
+  bny_books_closed:
+    source_url: https://www.adrbny.com/content/dam/adr/documents/books-closed/files/bc1141635.pdf
+    source_sha256: "b5d449fcad19cd38fb461c8f9bae4c1856c0fb7ccd4903e062f87840315ba675"
+    reviewed_claims:
+      notice_id: bc1141635
+      ads_symbol: NTCOY
+      cusip: 63884N108
+      exchange: OTC
+      ads_to_underlying_ratio: "1:2"
+      issuance_close_date: 2024-08-08
+      cancellation_close_date: 2024-08-13
+      close_reason: Termination of DR Facility
+
+# When separately authorized, EODHD acquisition makes exactly these three
+# bounded, no-retry requests, preserves each raw response, reports its
+# observed hash, and stops for review before promotion.
+provider:
+  provider_symbol: NTCOY.US
+  from: 2024-02-12
+  to: 2024-09-03
+  max_http_attempts: 3
+  requests:
+    eod:
+      source_url: https://eodhd.com/api/eod/NTCOY.US?from=2024-02-12&to=2024-09-03
+      source_sha256: "3ef3a1f03ec97252ac4db079298cdb90ddc32bdeb41fd64a71aaf6d667153e54"
+    div:
+      source_url: https://eodhd.com/api/div/NTCOY.US?from=2024-02-12&to=2024-09-03
+      # Pinned so the conflicting raw remains immutable audit evidence. Its
+      # economic values are explicitly rejected by decision_policy below.
+      source_sha256: "6adc67e2b64dd8dcf0acfc0a3bf20bb0d275844f2305b66c1ff4d2a3789d8175"
+    splits:
+      source_url: https://eodhd.com/api/splits/NTCOY.US?from=2024-02-12&to=2024-09-03
+      source_sha256: "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+
+decision_policy:
+  security_id: US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622
+  ticker_change_effective_date: 2024-02-12
+  ticker_change_old_symbol: NTCO
+  ticker_change_new_symbol: NTCOY
+  # Internal canonical value; the official Cboe wording remains Other-OTC in
+  # the reviewed claim and future action metadata.
+  ticker_change_new_exchange: OTC
+  terminal_action_type: delisting
+  terminal_effective_date: 2024-09-04
+  terminal_cash_amount_usd: "5.043659"
+  provider_price_policy: approve_exact_observed_ntcoy_raw
+  provider_splits_policy: approve_exact_empty_ntcoy_raw
+  provider_dividend_policy: archive_exact_ntcoy_raw_reject_economics_preserve_ntco_actions
+  preserved_dividend_event_ids_sha256: "5dcd8850fcd54710b33b75ddec149bca8bc47d5bf6618cd0468b7a2075add7ce"
+  max_dividend_sensitivity_usd_per_ads: "0.01585"
+  index_scope_policy: require_zero_ntco_anchor_and_membership_rows
+  overlap_policy: >-
+    Treat official NTCO->NTCOY same-ADS identity as a canonical-symbol
+    replacement candidate only when the exact raw hashes and complete
+    code-pinned alias-difference inventory match.
+  mismatch_policy: >-
+    Approve only the exact-pinned NTCOY EOD raw, exact empty splits raw,
+    same-security identity, official 2024-08-07 trading boundary, and official
+    2024-09-04 terminal cash. Archive the exact NTCOY dividend raw as rejected
+    conflict evidence; preserve the two existing NTCO cash-dividend rows and
+    their economic values byte-for-byte. Any profile change fails closed.

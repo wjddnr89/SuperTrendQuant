@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from ..config import AppConfig
@@ -12,6 +13,7 @@ from ..ranking import create_scorer
 from .base import BenchmarkInput, PreparedBacktest, reject_unknown_params
 from .common import (
     asset_filters_allow_buy,
+    active_universe_symbols,
     benchmark_for_strategy_symbol,
     configured_exit_down_confirmed,
     enabled_component,
@@ -29,6 +31,7 @@ class PreparedTripleFiltersBacktest(PreparedBacktest):
     prepared: dict[str, pd.DataFrame]
     market_filter_trends: dict[str, pd.Series]
     universe_schedule: tuple[Mapping[str, Any], ...] = ()
+    fast_values: dict[str, tuple[pd.Index, dict[str, np.ndarray]]] | None = None
 
     def build_order_plan(
         self,
@@ -36,16 +39,32 @@ class PreparedTripleFiltersBacktest(PreparedBacktest):
         account: AccountSnapshot,
         mode: str = "backtest",
     ) -> OrderPlan:
+        market_filter_states = {
+            symbol: _trend_is_up_at(trend, signal_ts)
+            for symbol, trend in self.market_filter_trends.items()
+        }
+        if self.fast_values is not None:
+            return self.strategy._build_order_plan_fast(
+                self.fast_values,
+                signal_ts,
+                account,
+                mode,
+                self.universe_schedule,
+                market_filter_states,
+            )
+        triple_exit = enabled_component(self.strategy.config, "exits", "triple_supertrend_flip")
+        tail_bars = max(
+            1,
+            int(self.strategy.config.exit.sell_confirm_bars),
+            int(triple_exit.params.get("confirm_bars", 1)) if triple_exit is not None else 1,
+        )
         prepared = scheduled_prepared_slice(
             self.prepared,
             signal_ts,
             account,
             self.universe_schedule,
+            tail_bars=tail_bars,
         )
-        market_filter_states = {
-            symbol: _trend_is_up_at(trend, signal_ts)
-            for symbol, trend in self.market_filter_trends.items()
-        }
         return self.strategy._build_order_plan_from_prepared(
             prepared,
             account,
@@ -104,7 +123,119 @@ class TripleFiltersStrategy:
             list(bars),
             market_filter_data,
         )
-        return PreparedTripleFiltersBacktest(self, prepared, market_filter_trends, universe_schedule)
+        fast_values = {
+            symbol: (
+                frame.index,
+                {
+                    column: frame[column].to_numpy(copy=False)
+                    for column in (
+                        "Close",
+                        "Score",
+                        "TripleAllUp",
+                        "TripleDownCount",
+                        "Ichimoku_LongOk",
+                        "EMA_LongOk",
+                    )
+                    if column in frame
+                },
+            )
+            for symbol, frame in prepared.items()
+        }
+        return PreparedTripleFiltersBacktest(
+            self, prepared, market_filter_trends, universe_schedule, fast_values
+        )
+
+    def _build_order_plan_fast(
+        self,
+        prepared: dict[str, tuple[pd.Index, dict[str, np.ndarray]]],
+        signal_ts,
+        account: AccountSnapshot,
+        mode: str,
+        universe_schedule: tuple[Mapping[str, Any], ...],
+        market_filter_states: dict[str, bool],
+    ) -> OrderPlan:
+        config = self.config
+        active = active_universe_symbols(universe_schedule, signal_ts)
+        allowed = None if active is None else active | set(account.positions)
+        open_slots = max(0, config.risk.max_position_count - account.total_position_count)
+        per_slot_allocation = config.execution.allocation_pct / max(1, open_slots)
+        triple_exit = enabled_component(config, "exits", "triple_supertrend_flip")
+        confirm_bars = max(
+            1,
+            int(
+                triple_exit.params.get("confirm_bars", config.exit.sell_confirm_bars)
+                if triple_exit is not None
+                else config.exit.sell_confirm_bars
+            ),
+        )
+        down_count = int(triple_exit.params.get("down_count", 2)) if triple_exit else 1
+        ichimoku_enabled = enabled_component(config, "filters", "ichimoku_cloud") is not None
+        ema_enabled = enabled_component(config, "filters", "ema_trend") is not None
+        orders: list[OrderIntent] = []
+        candidate_scores: dict[str, object] = {}
+        candidate_prices: dict[str, float] = {}
+        timestamp = pd.Timestamp(signal_ts)
+
+        for symbol, (index, values) in prepared.items():
+            if allowed is not None and symbol not in allowed:
+                continue
+            position_index = int(index.searchsorted(timestamp, side="right")) - 1
+            if position_index < 0:
+                continue
+            position = account.positions.get(symbol)
+            price = float(values["Close"][position_index])
+            if position and position.quantity > 0:
+                start = position_index - confirm_bars + 1
+                down = values.get("TripleDownCount")
+                should_exit = (
+                    down is not None
+                    and start >= 0
+                    and bool(np.all(np.asarray(down[start : position_index + 1], dtype=float) >= down_count))
+                )
+                if should_exit:
+                    orders.append(
+                        OrderIntent(
+                            symbol=symbol,
+                            side="sell",
+                            quantity=position.quantity,
+                            order_type=config.execution.order_type,
+                            reason="Triple Supertrend down",
+                        )
+                    )
+                continue
+            if config.market_trend_filter.enabled and not market_filter_states.get(symbol, False):
+                continue
+            if not bool(values["TripleAllUp"][position_index]):
+                continue
+            if ichimoku_enabled and not bool(values["Ichimoku_LongOk"][position_index]):
+                continue
+            if ema_enabled and not bool(values["EMA_LongOk"][position_index]):
+                continue
+            candidate_scores[symbol] = values["Score"][position_index]
+            candidate_prices[symbol] = price
+
+        for symbol in self.scorer.rank(candidate_scores):
+            if open_slots <= 0:
+                break
+            quantity = estimate_quantity(
+                account.cash,
+                candidate_prices[symbol],
+                per_slot_allocation,
+                fee_rate=config.costs.fee_rate,
+                slippage_rate=config.costs.slippage_rate,
+            )
+            if quantity > 0:
+                orders.append(
+                    OrderIntent(
+                        symbol=symbol,
+                        side="buy",
+                        quantity=quantity,
+                        order_type=config.execution.order_type,
+                        reason="Top-ranked triple-filter entry",
+                    )
+                )
+                open_slots -= 1
+        return OrderPlan(strategy_name=config.strategy.name, mode=mode, orders=tuple(orders))
 
     def build_order_plan(
         self,

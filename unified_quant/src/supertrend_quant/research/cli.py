@@ -169,16 +169,19 @@ def print_optimization_result(result: OptimizationResult) -> None:
 
 def emit_best_config(config: AppConfig, args: argparse.Namespace) -> None:
     if bool(getattr(args, "show_best_config", False)):
-        strategy_text, runtime_text = split_yaml_text(config)
+        strategy_text, runtime_text, data_text = split_yaml_text(config)
         print("Best Strategy YAML")
         print(strategy_text.rstrip())
         print("Best Runtime YAML")
         print(runtime_text.rstrip())
+        print("Best Data YAML")
+        print(data_text.rstrip())
     target = getattr(args, "save_best_dir", None)
     if target:
-        strategy_path, runtime_path = save_split_yaml(config, target)
+        strategy_path, runtime_path, data_path = save_split_yaml(config, target)
         print(f"Saved strategy: {strategy_path}")
         print(f"Saved runtime : {runtime_path}")
+        print(f"Saved data    : {data_path}")
 
 
 __all__ = [

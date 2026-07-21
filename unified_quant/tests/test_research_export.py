@@ -31,8 +31,8 @@ class ResearchExportTest(unittest.TestCase):
             ROOT / "configs/runtimes/research_kr.yaml",
         )
         with tempfile.TemporaryDirectory() as tmp:
-            strategy_path, runtime_path = save_split_yaml(config, tmp)
-            restored = load_split_config(strategy_path, runtime_path)
+            strategy_path, runtime_path, data_path = save_split_yaml(config, tmp)
+            restored = load_split_config(strategy_path, runtime_path, data_path)
 
         self.assertEqual(restored, config)
 

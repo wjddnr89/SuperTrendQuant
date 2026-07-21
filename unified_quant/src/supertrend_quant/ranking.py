@@ -147,7 +147,22 @@ class RelativeStrengthScorer:
                 continue
             benchmark_return = symbol_benchmark["Close"].pct_change(self.lookback_bars)
             aligned_benchmark_return = benchmark_return.reindex(out.index, method="ffill")
-            out["Score"] = out["Close"].pct_change(self.lookback_bars) - aligned_benchmark_return
+            if "IdentitySegment" in out and out["IdentitySegment"].nunique(
+                dropna=False
+            ) > 1:
+                symbol_return = out.groupby(
+                    "IdentitySegment",
+                    sort=False,
+                    dropna=False,
+                )["Close"].transform(
+                    lambda values: values.pct_change(
+                        self.lookback_bars,
+                        fill_method=None,
+                    )
+                )
+            else:
+                symbol_return = out["Close"].pct_change(self.lookback_bars)
+            out["Score"] = symbol_return - aligned_benchmark_return
             scored[symbol] = out
         return scored
 

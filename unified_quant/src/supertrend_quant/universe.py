@@ -25,6 +25,7 @@ class UniverseMember:
     symbol: str
     market: str
     exchange: str
+    security_id: str = ""
     name: str = ""
     security_type: str = "STOCK"
     yfinance_symbol: str = ""
@@ -40,6 +41,7 @@ class UniverseMember:
             symbol=str(raw["symbol"]),
             market=str(raw["market"]),
             exchange=str(raw.get("exchange") or raw["market"]),
+            security_id=str(raw.get("security_id") or ""),
             name=str(raw.get("name") or ""),
             security_type=str(raw.get("security_type") or "STOCK"),
             yfinance_symbol=str(raw.get("yfinance_symbol") or ""),
@@ -224,8 +226,12 @@ def resolve_universe(
     explicit_symbols = tuple(str(symbol) for symbol in config.symbols if str(symbol))
     universe_config = config.universe
     source = "symbols" if explicit_symbols else universe_config.source
-    profiles = tuple(universe_config.profiles.get(selected_market, ())) if source == "profiles" else ()
-    if source == "profiles" and not profiles:
+    profiles = (
+        tuple(universe_config.profiles.get(selected_market, ()))
+        if source in {"profiles", "index_events"}
+        else ()
+    )
+    if source in {"profiles", "index_events"} and not profiles:
         raise ValueError(f"No universe profiles configured for market={selected_market}.")
     selection_hash = _selection_hash(config, selected_market, source, profiles, explicit_symbols)
     snapshot_path = _snapshot_path(universe_config.snapshot_dir, selected_market, selection_hash, resolved_date)
@@ -246,6 +252,26 @@ def resolve_universe(
             selected_market,
             source,
             _schedule_profiles(schedule),
+            selection_hash,
+            raw_members,
+            raw_members,
+            (),
+            universe_config.filters,
+        )
+        return _with_exit_only(snapshot, held, managed_map, True, None, schedule=schedule)
+
+    if source == "index_events":
+        schedule = _load_index_event_schedule(config, profiles, resolved_date)
+        effective = max(
+            (entry for entry in schedule if entry.effective_date <= resolved_date.isoformat()),
+            key=lambda entry: entry.effective_date,
+        )
+        raw_members = effective.members
+        snapshot = _build_snapshot(
+            resolved_date,
+            selected_market,
+            source,
+            profiles,
             selection_hash,
             raw_members,
             raw_members,
@@ -351,7 +377,11 @@ def universe_request_key(
     resolved_date = as_of or _market_date(selected_market)
     explicit_symbols = tuple(str(symbol) for symbol in config.symbols if str(symbol))
     source = "symbols" if explicit_symbols else config.universe.source
-    profiles = tuple(config.universe.profiles.get(selected_market, ())) if source == "profiles" else ()
+    profiles = (
+        tuple(config.universe.profiles.get(selected_market, ()))
+        if source in {"profiles", "index_events"}
+        else ()
+    )
     return (
         resolved_date.isoformat(),
         _selection_hash(config, selected_market, source, profiles, explicit_symbols),
@@ -417,6 +447,7 @@ def _load_profile_members(profiles: tuple[str, ...], as_of: date, market: str) -
                 symbol=symbol,
                 market=market,
                 exchange=raw_member.exchange,
+                security_id=raw_member.security_id,
                 name=raw_member.name,
                 security_type=raw_member.security_type,
                 yfinance_symbol=raw_member.yfinance_symbol or _default_yfinance_symbol(symbol, raw_member.exchange),
@@ -429,6 +460,294 @@ def _load_profile_members(profiles: tuple[str, ...], as_of: date, market: str) -
             )
             combined[symbol] = member
     return tuple(combined[symbol] for symbol in sorted(combined))
+
+
+def _load_index_event_schedule(
+    config: AppConfig,
+    profiles: tuple[str, ...],
+    as_of: date,
+) -> tuple[UniverseScheduleEntry, ...]:
+    if config.market not in {"US", "AUTO"}:
+        raise ValueError("index_events universe currently supports market=US only.")
+    from .market_store.index_membership import IndexEventReplayer
+    from .market_store.repository import LocalDatasetRepository
+
+    repository = LocalDatasetRepository(config.data_store.local_cache_dir)
+    release, _ = repository.current_release()
+
+    class _ReleaseRepositoryView:
+        """Expose only the versions pinned by the selected immutable release."""
+
+        def current_manifest(self, dataset: str):
+            version = release.dataset_versions.get(dataset) if release is not None else None
+            return (
+                repository.manifest_for_version(dataset, version)
+                if version is not None
+                else None
+            )
+
+        def read_frame(
+            self,
+            dataset: str,
+            _version: str | None = None,
+        ) -> pd.DataFrame:
+            version = release.dataset_versions.get(dataset) if release is not None else None
+            if version is None:
+                return pd.DataFrame()
+            return repository.read_frame(dataset, version)
+
+    def release_frame(dataset: str) -> pd.DataFrame:
+        version = release.dataset_versions.get(dataset) if release is not None else None
+        if release is not None and version is None:
+            raise FileNotFoundError(f"Dataset is not part of release {release.version}: {dataset}")
+        return repository.read_frame(dataset, version)
+
+    anchors = release_frame("index_constituent_anchors")
+    events = release_frame("index_membership_events")
+    try:
+        overlays = release_frame("custom_universe_overlays")
+    except FileNotFoundError:
+        overlays = pd.DataFrame()
+    symbol_history = release_frame("symbol_history")
+    try:
+        security_master = release_frame("security_master")
+    except FileNotFoundError:
+        security_master = pd.DataFrame()
+    from .market_store.operational_validation import (
+        reviewed_operational_index_identity_gap_fingerprints,
+    )
+
+    reviewed_identity_gaps = frozenset(
+        reviewed_operational_index_identity_gap_fingerprints(
+            _ReleaseRepositoryView()
+        )
+    )
+    replayer = IndexEventReplayer(anchors, events, overlays)
+    anchor_dates = pd.to_datetime(
+        anchors.loc[anchors["index_id"].astype(str).isin(profiles), "anchor_date"],
+        errors="coerce",
+    ).dropna()
+    if anchor_dates.empty:
+        raise ValueError(f"No index anchors found for profiles: {', '.join(profiles)}")
+    # All selected indices must have an available anchor at the schedule start.
+    first_by_profile = [
+        pd.to_datetime(
+            anchors.loc[anchors["index_id"].astype(str) == profile, "anchor_date"],
+            errors="coerce",
+        ).min()
+        for profile in profiles
+    ]
+    if any(pd.isna(value) for value in first_by_profile):
+        raise ValueError(f"No index anchor found for one of: {', '.join(profiles)}")
+    start = max(first_by_profile).normalize()
+    end = pd.Timestamp(as_of).normalize()
+    change_dates = {start, end}
+    relevant_anchors = anchors.loc[
+        anchors["index_id"].astype(str).isin(profiles)
+    ]
+    relevant_events = events.loc[
+        events["index_id"].astype(str).isin(profiles)
+    ]
+    relevant_security_ids = set(relevant_anchors["security_id"].astype(str)) | set(
+        relevant_events["security_id"].astype(str)
+    )
+    for value in pd.to_datetime(
+        relevant_events["effective_date"],
+        errors="coerce",
+    ).dropna():
+        normalized = value.normalize()
+        if start <= normalized <= end:
+            change_dates.add(normalized)
+    if not overlays.empty:
+        relevant = overlays.loc[overlays["index_id"].astype(str).isin(profiles)]
+        if "security_id" in relevant:
+            relevant_security_ids.update(relevant["security_id"].astype(str))
+        for column in ("effective_from", "effective_to"):
+            for value in pd.to_datetime(relevant[column], errors="coerce").dropna():
+                normalized = value.normalize()
+                if start <= normalized <= end:
+                    change_dates.add(normalized)
+
+    # Membership is keyed by stable security ID, but the strategy schedule is
+    # keyed by ticker.  A constituent can change ticker without an index event;
+    # include those symbol-history boundaries so an existing position and its
+    # corporate actions move to the new symbol on the correct session.
+    relevant_history = symbol_history.loc[
+        symbol_history["security_id"].astype(str).isin(relevant_security_ids)
+    ]
+    for value in pd.to_datetime(
+        relevant_history["effective_from"], errors="coerce"
+    ).dropna():
+        normalized = value.normalize()
+        if start <= normalized <= end:
+            change_dates.add(normalized)
+
+    entries: list[UniverseScheduleEntry] = []
+    prior_identity_membership: tuple[tuple[str, str], ...] | None = None
+    for effective_date in sorted(change_dates):
+        memberships = [
+            replayer.members_on(
+                profile,
+                effective_date,
+                source_mode=config.data_store.index_source_mode,
+            )
+            for profile in profiles
+        ]
+        profile_by_security: dict[str, set[str]] = {}
+        for profile, membership in zip(profiles, memberships):
+            for security_id in membership.security_ids:
+                profile_by_security.setdefault(security_id, set()).add(profile)
+        members = _unique_members(
+            _index_security_member(
+                security_id,
+                effective_date,
+                tuple(sorted(member_profiles)),
+                symbol_history,
+                security_master,
+                events,
+                reviewed_identity_gaps,
+            )
+            for security_id, member_profiles in profile_by_security.items()
+        )
+        identity_membership = tuple(
+            (member.symbol, member.security_id)
+            for member in members
+        )
+        if identity_membership != prior_identity_membership:
+            entries.append(UniverseScheduleEntry(effective_date.date().isoformat(), members))
+            prior_identity_membership = identity_membership
+    if not entries:
+        raise ValueError("Index event replay produced no universe schedule.")
+    return tuple(entries)
+
+
+def _index_security_member(
+    security_id: str,
+    effective_date: pd.Timestamp,
+    profiles: tuple[str, ...],
+    symbol_history: pd.DataFrame,
+    security_master: pd.DataFrame,
+    index_events: pd.DataFrame | None = None,
+    reviewed_identity_gap_fingerprints: Iterable[str] = (),
+) -> UniverseMember:
+    history = symbol_history.loc[symbol_history["security_id"].astype(str) == security_id].copy()
+    starts = pd.to_datetime(history["effective_from"], errors="coerce")
+    ends = pd.to_datetime(history["effective_to"], errors="coerce")
+    active = history.loc[(starts <= effective_date) & (ends.isna() | (ends >= effective_date))]
+    if active.empty:
+        if not _reviewed_inactive_index_member_allowed(
+            security_id=security_id,
+            effective_date=effective_date,
+            profiles=profiles,
+            index_events=index_events,
+            reviewed_identity_gap_fingerprints=reviewed_identity_gap_fingerprints,
+        ):
+            raise ValueError(
+                f"No active symbol for security_id={security_id} on {effective_date.date()}"
+            )
+        # The exact reviewed operational exception represents an index source
+        # whose REMOVE date lags a legal terminal transition.  Keep the final
+        # historical alias only as the schedule's display identity; the
+        # corporate-action ledger retires it and the runner's stale-schedule
+        # guard prevents any post-transition re-entry.
+        historical = history.loc[starts <= effective_date]
+        if historical.empty:
+            raise ValueError(
+                f"No historical symbol for reviewed security_id={security_id} "
+                f"on {effective_date.date()}"
+            )
+        symbol_row = historical.sort_values("effective_from").iloc[-1]
+    else:
+        symbol_row = active.sort_values("effective_from").iloc[-1]
+    master = security_master.loc[
+        security_master["security_id"].astype(str) == security_id
+    ] if not security_master.empty else pd.DataFrame()
+    master_row = master.iloc[-1] if not master.empty else {}
+    symbol = str(symbol_row["symbol"])
+    exchange = str(symbol_row.get("exchange") or master_row.get("exchange") or "US")
+    return UniverseMember(
+        symbol=symbol,
+        market="US",
+        exchange=exchange,
+        security_id=security_id,
+        name=str(master_row.get("name") or ""),
+        security_type=str(master_row.get("asset_type") or "STOCK"),
+        yfinance_symbol=_default_yfinance_symbol(symbol, exchange),
+        benchmark=_profile_benchmark(profiles, "US"),
+        profiles=profiles,
+    )
+
+
+def _reviewed_inactive_index_member_allowed(
+    *,
+    security_id: str,
+    effective_date: pd.Timestamp,
+    profiles: tuple[str, ...],
+    index_events: pd.DataFrame | None,
+    reviewed_identity_gap_fingerprints: Iterable[str],
+) -> bool:
+    """Allow only an exact, release-bound reviewed index identity gap."""
+
+    allowed = {
+        str(value).strip().lower()
+        for value in reviewed_identity_gap_fingerprints
+        if str(value).strip()
+    }
+    required_columns = {
+        "event_id",
+        "index_id",
+        "effective_date",
+        "operation",
+        "security_id",
+        "source",
+        "source_hash",
+    }
+    if (
+        not allowed
+        or not profiles
+        or index_events is None
+        or index_events.empty
+        or not required_columns.issubset(index_events.columns)
+    ):
+        return False
+
+    from .market_store.validation import index_member_identity_gap_fingerprint
+
+    replay_date = effective_date.date().isoformat()
+    prepared = index_events.copy()
+    prepared["_effective_date"] = pd.to_datetime(
+        prepared["effective_date"], errors="coerce"
+    ).dt.normalize()
+    prepared = prepared.loc[
+        prepared["security_id"].astype(str).eq(security_id)
+        & prepared["operation"].astype(str).str.upper().eq("REMOVE")
+        & prepared["_effective_date"].notna()
+        & (prepared["_effective_date"] > effective_date.normalize())
+    ]
+
+    for index_id in profiles:
+        removals = prepared.loc[
+            prepared["index_id"].astype(str).eq(index_id)
+        ].sort_values(["_effective_date", "event_id"], kind="stable")
+        if removals.empty:
+            return False
+        next_remove = removals.iloc[0]
+        fingerprint = index_member_identity_gap_fingerprint(
+            index_id=index_id,
+            replay_date=replay_date,
+            security_id=security_id,
+            next_remove_event_id=str(next_remove.get("event_id", "") or ""),
+            next_remove_effective_date=pd.Timestamp(
+                next_remove["_effective_date"]
+            ).date().isoformat(),
+            next_remove_source=str(next_remove.get("source", "") or ""),
+            next_remove_source_hash=str(
+                next_remove.get("source_hash", "") or ""
+            ),
+        )
+        if fingerprint not in allowed:
+            return False
+    return True
 
 
 def _load_file_members(path: str, market: str) -> tuple[UniverseMember, ...]:
@@ -558,6 +877,18 @@ def _unique_members(members: Iterable[UniverseMember]) -> tuple[UniverseMember, 
     by_symbol: dict[str, UniverseMember] = {}
     for member in members:
         if member.symbol:
+            existing = by_symbol.get(member.symbol)
+            if (
+                existing is not None
+                and existing.security_id
+                and member.security_id
+                and existing.security_id != member.security_id
+            ):
+                raise ValueError(
+                    "One ticker maps to multiple security identities in the same "
+                    f"universe snapshot: {member.symbol} -> "
+                    f"{existing.security_id}, {member.security_id}"
+                )
             by_symbol[member.symbol] = member
     return tuple(by_symbol[symbol] for symbol in sorted(by_symbol))
 
@@ -824,7 +1155,12 @@ def _profile_benchmark(profiles: tuple[str, ...], market: str) -> str:
         return "^KS11"
     if len(profiles) != 1:
         return "SPY" if profiles else "QQQ"
-    return {"nasdaq100": "QQQ", "sp500": "SPY", "dow30": "DIA"}.get(profiles[0], "QQQ")
+    return {
+        "nasdaq100": "QQQ",
+        "sp500": "SPY",
+        "russell3000": "IWV",
+        "dow30": "DIA",
+    }.get(profiles[0], "QQQ")
 
 
 def _benchmark_for_exchange(exchange: str) -> str:
@@ -1021,6 +1357,13 @@ def _dow30_provider(as_of: date) -> Iterable[UniverseMember]:
         profile="dow30",
         minimum_count=30,
         maximum_count=30,
+    )
+
+
+@register_universe_provider("russell3000")
+def _russell3000_provider(as_of: date) -> Iterable[UniverseMember]:
+    raise RuntimeError(
+        "Russell 3000 requires universe.source=index_events with stored point-in-time data."
     )
 
 

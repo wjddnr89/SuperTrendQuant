@@ -1,19 +1,20 @@
-# Nasdaq-100 rolling-universe research runtime.
-# Use this for survivorship-aware daily or intraday research when you have a
-# historical quarterly constituent file.  The history file must list the
-# Nasdaq-100 members that were tradable from each effective_date onward.
+# Nasdaq-100 point-in-time daily research runtime.
+# Membership comes from stored anchors and actual effective-date events.
 
 name: research_us_nasdaq100_rolling
 market: US
 universe:
-  source: history_file
-  history_file: unified_quant/data/universes/nasdaq100_quarterly_history.json
+  source: index_events
+  profiles:
+    US: [nasdaq100]
   refresh: daily
   snapshot_dir: state/universes
+  filters:
+    enabled: false
 
 data:
   timeframe: 1d
-  period: 3y
+  period: max
 
 capital:
   initial_cash: 10000

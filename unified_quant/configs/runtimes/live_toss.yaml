@@ -10,8 +10,8 @@ universe:
     enabled: false
 
 data:
-  timeframe: 30m
-  period: 30d
+  timeframe: 1d
+  period: max
 
 capital:
   initial_cash: 10000

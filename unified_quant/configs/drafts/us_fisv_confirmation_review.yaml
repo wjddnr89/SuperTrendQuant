@@ -1,0 +1,44 @@
+schema: us_fisv_confirmation_review/v1
+status: fetched_hash_verified_pending_archive_apply
+active_policy_file: unified_quant/configs/us_cross_validation.yaml
+
+# This draft is intentionally not imported by the active validator.  Activation
+# is blocked until the exact 2026 Form 10-Q bytes have been collected, reviewed,
+# archived and their SHA-256 has been pinned below and in the repair output.
+evidence_roles:
+  transition_schedule:
+    form: 8-K
+    role: exact_transition_date_and_market_open_schedule
+    effective_date: "2025-11-11"
+    source_url: "https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/0001193125-25-254670.txt"
+    source_hash: d4cd0c2f981bfd0be14d2ebccfc8e852a94177e5fba86abe2c027c5510fc07d3
+  post_transition_confirmation:
+    form: 10-Q
+    role: completed_state_exchange_and_ticker_confirmation_only
+    period_end: "2026-03-31"
+    source_url: "https://www.sec.gov/Archives/edgar/data/798354/000079835426000018/fisv-20260331.htm"
+    source_hash: 4cdea27808fb879dcf34eae9098211adc3f8a632466d5c22e576704e6cbbf5d9
+    exact_bytes: 1409190
+
+reviewed_nonterminal_extraction:
+  event_id: 2df5c4c0298e5ff531aaa785146a20cba98d22080c970eabbd841b802ec60e7e
+  security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+  action_type: ticker_change
+  effective_date: "2025-11-11"
+  new_security_id: US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0
+  new_symbol: FISV
+  ratio: null
+  cash_amount: null
+  currency: USD
+  source_kind: official_crosscheck
+  source_url: "https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/0001193125-25-254670.txt"
+  source_hash: d4cd0c2f981bfd0be14d2ebccfc8e852a94177e5fba86abe2c027c5510fc07d3
+
+activation_requirements:
+  - The exact Form 10-Q URL was fetched once and no retry was made.
+  - Exact bytes, required FISV and Nasdaq cover-page terms, SHA-256 and size were verified offline.
+  - Apply only the source_archive repair; do not replace the corporate action's 8-K URL or hash.
+  - Pin the confirmed Form 10-Q SHA-256 in this reviewed draft.
+  - Append reviewed_nonterminal_extraction to the active policy inventory.
+  - Update the code-pinned reviewed inventory SHA-256.
+  - Rerun offline cross-validation and the publication gate.

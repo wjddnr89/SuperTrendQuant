@@ -14,13 +14,15 @@ from pathlib import Path
 from typing import Mapping
 
 
-UNIFIED_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(UNIFIED_ROOT / "src"))
+SCRIPT_DIR = Path(__file__).resolve().parent
+PLAYGROUND_ROOT = SCRIPT_DIR.parent
+sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(PLAYGROUND_ROOT / "src"))
 
+from market_data_source import load_experiment_market_data
 from supertrend_quant.config import AppConfig, load_split_config
 from supertrend_quant.metrics import format_float, format_pct
 from supertrend_quant.research import apply_config_overlay, evaluate_config
-from supertrend_quant.research.data_resolver import download_for_config
 
 
 BEST_RETURN_OVERLAY = {
@@ -39,13 +41,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--strategy",
-        default=str(UNIFIED_ROOT / "configs" / "strategies" / "leader_rotation.yaml"),
+        default=str(PLAYGROUND_ROOT / "configs" / "strategies" / "leader_rotation.yaml"),
     )
     parser.add_argument(
         "--runtime",
-        default=str(UNIFIED_ROOT / "configs" / "runtimes" / "research_us_nasdaq100_rolling.yaml"),
+        default=str(PLAYGROUND_ROOT / "configs" / "runtimes" / "research_us_nasdaq100_rolling.yaml"),
     )
     parser.add_argument("--period", default="3y")
+    parser.add_argument("--data-source", choices=("local", "yahoo"), default="local")
     parser.add_argument("--train-ratio", type=float, default=0.6)
     parser.add_argument("--validation-ratio", type=float, default=0.2)
     return parser
@@ -98,8 +101,14 @@ def main() -> None:
     args = build_parser().parse_args()
     config = best_config(args)
     print_strategy_summary(config)
-    print("Downloading shared market data...", flush=True)
-    market_data = download_for_config(config)
+    print(f"Data Source   : {args.data_source}")
+    print("Loading shared market data...", flush=True)
+    market_data = load_experiment_market_data(
+        config,
+        data_source=args.data_source,
+        strategy_path=args.strategy,
+        runtime_path=args.runtime,
+    )
     result = evaluate_config(
         config,
         market_data,

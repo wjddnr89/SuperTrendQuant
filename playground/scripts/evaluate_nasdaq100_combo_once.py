@@ -24,11 +24,11 @@ from search_nasdaq100_daily_3y_grid import (  # noqa: E402
     run_index_from_start,
     run_prepared_backtest,
 )
+from market_data_source import load_experiment_market_data  # noqa: E402
 from supertrend_quant.config import load_split_config  # noqa: E402
 from supertrend_quant.data import market_index  # noqa: E402
 from supertrend_quant.metrics import format_float, format_pct  # noqa: E402
 from supertrend_quant.research import apply_config_overlay  # noqa: E402
-from supertrend_quant.research.data_resolver import download_for_config  # noqa: E402
 from supertrend_quant.strategies import create_strategy  # noqa: E402
 
 
@@ -41,6 +41,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--period", default="max")
     parser.add_argument("--start", default="2010-01-01")
+    parser.add_argument("--data-source", choices=("local", "yahoo"), default="local")
     parser.add_argument("--entry", default="single")
     parser.add_argument("--market-filter", default="1d")
     parser.add_argument("--asset-filter", default="ichimoku_cloud")
@@ -87,8 +88,13 @@ def main() -> None:
         "st_multiplier": args.st_multiplier,
     }
 
-    print("[single-eval] downloading data...", flush=True)
-    market_data = download_for_config(base)
+    print(f"[single-eval] loading {args.data_source} data...", flush=True)
+    market_data = load_experiment_market_data(
+        base,
+        data_source=args.data_source,
+        strategy_path=args.strategy,
+        runtime_path=args.runtime,
+    )
     full_idx = market_index(market_data)
     requested_idx = run_index_from_start(full_idx, args.start)
     active_by_position = prepare_active_universe(market_data, full_idx)
@@ -173,6 +179,7 @@ def main() -> None:
         result.equity.rename("equity").to_frame().to_csv(run_dir / "equity.csv")
         summary = {
             "params": params,
+            "data_source": args.data_source,
             "fee_rate": config.costs.fee_rate,
             "slippage_rate": config.costs.slippage_rate,
             "start": str(result.equity.index[0]),

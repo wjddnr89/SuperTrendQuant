@@ -23,7 +23,7 @@ from .manifest import sha256_bytes, utc_now_iso, write_atomic
 from .models import DataQuality
 from .operational_validation import validate_operational_repository_snapshot
 from .repository import DatasetWriteResult, LocalDatasetRepository
-from .schemas import DATASET_SPECS
+from .schemas import DATASET_SPECS, dataset_spec
 
 
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers_exchange.json"
@@ -32,6 +32,12 @@ OTHER_LISTED_URL = "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
 
 
 _EODHD_BUDGET_LOCK = Lock()
+
+_DAILY_RELEASE_POLICY_METADATA_KEYS = (
+    "terminal_tail_registry_draft",
+    "terminal_tail_registry_inventory_sha256",
+    "terminal_tail_snapshot_metadata_repair",
+)
 
 
 @dataclass(frozen=True)
@@ -608,8 +614,9 @@ class DailyDataSynchronizer:
         backfill_start: str = "2000-01-01",
         refresh_security_master: bool = False,
         overlap_days: int = 7,
+        preserve_existing_price_revisions: bool = False,
     ) -> DailySyncResult:
-        _, release_etag = self.repository.current_release()
+        parent_release, release_etag = self.repository.current_release()
         warnings: list[str] = []
         conflicts: list[str] = []
         versions: dict[str, str] = {}
@@ -680,26 +687,73 @@ class DailyDataSynchronizer:
         ] if not fetched.prices.empty else fetched.prices
         if prices.empty:
             raise RuntimeError(f"Market-data provider returned no daily prices for {start} through {end}.")
+        accepted_prices = prices
         if current_prices is None:
             price_result = self.repository.write_frame(
                 "daily_price_raw",
                 prices,
                 completed_session=expected_session,
-                metadata={"operation": "initial_backfill", "start": start.isoformat()},
+                metadata={
+                    **self._inherited_policy_metadata("daily_price_raw"),
+                    "operation": "initial_backfill",
+                    "start": start.isoformat(),
+                },
             )
         else:
             price_result = self.repository.append_frame(
                 "daily_price_raw",
                 prices,
                 completed_session=expected_session,
-                metadata={"overlap_days": overlap_days},
+                metadata={
+                    **self._inherited_policy_metadata("daily_price_raw"),
+                    "overlap_days": overlap_days,
+                },
+            )
+        if price_result.conflict:
+            if not preserve_existing_price_revisions:
+                self._record_result(
+                    "daily_price_raw", price_result, versions, conflicts
+                )
+                raise RuntimeError(
+                    "Daily-price revision conflicted with a stored value; candidate was quarantined."
+                )
+            current_frame = self.repository.read_frame(
+                "daily_price_raw", current_prices.version
+            )
+            primary_key = list(dataset_spec("daily_price_raw").primary_key)
+            existing_keys = current_frame.loc[:, primary_key].drop_duplicates()
+            accepted_prices = (
+                prices.merge(
+                    existing_keys.assign(_already_stored=True),
+                    on=primary_key,
+                    how="left",
+                )
+                .loc[lambda frame: frame["_already_stored"].isna()]
+                .drop(columns="_already_stored")
+            )
+            if accepted_prices.empty:
+                raise RuntimeError(
+                    "Daily-price revisions were quarantined, but the provider returned no new sessions."
+                )
+            quarantined_path = price_result.conflict_path
+            price_result = self.repository.append_frame(
+                "daily_price_raw",
+                accepted_prices,
+                completed_session=expected_session,
+                metadata={
+                    **self._inherited_policy_metadata("daily_price_raw"),
+                    "operation": "append_new_sessions_preserving_existing_revisions",
+                    "overlap_days": overlap_days,
+                    "quarantined_revision_path": quarantined_path,
+                },
+            )
+            warnings.append(
+                "Provider revisions to existing daily prices were quarantined; "
+                f"preserved stored values and appended {len(accepted_prices)} new rows "
+                f"({quarantined_path})."
             )
         self._record_result("daily_price_raw", price_result, versions, conflicts)
-        if price_result.conflict:
-            raise RuntimeError(
-                "Daily-price revision conflicted with a stored value; candidate was quarantined."
-            )
-        row_counts["daily_price_raw"] = len(prices)
+        row_counts["daily_price_raw"] = len(accepted_prices)
 
         if not fetched.corporate_actions.empty:
             if self.repository.current_manifest("corporate_actions") is None:
@@ -708,7 +762,10 @@ class DailyDataSynchronizer:
                     fetched.corporate_actions,
                     completed_session=expected_session,
                     incomplete_action_policy="warn",
-                    metadata={"operation": "initial_actions"},
+                    metadata={
+                        **self._inherited_policy_metadata("corporate_actions"),
+                        "operation": "initial_actions",
+                    },
                 )
             else:
                 action_result = self.repository.append_frame(
@@ -716,6 +773,7 @@ class DailyDataSynchronizer:
                     fetched.corporate_actions,
                     completed_session=expected_session,
                     incomplete_action_policy="warn",
+                    metadata=self._inherited_policy_metadata("corporate_actions"),
                 )
             self._record_result("corporate_actions", action_result, versions, conflicts)
             warnings.extend(
@@ -730,7 +788,11 @@ class DailyDataSynchronizer:
                 pd.DataFrame(columns=_ACTION_COLUMNS),
                 completed_session=expected_session,
                 incomplete_action_policy="warn",
-                metadata={"operation": "initial_actions", "empty": True},
+                metadata={
+                    **self._inherited_policy_metadata("corporate_actions"),
+                    "operation": "initial_actions",
+                    "empty": True,
+                },
             )
             self._record_result("corporate_actions", action_result, versions, conflicts)
             row_counts["corporate_actions"] = 0
@@ -738,25 +800,33 @@ class DailyDataSynchronizer:
 
         all_prices = self.repository.read_frame("daily_price_raw")
         all_actions = self._read_optional("corporate_actions")
+        factor_source_daily_version = self.repository.current_manifest(
+            "daily_price_raw"
+        ).version
+        factor_source_actions_version = (
+            self.repository.current_manifest("corporate_actions").version
+            if self.repository.current_manifest("corporate_actions")
+            else "no-actions"
+        )
+        factor_source_version = (
+            factor_source_daily_version + "+" + factor_source_actions_version
+        )
         factors = build_adjustment_factors(
             all_prices,
             all_actions if not all_actions.empty else pd.DataFrame(columns=["security_id", "event_id", "action_type", "effective_date", "ex_date", "cash_amount", "ratio"]),
-            source_version="+".join(
-                filter(
-                    None,
-                    (
-                        self.repository.current_manifest("daily_price_raw").version,
-                        self.repository.current_manifest("corporate_actions").version
-                        if self.repository.current_manifest("corporate_actions") else "no-actions",
-                    ),
-                )
-            ),
+            source_version=factor_source_version,
         )
         factor_result = self.repository.write_frame(
             "adjustment_factors",
             factors,
             completed_session=expected_session,
-            metadata={"operation": "rebuild_after_sync"},
+            metadata={
+                **self._inherited_policy_metadata("adjustment_factors"),
+                "operation": "rebuild_after_sync",
+                "source_version": factor_source_version,
+                "source_daily_price_version": factor_source_daily_version,
+                "source_corporate_actions_version": factor_source_actions_version,
+            },
         )
         self._record_result("adjustment_factors", factor_result, versions, conflicts)
         row_counts["adjustment_factors"] = len(factors)
@@ -777,11 +847,19 @@ class DailyDataSynchronizer:
             for dataset in DATASET_SPECS
             if (manifest := self.repository.current_manifest(dataset)) is not None
         }
+        release_warnings = tuple(
+            dict.fromkeys(
+                (
+                    *(parent_release.warnings if parent_release is not None else ()),
+                    *warnings,
+                )
+            )
+        )
         release = self.repository.commit_release(
             expected_session,
             release_versions,
-            quality=DataQuality.DEGRADED if warnings else DataQuality.VALID,
-            warnings=tuple(dict.fromkeys(warnings)),
+            quality=DataQuality.DEGRADED if release_warnings else DataQuality.VALID,
+            warnings=release_warnings,
             expected_etag=release_etag,
         )
         return DailySyncResult(
@@ -793,6 +871,27 @@ class DailyDataSynchronizer:
             warnings=tuple(warnings),
             conflicts=tuple(conflicts),
         )
+
+    def _inherited_policy_metadata(self, dataset: str) -> dict[str, object]:
+        """Carry code-pinned release policy through ordinary daily children."""
+
+        manifest = self.repository.current_manifest(dataset)
+        visited: set[str] = set()
+        while manifest is not None and manifest.version not in visited:
+            visited.add(manifest.version)
+            inherited = {
+                key: manifest.metadata[key]
+                for key in _DAILY_RELEASE_POLICY_METADATA_KEYS
+                if key in manifest.metadata
+            }
+            if inherited:
+                return inherited
+            if not manifest.parent_version:
+                break
+            manifest = self.repository.manifest_for_version(
+                dataset, manifest.parent_version
+            )
+        return {}
 
     def _archive(
         self,

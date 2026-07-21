@@ -170,6 +170,61 @@ class _PriceSource:
         return YahooFetchResult(prices, actions, (artifact,), (),)
 
 
+class _RevisingPriceSource:
+    def __init__(self):
+        self.calls = 0
+
+    def fetch(self, securities, *, start, end, batch_size=100):
+        self.calls += 1
+        artifact = SourceArtifact(
+            "fixture_prices",
+            "fixture://prices",
+            f"2026-07-{14 + self.calls}T00:00:00Z",
+            f"revising-prices-{self.calls}".encode(),
+            "text/csv",
+        )
+        sessions = [(end, 100.0)]
+        if self.calls == 2:
+            sessions = [("2026-07-14", 101.0), (end, 102.0)]
+        prices = pd.DataFrame(
+            [
+                {
+                    "security_id": "SEC-A",
+                    "session": session,
+                    "open": close,
+                    "high": close + 1,
+                    "low": close - 1,
+                    "close": close,
+                    "volume": 100.0,
+                    "currency": "USD",
+                    "source": artifact.source,
+                    "retrieved_at": artifact.retrieved_at,
+                    "source_hash": artifact.source_hash,
+                }
+                for session, close in sessions
+            ]
+        )
+        actions = pd.DataFrame(
+            columns=[
+                "event_id",
+                "security_id",
+                "action_type",
+                "effective_date",
+                "ex_date",
+                "cash_amount",
+                "ratio",
+                "currency",
+                "new_security_id",
+                "new_symbol",
+                "official",
+                "source",
+                "retrieved_at",
+                "source_hash",
+            ]
+        )
+        return YahooFetchResult(prices, actions, (artifact,), ())
+
+
 class DailySynchronizerTest(unittest.TestCase):
     def test_initial_backfill_then_daily_delta_and_factor_rebuild(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -190,10 +245,48 @@ class DailySynchronizerTest(unittest.TestCase):
             self.assertEqual(len(repository.manifest_chain("daily_price_raw")), 2)
             self.assertEqual(len(repository.read_frame("daily_price_raw")), 2)
             factors = repository.read_frame("adjustment_factors")
+            factor_manifest = repository.current_manifest("adjustment_factors")
+            price_version = repository.current_manifest("daily_price_raw").version
+            action_version = repository.current_manifest("corporate_actions").version
+            lineage = price_version + "+" + action_version
+            self.assertEqual(factor_manifest.metadata["source_version"], lineage)
+            self.assertEqual(
+                factor_manifest.metadata["source_daily_price_version"],
+                price_version,
+            )
+            self.assertEqual(
+                factor_manifest.metadata["source_corporate_actions_version"],
+                action_version,
+            )
             prior = factors.loc[pd.to_datetime(factors["session"]).dt.date == pd.Timestamp("2026-07-14").date()]
             self.assertEqual(prior.iloc[0]["split_factor"], 0.5)
             self.assertTrue((Path(directory) / "archives").exists())
             self.assertIsNotNone(repository.current_manifest("source_archive"))
+
+    def test_explicit_preserve_mode_quarantines_revisions_and_appends_only_new_sessions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repository = LocalDatasetRepository(directory)
+            synchronizer = DailyDataSynchronizer(
+                repository,
+                security_source=_SecuritySource(),
+                price_source=_RevisingPriceSource(),
+            )
+            synchronizer.sync("2026-07-14", backfill_start="2026-07-14")
+
+            result = synchronizer.sync(
+                "2026-07-15",
+                preserve_existing_price_revisions=True,
+            )
+
+            prices = repository.read_frame("daily_price_raw")
+            by_session = prices.set_index("session")
+            self.assertEqual(by_session.loc["2026-07-14", "close"], 100.0)
+            self.assertEqual(by_session.loc["2026-07-15", "close"], 102.0)
+            self.assertEqual(result.row_counts["daily_price_raw"], 1)
+            self.assertTrue(
+                any("revisions" in warning for warning in result.warnings)
+            )
+            self.assertTrue(repository.conflicts())
 
 
 class _EodhdClient:

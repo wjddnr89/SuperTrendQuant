@@ -341,6 +341,14 @@ def data_main() -> None:
         action="store_true",
         help="Reuse the current security master instead of refreshing official listings.",
     )
+    parser.add_argument(
+        "--preserve-existing-price-revisions",
+        action="store_true",
+        help=(
+            "Quarantine provider changes to already stored daily prices, preserve the "
+            "validated winners, and append only previously unseen sessions."
+        ),
+    )
     parser.add_argument("--kind", choices=["anchor", "events", "overlay"], help="Index import kind.")
     parser.add_argument("--index-id", help="Index id such as sp500, nasdaq100, or russell3000.")
     parser.add_argument("--input", help="CSV/TXT/Parquet index source file.")
@@ -510,6 +518,9 @@ def data_main() -> None:
                     expected,
                     backfill_start=args.backfill_start,
                     refresh_security_master=not args.skip_security_refresh,
+                    preserve_existing_price_revisions=(
+                        args.preserve_existing_price_revisions
+                    ),
                 )
                 outcomes["source_sync"] = {
                     "completed_session": synced.completed_session,

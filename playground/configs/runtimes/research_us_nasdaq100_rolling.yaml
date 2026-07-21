@@ -13,13 +13,13 @@ universe:
 
 data:
   timeframe: 1d
-  period: 3y
+  period: max
 
 capital:
   initial_cash: 10000
 
 costs:
-  fee_rate: 0.001
+  fee_rate: 0.00225
   slippage_rate: 0.0005
 
 execution:

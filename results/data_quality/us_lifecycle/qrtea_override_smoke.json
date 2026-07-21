@@ -1,0 +1,84 @@
+{
+  "records": {
+    "US:EODHD:5b0fba54-201e-58fc-9a0c-6985ef098924": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:21:19.842735Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "ac0f638b80142d27d6a2d7661d1124998ab4c53a0aef5eb557332e73954c4013",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1355096/000110465925016368/tm257272d1_8k.htm"
+        },
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:21:19.993519Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "880b356166e626695376bc0adcfd4c6c059183f771abb1f25d3a21d9677ab511",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1355096/000110465925016368/tm257272d1_ex99-1.htm"
+        }
+      ],
+      "candidate": {
+        "active_to": "2025-02-21",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2018-12-24"
+        ],
+        "last_price_date": "2025-02-21",
+        "name": "Qurate Retail Inc Series A",
+        "security_id": "US:EODHD:5b0fba54-201e-58fc-9a0c-6985ef098924",
+        "symbol": "QRTEA"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 2254,
+        "old_close": 0.3588,
+        "old_price_session": "2025-02-21",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 3
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001104659-25-016368",
+        "cik": "1355096",
+        "display_name": "Qurate Retail Inc Series A",
+        "filing_date": "2025-02-21",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2025-02-24",
+        "new_symbol": "QVCGA",
+        "ratio": null,
+        "reason": "QVC Group's SEC filing states that QRTEA would begin trading as QVCGA at the open on February 24, 2025."
+      },
+      "source_hash": "ac0f638b80142d27d6a2d7661d1124998ab4c53a0aef5eb557332e73954c4013",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1355096/000110465925016368/tm257272d1_8k.htm",
+      "successor_security_id": ""
+    }
+  },
+  "release_version": "20260715-20260717T155657288079Z",
+  "summary": {
+    "action_type_counts": {
+      "ticker_change": 1
+    },
+    "candidate_count": 1,
+    "collected_count": 1,
+    "eligible_count": 0,
+    "unresolved_count": 1
+  }
+}

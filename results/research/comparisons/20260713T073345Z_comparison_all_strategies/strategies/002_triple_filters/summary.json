@@ -1,0 +1,200 @@
+{
+  "run_id": "002_triple_filters",
+  "mode": "backtest",
+  "created_at": "2026-07-13T07:33:45.887120+00:00",
+  "strategy": "triple_filters_research",
+  "market": "US",
+  "timeframe": "30m",
+  "period": "30d",
+  "metrics": {
+    "total_return": -0.07954587144811032,
+    "cagr": -0.9999491014508889,
+    "mdd": -0.0949270268425253,
+    "calmar": -10.533871487513322,
+    "sharpe": -15.193432216241385,
+    "sortino": -15.825035432398662,
+    "win_rate": 0.25,
+    "payoff_ratio": 0.5382953248344418,
+    "trade_count": 4
+  },
+  "trade_returns": [
+    -0.06654243394048076,
+    -0.00034014199213583396,
+    -0.032703343701835474,
+    0.01786887831952133
+  ],
+  "trades": [
+    {
+      "symbol": "AXON",
+      "entry_time": "2026-07-07 14:30:00-04:00",
+      "exit_time": "2026-07-08 11:00:00-04:00",
+      "entry_price": 649.2444429016113,
+      "exit_price": 608.7754770812988,
+      "quantity": 15,
+      "pnl_pct": -0.06654243394048076,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2026-07-08 13:00:00-04:00",
+      "exit_time": "2026-07-09 10:00:00-04:00",
+      "entry_price": 201.14051328277586,
+      "exit_price": 201.97896183013918,
+      "quantity": 46,
+      "pnl_pct": -0.00034014199213583396,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "VRT",
+      "entry_time": "2026-07-09 10:00:00-04:00",
+      "exit_time": "2026-07-10 11:00:00-04:00",
+      "entry_price": 328.64425099182125,
+      "exit_price": 319.3302452392578,
+      "quantity": 28,
+      "pnl_pct": -0.032703343701835474,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2026-07-10 11:00:00-04:00",
+      "exit_time": "2026-07-10 15:30:00-04:00",
+      "entry_price": 206.21305561065674,
+      "exit_price": 210.84452194976808,
+      "quantity": 43,
+      "pnl_pct": 0.01786887831952133,
+      "exit_reason": "FinalClose"
+    }
+  ],
+  "skipped": [],
+  "config": {
+    "strategy": {
+      "name": "triple_filters_research",
+      "type": "leader_rotation",
+      "params": {}
+    },
+    "market": "US",
+    "universe_file": "universe.json",
+    "symbols": [],
+    "timeframe": "30m",
+    "period": "30d",
+    "capital": {
+      "initial_cash": 10000
+    },
+    "costs": {
+      "fee_rate": 0.00225,
+      "slippage_rate": 0.0005
+    },
+    "supertrend": {
+      "enabled": true,
+      "period": 10,
+      "multiplier": 3.0,
+      "atr_method": "wilder",
+      "symbol_multipliers": {}
+    },
+    "market_trend_filter": {
+      "enabled": true,
+      "timeframe": "1d"
+    },
+    "leader_rotation": {
+      "rs_period": 100,
+      "rs_period_by_market": {},
+      "max_slots": 1,
+      "hurdle_atr_mult": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.0
+    },
+    "exit": {
+      "sell_confirm_bars": 3
+    },
+    "execution": {
+      "order_type": "market",
+      "allocation_pct": 1.0,
+      "broker": "paper",
+      "live_confirm_required": true
+    },
+    "risk": {
+      "max_position_count": 1
+    },
+    "live": {
+      "holdings_file": "holding.json",
+      "loop_interval_seconds": 60
+    },
+    "paper": {
+      "state_file": "state/paper.json",
+      "results_dir": "results/paper",
+      "loop_interval_seconds": 60,
+      "run_once_per_candle": true
+    },
+    "backtest": {
+      "results_dir": "results/backtests"
+    },
+    "components": [
+      {
+        "type": "triple_supertrend",
+        "enabled": true,
+        "group": "entries",
+        "params": {
+          "atr_method": "wilder",
+          "settings": [
+            {
+              "period": 10,
+              "multiplier": 1.0
+            },
+            {
+              "period": 11,
+              "multiplier": 2.0
+            },
+            {
+              "period": 12,
+              "multiplier": 3.0
+            }
+          ]
+        }
+      },
+      {
+        "type": "benchmark_trend",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "timeframe": "1d"
+        }
+      },
+      {
+        "type": "relative_strength",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "lookback_bars": 100
+        }
+      },
+      {
+        "type": "ichimoku_cloud",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "tenkan": 9,
+          "kijun": 26,
+          "span_b": 52,
+          "shift": 26
+        }
+      },
+      {
+        "type": "ema_trend",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "period": 200
+        }
+      },
+      {
+        "type": "triple_supertrend_flip",
+        "enabled": true,
+        "group": "exits",
+        "params": {
+          "down_count": 2,
+          "confirm_bars": 3
+        }
+      }
+    ]
+  }
+}

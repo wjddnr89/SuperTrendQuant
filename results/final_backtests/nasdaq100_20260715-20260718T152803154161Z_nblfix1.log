@@ -1,0 +1,26 @@
+{"stage": "loading_local_parquet", "schedule_entries": 68, "requested_symbols": 214}
+{"stage": "running_backtest", "loaded_symbols": 232, "completed_session": "2026-07-15", "data_quality": "degraded"}
+{
+  "run_dir": "results/research/us_nasdaq100_rolling/backtests/nasdaq100_triple_supertrend_alone_max_20260715-20260718T152803154161Z_nblfix1",
+  "schedule_entries": 68,
+  "requested_symbols": 214,
+  "loaded_symbols": 232,
+  "completed_session": "2026-07-15",
+  "data_quality": "degraded",
+  "data_warnings": [
+    "ABMD 2022-12-22 merger models only the guaranteed $380/share cash leg; one non-tradeable CVR per share (up to $35 contingent cash) is marked at $0 under the as-of-2026-07-15 lower-bound policy, so returns may be understated; J&J still reported about $0.4bn of aggregate ABMD CVR liability at 2025 year-end, so $0 is not a fair-value estimate.",
+    "FRCB EODHD raw OHLCV required an exact-hash reviewed envelope correction (2024-12-30 low=0.0->0.003; raw_eod_sha256=3c96be232fb5f567e77a94fe315b67aa61e520d1611842620c04680fb5df6ab3); all other fields remain unchanged, so release quality remains degraded.",
+    "CELG/BMYRT official_exit_mark uses only the hash-pinned BMY 2020 10-K first-trade close of USD 2.30 as a retrospective first-session close exit mark for a non-index child, with cash available next session; the 2019-11-21..2020-12-31 280-session trading path is unsupported."
+  ],
+  "metrics": {
+    "total_return": 19.027201318951246,
+    "cagr": 0.3090423669235609,
+    "mdd": -0.40856095292282724,
+    "calmar": 0.7564167958604103,
+    "sharpe": 0.9814780045231039,
+    "sortino": 1.482881194391472,
+    "win_rate": 0.3874538745387454,
+    "payoff_ratio": 2.416074427885784,
+    "trade_count": 542
+  }
+}

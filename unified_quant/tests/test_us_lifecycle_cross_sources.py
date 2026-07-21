@@ -4731,6 +4731,38 @@ class SymcNlokFrozenYahooReplayTest(unittest.TestCase):
 
 
 class YahooChartCacheSafetyTest(unittest.TestCase):
+    def test_reviewed_cache_lookup_keeps_the_original_bounded_request(self):
+        payload = _chart_json(
+            _bars(pd.bdate_range("2024-01-02", periods=2)), symbol="AA"
+        )
+        period1, period2 = _request_periods("2024-01-02", "2024-01-31")
+        class Response:
+            status = 200
+            headers = {"Content-Type": "application/json"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return payload
+
+        with tempfile.TemporaryDirectory() as directory:
+            cache = RawYahooChartCache(Path(directory), max_http_attempts=1)
+            with patch(
+                "supertrend_quant.market_store.yahoo_chart.urlopen",
+                return_value=Response(),
+            ):
+                response = cache.fill_missing([("AA", period1, period2)])["AA", period1, period2]
+            reviewed = cache.get_by_wrapper_hash("AA", response.wrapper_hash)
+
+        self.assertIsNotNone(reviewed)
+        self.assertEqual(reviewed.request_period1, period1)
+        self.assertEqual(reviewed.request_period2, period2)
+        self.assertEqual(reviewed.source_hash, script.sha256_bytes(payload))
+
     def test_archive_artifact_hash_is_the_exact_response_hash(self):
         payload = _chart_json(
             _bars(pd.bdate_range("2024-01-02", periods=2)), symbol="AA"

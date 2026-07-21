@@ -22,7 +22,7 @@ import math
 import sys
 import uuid
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 from urllib.parse import urlparse
@@ -142,8 +142,10 @@ from supertrend_quant.market_store.reviewed_price_evidence import (
     verify_reviewed_price_projection,
 )
 from supertrend_quant.market_store.reviewed_remaining_price_exceptions import (
+    TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_DATA_END,
     TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_INVENTORY_SHA256,
     apply_reviewed_remaining_price_exceptions,
+    reviewed_remaining_price_exception_inventory,
 )
 from supertrend_quant.market_store.source_archive_price_evidence import (
     REVIEWED_SOURCE_ARCHIVE_PRICE_ONLY_BASIS,
@@ -241,6 +243,7 @@ class PriceTarget:
     successor_security_id: str = ""
     request_start: str = ""
     request_end: str = ""
+    validation_data_end: str = ""
 
     @property
     def provider_symbol(self) -> str:
@@ -2280,6 +2283,25 @@ class YahooChartCache:
             period2=period2,
         )
 
+    def reviewed_response(
+        self,
+        target: PriceTarget,
+        reviewed_spec: Mapping[str, Any],
+    ) -> CachedResponse | None:
+        """Resolve the exact code-reviewed response independently of release tail."""
+
+        response = self.backend.get_by_wrapper_hash(
+            target.provider_symbol,
+            str(reviewed_spec["cache_wrapper_sha256"]),
+        )
+        if response is None:
+            return None
+        _require(
+            response.source_hash == reviewed_spec["source_sha256"],
+            "Reviewed Yahoo response bytes changed.",
+        )
+        return response
+
     def provenance_payload(self, target: PriceTarget) -> bytes | None:
         _, _, period1, period2 = _bounded_yahoo_request(target)
         return self.backend.provenance_payload(
@@ -2968,6 +2990,15 @@ def build_price_checks(
         self_source = independent_provider_source_mask(own_prices)
         self_source_rows = int(self_source.sum())
         own_prices = own_prices.loc[~self_source].copy()
+        if target.validation_data_end:
+            own_sessions = pd.to_datetime(own_prices["session"], errors="coerce")
+            _require(
+                not bool(own_sessions.isna().any()),
+                "Internal price sessions are invalid.",
+            )
+            own_prices = own_prices.loc[
+                own_sessions.le(pd.Timestamp(target.validation_data_end))
+            ].copy()
 
         reviewed_price_spec = reviewed_price_registry.get(target.target_id)
         if reviewed_price_spec is not None:
@@ -2998,6 +3029,18 @@ def build_price_checks(
                     official_event_binding_passed,
                     "Reviewed Yahoo official-event binding changed.",
                 )
+                reviewed_internal_prices = own_prices.copy()
+                reviewed_sessions = pd.to_datetime(
+                    reviewed_internal_prices["session"], errors="coerce"
+                )
+                _require(
+                    not bool(reviewed_sessions.isna().any()),
+                    "Reviewed internal price sessions are invalid.",
+                )
+                reviewed_internal_prices = reviewed_internal_prices.loc[
+                    reviewed_sessions.ge(pd.Timestamp(request_start))
+                    & reviewed_sessions.le(pd.Timestamp(request_end))
+                ].copy()
                 provider_rows, projection = build_reviewed_price_projection(
                     content=response.content,
                     spec=reviewed_price_spec,
@@ -3008,7 +3051,7 @@ def build_price_checks(
                         "active_from": target.active_from,
                         "active_to": target.active_to,
                     },
-                    internal_prices=own_prices,
+                    internal_prices=reviewed_internal_prices,
                     split_dates=split_by_security.get(target.security_id, ()),
                     policy_prices=policy.prices,
                 )
@@ -3077,7 +3120,9 @@ def build_price_checks(
                             "official_effective_date"
                         ],
                         "overlap_session_count": projection["overlap_row_count"],
-                        "independent_internal_price_rows": len(own_prices),
+                        "independent_internal_price_rows": len(
+                            reviewed_internal_prices
+                        ),
                         "self_source_rows_excluded": self_source_rows,
                         "all_overlap_sessions_compared": True,
                         "scale_stability_passed": True,
@@ -3703,6 +3748,79 @@ def prepare_cross_validation(
         frames["lifecycle_resolutions"],
         frames["daily_price_raw"],
     )
+    reviewed_registry = reviewed_price_evidence_registry(policy.prices)
+    reviewed_remaining_registry = reviewed_remaining_price_exception_inventory()
+    reviewed_chain_registry = reviewed_no_data_successor_chains(policy.prices)
+    reviewed_chain_response_registry: dict[str, Mapping[str, Any]] = {}
+    for chain in reviewed_chain_registry.values():
+        for spec in (*chain["nodes"], chain["final"]):
+            target_id = _text(spec.get("target_id")).lower()
+            existing = reviewed_chain_response_registry.get(target_id)
+            _require(
+                existing is None
+                or (
+                    existing["source_sha256"] == spec["source_sha256"]
+                    and existing["cache_wrapper_sha256"]
+                    == spec["cache_wrapper_sha256"]
+                ),
+                "Reviewed successor-chain response pin is inconsistent.",
+            )
+            reviewed_chain_response_registry[target_id] = spec
+    pinned_response_registry = {
+        **reviewed_chain_response_registry,
+        **reviewed_registry,
+    }
+    prior_review_end = TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_DATA_END
+    pinned_responses: dict[str, CachedResponse | None] = {}
+    bounded_targets: list[PriceTarget] = []
+    for target in targets:
+        pinned_spec = pinned_response_registry.get(target.target_id)
+        if pinned_spec is None:
+            if target.target_id in reviewed_remaining_registry:
+                bounded_targets.append(
+                    replace(
+                        target,
+                        request_end=(
+                            prior_review_end
+                            if not target.request_end
+                            or target.request_end > prior_review_end
+                            else target.request_end
+                        ),
+                        validation_data_end=prior_review_end,
+                    )
+                )
+            else:
+                bounded_targets.append(target)
+            continue
+        response = cache.reviewed_response(target, pinned_spec)
+        pinned_responses[target.target_id] = response
+        if response is None:
+            bounded_targets.append(target)
+            continue
+        request_start = pd.Timestamp(
+            response.request_period1, unit="s", tz="UTC"
+        ).date().isoformat()
+        request_end = (
+            pd.Timestamp(response.request_period2, unit="s", tz="UTC")
+            - pd.Timedelta(days=1)
+        ).date().isoformat()
+        bounded = replace(
+            target,
+            request_start=request_start,
+            request_end=request_end,
+            validation_data_end=(
+                prior_review_end
+                if target.target_id in reviewed_remaining_registry
+                else request_end
+            ),
+        )
+        _require(
+            _bounded_yahoo_request(bounded)[2:]
+            == (response.request_period1, response.request_period2),
+            "Reviewed Yahoo request bounds are not reproducible.",
+        )
+        bounded_targets.append(bounded)
+    targets = bounded_targets
     source_archive_price_only_targets = {
         target.target_id: {
             "target_id": target.target_id,
@@ -3776,12 +3894,18 @@ def prepare_cross_validation(
         and target.target_id not in source_archive_price_only
         and target.target_id not in wiki14_price_only
     ]
+    ordinary_yahoo_targets = [
+        target
+        for target in yahoo_targets
+        if target.target_id not in pinned_response_registry
+    ]
     if fetch_missing:
-        responses = cache.fill_missing(yahoo_targets)
+        responses = cache.fill_missing(ordinary_yahoo_targets)
     else:
         responses = {
-            target.target_id: cache.get(target) for target in yahoo_targets
+            target.target_id: cache.get(target) for target in ordinary_yahoo_targets
         }
+    responses.update(pinned_responses)
     price_checks = build_price_checks(
         targets,
         responses,

@@ -1,0 +1,965 @@
+{
+  "candidate_count": 183,
+  "candidate_selection_rule": "us_terminal_v1",
+  "candidate_set_sha256": "e7026ad5b913131a65f45c5a3fb861f3d7b2b6d3abc0dd6ec862135e2caa7818",
+  "collection_context_sha256": "b5258b2b3d3ee03903e48a13641164c07656be7d8a7f8ad070f367e6e1c43eeb",
+  "collector_config_sha256": "59aea7cb289e328ebcc568b87bf0c2ac92a3cbc4553a6753248a60e1e2e08282",
+  "collector_config_version": "us_terminal_sec_evidence/v1",
+  "collector_version": "us_lifecycle_collector_v1",
+  "completed_session": "2026-07-15",
+  "hints_sha256": "2211432c0e25659942d5531045421fcb9ad6ac68ca1e4b9a2eec3f9a73069a86",
+  "input_dataset_versions": {
+    "adjustment_factors": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-adjustment_factors",
+    "corporate_actions": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-corporate_actions",
+    "daily_price_raw": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-daily_price_raw",
+    "index_constituent_anchors": "market-transitions-20260715-0cd5221df34d80c5-index_constituent_anchors",
+    "index_membership_events": "market-transitions-20260715-0cd5221df34d80c5-index_membership_events",
+    "lifecycle_resolutions": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-lifecycle_resolutions",
+    "security_master": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-security_master",
+    "source_archive": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-source_archive",
+    "symbol_history": "sivb-avp-transition-20260715-a99012c5a93a4857b3c5d43d6b8c3505-symbol_history"
+  },
+  "input_dataset_versions_sha256": "3de2f52996fe0f2e2270b79834ce8dab5d98deaab9aaeeeb6ff6bdff798c8cd5",
+  "records": {
+    "US:EODHD:1123af95-e37a-5697-b0a1-1a6c126fa501": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:50.028064Z",
+          "source": "sec_edgar_search",
+          "source_hash": "b1c1d7800133f044cd453ce95faab7e206150817af800580927bcdd3c846fdda",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Dell+Technologies+Inc%22&forms=8-K&startdt=2018-10-13&enddt=2019-02-10&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:50.029188Z",
+          "source": "sec_edgar_search",
+          "source_hash": "22a03b8bb1b7bed5e4908d114648253a7d909b53e34f07860daa4f5e22b32f83",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Dell+Technologies+Inc%22&forms=6-K&startdt=2018-10-13&enddt=2019-02-10&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:50.029254Z",
+          "source": "sec_edgar_search",
+          "source_hash": "56b13a2abf9cb9777ffb5e68e5a217691f7e9ea61075976c5bfabd326c10b431",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Dell+Technologies+Inc%22&forms=25-NSE&startdt=2018-10-13&enddt=2019-02-10&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.029656Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "06755cccff50fabc62963bc7817c15575618a57d7954d415862dd82da36aa25f",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312518360943/0001193125-18-360943.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.362434Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "e49af480bbe837ae85b46b20f1c511485dc70da9e8fc541552efbaced6bc1ae1",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312518349469/0001193125-18-349469.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.364570Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "cc09a3494f05b608ff7662cdaf4eba8de15d363d0d77d67590390527fec8426e",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312518346958/0001193125-18-346958.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.374940Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "ebd82b9e9586225fdbcc31271e7fc05c0734cfdc756a7dc2a08c3705ca290b99",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000157199618000037/0001571996-18-000037.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.419554Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "29546c186b0b32c1ef0438d544a39a062a348ac62b5c93fc09f08d89c9ed3305",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000087666118001378/0000876661-18-001378.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.614149Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "b5a4b856f3c9eed7350f96553bc0cd64131d4b0511b8a3614afd222b65e5b919",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312518333967/0001193125-18-333967.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.840897Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "92f06f3fa870ba0df2687a3c4169c1219e703dfbdbb34933b9c34f979174d8b2",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312518356324/0001193125-18-356324.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:50.997456Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "f569c0b43237287fed8c200f09e76c3e9e7ba6fc24009a28247e1e08ad2de631",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000157199618000041/0001571996-18-000041.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2018-12-27",
+        "exchange": "NYSE",
+        "index_remove_dates": [],
+        "last_price_date": "2018-12-27",
+        "name": "Dell Technologies Inc",
+        "security_id": "US:EODHD:1123af95-e37a-5697-b0a1-1a6c126fa501",
+        "symbol": "DVMT"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": null,
+        "old_close": 80.0,
+        "old_price_session": "2018-12-27",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-18-360943",
+        "cik": "0001571996",
+        "display_name": "Dell Technologies Inc  (DELL)  (CIK 0001571996)",
+        "filing_date": "2018-12-28",
+        "form": "8-K",
+        "items": [
+          "1.01",
+          "1.02",
+          "3.01",
+          "3.03",
+          "5.02",
+          "5.03",
+          "7.01",
+          "8.01",
+          "9.01"
+        ],
+        "score": 11.966666666666667
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": 120.0,
+        "confidence": "review",
+        "effective_date": "2018-12-28",
+        "new_symbol": "",
+        "ratio": 1.8066,
+        "reason": "SEC completion filing contains a stock exchange ratio."
+      },
+      "source_hash": "06755cccff50fabc62963bc7817c15575618a57d7954d415862dd82da36aa25f",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312518360943/0001193125-18-360943.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:1974e939-3149-5663-91d4-ef44b2761282": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:54.433344Z",
+          "source": "sec_edgar_search",
+          "source_hash": "529bd42ceeaab66d7515f94c9723d1016423354a413ca2c07a8eb318d8b89664",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Bristol+Myers+Squibb+Company+Ce%22&forms=8-K&startdt=2019-09-07&enddt=2020-01-05&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:54.973410Z",
+          "source": "sec_edgar_search",
+          "source_hash": "b42b4087d26502f274f65387e156905825f3ea37729a6120b30ad888ff99a325",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Bristol+Myers+Squibb+Company+Ce%22&forms=6-K&startdt=2019-09-07&enddt=2020-01-05&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:55.492196Z",
+          "source": "sec_edgar_search",
+          "source_hash": "dc6ce95432f4b757f11ebe9742d78e266590b31e1d3009983da9d789deb599e7",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Bristol+Myers+Squibb+Company+Ce%22&forms=25-NSE&startdt=2019-09-07&enddt=2020-01-05&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:58.519588Z",
+          "source": "sec_edgar_search",
+          "source_hash": "453e28b2a75820dea51d18a307bcfaa53fb6f1144f1b226b3ec0f3f814aa3644",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22BMYRT%22&forms=8-K&startdt=2019-09-07&enddt=2020-01-05&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:59.108960Z",
+          "source": "sec_edgar_search",
+          "source_hash": "4760673328b6760ff9f2228692a1b7ca12e90b1805577dfad1586eaca286b0f2",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22BMYRT%22&forms=6-K&startdt=2019-09-07&enddt=2020-01-05&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:59.634904Z",
+          "source": "sec_edgar_search",
+          "source_hash": "cb6e106ac51a8d3bf859b4d1cdc31c37e535efb57888c41b7cf8ac0383d649e2",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22BMYRT%22&forms=25-NSE&startdt=2019-09-07&enddt=2020-01-05&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:59.635100Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "f1427f52db4d2212e0aa58d13f1c2299a9ee079b58201c600a827be8f2a1457b",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/816284/000110465919065939/0001104659-19-065939.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:59.672647Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2020-12-31",
+        "exchange": "NYSE",
+        "index_remove_dates": [],
+        "last_price_date": "2019-11-21",
+        "name": "Bristol-Myers Squibb Company Ce",
+        "security_id": "US:EODHD:1974e939-3149-5663-91d4-ef44b2761282",
+        "symbol": "BMYRT"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": null,
+        "old_close": null,
+        "old_price_session": null,
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001104659-19-065939",
+        "cik": "0000816284",
+        "display_name": "CELGENE CORP /DE/  (CIK 0000816284)",
+        "filing_date": "2019-11-20",
+        "form": "8-K",
+        "items": [
+          "1.02",
+          "2.01",
+          "3.01",
+          "3.03",
+          "5.01",
+          "5.02",
+          "5.03",
+          "8.01",
+          "9.01"
+        ],
+        "score": 10.966666666666667
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": 50.0,
+        "confidence": "review",
+        "effective_date": "2019-11-20",
+        "new_symbol": "",
+        "ratio": 1.0,
+        "reason": "SEC completion filing contains a stock exchange ratio."
+      },
+      "source_hash": "f1427f52db4d2212e0aa58d13f1c2299a9ee079b58201c600a827be8f2a1457b",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/816284/000110465919065939/0001104659-19-065939.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:33cf5387-6cec-598e-84a9-563ca333b0f3": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:10.302297Z",
+          "source": "sec_edgar_search",
+          "source_hash": "1ef60d9d686aa4fc5b606159575f6d4e2d638d4346b10b7105022647a260f654",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Arconic+Corporation%22&forms=8-K&startdt=2023-06-03&enddt=2023-10-01&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:10.302556Z",
+          "source": "sec_edgar_search",
+          "source_hash": "149f23c43ac02bed79761f8d17506ba6aa7d0528f3af60aea45ebd786e0664bc",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Arconic+Corporation%22&forms=6-K&startdt=2023-06-03&enddt=2023-10-01&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:10.302612Z",
+          "source": "sec_edgar_search",
+          "source_hash": "29a9ff4f66864d482350abba192284681654e2fba7c3fb41aa929a6bf8635bd5",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Arconic+Corporation%22&forms=25-NSE&startdt=2023-06-03&enddt=2023-10-01&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:10.302697Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "4140dc945094b8a77bf0001f32fad7007b7cbc9689181a0853a7c75623774375",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1790982/000114036123040367/0001140361-23-040367.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2023-08-17",
+        "exchange": "NYSE",
+        "index_remove_dates": [],
+        "last_price_date": "2023-08-17",
+        "name": "Arconic Corporation (2020 spin company)",
+        "security_id": "US:EODHD:33cf5387-6cec-598e-84a9-563ca333b0f3",
+        "symbol": "ARNC"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 30.0,
+        "nearest_index_remove_gap_days": null,
+        "old_close": 29.99,
+        "old_price_session": "2023-08-17",
+        "passed": true,
+        "relative_deviation": 0.0003333333333333854,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001140361-23-040367",
+        "cik": "0001790982",
+        "display_name": "Arconic Corp  (CIK 0001790982)",
+        "filing_date": "2023-08-18",
+        "form": "8-K",
+        "items": [
+          "1.01",
+          "1.02",
+          "2.01",
+          "2.03",
+          "3.01",
+          "3.03",
+          "5.01",
+          "5.02",
+          "5.03",
+          "8.01",
+          "9.01"
+        ],
+        "score": 13.966666666666667
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "cash_merger",
+        "cash_amount": 30.0,
+        "confidence": "high",
+        "effective_date": "2023-08-18",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC completion filing contains per-share cash consideration."
+      },
+      "source_hash": "4140dc945094b8a77bf0001f32fad7007b7cbc9689181a0853a7c75623774375",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1790982/000114036123040367/0001140361-23-040367.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:00.179265Z",
+          "source": "sec_edgar_search",
+          "source_hash": "a62e4584d7e97c726f95d0457cd7606755d4c0ec0df9fb9ddeb0ef5024aade10",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Ovintiv+Inc%22&forms=8-K&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:00.988352Z",
+          "source": "sec_edgar_search",
+          "source_hash": "750a55c43df7f34107a95a54ceaa9bac1351a2e16fa5589a4f1c225c3f9957d4",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Ovintiv+Inc%22&forms=6-K&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:02.108771Z",
+          "source": "sec_edgar_search",
+          "source_hash": "71bef9d03d6d307fdbd23e0d599a049e423a15f434795cd67b615f38bc97795e",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Ovintiv+Inc%22&forms=25-NSE&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:04.107970Z",
+          "source": "sec_edgar_search",
+          "source_hash": "1e81a5f14598a54e5317aea9c5212f6ab78eb95c8cd81509bb9239f7ffdc2386",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Ovintiv%22&forms=8-K&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:05.708156Z",
+          "source": "sec_edgar_search",
+          "source_hash": "9171013756486c92fbf1cc007eba11c1d50e30fbed9caf20b5c5b3f158d56f8d",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Ovintiv%22&forms=6-K&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:06.652033Z",
+          "source": "sec_edgar_search",
+          "source_hash": "8361d1a574f2a0b31659f926d9e65109cf398c29e74a533a3d1a1a0b349aca93",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Ovintiv%22&forms=25-NSE&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:07.663064Z",
+          "source": "sec_edgar_search",
+          "source_hash": "a6ecd389f2be37ba6db3fe36aeaba3e0ebdbc8142bf08da1ee622dd831348ea5",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22ECA%22&forms=8-K&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:08.564494Z",
+          "source": "sec_edgar_search",
+          "source_hash": "637fee5324f3a8bb1ac7fe1c74531152b29b16ae2ab81501e908915165657081",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22ECA%22&forms=6-K&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:09.049579Z",
+          "source": "sec_edgar_search",
+          "source_hash": "ad7d1aadd4292b0580328ea5c09289a2aba53b2aceb518f7fdaeaa6010be2562",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22ECA%22&forms=25-NSE&startdt=2020-07-25&enddt=2020-11-22&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:09.205243Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "71bae6a9db81d82737aa3e8e38204e7619a2a0729f5cd9afe54c0d4c8c74ecb2",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000156459020046319/0001564590-20-046319.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:09.363571Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "d03bed6619e8db0280799606d26d10ec31da8114dadd8f4b7f77ba421afc016f",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000156459020048534/0001564590-20-048534.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:09.517607Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "b81a0199469d9192ee896f81789d2ed6d942b8a70b7a05aa0814362bf804e053",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000156459020051706/0001564590-20-051706.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:09.670387Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "279b90ca7918d528f0d315300b12eee5712f2df30fcf40bf153a6661b58a1432",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000119312520238097/0001193125-20-238097.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:09.833427Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "0aa09f4d7745eb4bc51c24355ad4eb53dd70b360d9f268643292d4ca49a15129",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000119312520201843/0001193125-20-201843.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:09.988203Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "6acd9d9dfec7de851bdc7b3a60911ab153ad5f80810e47f4153af909538152b2",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000156459020054234/0001564590-20-054234.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:10.143476Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "444f212b99af257cf5cc17b53ad357315a1a960ba0b1f000cf90c786276eb957",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1792580/000156459020054703/0001564590-20-054703.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:10.297196Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "3e215dc22ee30fd63af08bd931d7c19ba85520d2f69b21c3e69c324274b01669",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1487798/000110465920088706/0001104659-20-088706.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2020-10-08",
+        "exchange": "NYSE",
+        "index_remove_dates": [],
+        "last_price_date": "2020-10-08",
+        "name": "Ovintiv Inc",
+        "security_id": "US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd",
+        "symbol": "ECA"
+      },
+      "crosscheck": {
+        "basis": "no_parsed_event",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "nearest_index_remove_gap_days": null,
+        "passed": false,
+        "terminal_gap_days": null
+      },
+      "eligible_for_apply": false,
+      "error": "No supported lifecycle terms found in candidate SEC filings.",
+      "filing": {
+        "accession_number": "0001564590-20-046319",
+        "cik": "0001792580",
+        "display_name": "Ovintiv Inc.  (OVV)  (CIK 0001792580)",
+        "filing_date": "2020-10-13",
+        "form": "8-K",
+        "items": [
+          "8.01",
+          "9.01"
+        ],
+        "score": 5.833333333333333
+      },
+      "manual_review_reason": "",
+      "parsed": null,
+      "source_hash": "",
+      "source_url": "",
+      "successor_security_id": ""
+    },
+    "US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:14.860578Z",
+          "source": "sec_edgar_search",
+          "source_hash": "23e808b2365983f80da86fb2c77452b5915ddade2edba0cabb755e707c933e58",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVC+Group+Inc%22&forms=8-K&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:15.329496Z",
+          "source": "sec_edgar_search",
+          "source_hash": "80f88df3053339cff47eea9f2acf980c0c39d5c7185772744f750d1df4d4abad",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVC+Group+Inc%22&forms=6-K&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:15.974125Z",
+          "source": "sec_edgar_search",
+          "source_hash": "ea787e2c323dc92265d2a552c7ee659fd95813463201ee4032354f16ec7fff44",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVC+Group+Inc%22&forms=25-NSE&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:16.542725Z",
+          "source": "sec_edgar_search",
+          "source_hash": "170336e96285c321d8b07bb2dfd1a49dd94bb52a1d9ed5495c79c01b0c9c556b",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVC+Group%22&forms=8-K&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:17.168646Z",
+          "source": "sec_edgar_search",
+          "source_hash": "d535b46798c6268199c1d86c5c41315b2bb1b3e14e962d827b5de79573bc2051",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVC+Group%22&forms=6-K&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:17.682046Z",
+          "source": "sec_edgar_search",
+          "source_hash": "0be7f54e6bcee35d80ea08a9534ae78040c2d18a8ccf04eb58935349c4f4211b",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVC+Group%22&forms=25-NSE&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:18.156470Z",
+          "source": "sec_edgar_search",
+          "source_hash": "32bdd60ffac41f8a59ca9b7ff7834bcc37836f26c3a9b9dcd6d48cff844f7b52",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVCGA%22&forms=8-K&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:18.601433Z",
+          "source": "sec_edgar_search",
+          "source_hash": "c59d291f4c6d815cfddfbdb4c3bedfab8feb44ae18b6848586199cfc7bf41263",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVCGA%22&forms=6-K&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:19.122088Z",
+          "source": "sec_edgar_search",
+          "source_hash": "741a80ac842ca01228225d616e2371da0c4bb93758edbe68479f3724e911cc2a",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22QVCGA%22&forms=25-NSE&startdt=2026-02-07&enddt=2026-06-07&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:19.448563Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "555740be3a75335f28a59ef1f7936ea58e57dc9a475a255e0508cb4033a41b96",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1254699/000125469926000006/0001254699-26-000006.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:19.815167Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "a99a6215dfb40507fd1d9c8ae3480f90469d6f3962637cfb7aa10738a839ebc0",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1355096/000135509626000015/0001355096-26-000015.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:20.189600Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "480970b8e519a92fb3ca41c7846646b5ee39595efed0d4899924537ab856ffaa",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1254699/000110465926044600/0001104659-26-044600.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:20.771502Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "892d0d181f5ce4ca6319313bb1f8b9c51d129fb27d1d65d0cf3d419370c032bf",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1254699/000087666126000384/0000876661-26-000384.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:22.430642Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "60a0339e5b1d18f4cc1e7f397f2d32d3218067136fc3ee6f5ddf3b980d3fd4f7",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1355096/000110465926044521/0001104659-26-044521.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:25.387482Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "b497caa73dc37013cc85e5bcd6b63acfbe515c9012312e82bb49261817fe1431",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1355096/000135509626000005/0001355096-26-000005.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2026-04-23",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [],
+        "last_price_date": "2026-04-23",
+        "name": "QVC Group Inc",
+        "security_id": "US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc",
+        "symbol": "QVCGA"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": null,
+        "old_close": 0.5269,
+        "old_price_session": "2026-04-20",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 3
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001254699-26-000006",
+        "cik": "0001254699",
+        "display_name": "QVC INC  (QVCC, QVCD)  (CIK 0001254699)",
+        "filing_date": "2026-04-20",
+        "form": "8-K",
+        "items": [
+          "3.01"
+        ],
+        "score": 6.9
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "delisting",
+        "cash_amount": null,
+        "confidence": "review",
+        "effective_date": "2026-04-20",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC filing confirms removal from exchange; recovery terms are unknown."
+      },
+      "source_hash": "555740be3a75335f28a59ef1f7936ea58e57dc9a475a255e0508cb4033a41b96",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1254699/000125469926000006/0001254699-26-000006.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:10.965182Z",
+          "source": "sec_edgar_search",
+          "source_hash": "fbc1a56454075676daab20e4c8a075c28e0927b528588c9093252dd6bcb431b0",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Natura+%26+Co+Holding+SA%22&forms=8-K&startdt=2024-01-28&enddt=2024-05-27&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:11.461729Z",
+          "source": "sec_edgar_search",
+          "source_hash": "cba15e6124ebc0d4ee08fe6181fd751ff307948b0bc28bb149722570eb600059",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Natura+%26+Co+Holding+SA%22&forms=6-K&startdt=2024-01-28&enddt=2024-05-27&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:11.892776Z",
+          "source": "sec_edgar_search",
+          "source_hash": "4d855dd4f5565d70571f1e6c271c4d25a9b9870c3191b47c8d6a6b0f62da369f",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Natura+%26+Co+Holding+SA%22&forms=25-NSE&startdt=2024-01-28&enddt=2024-05-27&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:12.554070Z",
+          "source": "sec_edgar_search",
+          "source_hash": "eb0322d2c9063156bce12906011cee16d7b541d79f120ebca7b66ac52792098f",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22NTCO%22&forms=8-K&startdt=2024-01-28&enddt=2024-05-27&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:13.078347Z",
+          "source": "sec_edgar_search",
+          "source_hash": "c78f161617558b471907de2cbbaec9bb54038fc40d101a8086caaf52b8c9ac1a",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22NTCO%22&forms=6-K&startdt=2024-01-28&enddt=2024-05-27&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:30:13.518433Z",
+          "source": "sec_edgar_search",
+          "source_hash": "09b2b905f2757720fd79b41223308787af20db90e5355c52831682e372f0a465",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22NTCO%22&forms=25-NSE&startdt=2024-01-28&enddt=2024-05-27&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:13.819200Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "1871d524b5b36c840b2ef3dce801bf53e37cadba228326c91f7ad1762d5e2867",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1776967/000155485524000148/0001554855-24-000148.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:14.149372Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "5a47905ed0afbe8a2fec8849583b50cdfab15a6dd3ab034669effce744d472d7",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1776967/000155485524000137/0001554855-24-000137.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:30:14.348253Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "bf40daac166b6472d2faec6fcbe041c9a22ce65a97b18c68a25be8e603305d18",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1776967/000155485524000394/0001554855-24-000394.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2024-04-12",
+        "exchange": "NYSE",
+        "index_remove_dates": [],
+        "last_price_date": "2024-04-12",
+        "name": "Natura & Co Holding SA",
+        "security_id": "US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622",
+        "symbol": "NTCO"
+      },
+      "crosscheck": {
+        "basis": "no_parsed_event",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "nearest_index_remove_gap_days": null,
+        "passed": false,
+        "terminal_gap_days": null
+      },
+      "eligible_for_apply": false,
+      "error": "No supported lifecycle terms found in candidate SEC filings.",
+      "filing": {
+        "accession_number": "0001554855-24-000148",
+        "cik": "0001776967",
+        "display_name": "Natura &Co Holding S.A.  (CIK 0001776967)",
+        "filing_date": "2024-03-13",
+        "form": "6-K",
+        "items": [],
+        "score": 3.4000000000000004
+      },
+      "manual_review_reason": "",
+      "parsed": null,
+      "source_hash": "",
+      "source_url": "",
+      "successor_security_id": ""
+    },
+    "US:EODHD:9b1bbdaa-839c-5d59-8bda-99b2087022e6": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041042Z",
+          "source": "sec_edgar_search",
+          "source_hash": "a2decc3733279a9ac659309ad41e6f50e2d3030182bf7a3ee0b1db50f894bb54",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Altaba+Inc%22&forms=8-K&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041310Z",
+          "source": "sec_edgar_search",
+          "source_hash": "2f980317fa1ca365b910ccb2dfe25e6fd45f748aae9856496c7fd2fe0d5f7302",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Altaba+Inc%22&forms=6-K&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041479Z",
+          "source": "sec_edgar_search",
+          "source_hash": "1997ad007d603349725c199b69a9790f54db7b5944c094be4ec6a00ee0ca94a1",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Altaba+Inc%22&forms=25-NSE&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041538Z",
+          "source": "sec_edgar_search",
+          "source_hash": "019ccf16d2e99ac2bda1bc58d15acbfe26bda83b7dd7fa16130ac732e74ff32f",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Altaba%22&forms=8-K&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041625Z",
+          "source": "sec_edgar_search",
+          "source_hash": "620f4e9d4de32f7d51c81694ead68582145b1dfcf34bbc940fe0a4270dd75998",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Altaba%22&forms=6-K&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041687Z",
+          "source": "sec_edgar_search",
+          "source_hash": "d94f3748d3ede5e65b99a1d59a098eafd4ddb5b5786a2f5478602e93cd479e0b",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Altaba%22&forms=25-NSE&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041742Z",
+          "source": "sec_edgar_search",
+          "source_hash": "5e19530734ef2f5613e763a72a3dda8d870f91ab6c9d9f799c3feb69f157588a",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22AABA%22&forms=8-K&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041855Z",
+          "source": "sec_edgar_search",
+          "source_hash": "93db9af8312377687a9db608db0aae10880c3784f0f0fa875fd29b3da1db10eb",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22AABA%22&forms=6-K&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T16:29:51.041889Z",
+          "source": "sec_edgar_search",
+          "source_hash": "4e1f1a869108fe05065e24620383b07f1034281dbac5d1b207e124a6eb0d8a86",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22AABA%22&forms=25-NSE&startdt=2019-07-19&enddt=2019-11-16&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:51.041945Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "01cea25a16cb222ab50254d9c9758a0a7cb0751e045e0696e05d203464f9682d",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1011006/000119312519262790/0001193125-19-262790.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:51.046155Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "450040df75211b898fa87a09c25417035aa0d5879d564725a52d0d62235cef3c",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1011006/000135445719000499/0001354457-19-000499.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:51.046576Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "f631b9e63c7ff23279bbc0dd382dae4a658bce5df7e4c7339d740992d99f14fb",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1011006/000119312519252251/0001193125-19-252251.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:51.050096Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "c13d96e8a8c00c65998e8b5889fb8c2e89966009565eb9ea2a0b4d9d86e384e1",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1011006/000119312519281962/0001193125-19-281962.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T16:29:51.054762Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "23e22ce697ba912b2d89418b2012f362b07a5a78fd04ce602665dea9d65ca8f4",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271219000054/0000732712-19-000054.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2019-10-02",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [],
+        "last_price_date": "2019-10-02",
+        "name": "Altaba Inc",
+        "security_id": "US:EODHD:9b1bbdaa-839c-5d59-8bda-99b2087022e6",
+        "symbol": "AABA"
+      },
+      "crosscheck": {
+        "basis": "no_parsed_event",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "nearest_index_remove_gap_days": null,
+        "passed": false,
+        "terminal_gap_days": null
+      },
+      "eligible_for_apply": false,
+      "error": "No supported lifecycle terms found in candidate SEC filings.",
+      "filing": {
+        "accession_number": "0001193125-19-262790",
+        "cik": "0001011006",
+        "display_name": "ALTABA INC.  (CIK 0001011006)",
+        "filing_date": "2019-10-04",
+        "form": "8-K",
+        "items": [
+          "7.01",
+          "9.01"
+        ],
+        "score": 7.933333333333334
+      },
+      "manual_review_reason": "Multi-stage liquidation distributions cannot be represented as a single terminal cash event.",
+      "parsed": null,
+      "source_hash": "",
+      "source_url": "",
+      "successor_security_id": ""
+    }
+  },
+  "release_version": "20260715-20260718T152803154161Z",
+  "report_schema": "us_lifecycle_sec_collection/v1",
+  "sec_fetch_policy": "fetch_missing_opt_in",
+  "sec_http_attempts": 51,
+  "sec_http_attempts_by_candidate": {
+    "US:EODHD:1123af95-e37a-5697-b0a1-1a6c126fa501|2018-12-27": 3,
+    "US:EODHD:1974e939-3149-5663-91d4-ef44b2761282|2019-11-21": 6,
+    "US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd|2020-10-08": 18,
+    "US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc|2026-04-23": 15,
+    "US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622|2024-04-12": 9
+  },
+  "sec_max_http_attempts": 120,
+  "sec_max_http_attempts_per_candidate": 24,
+  "sec_max_http_attempts_per_request": 4,
+  "summary": {
+    "action_type_counts": {
+      "cash_merger": 1,
+      "delisting": 1,
+      "stock_merger": 2,
+      "unresolved": 3
+    },
+    "candidate_count": 183,
+    "collected_count": 7,
+    "eligible_count": 1,
+    "sec_fetch_policy": "fetch_missing_opt_in",
+    "sec_http_attempts": 51,
+    "sec_http_attempts_by_candidate": {
+      "US:EODHD:1123af95-e37a-5697-b0a1-1a6c126fa501|2018-12-27": 3,
+      "US:EODHD:1974e939-3149-5663-91d4-ef44b2761282|2019-11-21": 6,
+      "US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd|2020-10-08": 18,
+      "US:EODHD:5eca6dac-4c4c-50af-9fc2-17c5839a4efc|2026-04-23": 15,
+      "US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622|2024-04-12": 9
+    },
+    "sec_http_attempts_remaining": 69,
+    "sec_max_http_attempts": 120,
+    "sec_max_http_attempts_per_candidate": 24,
+    "sec_max_http_attempts_per_request": 4,
+    "unresolved_count": 6
+  }
+}

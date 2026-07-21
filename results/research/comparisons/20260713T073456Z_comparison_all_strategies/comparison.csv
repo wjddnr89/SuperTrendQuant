@@ -1,0 +1,4 @@
+rank,best,strategy_path,strategy_name,strategy_type,total_return,cagr,mdd,calmar,sharpe,sortino,win_rate,payoff_ratio,trade_count,composite_score
+1,True,leader_rotation.yaml,leader_rotation_default,leader_rotation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,80.95238095238095
+2,False,triple_filters.yaml,triple_filters_research,leader_rotation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,80.95238095238095
+3,False,simple_supertrend.yaml,simple_supertrend_default,simple_supertrend,-0.023866842745279393,-0.9439216224418304,-0.031197719942541502,-30.256109234274202,-6.123508016275184,-7.901335933629117,0.0,0.0,3,38.095238095238095

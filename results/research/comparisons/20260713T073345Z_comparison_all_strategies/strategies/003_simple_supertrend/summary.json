@@ -1,0 +1,150 @@
+{
+  "run_id": "003_simple_supertrend",
+  "mode": "backtest",
+  "created_at": "2026-07-13T07:33:45.887910+00:00",
+  "strategy": "simple_supertrend_default",
+  "market": "US",
+  "timeframe": "30m",
+  "period": "30d",
+  "metrics": {
+    "total_return": -0.023866842745279393,
+    "cagr": -0.9439216224418304,
+    "mdd": -0.031197719942541502,
+    "calmar": -30.256109234274202,
+    "sharpe": -6.123508016275184,
+    "sortino": -7.901335933629117,
+    "win_rate": 0.0,
+    "payoff_ratio": 0.0,
+    "trade_count": 3
+  },
+  "trade_returns": [
+    -0.06941156777135615,
+    -0.01202232551328375,
+    -0.0015707294753165568
+  ],
+  "trades": [
+    {
+      "symbol": "RDW",
+      "entry_time": "2026-07-08 10:00:00-04:00",
+      "exit_time": "2026-07-10 10:00:00-04:00",
+      "entry_price": 10.895445343494414,
+      "exit_price": 10.184904580593109,
+      "quantity": 274,
+      "pnl_pct": -0.06941156777135615,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2026-07-08 10:00:00-04:00",
+      "exit_time": "2026-07-10 15:30:00-04:00",
+      "entry_price": 1098.8991505737304,
+      "exit_price": 1090.584439880371,
+      "quantity": 2,
+      "pnl_pct": -0.01202232551328375,
+      "exit_reason": "FinalClose"
+    },
+    {
+      "symbol": "VRT",
+      "entry_time": "2026-07-08 10:00:00-04:00",
+      "exit_time": "2026-07-10 15:30:00-04:00",
+      "entry_price": 317.75880610656736,
+      "exit_price": 318.6905811004639,
+      "quantity": 9,
+      "pnl_pct": -0.0015707294753165568,
+      "exit_reason": "FinalClose"
+    }
+  ],
+  "skipped": [],
+  "config": {
+    "strategy": {
+      "name": "simple_supertrend_default",
+      "type": "simple_supertrend",
+      "params": {}
+    },
+    "market": "US",
+    "universe_file": "universe.json",
+    "symbols": [],
+    "timeframe": "30m",
+    "period": "30d",
+    "capital": {
+      "initial_cash": 10000
+    },
+    "costs": {
+      "fee_rate": 0.00225,
+      "slippage_rate": 0.0005
+    },
+    "supertrend": {
+      "enabled": true,
+      "period": 10,
+      "multiplier": 3.0,
+      "atr_method": "wilder",
+      "symbol_multipliers": {}
+    },
+    "market_trend_filter": {
+      "enabled": false,
+      "timeframe": "1d"
+    },
+    "leader_rotation": {
+      "rs_period": 100,
+      "rs_period_by_market": {},
+      "max_slots": 3,
+      "hurdle_atr_mult": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "exit": {
+      "sell_confirm_bars": 1
+    },
+    "execution": {
+      "order_type": "market",
+      "allocation_pct": 0.9,
+      "broker": "paper",
+      "live_confirm_required": true
+    },
+    "risk": {
+      "max_position_count": 3
+    },
+    "live": {
+      "holdings_file": "holding.json",
+      "loop_interval_seconds": 60
+    },
+    "paper": {
+      "state_file": "state/paper.json",
+      "results_dir": "results/paper",
+      "loop_interval_seconds": 60,
+      "run_once_per_candle": true
+    },
+    "backtest": {
+      "results_dir": "results/backtests"
+    },
+    "components": [
+      {
+        "type": "supertrend",
+        "enabled": true,
+        "group": "entries",
+        "params": {
+          "period": 10,
+          "multiplier": 3.0,
+          "atr_method": "wilder",
+          "symbol_multipliers": {}
+        }
+      },
+      {
+        "type": "benchmark_trend",
+        "enabled": false,
+        "group": "filters",
+        "params": {
+          "timeframe": "1d"
+        }
+      },
+      {
+        "type": "supertrend_flip",
+        "enabled": true,
+        "group": "exits",
+        "params": {
+          "confirm_bars": 1
+        }
+      }
+    ]
+  }
+}

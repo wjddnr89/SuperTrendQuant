@@ -1,0 +1,590 @@
+{
+  "run_id": "002_simple_supertrend",
+  "mode": "backtest",
+  "created_at": "2026-07-13T14:51:25.944930+00:00",
+  "strategy": "simple_supertrend_default",
+  "market": "US",
+  "timeframe": "1d",
+  "period": "max",
+  "metrics": {
+    "total_return": 0.43305685548127926,
+    "cagr": 0.2726974217018099,
+    "mdd": -0.4019253882382158,
+    "calmar": 0.6784777216914344,
+    "sharpe": 0.7291256280188868,
+    "sortino": 0.9814310706442647,
+    "win_rate": 0.3488372093023256,
+    "payoff_ratio": 3.1168786736223475,
+    "trade_count": 43
+  },
+  "trade_returns": [
+    -0.2706697776299929,
+    -0.2120077073423402,
+    -0.21307514718009446,
+    -0.09716677015539366,
+    -0.017248057059877864,
+    -0.09696098057740576,
+    -0.15180355293470704,
+    -0.22356142753164754,
+    -0.2813494941093495,
+    -0.2089184186658516,
+    -0.2566660044450444,
+    -0.20944741020392488,
+    0.24639323173386396,
+    -0.28422439690442425,
+    -0.10123952478161058,
+    0.8185289341296427,
+    0.4954594309003624,
+    0.6204920835929668,
+    0.5235530961444734,
+    -0.05717909918121544,
+    0.1137946109605843,
+    0.1714659618241583,
+    0.11530045014899382,
+    -0.13378143654451624,
+    -0.16016955872364846,
+    -0.2000386279421127,
+    -0.07583661955103083,
+    -0.02244119020863322,
+    -0.11563263315903172,
+    0.01016730124145937,
+    -0.2986181676672004,
+    0.005315156914731389,
+    1.1733074032126125,
+    0.5674576997804726,
+    2.0749376818191707,
+    -0.019609955636246346,
+    -0.21101799092094953,
+    -0.057904374417199644,
+    0.589906891527076,
+    -0.32908155040666454,
+    -0.029066388216668848,
+    -0.2199480358106375,
+    0.07910007445697032
+  ],
+  "trades": [
+    {
+      "symbol": "SOXL",
+      "entry_time": "2025-01-22 00:00:00",
+      "exit_time": "2025-01-28 00:00:00",
+      "entry_price": 34.707343626022336,
+      "exit_price": 25.42728053379059,
+      "quantity": 59,
+      "pnl_pct": -0.2706697776299929,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "FN",
+      "entry_time": "2025-01-22 00:00:00",
+      "exit_time": "2025-01-28 00:00:00",
+      "entry_price": 260.11998522949216,
+      "exit_price": 205.89700000000002,
+      "quantity": 7,
+      "pnl_pct": -0.2120077073423402,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "COHR",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-01-28 00:00:00",
+      "entry_price": 105.83288877868652,
+      "exit_price": 83.65814694976807,
+      "quantity": 19,
+      "pnl_pct": -0.21307514718009446,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2025-01-29 00:00:00",
+      "exit_time": "2025-02-20 00:00:00",
+      "entry_price": 640.3199999999999,
+      "exit_price": 580.7095,
+      "quantity": 2,
+      "pnl_pct": -0.09716677015539366,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "PL",
+      "entry_time": "2025-01-22 00:00:00",
+      "exit_time": "2025-02-25 00:00:00",
+      "entry_price": 4.652325095415115,
+      "exit_price": 4.592702290296555,
+      "quantity": 427,
+      "pnl_pct": -0.017248057059877864,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "TQQQ",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-02-26 00:00:00",
+      "entry_price": 43.29163545799255,
+      "exit_price": 39.27035591506958,
+      "quantity": 46,
+      "pnl_pct": -0.09696098057740576,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2025-02-19 00:00:00",
+      "exit_time": "2025-03-04 00:00:00",
+      "entry_price": 105.81288213729857,
+      "exit_price": 90.15489694976807,
+      "quantity": 15,
+      "pnl_pct": -0.15180355293470704,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "OUST",
+      "entry_time": "2025-03-24 00:00:00",
+      "exit_time": "2025-04-01 00:00:00",
+      "entry_price": 11.520757843494415,
+      "exit_price": 8.985504771232605,
+      "quantity": 145,
+      "pnl_pct": -0.22356142753164754,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "FN",
+      "entry_time": "2025-03-25 00:00:00",
+      "exit_time": "2025-04-04 00:00:00",
+      "entry_price": 228.42415255737305,
+      "exit_price": 164.8975057296753,
+      "quantity": 6,
+      "pnl_pct": -0.2813494941093495,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2025-03-25 00:00:00",
+      "exit_time": "2025-04-04 00:00:00",
+      "entry_price": 113.32663164138793,
+      "exit_price": 90.05494847488404,
+      "quantity": 13,
+      "pnl_pct": -0.2089184186658516,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2025-03-25 00:00:00",
+      "exit_time": "2025-04-07 00:00:00",
+      "entry_price": 344.0419301147461,
+      "exit_price": 256.89147901916505,
+      "quantity": 4,
+      "pnl_pct": -0.2566660044450444,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2025-03-26 00:00:00",
+      "exit_time": "2025-04-09 00:00:00",
+      "entry_price": 282.8013336639404,
+      "exit_price": 224.57765744018556,
+      "quantity": 7,
+      "pnl_pct": -0.20944741020392488,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2025-04-25 00:00:00",
+      "exit_time": "2025-07-11 00:00:00",
+      "entry_price": 591.0153306884765,
+      "exit_price": 739.9598520812989,
+      "quantity": 2,
+      "pnl_pct": 0.24639323173386396,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "RDW",
+      "entry_time": "2025-07-21 00:00:00",
+      "exit_time": "2025-07-30 00:00:00",
+      "entry_price": 20.240114542007444,
+      "exit_price": 14.552720419406892,
+      "quantity": 86,
+      "pnl_pct": -0.28422439690442425,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2025-08-06 00:00:00",
+      "exit_time": "2025-08-13 00:00:00",
+      "entry_price": 860.1898897705078,
+      "exit_price": 776.5914904785157,
+      "quantity": 1,
+      "pnl_pct": -0.10123952478161058,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "RKLB",
+      "entry_time": "2025-04-25 00:00:00",
+      "exit_time": "2025-08-20 00:00:00",
+      "entry_price": 22.00099477100372,
+      "exit_price": 40.18989408493042,
+      "quantity": 58,
+      "pnl_pct": 0.8185289341296427,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "VRT",
+      "entry_time": "2025-04-25 00:00:00",
+      "exit_time": "2025-08-21 00:00:00",
+      "entry_price": 85.01248622131347,
+      "exit_price": 127.70611164474488,
+      "quantity": 15,
+      "pnl_pct": 0.4954594309003624,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2025-04-25 00:00:00",
+      "exit_time": "2025-09-03 00:00:00",
+      "entry_price": 359.989902557373,
+      "exit_price": 585.991830657959,
+      "quantity": 3,
+      "pnl_pct": 0.6204920835929668,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2025-04-10 00:00:00",
+      "exit_time": "2025-09-08 00:00:00",
+      "entry_price": 109.42468774795532,
+      "exit_price": 167.46622805023193,
+      "quantity": 10,
+      "pnl_pct": 0.5235530961444734,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "RKLB",
+      "entry_time": "2025-09-03 00:00:00",
+      "exit_time": "2025-11-07 00:00:00",
+      "entry_price": 50.29513545799255,
+      "exit_price": 47.63317299461365,
+      "quantity": 41,
+      "pnl_pct": -0.05717909918121544,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2025-08-26 00:00:00",
+      "exit_time": "2025-11-14 00:00:00",
+      "entry_price": 345.1024576721191,
+      "exit_price": 386.1068377990723,
+      "quantity": 5,
+      "pnl_pct": 0.1137946109605843,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "FN",
+      "entry_time": "2025-08-27 00:00:00",
+      "exit_time": "2025-11-14 00:00:00",
+      "entry_price": 328.164,
+      "exit_price": 386.16680535888673,
+      "quantity": 5,
+      "pnl_pct": 0.1714659618241583,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "TSM",
+      "entry_time": "2025-09-09 00:00:00",
+      "exit_time": "2025-11-19 00:00:00",
+      "entry_price": 247.05345767211912,
+      "exit_price": 276.78155342102053,
+      "quantity": 6,
+      "pnl_pct": 0.11530045014899382,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2025-12-04 00:00:00",
+      "exit_time": "2025-12-18 00:00:00",
+      "entry_price": 45.91294438934326,
+      "exit_price": 39.95001622009278,
+      "quantity": 39,
+      "pnl_pct": -0.13378143654451624,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "MRVL",
+      "entry_time": "2025-12-03 00:00:00",
+      "exit_time": "2025-12-18 00:00:00",
+      "entry_price": 100.09002091598511,
+      "exit_price": 84.43776335525513,
+      "quantity": 20,
+      "pnl_pct": -0.16016955872364846,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AEHR",
+      "entry_time": "2025-12-05 00:00:00",
+      "exit_time": "2025-12-30 00:00:00",
+      "entry_price": 25.622805610656737,
+      "exit_price": 20.58970038127899,
+      "quantity": 72,
+      "pnl_pct": -0.2000386279421127,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2025-12-23 00:00:00",
+      "exit_time": "2026-01-29 00:00:00",
+      "entry_price": 597.5586397705077,
+      "exit_price": 554.7325047607422,
+      "quantity": 3,
+      "pnl_pct": -0.07583661955103083,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2026-01-07 00:00:00",
+      "exit_time": "2026-02-05 00:00:00",
+      "entry_price": 52.22610076332092,
+      "exit_price": 51.284346372604375,
+      "quantity": 34,
+      "pnl_pct": -0.02244119020863322,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "FN",
+      "entry_time": "2026-02-23 00:00:00",
+      "exit_time": "2026-03-09 00:00:00",
+      "entry_price": 540.2900295410155,
+      "exit_price": 479.9698864593506,
+      "quantity": 3,
+      "pnl_pct": -0.11563263315903172,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "TSM",
+      "entry_time": "2026-01-05 00:00:00",
+      "exit_time": "2026-03-09 00:00:00",
+      "entry_price": 330.5651938934326,
+      "exit_price": 335.4322061004639,
+      "quantity": 5,
+      "pnl_pct": 0.01016730124145937,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "OUST",
+      "entry_time": "2026-03-12 00:00:00",
+      "exit_time": "2026-03-31 00:00:00",
+      "entry_price": 24.202095534324645,
+      "exit_price": 17.05146946620941,
+      "quantity": 65,
+      "pnl_pct": -0.2986181676672004,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AEHR",
+      "entry_time": "2026-02-12 00:00:00",
+      "exit_time": "2026-03-31 00:00:00",
+      "entry_price": 33.16657652664184,
+      "exit_price": 33.493243322372436,
+      "quantity": 51,
+      "pnl_pct": 0.005315156914731389,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "COHR",
+      "entry_time": "2025-09-11 00:00:00",
+      "exit_time": "2026-03-31 00:00:00",
+      "entry_price": 102.5912709159851,
+      "exit_price": 223.96796183013916,
+      "quantity": 18,
+      "pnl_pct": 1.1733074032126125,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2025-12-05 00:00:00",
+      "exit_time": "2026-05-19 00:00:00",
+      "entry_price": 631.1754153442382,
+      "exit_price": 993.8028377990723,
+      "quantity": 2,
+      "pnl_pct": 0.5674576997804726,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-06-08 00:00:00",
+      "entry_price": 68.15406274795532,
+      "exit_price": 210.51468511962892,
+      "quantity": 33,
+      "pnl_pct": 2.0749376818191707,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "PL",
+      "entry_time": "2026-03-23 00:00:00",
+      "exit_time": "2026-06-08 00:00:00",
+      "entry_price": 34.51725,
+      "exit_price": 33.99299332237244,
+      "quantity": 49,
+      "pnl_pct": -0.019609955636246346,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "RZLV",
+      "entry_time": "2026-04-02 00:00:00",
+      "exit_time": "2026-06-08 00:00:00",
+      "entry_price": 3.0015,
+      "exit_price": 2.3788101143836977,
+      "quantity": 725,
+      "pnl_pct": -0.21101799092094953,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2026-05-29 00:00:00",
+      "exit_time": "2026-06-23 00:00:00",
+      "entry_price": 437.71875,
+      "exit_price": 414.2327824401856,
+      "quantity": 4,
+      "pnl_pct": -0.057904374417199644,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "AEHR",
+      "entry_time": "2026-04-06 00:00:00",
+      "exit_time": "2026-07-06 00:00:00",
+      "entry_price": 45.32264923667908,
+      "exit_price": 72.38378816986085,
+      "quantity": 52,
+      "pnl_pct": 0.589906891527076,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2026-06-23 00:00:00",
+      "exit_time": "2026-07-08 00:00:00",
+      "entry_price": 236.118,
+      "exit_price": 159.13040171051026,
+      "quantity": 12,
+      "pnl_pct": -0.32908155040666454,
+      "exit_reason": "Supertrend SellSignal"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2026-06-18 00:00:00",
+      "exit_time": "2026-07-13 00:00:00",
+      "entry_price": 1091.5755443115233,
+      "exit_price": 1064.6274541625978,
+      "quantity": 3,
+      "pnl_pct": -0.029066388216668848,
+      "exit_reason": "FinalClose"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2026-06-22 00:00:00",
+      "exit_time": "2026-07-13 00:00:00",
+      "entry_price": 1196.8180806884766,
+      "exit_price": 937.7908797607422,
+      "quantity": 3,
+      "pnl_pct": -0.2199480358106375,
+      "exit_reason": "FinalClose"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2026-06-30 00:00:00",
+      "exit_time": "2026-07-13 00:00:00",
+      "entry_price": 521.7107372131347,
+      "exit_price": 565.5172098083497,
+      "quantity": 4,
+      "pnl_pct": 0.07910007445697032,
+      "exit_reason": "FinalClose"
+    }
+  ],
+  "skipped": [],
+  "config": {
+    "strategy": {
+      "name": "simple_supertrend_default",
+      "type": "simple_supertrend",
+      "params": {}
+    },
+    "market": "US",
+    "universe_file": "universe.json",
+    "symbols": [],
+    "timeframe": "1d",
+    "period": "max",
+    "capital": {
+      "initial_cash": 10000
+    },
+    "costs": {
+      "fee_rate": 0.00225,
+      "slippage_rate": 0.0005
+    },
+    "supertrend": {
+      "enabled": true,
+      "period": 10,
+      "multiplier": 3.0,
+      "atr_method": "wilder",
+      "symbol_multipliers": {}
+    },
+    "market_trend_filter": {
+      "enabled": false,
+      "timeframe": "1d"
+    },
+    "leader_rotation": {
+      "rs_period": 100,
+      "rs_period_by_market": {},
+      "max_slots": 5,
+      "hurdle_atr_mult": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "exit": {
+      "sell_confirm_bars": 1
+    },
+    "execution": {
+      "order_type": "market",
+      "allocation_pct": 1.0,
+      "broker": "paper",
+      "live_confirm_required": true
+    },
+    "risk": {
+      "max_position_count": 5
+    },
+    "live": {
+      "holdings_file": "holding.json",
+      "loop_interval_seconds": 60
+    },
+    "paper": {
+      "state_file": "state/paper.json",
+      "results_dir": "results/paper",
+      "loop_interval_seconds": 60,
+      "run_once_per_candle": true
+    },
+    "backtest": {
+      "results_dir": "results/backtests"
+    },
+    "components": [
+      {
+        "type": "supertrend",
+        "enabled": true,
+        "group": "entries",
+        "params": {
+          "period": 10,
+          "multiplier": 3.0,
+          "atr_method": "wilder",
+          "symbol_multipliers": {}
+        }
+      },
+      {
+        "type": "benchmark_trend",
+        "enabled": false,
+        "group": "filters",
+        "params": {
+          "timeframe": "1d"
+        }
+      },
+      {
+        "type": "supertrend_flip",
+        "enabled": true,
+        "group": "exits",
+        "params": {
+          "confirm_bars": 1
+        }
+      }
+    ]
+  }
+}

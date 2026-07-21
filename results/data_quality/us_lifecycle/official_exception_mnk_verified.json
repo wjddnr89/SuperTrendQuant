@@ -1,0 +1,268 @@
+{
+  "official_exception_evidence": {
+    "mallinckrodt_2022_cancellation": {
+      "action_type": "delisting",
+      "candidate_binding_status": "bound",
+      "candidate_last_price_date": "2022-06-15",
+      "candidate_security_id": "US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf",
+      "candidate_symbol": "MNK",
+      "cash_amount": 0.0,
+      "claim": "Mallinckrodt's 2022 plan cancelled all predecessor ordinary shares with no legacy-equity distribution; after exact identity repair this is a verified zero-recovery delisting, not a permanent exception.",
+      "content_bytes": 184840,
+      "content_type": "text/html",
+      "effective_date": "2022-06-16",
+      "exception_code": "",
+      "matched_phrases": [
+        "June 16, 2022",
+        "existing ordinary shares",
+        "cancelled",
+        "100% of the new Mallinckrodt Ordinary Shares to holders of the Guaranteed Unsecured Notes"
+      ],
+      "observed_sha256": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+      "pinned_sha256": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+      "resolution_kind": "applied_event",
+      "retrieved_at": "2026-07-18T00:40:46.735294Z",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm",
+      "status": "verified_pinned_promoted"
+    },
+    "mallinckrodt_2023_cancellation": {
+      "action_type": "delisting",
+      "candidate_binding_status": "bound",
+      "candidate_last_price_date": "2023-11-13",
+      "candidate_security_id": "US:EODHD:647b8b62-0015-5a56-8a63-4da7ba287025",
+      "candidate_symbol": "MNK",
+      "cash_amount": 0.0,
+      "claim": "Mallinckrodt's 2023 plan cancelled the predecessor ordinary shares without consideration; after exact identity repair this is a verified zero-recovery delisting, never an exception on the reused Muniholdings ticker.",
+      "content_bytes": 3998498,
+      "content_type": "text/html",
+      "effective_date": "2023-11-14",
+      "exception_code": "",
+      "matched_phrases": [
+        "November 14, 2023",
+        "All of Mallinckrodt ordinary shares were cancelled for no consideration"
+      ],
+      "observed_sha256": "a8981dfbe1b3dcc287fb6c0ebc8f014be96724ec2a7a878301e9e5bedfcbf7d5",
+      "pinned_sha256": "a8981dfbe1b3dcc287fb6c0ebc8f014be96724ec2a7a878301e9e5bedfcbf7d5",
+      "resolution_kind": "applied_event",
+      "retrieved_at": "2026-07-18T00:40:47.234797Z",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000156789224000008/mnk-20231229.htm",
+      "status": "verified_pinned_promoted"
+    }
+  },
+  "official_exception_evidence_http_attempts": 0,
+  "records": {
+    "US:EODHD:647b8b62-0015-5a56-8a63-4da7ba287025": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-18T00:47:45.724518Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm"
+        },
+        {
+          "claim": "Mallinckrodt's 2023 plan cancelled the predecessor ordinary shares without consideration; after exact identity repair this is a verified zero-recovery delisting, never an exception on the reused Muniholdings ticker.",
+          "content_type": "text/html",
+          "effective_date": "2023-11-14",
+          "evidence_id": "mallinckrodt_2023_cancellation",
+          "exception_code": "",
+          "matched_phrases": [
+            "November 14, 2023",
+            "All of Mallinckrodt ordinary shares were cancelled for no consideration"
+          ],
+          "pin_status": "verified_pinned",
+          "resolution_kind": "applied_event",
+          "retrieved_at": "2026-07-18T00:40:47.234797Z",
+          "source": "sec_edgar_lifecycle_exception",
+          "source_hash": "a8981dfbe1b3dcc287fb6c0ebc8f014be96724ec2a7a878301e9e5bedfcbf7d5",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000156789224000008/mnk-20231229.htm"
+        }
+      ],
+      "candidate": {
+        "active_to": "2023-11-13",
+        "exchange": "NYSE MKT",
+        "index_remove_dates": [],
+        "last_price_date": "2023-11-13",
+        "name": "Mallinckrodt plc (2022 reorganized ordinary shares)",
+        "security_id": "US:EODHD:647b8b62-0015-5a56-8a63-4da7ba287025",
+        "symbol": "MNK"
+      },
+      "crosscheck": {
+        "basis": "date_mismatch",
+        "date_passed": false,
+        "economic_terms_passed": true,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": null,
+        "old_close": null,
+        "old_price_session": null,
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 515
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-22-178880",
+        "cik": "1567892",
+        "display_name": "Mallinckrodt plc (2022 reorganized ordinary shares)",
+        "filing_date": "2022-06-22",
+        "form": "8-K",
+        "items": [
+          "1.01",
+          "3.02",
+          "3.03",
+          "5.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review": false,
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "delisting",
+        "cash_amount": 0.0,
+        "confidence": "high",
+        "effective_date": "2022-06-16",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC emergence filing states that all legacy Mallinckrodt ordinary shares were cancelled and all new ordinary shares were issued to unsecured noteholders, leaving legacy equity with no distribution."
+      },
+      "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm",
+      "successor_security_id": "",
+      "verified_event": {
+        "action_type": "delisting",
+        "cash_amount": 0.0,
+        "confidence": "high",
+        "content_type": "text/html",
+        "effective_date": "2023-11-14",
+        "filing_date": "",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "Mallinckrodt's 2023 plan cancelled the predecessor ordinary shares without consideration; after exact identity repair this is a verified zero-recovery delisting, never an exception on the reused Muniholdings ticker.",
+        "retrieved_at": "2026-07-18T00:40:47.234797Z",
+        "source_hash": "a8981dfbe1b3dcc287fb6c0ebc8f014be96724ec2a7a878301e9e5bedfcbf7d5",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000156789224000008/mnk-20231229.htm"
+      },
+      "verified_event_evidence_id": "mallinckrodt_2023_cancellation"
+    },
+    "US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-18T00:47:45.723311Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm"
+        },
+        {
+          "claim": "Mallinckrodt's 2022 plan cancelled all predecessor ordinary shares with no legacy-equity distribution; after exact identity repair this is a verified zero-recovery delisting, not a permanent exception.",
+          "content_type": "text/html",
+          "effective_date": "2022-06-16",
+          "evidence_id": "mallinckrodt_2022_cancellation",
+          "exception_code": "",
+          "matched_phrases": [
+            "June 16, 2022",
+            "existing ordinary shares",
+            "cancelled",
+            "100% of the new Mallinckrodt Ordinary Shares to holders of the Guaranteed Unsecured Notes"
+          ],
+          "pin_status": "verified_pinned",
+          "resolution_kind": "applied_event",
+          "retrieved_at": "2026-07-18T00:40:46.735294Z",
+          "source": "sec_edgar_lifecycle_exception",
+          "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm"
+        }
+      ],
+      "candidate": {
+        "active_to": "2022-06-15",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2017-07-26"
+        ],
+        "last_price_date": "2022-06-15",
+        "name": "Mallinckrodt plc (legacy ordinary shares)",
+        "security_id": "US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf",
+        "symbol": "MNK"
+      },
+      "crosscheck": {
+        "basis": "sec_cancellation_after_eodhd_terminal",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 1786,
+        "old_close": 0.018,
+        "old_price_session": "2022-06-15",
+        "passed": true,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-22-178880",
+        "cik": "1567892",
+        "display_name": "Mallinckrodt plc (legacy ordinary shares)",
+        "filing_date": "2022-06-22",
+        "form": "8-K",
+        "items": [
+          "1.01",
+          "3.02",
+          "3.03",
+          "5.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review": false,
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "delisting",
+        "cash_amount": 0.0,
+        "confidence": "high",
+        "effective_date": "2022-06-16",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC emergence filing states that all legacy Mallinckrodt ordinary shares were cancelled and all new ordinary shares were issued to unsecured noteholders, leaving legacy equity with no distribution."
+      },
+      "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm",
+      "successor_security_id": "",
+      "verified_event": {
+        "action_type": "delisting",
+        "cash_amount": 0.0,
+        "confidence": "high",
+        "content_type": "text/html",
+        "effective_date": "2022-06-16",
+        "filing_date": "2022-06-22",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "Mallinckrodt's 2022 plan cancelled all predecessor ordinary shares with no legacy-equity distribution; after exact identity repair this is a verified zero-recovery delisting, not a permanent exception.",
+        "retrieved_at": "2026-07-18T00:40:46.735294Z",
+        "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm"
+      },
+      "verified_event_evidence_id": "mallinckrodt_2022_cancellation"
+    }
+  },
+  "release_version": "20260715-20260718T003128624534Z",
+  "summary": {
+    "action_type_counts": {
+      "delisting": 2
+    },
+    "candidate_count": 2,
+    "collected_count": 2,
+    "eligible_count": 0,
+    "official_exception_evidence": {
+      "evidence_count": 2,
+      "http_attempts": 0,
+      "status_counts": {
+        "verified_pinned_promoted": 2
+      }
+    },
+    "unresolved_count": 2
+  }
+}

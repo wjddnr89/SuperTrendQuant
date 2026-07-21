@@ -6732,6 +6732,25 @@ def validate_cross_validation_gate(
     policy_exceptions = reviewed_terminal_policy_exceptions(policy["events"])
     tail_corrections = reviewed_terminal_price_tail_corrections(policy["events"])
     reviewed_price_registry = reviewed_price_evidence_registry(policy["prices"])
+    reviewed_successor_chains = reviewed_no_data_successor_chains(
+        policy["prices"]
+    )
+    pinned_yahoo_response_registry: dict[str, Mapping[str, Any]] = {}
+    for chain in reviewed_successor_chains.values():
+        for spec in (*chain["nodes"], chain["final"]):
+            target_id = _text(spec.get("target_id")).lower()
+            existing = pinned_yahoo_response_registry.get(target_id)
+            _require(
+                existing is None
+                or (
+                    existing["source_sha256"] == spec["source_sha256"]
+                    and existing["cache_wrapper_sha256"]
+                    == spec["cache_wrapper_sha256"]
+                ),
+                "Reviewed successor-chain response pin is inconsistent.",
+            )
+            pinned_yahoo_response_registry[target_id] = spec
+    pinned_yahoo_response_registry.update(reviewed_price_registry)
     reviewed_remaining_price_exceptions = (
         reviewed_remaining_price_exception_inventory()
     )
@@ -7905,9 +7924,26 @@ def validate_cross_validation_gate(
         )
         request = _bounded_yahoo_source_request(item.get("source_url"))
         _require(request is not None, "Yahoo bounded source request is invalid.")
-        request_start, request_end, period1, period2 = (
-            _expected_bounded_yahoo_request(target, prices)
-        )
+        pinned_response = pinned_yahoo_response_registry.get(target_id)
+        if pinned_response is None:
+            request_start, request_end, period1, period2 = (
+                _expected_bounded_yahoo_request(target, prices)
+            )
+        else:
+            _, period1, period2 = request
+            request_start = pd.Timestamp(
+                period1, unit="s", tz="UTC"
+            ).date().isoformat()
+            request_end = (
+                pd.Timestamp(period2, unit="s", tz="UTC")
+                - pd.Timedelta(days=1)
+            ).date().isoformat()
+            _require(
+                source_hash == pinned_response["source_sha256"]
+                and _text(item.get("cache_wrapper_sha256")).lower()
+                == pinned_response["cache_wrapper_sha256"],
+                "Code-pinned Yahoo response identity changed: " + target_id,
+            )
         _require(
             request == (target["provider_symbol"], period1, period2)
             and _text(item.get("source_url"))
@@ -8023,7 +8059,6 @@ def validate_cross_validation_gate(
     for evidence_id in sorted(evidence_ids):
         _archive_payload(repository, archive, evidence_id)
 
-    reviewed_successor_chains = reviewed_no_data_successor_chains(policy["prices"])
     recomputed_source_archive_price_only: dict[str, dict[str, Any]] = {}
     factors: pd.DataFrame | None = None
     if expected_source_archive_price_only_ids:
@@ -8314,6 +8349,23 @@ def validate_cross_validation_gate(
             internal_rows = _all_internal_target_rows(
                 independent_prices, target
             ).drop(columns=["_session"])
+            reviewed_request_start = _date(
+                price_item.get("request_start_date")
+            )
+            reviewed_request_end = _date(price_item.get("request_end_date"))
+            internal_sessions = pd.to_datetime(
+                internal_rows["session"], errors="coerce"
+            )
+            _require(
+                reviewed_request_start
+                and reviewed_request_end
+                and not bool(internal_sessions.isna().any()),
+                "Reviewed exact price replay has invalid request bounds or sessions.",
+            )
+            internal_rows = internal_rows.loc[
+                internal_sessions.ge(pd.Timestamp(reviewed_request_start))
+                & internal_sessions.le(pd.Timestamp(reviewed_request_end))
+            ].copy()
             split_dates = [
                 _date(value)
                 for value in actions.loc[
@@ -8445,9 +8497,22 @@ def validate_cross_validation_gate(
                 "Yahoo report history bounds do not match the archived response.",
             )
             target = expected_price_targets[str(price_item["target_id"])]
-            request_start, request_end, period1, period2 = (
-                _expected_bounded_yahoo_request(target, prices)
+            pinned_response = pinned_yahoo_response_registry.get(
+                str(price_item["target_id"])
             )
+            if pinned_response is None:
+                request_start, request_end, period1, period2 = (
+                    _expected_bounded_yahoo_request(target, prices)
+                )
+            else:
+                request_start = _date(price_item.get("request_start_date"))
+                request_end = _date(price_item.get("request_end_date"))
+                period1 = _integer(
+                    price_item.get("request_period1"), "request_period1"
+                )
+                period2 = _integer(
+                    price_item.get("request_period2"), "request_period2"
+                )
             expected_xnys = pd.DatetimeIndex(
                 xcals.get_calendar("XNYS").sessions_in_range(
                     request_start, request_end
@@ -8529,6 +8594,10 @@ def validate_cross_validation_gate(
                 "Yahoo report failed bounded exact XNYS inventory validation.",
             )
             internal_sessions = _internal_target_sessions(prices, target)
+            if pinned_response is not None:
+                internal_sessions = internal_sessions[
+                    internal_sessions <= pd.Timestamp(request_end)
+                ]
             provider_sessions = _provider_target_sessions(parsed_price.bars, target)
             _require(
                 not internal_sessions.empty,

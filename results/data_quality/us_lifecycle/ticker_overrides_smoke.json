@@ -1,0 +1,294 @@
+{
+  "records": {
+    "US:EODHD:3e7acffc-054a-5173-bcb3-af5b1bf93c93": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:18:15.831111Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "7b35f08b2292b3713b6f9e6a0642839b7023bbfe354b69fe3fdc21169540c19f",
+          "source_url": "https://investors.gapinc.com/press-releases/news-details/2024/Gap-Inc.-To-Change-Ticker-Symbol-to-GAP-on-August-22-To-Report-Second-Quarter-Fiscal-2024-Results-on-August-29/default.aspx"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:18:15.831905Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "3ef972e7bc65c9bcb83bda85b65b7384b0e9dfedf8dc561c7dc791218b555f76",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/39911/000003991124000176/0000039911-24-000176.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2024-10-15",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2022-02-02"
+        ],
+        "last_price_date": "2024-10-15",
+        "name": "Gap Inc",
+        "security_id": "US:EODHD:3e7acffc-054a-5173-bcb3-af5b1bf93c93",
+        "symbol": "GPS"
+      },
+      "crosscheck": {
+        "basis": "date_mismatch",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 932,
+        "old_close": 24.44,
+        "old_price_session": "2024-08-22",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 54
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0000039911-24-000176",
+        "cik": "39911",
+        "display_name": "Gap Inc",
+        "filing_date": "2024-08-29",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2024-08-22",
+        "new_symbol": "GAP",
+        "ratio": null,
+        "reason": "Gap's official investor release states that GPS would begin trading as GAP on August 22, 2024; the subsequent SEC filing confirms GAP as the NYSE symbol."
+      },
+      "source_hash": "7b35f08b2292b3713b6f9e6a0642839b7023bbfe354b69fe3fdc21169540c19f",
+      "source_url": "https://investors.gapinc.com/press-releases/news-details/2024/Gap-Inc.-To-Change-Ticker-Symbol-to-GAP-on-August-22-To-Report-Second-Quarter-Fiscal-2024-Results-on-August-29/default.aspx",
+      "successor_security_id": ""
+    },
+    "US:EODHD:9a968d54-1ad6-5daf-9edd-ae838a9569b3": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:18:14.377025Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "27e695c91171dcd250007c32bc9fa47ec3a950f7b0537a412cd101d4d242a25b",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/31791/000115752323000815/a53397725ex99_1.htm"
+        },
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:18:14.545554Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "f873f67e28989b986a78ef72fc561899bfe3fe3f20c7ea3e5daaacd167aee234",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/31791/000003179124000004/pki-20231231.htm"
+        }
+      ],
+      "candidate": {
+        "active_to": "2023-05-16",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2023-05-16"
+        ],
+        "last_price_date": "2023-05-16",
+        "name": "PerkinElmer Inc",
+        "security_id": "US:EODHD:9a968d54-1ad6-5daf-9edd-ae838a9569b3",
+        "symbol": "PKI"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 114.21,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 114.21,
+        "old_price_session": "2023-05-16",
+        "passed": true,
+        "relative_deviation": 0.0,
+        "successor_close": 114.21,
+        "successor_price_session": "2023-05-16",
+        "terminal_gap_days": 0
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001157523-23-000815",
+        "cik": "31791",
+        "display_name": "PerkinElmer Inc",
+        "filing_date": "2023-05-11",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2023-05-16",
+        "new_symbol": "RVTY",
+        "ratio": null,
+        "reason": "The official SEC-filed issuer release and annual report state that PKI began trading as RVTY on May 16, 2023."
+      },
+      "source_hash": "27e695c91171dcd250007c32bc9fa47ec3a950f7b0537a412cd101d4d242a25b",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/31791/000115752323000815/a53397725ex99_1.htm",
+      "successor_security_id": "US:EODHD:9dd2300f-f254-560c-804d-952867f0a126"
+    },
+    "US:EODHD:b4ec0c21-2f69-5abf-973e-1f725f81f0ce": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:18:17.494477Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "f4b732885e4ffa05b92e2feecd2a4655993021bb54b32b2c37949fcdf4f3f28b",
+          "source_url": "https://www.bny.com/corporate/global/en/about-us/newsroom/press-release/bny-announces-planned-change-of-stock-ticker-symbol-to-bny-130465.html"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:18:17.495014Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "81f89cb5b19feab0bb74746d35191db612c00994358e7e9421715ea5a14bea12",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1390777/000119312526269610/0001193125-26-269610.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2026-05-20",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2026-05-21"
+        ],
+        "last_price_date": "2026-05-20",
+        "name": "The Bank of New York Mellon Corporation",
+        "security_id": "US:EODHD:b4ec0c21-2f69-5abf-973e-1f725f81f0ce",
+        "symbol": "BK"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 138.98,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 137.16,
+        "old_price_session": "2026-05-20",
+        "passed": true,
+        "relative_deviation": 0.013095409411426057,
+        "successor_close": 138.98,
+        "successor_price_session": "2026-05-21",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-26-269610",
+        "cik": "1390777",
+        "display_name": "The Bank of New York Mellon Corporation",
+        "filing_date": "2026-06-12",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2026-05-21",
+        "new_symbol": "BNY",
+        "ratio": null,
+        "reason": "BNY's official issuer release states that BK common stock would begin trading under BNY effective May 21, 2026; the subsequent SEC filing confirms BNY as the NYSE symbol."
+      },
+      "source_hash": "f4b732885e4ffa05b92e2feecd2a4655993021bb54b32b2c37949fcdf4f3f28b",
+      "source_url": "https://www.bny.com/corporate/global/en/about-us/newsroom/press-release/bny-announces-planned-change-of-stock-ticker-symbol-to-bny-130465.html",
+      "successor_security_id": "US:EODHD:f9f9df89-b4e2-5894-8822-6f64c6d333ca"
+    },
+    "US:EODHD:fc00ff9c-3a71-5995-968e-bc351f950cb4": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:18:13.832075Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "e2cec2305520d654eb7667991407dcdcd137ec6bc88b47f652c4168cc7037810",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/18926/000001892620000028/ctl-20200930.htm"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:18:13.832825Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "b206697f4c66fe9f9d7cab2415774150ce7d99220404d5a9ee5f9f9f39a24962",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/18926/000119312520247184/0001193125-20-247184.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2021-02-01",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2020-09-18"
+        ],
+        "last_price_date": "2021-02-01",
+        "name": "Lumen Technologies Inc",
+        "security_id": "US:EODHD:fc00ff9c-3a71-5995-968e-bc351f950cb4",
+        "symbol": "CTL"
+      },
+      "crosscheck": {
+        "basis": "index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 10.77,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 10.77,
+        "old_price_session": "2020-09-18",
+        "passed": true,
+        "relative_deviation": 0.0,
+        "successor_close": 10.77,
+        "successor_price_session": "2020-09-18",
+        "terminal_gap_days": 136
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0000018926-20-000028",
+        "cik": "18926",
+        "display_name": "Lumen Technologies Inc",
+        "filing_date": "2020-11-05",
+        "form": "10-Q",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2020-09-18",
+        "new_symbol": "LUMN",
+        "ratio": null,
+        "reason": "CenturyLink's SEC quarterly report states that its stock began trading under LUMN effective September 18, 2020."
+      },
+      "source_hash": "e2cec2305520d654eb7667991407dcdcd137ec6bc88b47f652c4168cc7037810",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/18926/000001892620000028/ctl-20200930.htm",
+      "successor_security_id": "US:EODHD:3d809999-79d0-52f9-b937-a51185539c4d"
+    }
+  },
+  "release_version": "20260715-20260717T155657288079Z",
+  "summary": {
+    "action_type_counts": {
+      "ticker_change": 4
+    },
+    "candidate_count": 4,
+    "collected_count": 4,
+    "eligible_count": 3,
+    "unresolved_count": 1
+  }
+}

@@ -23,6 +23,7 @@ from .manifest import sha256_bytes
 REVIEWED_REMAINING_PRICE_EXCEPTION_BASIS = (
     "reviewed_exact_secondary_provider_disagreement/v1"
 )
+TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_DATA_END = "2026-07-15"
 
 # Populated only after the complete 33-target diagnostic inventory is reviewed.
 REVIEWED_REMAINING_PRICE_EXCEPTION_LIMITATIONS = {
@@ -315,6 +316,7 @@ def validate_reviewed_remaining_price_exception(value: Mapping[str, Any]) -> Non
 
 __all__ = [
     "REVIEWED_REMAINING_PRICE_EXCEPTION_BASIS",
+    "TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_DATA_END",
     "TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_INVENTORY_SHA256",
     "TRUSTED_REVIEWED_REMAINING_PRICE_EXCEPTION_SPECS",
     "apply_reviewed_remaining_price_exceptions",

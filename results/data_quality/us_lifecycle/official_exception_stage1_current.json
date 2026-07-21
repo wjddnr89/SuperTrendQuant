@@ -1,0 +1,367 @@
+{
+  "official_exception_evidence": {
+    "frc_fdic_receivership": {
+      "action_type": "",
+      "candidate_binding_status": "bound",
+      "candidate_last_price_date": "2023-05-02",
+      "candidate_security_id": "US:EODHD:3453b450-03d1-52ee-9100-cf80856b06ef",
+      "candidate_symbol": "FRC",
+      "cash_amount": null,
+      "claim": "FRC entered FDIC receivership on 2023-05-01; stockholders remain the last-priority class and the active receivership has no final per-share recovery.",
+      "content_bytes": 83710,
+      "content_type": "text/html; charset=UTF-8",
+      "effective_date": "2023-05-01",
+      "exception_code": "recovery_uncertain",
+      "matched_phrases": [
+        "First Republic Bank",
+        "May 1, 2023",
+        "stockholders",
+        "Subordinated Debt Stockholders"
+      ],
+      "observed_sha256": "30c6bad80710f702144fa3ef61ca1ae14e81503fb0f436abdad7f91ebe8e51eb",
+      "pinned_sha256": "",
+      "resolution_kind": "exception",
+      "retrieved_at": "2026-07-18T00:39:18.051566Z",
+      "source_url": "https://www.fdic.gov/resources/resolutions/bank-failures/failed-bank-list/first-republic.html",
+      "status": "observed_unpinned_attached"
+    },
+    "legacy_val_2021_warrant_consideration": {
+      "action_type": "",
+      "candidate_binding_status": "bound",
+      "candidate_last_price_date": "",
+      "candidate_security_id": "",
+      "candidate_symbol": "",
+      "cash_amount": null,
+      "claim": "Legacy VAL interests ceased after the 2021 reorganization and holders received warrants with nonzero, path-dependent value that cannot be represented as a zero-cash delisting.",
+      "content_bytes": 139666,
+      "content_type": "text/html",
+      "effective_date": "2021-04-30",
+      "exception_code": "unsupported_consideration",
+      "matched_phrases": [
+        "April 30, 2021",
+        "5,645,161 warrants",
+        "138.88",
+        "one New Common Share per Warrant"
+      ],
+      "observed_sha256": "895fe74de611eb55e89524949f408b1e9b6fc6d84a0f9b538e18ad4ab8abc25e",
+      "pinned_sha256": "",
+      "resolution_kind": "exception",
+      "retrieved_at": "2026-07-18T00:39:56.986295Z",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/314808/000110465921058903/tm2114630d1_8k.htm",
+      "status": "observed_unpinned_unbound"
+    },
+    "mallinckrodt_2022_cancellation": {
+      "action_type": "delisting",
+      "candidate_binding_status": "bound",
+      "candidate_last_price_date": "2022-06-15",
+      "candidate_security_id": "US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf",
+      "candidate_symbol": "MNK",
+      "cash_amount": 0.0,
+      "claim": "Mallinckrodt's 2022 plan cancelled all predecessor ordinary shares with no legacy-equity distribution; after exact identity repair this is a verified zero-recovery delisting, not a permanent exception.",
+      "content_bytes": 184840,
+      "content_type": "text/html",
+      "effective_date": "2022-06-16",
+      "exception_code": "",
+      "matched_phrases": [
+        "June 16, 2022",
+        "existing ordinary shares",
+        "cancelled",
+        "100% of the new Mallinckrodt Ordinary Shares to holders of the Guaranteed Unsecured Notes"
+      ],
+      "observed_sha256": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+      "pinned_sha256": "",
+      "resolution_kind": "applied_event",
+      "retrieved_at": "2026-07-18T00:40:46.735294Z",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm",
+      "status": "observed_unpinned_attached"
+    },
+    "mallinckrodt_2023_cancellation": {
+      "action_type": "delisting",
+      "candidate_binding_status": "bound",
+      "candidate_last_price_date": "",
+      "candidate_security_id": "",
+      "candidate_symbol": "",
+      "cash_amount": 0.0,
+      "claim": "Mallinckrodt's 2023 plan cancelled the predecessor ordinary shares without consideration; after exact identity repair this is a verified zero-recovery delisting, never an exception on the reused Muniholdings ticker.",
+      "content_bytes": 3998498,
+      "content_type": "text/html",
+      "effective_date": "2023-11-14",
+      "exception_code": "",
+      "matched_phrases": [
+        "November 14, 2023",
+        "All of Mallinckrodt ordinary shares were cancelled for no consideration"
+      ],
+      "observed_sha256": "a8981dfbe1b3dcc287fb6c0ebc8f014be96724ec2a7a878301e9e5bedfcbf7d5",
+      "pinned_sha256": "",
+      "resolution_kind": "applied_event",
+      "retrieved_at": "2026-07-18T00:40:47.234797Z",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000156789224000008/mnk-20231229.htm",
+      "status": "observed_unpinned_unbound"
+    }
+  },
+  "official_exception_evidence_http_attempts": 0,
+  "records": {
+    "US:EODHD:3453b450-03d1-52ee-9100-cf80856b06ef": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T00:42:39.707946Z",
+          "source": "sec_edgar_search",
+          "source_hash": "83f8902232a9fcb312ee067a41184ceb3adba7d7aba758d3323fb9141f20fd15",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22First+Republic+Bank%22&forms=8-K&startdt=2023-02-16&enddt=2023-06-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T00:42:39.708407Z",
+          "source": "sec_edgar_search",
+          "source_hash": "433bd0ad9264b7e203f0f40249e278505b5153d784d3956462af8f0647171f95",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22First+Republic+Bank%22&forms=6-K&startdt=2023-02-16&enddt=2023-06-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T00:42:39.708553Z",
+          "source": "sec_edgar_search",
+          "source_hash": "044675b84605e0fba4ef8410298c07e1fbc1305a2a56b25dd52a0b4375f4b551",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22First+Republic+Bank%22&forms=25-NSE&startdt=2023-02-16&enddt=2023-06-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T00:42:39.708597Z",
+          "source": "sec_edgar_search",
+          "source_hash": "5a42e6e6dbf44e4052bd3d9f147d4eb4e8b896b39233b16eab0462ed7f66ed23",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22FRC%22&forms=8-K&startdt=2023-02-16&enddt=2023-06-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T00:42:39.708818Z",
+          "source": "sec_edgar_search",
+          "source_hash": "f8735b341f74c1094e1c58ef92208bea1f53c02c76c587c7209ce74a27c52f80",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22FRC%22&forms=6-K&startdt=2023-02-16&enddt=2023-06-16&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-18T00:42:39.709232Z",
+          "source": "sec_edgar_search",
+          "source_hash": "5ea5619d9f7c6ace8354cd68236e41e6f41bab4d849a724f265130f7198ab2e6",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22FRC%22&forms=25-NSE&startdt=2023-02-16&enddt=2023-06-16&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:39.709760Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "ca46cd00287b9d4fba483c16e8e5c7b1021dcf3d8c670112def29d7b0b8bdb59",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1002638/000119312523096505/0001193125-23-096505.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:40.082358Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "9c7704ac5023eb1c154fc70a11bc25030ae9f0ecf53e68b76cbf0d27da9c63dc",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1879293/000149315223010365/0001493152-23-010365.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:40.277436Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "0ec7ae26cf27b7cff6b206d35f469ab5b4fcf9f55539b157f40762f39d157683",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/19617/000001961723000304/0000019617-23-000304.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:40.318139Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "eb45f4744ac3cda7cc414e6ee5a72aad4fc222919684080b1afe8f45405c6d1c",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/879635/000087963523000027/0000879635-23-000027.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:40.427206Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "95da89f54a47f5cb624c8a5809242aa4d2923cba661ae950bb927ed56f17f73d",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/92103/000119312523126033/0001193125-23-126033.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:40.605749Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "ccbf439ecc031d3935ed681abb026c88f8e8b637ce5c75ebdf08ee81ac0cf290",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1822993/000182299323000027/0001822993-23-000027.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:43.584647Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "0fbaabce6ca5e1264165934b245152198686bcf5af4003d34642d27e0aeb4f95",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/887596/000110465923058468/0001104659-23-058468.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-18T00:42:44.315884Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "3a479df5fd60f9405d317d3ff2782c0e4b6958ce3375d425c7c20049399dbcb0",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1327607/000132760723000074/0001327607-23-000074.txt"
+        },
+        {
+          "claim": "FRC entered FDIC receivership on 2023-05-01; stockholders remain the last-priority class and the active receivership has no final per-share recovery.",
+          "content_type": "text/html; charset=UTF-8",
+          "effective_date": "2023-05-01",
+          "evidence_id": "frc_fdic_receivership",
+          "exception_code": "recovery_uncertain",
+          "matched_phrases": [
+            "First Republic Bank",
+            "May 1, 2023",
+            "stockholders",
+            "Subordinated Debt Stockholders"
+          ],
+          "pin_status": "observed_unpinned",
+          "resolution_kind": "exception",
+          "retrieved_at": "2026-07-18T00:39:18.051566Z",
+          "source": "fdic_failed_bank_receivership",
+          "source_hash": "30c6bad80710f702144fa3ef61ca1ae14e81503fb0f436abdad7f91ebe8e51eb",
+          "source_url": "https://www.fdic.gov/resources/resolutions/bank-failures/failed-bank-list/first-republic.html"
+        }
+      ],
+      "candidate": {
+        "active_to": "2023-05-02",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2023-05-04"
+        ],
+        "last_price_date": "2023-05-02",
+        "name": "First Republic Bank",
+        "security_id": "US:EODHD:3453b450-03d1-52ee-9100-cf80856b06ef",
+        "symbol": "FRC"
+      },
+      "crosscheck": {
+        "basis": "no_parsed_event",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "nearest_index_remove_gap_days": null,
+        "passed": false,
+        "terminal_gap_days": null
+      },
+      "eligible_for_apply": false,
+      "error": "No supported lifecycle terms found in candidate SEC filings.",
+      "filing": {
+        "accession_number": "0001193125-23-096505",
+        "cik": "0001002638",
+        "display_name": "OPEN TEXT CORP  (OTEX)  (CIK 0001002638)",
+        "filing_date": "2023-04-10",
+        "form": "8-K/A",
+        "items": [
+          "2.01",
+          "9.01"
+        ],
+        "score": 6.266666666666667
+      },
+      "manual_review_reason": "",
+      "parsed": null,
+      "source_hash": "",
+      "source_url": "",
+      "successor_security_id": ""
+    },
+    "US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-18T00:42:39.706393Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm"
+        },
+        {
+          "claim": "Mallinckrodt's 2022 plan cancelled all predecessor ordinary shares with no legacy-equity distribution; after exact identity repair this is a verified zero-recovery delisting, not a permanent exception.",
+          "content_type": "text/html",
+          "effective_date": "2022-06-16",
+          "evidence_id": "mallinckrodt_2022_cancellation",
+          "exception_code": "",
+          "matched_phrases": [
+            "June 16, 2022",
+            "existing ordinary shares",
+            "cancelled",
+            "100% of the new Mallinckrodt Ordinary Shares to holders of the Guaranteed Unsecured Notes"
+          ],
+          "pin_status": "observed_unpinned",
+          "resolution_kind": "applied_event",
+          "retrieved_at": "2026-07-18T00:40:46.735294Z",
+          "source": "sec_edgar_lifecycle_exception",
+          "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm"
+        }
+      ],
+      "candidate": {
+        "active_to": "2022-06-15",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2017-07-26"
+        ],
+        "last_price_date": "2022-06-15",
+        "name": "Mallinckrodt plc (legacy ordinary shares)",
+        "security_id": "US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf",
+        "symbol": "MNK"
+      },
+      "crosscheck": {
+        "basis": "sec_cancellation_after_eodhd_terminal",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 1786,
+        "old_close": 0.018,
+        "old_price_session": "2022-06-15",
+        "passed": true,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-22-178880",
+        "cik": "1567892",
+        "display_name": "Mallinckrodt plc (legacy ordinary shares)",
+        "filing_date": "2022-06-22",
+        "form": "8-K",
+        "items": [
+          "1.01",
+          "3.02",
+          "3.03",
+          "5.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "The provider reused MNK for an unrelated Muniholdings fund and for reorganized Mallinckrodt shares; the 2022 legacy cancellation and the 2023 reorganized-share cancellation must be assigned to separate security identities with no successor link.",
+      "parsed": {
+        "action_type": "delisting",
+        "cash_amount": 0.0,
+        "confidence": "high",
+        "effective_date": "2022-06-16",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC emergence filing states that all legacy Mallinckrodt ordinary shares were cancelled and all new ordinary shares were issued to unsecured noteholders, leaving legacy equity with no distribution."
+      },
+      "source_hash": "bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm",
+      "successor_security_id": ""
+    }
+  },
+  "release_version": "20260715-20260718T003128624534Z",
+  "summary": {
+    "action_type_counts": {
+      "delisting": 1,
+      "unresolved": 1
+    },
+    "candidate_count": 2,
+    "collected_count": 2,
+    "eligible_count": 0,
+    "official_exception_evidence": {
+      "evidence_count": 4,
+      "http_attempts": 0,
+      "status_counts": {
+        "observed_unpinned_attached": 2,
+        "observed_unpinned_unbound": 2
+      }
+    },
+    "unresolved_count": 2
+  }
+}

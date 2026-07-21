@@ -1,0 +1,905 @@
+<div class="dr-overview">
+  
+  
+
+  
+    <div class="dr-performance-chart  dr-details-container">
+<h3>52-Week Performance Chart</h3>
+
+
+
+
+<iframe id="chart" class="chart" ng-src="https://custom.factsetdigitalsolutions.com/custom/bny-mellon/chart-profile.html?symb=63884N108" frameborder="0" scrolling="no" width="100%" height="100%" src="https://custom.factsetdigitalsolutions.com/custom/bny-mellon/chart-profile.html?symb=63884N108"></iframe>
+<div class="data-provider-source">
+	<p>Powered by FactSet Research Systems Inc</p>
+</div>
+</div>
+  
+  <div class="overview-two-col-layout">
+    <div class="panel-details dr-details-container">
+    <div class="panel-heading">
+        <h3>Recent Company News</h3>
+        <a class="panel-top-cta" href="#" onclick="switchTab('news')">More</a>
+    </div>
+    <div class="panel-content">
+        <div class="drNews-tab-titles">
+            <ul class="drNews-tab-list">
+                <li>
+                    <a href="#" class="drNews-tab-list-item active" data-target="#drFactset_news_content" data-toggle="drNews">FACTSET NEWS</a>
+                </li>
+
+            </ul>
+        </div>
+        
+
+        <div class="drNews-tab-content">
+            <div class="drNews-tab-pane active" id="drFactset_news_content">
+                
+                
+					<div class="no-data-message">
+						<p>No news is available</p>
+                    </div>    
+                
+                <div class="data-provider-source">
+                    <p>Powered by FactSet Research Systems Inc.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+	
+    
+<link rel="stylesheet" href="/etc.clientlibs/adr/clientlibs/global-adr-newsData.min.css" type="text/css">
+<script src="/etc.clientlibs/adr/clientlibs/global-adr-newsData.min.js"></script>
+
+
+
+
+<script>
+    $('[data-toggle="drNews"]').click(function (e) {
+        e.preventDefault();
+        var $this = $(this),
+            targ = $this.attr("data-target");
+
+        var tabListItems = document.getElementsByClassName("drNews-tab-list-item");
+        for (i = 0; i < tabListItems.length; i++) {
+            tabListItems[i].className = tabListItems[i].className.replace("active", "");
+        }
+        this.classList.add("active");
+
+        var tabContents = document.getElementsByClassName("drNews-tab-pane");
+        for (j = 0; j < tabContents.length; j++) {
+            tabContents[j].className = tabContents[j].className.replace("active", "");
+        }
+        document.getElementById(targ.substring(1)).classList.add("active");
+
+        return false;
+    });
+</script>
+
+    
+
+
+  </div>
+  
+ 
+
+
+  
+
+
+
+
+
+
+
+    <div class="panel-details dr-details-container">
+        <div class="panel-content">
+            <div class="drEvents-tab-titles">
+                <ul class="drEvents-tab-list">
+                        <li>
+                            <a href="#" class="drEvents-tab-list-item " data-target="#special_notices" data-toggle="drEvents">SPECIAL NOTICES</a>
+                        </li>
+
+                    <li>
+                        <a href="#" class="drEvents-tab-list-item active" data-target="#dr_events" data-toggle="drEvents">RECENT / UPCOMING DR EVENTS</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="drEvents-tab-content-container">
+                <div class="drEvents-tab-content">
+                    <div class="drEvents-tab-pane special-notices " id="special_notices">
+                        
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/61/AL2000061.pdf"><strong>Jun 25, 2026</strong>- Societatea Energetica Electrica SA - Reg. S - Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/60/AL2000060.pdf"><strong>Jun 1, 2026</strong>- Zurich Insurance Cash Dividend Final Information</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/59/AL2000059.pdf"><strong>May 12, 2026</strong>- Elevra Lithium Limited Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/58/AL2000058.pdf"><strong>May 6, 2026</strong>- Ozon Holdings PLC: Special Notice to Holders</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/57/AL2000057.pdf"><strong>Apr 17, 2026</strong>- First Phosphate Corp. Special Notice: Instructions for Converting Common Shares to ADRs</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/56/AL2000056.pdf"><strong>Apr 14, 2026</strong>- Nicola Mining Inc. Special Notice - Instructions for Converting Common Shares into ADRs</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/53/AL2000053.pdf"><strong>Feb 2, 2026</strong>- AB Ignitis Grupe 144A DSF Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/54/AL2000054.pdf"><strong>Feb 2, 2026</strong>- AB Ignitis Grupe Reg. S DSF Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/51/AL2000051.pdf"><strong>Jan 5, 2026</strong>- Companhia Paranaense de Energia-COPEL - Pref - Cash Distribution</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/50/AL2000050.pdf"><strong>Dec 26, 2025</strong>- Brainchip Holdings Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/49/AL2000049.pdf"><strong>Dec 23, 2025</strong>- Kazia Therapeutics Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/48/AL2000048.pdf"><strong>Dec 16, 2025</strong>- Eutelsat Communications S.A. - Deposit Certificate</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/46/AL2000046.pdf"><strong>Oct 28, 2025</strong>- Inventiva S.A Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/45/AL2000045.pdf"><strong>Oct 27, 2025</strong>- Brazilian Rare Earths - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/43/AL2000043.pdf"><strong>Oct 14, 2025</strong>- Kingsoft Cloud - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/08/AL877908.pdf"><strong>Aug 29, 2025</strong>- Lynas Corporation Limited - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/42/AL2000042.pdf"><strong>Aug 19, 2025</strong>- Country Peru: Appointment of Custodian Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/40/AL2000040.pdf"><strong>Aug 13, 2025</strong>- American Rare Earths Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/41/AL2000041.pdf"><strong>Aug 13, 2025</strong>- Silex Systems Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/22/AL2000022.pdf"><strong>Jul 28, 2025</strong>- IperionX Limited Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/37/AL2000037.pdf"><strong>Jun 5, 2025</strong>- Achilles Therapeutics - Cash Distribution Final Rate</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/38/AL2000038.pdf"><strong>Jun 2, 2025</strong>- Valterra Platinum Limited Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/36/AL2000036.pdf"><strong>May 23, 2025</strong>- Special Notice: Kingsoft Cloud Cancellations</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/35/AL2000035.pdf"><strong>May 14, 2025</strong>- Ryanair Holdings plc: Notice to ADR Holders</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/34/AL2000034.pdf"><strong>May 9, 2025</strong>- Cautionary Notice Mitsubishi UFJ Financial SEC F-6 DR Registration Limit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/14/AL2000014.pdf"><strong>Feb 5, 2025</strong>- Paraguay Treasury Bond Cusip 699149BG4 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/19/AL2000019.pdf"><strong>Feb 5, 2025</strong>- Paraguay Treasury Bond Cusip 699149BB5 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL2000017.pdf"><strong>Feb 5, 2025</strong>- Paraguay Treasury Bond Cusip 699149BD1 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/18/AL2000018.pdf"><strong>Feb 5, 2025</strong>- Paraguay Treasury Bond Cusip 699149BC3 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/32/AL2000032.pdf"><strong>Jan 17, 2025</strong>- Deposit Certification - Novonix Limited</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/30/AL2000030.pdf"><strong>Nov 21, 2024</strong>- Kazia Therapeutics Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/27/AL2000027.pdf"><strong>Nov 21, 2024</strong>- 36Kr Holdings Inc Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/25/AL2000025.pdf"><strong>Nov 21, 2024</strong>- Holders of ZEEKR Intelligent Technology Holding Limited - Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/28/AL2000028.pdf"><strong>Nov 21, 2024</strong>- Evaxion Biotech A/S Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/29/AL2000029.pdf"><strong>Nov 21, 2024</strong>- Genetic Technologies Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/26/AL2000026.pdf"><strong>Nov 21, 2024</strong>- Tokyo Lifestyle Co., Ltd Depositary Service Fee Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/20/AL2000020.pdf"><strong>Nov 14, 2024</strong>- Paraguay Treasury Bond Cusip 699149BA7 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/21/AL2000021.pdf"><strong>Nov 14, 2024</strong>- Paraguay Treasury Bond Cusip 699149AZ3 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/15/AL2000015.pdf"><strong>Nov 14, 2024</strong>- Paraguay Treasury Bond Cusip 699149BF6 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/16/AL2000016.pdf"><strong>Nov 14, 2024</strong>- Paraguay Treasury Bond Cusip 699149BE9 Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/13/AL2000013.pdf"><strong>Oct 7, 2024</strong>- British Land Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/12/AL2000012.pdf"><strong>Sep 30, 2024</strong>- Bayerische Motoren Werke Aktiengesellschaft (“BMW”) - INSTRUCTION LETTER </a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/10/AL2000010.pdf"><strong>Sep 10, 2024</strong>- Appointment of Custodian Notice: Country: Kazakhstan </a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/02/AL200002.pdf"><strong>Aug 26, 2024</strong>- Final Cash Dividend Announcement - JSC Kaspi.kz -144A - Cusip 48581R106</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL1143417.pdf"><strong>Jun 21, 2024</strong>- Opthea Limited Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/85/AL608285.pdf"><strong>Jun 11, 2024</strong>- Immutep Limited- Deposit of Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/01/AL1141801.pdf"><strong>May 8, 2024</strong>- WOOLWORTHS 144A Cash Dividend Information</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/08/AL1141008.pdf"><strong>Apr 16, 2024</strong>- Cash Dividend - Final Rate Holders of JSC Kaspi.kz – 144A</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/09/AL1141009.pdf"><strong>Apr 16, 2024</strong>- Cash Dividend - Final Rate Holders of JSC Kaspi.kz</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/01/AL1138601.pdf"><strong>Feb 7, 2024</strong>- Certification Phoenix Copper Limited</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/30/AL1133030.pdf"><strong>Jan 24, 2024</strong>- Deposit Certification - Coloplast</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/34/AL1135934.pdf"><strong>Dec 19, 2023</strong>- MorphoSys Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/75/AL1135475.pdf"><strong>Dec 5, 2023</strong>- Special Notice: Cresud S.A.C.I.F. y.A - Cash Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/78/AL1135478.pdf"><strong>Dec 5, 2023</strong>- Special Notice - RSA Inversiones y Representaciones Sociedad Anonima - Cash Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/76/AL1135476.pdf"><strong>Dec 5, 2023</strong>- Special Notice - Cresud S.AC.I.F. y A. - Stock Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/79/AL1135479.pdf"><strong>Dec 5, 2023</strong>- Special Notice - IRSA Inversiones y Representaciones Sociedad Anonima - Stock Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/75/AL1135375.pdf"><strong>Dec 1, 2023</strong>- Change of Custodian Notice - Tung Ho Steel</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/36/AL1134536.pdf"><strong>Oct 25, 2023</strong>- Biophytis Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/49/AL1133849.pdf"><strong>Sep 28, 2023</strong>- Opthea Limited Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/40/AL1133040.pdf"><strong>Sep 1, 2023</strong>- Final Announcement - JSC Kaspi.kz - REGs Cash Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/41/AL1133041.pdf"><strong>Sep 1, 2023</strong>- Final Announcement - JSC Kaspi.kz -144A Cash Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/78/AL1131678.pdf"><strong>Jul 26, 2023</strong>- JBS: Cautionary Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/01/AL1131301.pdf"><strong>Jul 14, 2023</strong>- BRF Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/33/AL1130733.pdf"><strong>Jun 28, 2023</strong>- Deposit Certification - Localiza Rent A Car</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/99/AL1130199.pdf"><strong>Jun 15, 2023</strong>- Raia Drogasil: Cancellation of Stock Dividend Distribution</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/75/AL1129375.pdf"><strong>May 31, 2023</strong>- Holders of JSC Kaspi.kz – 144A - Final Announcement Cash Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/76/AL1129376.pdf"><strong>May 31, 2023</strong>- Holders of JSC Kaspi.kz - Reg. S Final Announcement Cash Dividend</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/19/AL1129319.pdf"><strong>May 30, 2023</strong>- IDEX Biometrics Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/79/AL888479.pdf"><strong>Feb 22, 2023</strong>- Kazia Therapeutics - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/63/AL1119263.pdf"><strong>Feb 2, 2023</strong>- Iberdrola Web Final Notice February, 13, 2023</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/51/AL1112851.pdf"><strong>Dec 12, 2022</strong>- Credit Suisse Group AG - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/27/AL1110827.pdf"><strong>Nov 28, 2022</strong>- Important Notice: Holders of JSC Kaspi.dz - 144A   Cash Dividend - Final Rate</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/25/AL1110825.pdf"><strong>Nov 28, 2022</strong>- Important Notice: Holders of JSC Kaspi.kz - Reg. S : Cash Dividend - Final Rate</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/77/AL1104577.pdf"><strong>Oct 31, 2022</strong>- Dividend Direct Claim Event Notice - NOVATEK</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/81/AL1020381.pdf"><strong>Oct 3, 2022</strong>- Russia Notice of Custodian Change: JSC Kaspi.kz</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/49/AL1019449.pdf"><strong>Sep 27, 2022</strong>- Conditional Books Open Notice: PJSC MMC NORILSK NICKEL   LEVEL I CUSIP: 55315J102</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/46/AL1019446.pdf"><strong>Sep 27, 2022</strong>- Conditional Books Open Notice: JSC NOVATEK  REG S CUSIP: 669888109</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/14/AL1019314.pdf"><strong>Sep 26, 2022</strong>- Conditional Books Open Notice: SURGUTNEFTEGAS PJSC - COMMON</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/24/AL1019324.pdf"><strong>Sep 26, 2022</strong>- Conditional Books Open Notice: SURGUTNEFTEGAS PJSC - PREF</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/22/AL1019322.pdf"><strong>Sep 26, 2022</strong>- Conditional Books Open Notice:  PJSC POLYUS   LEVEL I CUSIP: 73181P102</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL1019317.pdf"><strong>Sep 26, 2022</strong>- Conditional Books Open Notice: PJSC RUSHYDRO 144-A CUSIP: 782183503</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/18/AL1019318.pdf"><strong>Sep 26, 2022</strong>- Conditional Books Open Notice: PJSC POLYUS   REG S CUSIP: 73181M117 144-A CUSIP: 73181M109</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/40/AL1016540.pdf"><strong>Sep 2, 2022</strong>- Books Closed Notice: Novatek - Reg. S</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/41/AL1016541.pdf"><strong>Sep 2, 2022</strong>- Books Closed Notice: PJSC POLYUS - Level 1 Cusip: 73181P102</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/34/AL1016534.pdf"><strong>Sep 2, 2022</strong>- Books Closed Notice: PJSC POLYUS - REG S CUSIP: 73181M117 and 144-A CUSIP: 73181M109</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/39/AL1016539.pdf"><strong>Sep 2, 2022</strong>- Books Closed Notice: PJSC MMC NORILSK NICKEL</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/78/AL1016478.pdf"><strong>Sep 1, 2022</strong>- PJSC RusHydro 144A Books Closed Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/25/AL1016325.pdf"><strong>Sep 1, 2022</strong>- JSC VTB BANK: Special License to allow for the orderly winddown of the VTB depositary receipt program.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/95/AL1015995.pdf"><strong>Aug 31, 2022</strong>- Surgutneftegas PJSC Preferred Shares - Books Closed Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/96/AL1015996.pdf"><strong>Aug 31, 2022</strong>- Surgutneftegas PJSC Common Shares - Books Closed Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/48/AL1015448.pdf"><strong>Aug 26, 2022</strong>- Corporate Action: Books Closed: JSC VTB BANK - ONE GDR REPRESENTS TWO THOUSAND ORDINARY SHARES - REG S CUSIP: 46630Q202 144-A CUSIP: 46630Q103</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL1014917.pdf"><strong>Aug 23, 2022</strong>- Australia and New Zealand Banking -  Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/52/AL1013252.pdf"><strong>Aug 9, 2022</strong>- SURGUTNEFTEGAS PJSC - PREFERRED– DR Holder Request</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/54/AL1013254.pdf"><strong>Aug 9, 2022</strong>- SURGUTNEFTEGAS PJSC – COMMON – DR Holder Request</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/20/AL1011820.pdf"><strong>Aug 1, 2022</strong>- Iberdrola Supplementary Dividend - Final Rate</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/91/AL1009891.pdf"><strong>Jul 18, 2022</strong>- PJSC MMC Norilsk Nickel– DR Holder Request</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/92/AL1009892.pdf"><strong>Jul 18, 2022</strong>- Dividend Direct Claim Event Notice - NOVATEK</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/45/AL1003245.pdf"><strong>Jun 10, 2022</strong>- Olympus Corporation -  Cautionary Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL1000817.pdf"><strong>May 24, 2022</strong>- SPECIAL NOTICE - VTB Special License</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/33/AL960933.pdf"><strong>May 23, 2022</strong>- Gol Linhas - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/05/AL999105.pdf"><strong>May 10, 2022</strong>- Special Notice: VTB Bank -  Orderly winddown of VTB Depositary Receipt Program</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/77/AL650477.pdf"><strong>Mar 31, 2022</strong>- Certification of Deposit - Oi - Com</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/16/AL992516.pdf"><strong>Mar 31, 2022</strong>- Oi - Pref - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/56/AL989256.pdf"><strong>Mar 9, 2022</strong>- Pretium Resources - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/03/AL988103.pdf"><strong>Mar 1, 2022</strong>- americanas s.a - Reg. S - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/47/AL986047.pdf"><strong>Feb 16, 2022</strong>- Syrah Resources - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/81/AL976781.pdf"><strong>Dec 16, 2021</strong>- CSL - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/88/AL974888.pdf"><strong>Dec 9, 2021</strong>- Itau Corpbanca - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/33/AL967033.pdf"><strong>Oct 14, 2021</strong>- Silex Systems - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/96/AL962396.pdf"><strong>Sep 14, 2021</strong>- Epigenomics- Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/91/AL962091.pdf"><strong>Sep 10, 2021</strong>- China Telecom Corporation - Notice to Holders</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/65/AL957865.pdf"><strong>Aug 12, 2021</strong>- Deposit Certification - Prosus N.V.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/31/AL956831.pdf"><strong>Aug 5, 2021</strong>- Change of Custodian Notice - Country: Russia</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/18/AL954918.pdf"><strong>Jul 26, 2021</strong>- CHINA UNICOM (HONG KONG) LIMITED ONE ADS REPRESENTS TEN ORDINARY SHARES (CUSIP: 16945R104)</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/65/AL954265.pdf"><strong>Jul 21, 2021</strong>- Deposit Certification - B2W - Companhia Digital Reg. S</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/81/AL948081.pdf"><strong>Jun 17, 2021</strong>- NOTICE TO HOLDERS OF AMERICAN DEPOSITARY SHARES REPRESENTING DEPOSITED ORDINARY SHARES OF: CHINA MOBILE LIMITED</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/55/AL939855.pdf"><strong>May 4, 2021</strong>- Deposit Certification - Lojas Renner</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/93/AL934393.pdf"><strong>Apr 2, 2021</strong>- NOTICE TO HOLDERS OF AMERICAN DEPOSITARY SHARES REPRESENTING DEPOSITED PREFERRED SHARES (“Preferred Share ADSs”)OF COMPANHIA PARANAENSE DE ENERGIA - COPEL</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/94/AL934394.pdf"><strong>Apr 2, 2021</strong>- NOTICE TO HOLDERS OF AMERICAN DEPOSITARY SHARES REPRESENTING DEPOSITED COMMON SHARES (“Common Share ADSs”) OF COMPANHIA PARANAENSE DE ENERGIA - COPEL</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/53/AL932753.pdf"><strong>Mar 31, 2021</strong>- Harbour Energy plc Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/31/AL925831.pdf"><strong>Feb 26, 2021</strong>- Deposit Certification - Biofrontera</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/78/AL921278.pdf"><strong>Feb 9, 2021</strong>- Deposit Certification - BrasilAgro</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/Ryanair%20EU%20NationalityDeclaration.pdf"><strong>Feb 3, 2021</strong>- Ryanair EU Nationality Declaration</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/85/AL663985.pdf"><strong>Dec 23, 2020</strong>- Syrah Resources Limited - Certification of Deposit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/71/AL905571.pdf"><strong>Dec 10, 2020</strong>- Notice is hereby given by BNY Mellon (as Depositary) to owners and holders of Depositary Receipts of the change of custodian from Novo Banco, S.A. to Banco Santander Totta, S.A. for the below listed Depositary Receipt programs effective December 10, 2020.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/06/AL724306.pdf"><strong>Dec 2, 2020</strong>- Heliospectra - Deposit of Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/83/AL886983.pdf"><strong>Sep 29, 2020</strong>- Starpharma Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/25/AL885025.pdf"><strong>Sep 18, 2020</strong>- Change of Custodian:  Notice is hereby given by BNY Mellon (as Depositary) to owners and holders of Global Depositary Receipts of the change of custodian from OTP Bank Limited to UniCredit Hungary for the below listed Global Depositary Receipt programs effective September 21, 2020.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/26/AL880226.pdf"><strong>Aug 31, 2020</strong>- Effective September 18, 2020:  Notice is hereby given by BNY Mellon (as Depositary) to owners and holders of Depositary Receipts of the consolidation of custodians for the Hungarian market.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/09/AL877909.pdf"><strong>Aug 20, 2020</strong>- RWE AG Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL875717.pdf"><strong>Aug 12, 2020</strong>- CATHAY PACIFIC AIRWAYS LIMITED - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/89/AL869389.pdf"><strong>Jul 23, 2020</strong>- Qantas Airways - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/75/AL865775.pdf"><strong>Jul 13, 2020</strong>- Deposit Certification Metso Outotec Corporation</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/09/AL862209.pdf"><strong>Jul 8, 2020</strong>- SkyCity Entertainment Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/15/AL861315.pdf"><strong>Jul 6, 2020</strong>- Natura &amp; Co Holding - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/51/AL859451.pdf"><strong>Jun 29, 2020</strong>- Deposit Certification - Thin Film Electronics</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/90/AL858490.pdf"><strong>Jun 25, 2020</strong>- Qantas Airways Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/64/AL856864.pdf"><strong>Jun 19, 2020</strong>- Zealand Pharma - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/60/AL852360.pdf"><strong>Jun 4, 2020</strong>- Republic of Nigeria  - 144A GDN Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/57/AL852357.pdf"><strong>Jun 4, 2020</strong>- Republic of Nigeria - Reg S GDN Withdrawal Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/61/AL852361.pdf"><strong>Jun 4, 2020</strong>- Republic of Nigeria - 144A GDN Withdrawal Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/56/AL852356.pdf"><strong>Jun 4, 2020</strong>- Republic of Nigeria - Reg S GDN Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/33/AL846533.pdf"><strong>May 15, 2020</strong>- Incitec Pivot - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/81/AL842381.pdf"><strong>May 6, 2020</strong>- Newcrest Mining - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/43/AL834543.pdf"><strong>Apr 7, 2020</strong>- Certification Deposit - Oil Search Limited</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/29/AL829229.pdf"><strong>Mar 12, 2020</strong>- Corporate Action Notice: Notice is hereby given by BNY Mellon (as Depositary) to owners and holders of Depositary Receipts of the consolidation of custodians for the South African market.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/01/AL818101.pdf"><strong>Feb 18, 2020</strong>- Deposit Certification - Gold Fields</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/93/AL817493.pdf"><strong>Feb 13, 2020</strong>- Deposit Certification - Cogna Educação S.A.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/24/AL808724.pdf"><strong>Jan 10, 2020</strong>- Alexium International Group Limited - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/98/AL804098.pdf"><strong>Dec 20, 2019</strong>- PJSC Polyus - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/39/AL381439.pdf"><strong>Nov 25, 2019</strong>- Avita Medical  - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/15/AL777015.pdf"><strong>Nov 8, 2019</strong>- Paringa  Resources- Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/48/AL786448.pdf"><strong>Oct 23, 2019</strong>- Banco do Brasil - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/93/AL785893.pdf"><strong>Oct 21, 2019</strong>- Genetic - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/02/AL784002.pdf"><strong>Oct 15, 2019</strong>- Macquarie Group Ltd. - Certification of Deposit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/35/AL776835.pdf"><strong>Sep 19, 2019</strong>- AES Tiete Energia - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/35/AL740235.pdf"><strong>May 22, 2019</strong>- Epigenomics AG - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/24/AL722924.pdf"><strong>Apr 9, 2019</strong>- Sibanye Gold Limited - Deposit of Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/17/AL719417.pdf"><strong>Mar 28, 2019</strong>- Motif Bio - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/99/AL701099.pdf"><strong>Jan 22, 2019</strong>- GCS Holdings, Inc. - Market Notice Update</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/95/AL667895.pdf"><strong>Sep 21, 2018</strong>- Change of Custodian - Volaris</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/55/AL650155.pdf"><strong>Jul 23, 2018</strong>- Change of Custodian: Kazkhstan</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/31/AL643231.pdf"><strong>Jul 6, 2018</strong>- Change of Custodian: Singapore</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/32/AL643232.pdf"><strong>Jul 6, 2018</strong>- Change of Custodian: Singapore</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/91/AL640491.pdf"><strong>Jun 22, 2018</strong>- Bayer - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/54/AL635754.pdf"><strong>Jun 5, 2018</strong>- Benitec Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/79/AL630679.pdf"><strong>May 21, 2018</strong>- South Africa - Termination of Custodian</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/08/AL617608.pdf"><strong>Apr 17, 2018</strong>- Halyk Bank of Kazakhstan - 144A - Certification of Deposit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/11/AL617611.pdf"><strong>Apr 17, 2018</strong>- Halyk Bank of Kazakhstan - Reg. S - Certification of Deposit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/75/AL613675.pdf"><strong>Apr 6, 2018</strong>- Altran Technologies - Certification of Deposit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/84/AL608284.pdf"><strong>Mar 19, 2018</strong>- Sundance Energy Australia -  Deposit of Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/36/AL606436.pdf"><strong>Mar 12, 2018</strong>- CGG - Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/41/AL603041.pdf"><strong>Mar 1, 2018</strong>- Change of Custodian Brazil</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/72/AL595572.pdf"><strong>Feb 1, 2018</strong>- Change of Custodian: India</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/38/AL547338.pdf"><strong>Sep 12, 2017</strong>- Chi Mei - Market Notice Update</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/41/AL523941.pdf"><strong>Jul 19, 2017</strong>- Grupo Supervielle Certification Deposit</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/00/AL520800.pdf"><strong>Jul 13, 2017</strong>- Polyus Reg S Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/29/AL506229.pdf"><strong>Jun 20, 2017</strong>- Credit Suisse Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/93/AL505493.pdf"><strong>Jun 16, 2017</strong>- Nano Dimension - Revised Certification of Acquirors of Receipts</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/06/AL42106.pdf"><strong>Apr 10, 2017</strong>- Updated Turkish DR Market Cancellation Procedures</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/89/AL453289.pdf"><strong>Jan 9, 2017</strong>- Greencore 2016 Deposit Certificate</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/41/AL447441.pdf"><strong>Dec 14, 2016</strong>- Custodian Change Notice: Mexican Security Switches.  BBVA Bancomer, S.A. to Banco Santander Mexicano, S.A.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/40/AL446940.pdf"><strong>Dec 13, 2016</strong>- Change of Settlement BICs</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/11/AL441911.pdf"><strong>Nov 23, 2016</strong>- Covestro AG Unsponsored to Sponsored Exchange</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/18/AL433918.pdf"><strong>Oct 26, 2016</strong>- Informa PLC Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/01/AL429301.pdf"><strong>Oct 14, 2016</strong>- Deposit Certification - PRUMO LOGISTICA S.A.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/63/AL426263.pdf"><strong>Oct 3, 2016</strong>- Deposit Certification - Eneva S. A.</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/95/AL422995.pdf"><strong>Sep 20, 2016</strong>- Fondul Proprietatea Cautionary Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/02/AL408002.pdf"><strong>Aug 5, 2016</strong>- Usiminas S. A. Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/38/AL294838.pdf"><strong>Jun 20, 2016</strong>- Usiminas -  Certification of Deposit Form</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/65/AL277065.pdf"><strong>May 23, 2016</strong>- Alkane Resources Limited Deposit Certification</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/37/AL249237.pdf"><strong>Apr 12, 2016</strong>- Cyrela Brazil Realty Change of Custodian Notice</a></br>
+                            
+                                <a href="/content/dam/adr/documents/special-notices/files/11/AL245411.pdf"><strong>Apr 7, 2016</strong>- Gold Fields Deposit Certification</a></br>
+                            
+                        
+                        
+
+                    </div>
+                    <div class="drEvents-tab-pane active" id="dr_events">
+                        
+                        
+                            <p>No DR Events are available.</p>
+                        
+                        <div class="data-provider-source">
+                            <p>Data provided by Thomson Reuters</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <script>
+        $('[data-toggle="drEvents"]').click(function (e) {
+            e.preventDefault();
+            var $this = $(this),
+                targ = $this.attr("data-target");
+
+        var tabListItems = document.getElementsByClassName("drEvents-tab-list-item");
+        for (i = 0; i < tabListItems.length; i++) {
+            tabListItems[i].className = tabListItems[i].className.replace("active", "");
+        }
+        this.classList.add("active");
+
+        var tabContents = document.getElementsByClassName("drEvents-tab-pane");
+        for (j = 0; j < tabContents.length; j++) {
+            tabContents[j].className = tabContents[j].className.replace("active", "");
+        }
+        document.getElementById(targ.substring(1)).classList.add("active");
+
+        return false;
+    });
+</script>
+
+
+  
+
+
+
+  <div class="overview-left-container">
+    <div class="overview-two-col-layout">
+    
+      <div class="first-col dr-details-panel">
+
+          <div class="panel-details dr-details-container institutionalOwnership-container">
+  <div class="panel-heading">
+    <h3>Institutional Ownership</h3>
+  </div>
+  
+
+  <div class="institutionalOwnership-tab-titles">
+    <ul class="institutionalOwnership-tab-list">
+      <li>
+        <a href="#" class="institutionalOwnership-tab-list-item active" data-target="#instHoldersTable" data-toggle="institutionalOwnershipTabs">Top Institutional Holders</a>
+      </li>
+      <li>
+        <a href="#" class="institutionalOwnership-tab-list-item" data-target="#mfHoldersTable" data-toggle="institutionalOwnershipTabs">Top Mutual Fund Holders</a>
+      </li>
+    </ul>
+    <a class="panel-top-cta" href="#" onclick="switchTab('institutionalOwnership')">More</a>
+  </div>
+
+  <div class="panel-content">
+    <table id="instHoldersTable" class="panel-table active">
+      <tr>
+        <th><b>TOP INSTITUTIONAL HOLDERS</b></th>
+        <th><b>POSITION</b></th>
+      </tr>
+      
+        
+          
+            <tr>
+              <td>
+                 
+              </td>
+              <td>
+                 
+              </td>
+            </tr>
+          
+        
+      
+      
+    </table>
+    <table id="mfHoldersTable" class="panel-table">
+      <tr>
+        <th><b>TOP MUTUAL FUND HOLDERS</b></th>
+        <th><b>POSITION</b></th>
+      </tr>
+      
+        
+          
+            <tr>
+              <td>
+                 
+              </td>
+              <td>
+                 
+              </td>
+            </tr>
+          
+        
+      
+      
+    </table>
+
+    <div class="data-provider-source">
+      <p>Data provided by FactSet Research Systems Inc.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+	$('[data-toggle="institutionalOwnershipTabs"]').click(function(e) {
+    e.preventDefault();
+    var $this = $(this),
+        targ = $this.attr('data-target');
+
+    var tabListItems = document.getElementsByClassName("institutionalOwnership-tab-list-item");
+      for (i = 0; i < tabListItems.length; i++) {
+        tabListItems[i].className = tabListItems[i].className.replace("active", "");
+      }
+	this.classList.add('active');
+
+  $(".institutionalOwnership-container .panel-table").removeClass("active")
+    document.getElementById(targ.substring(1)).classList.add("active");
+
+    return false;
+});
+</script>
+          
+
+      </div>
+      
+      <div class="second-col dr-details-panel">
+        
+  
+  <div class="drsummary-tabs dr-details-panel dr-details-container">
+    <div class="panel-details">
+      <div class="panel-heading">
+        <h3>DR Details</h3>
+      </div>
+      <div class="drsummary-tab-titles">
+        <ul class="drsummary-tab-list">
+          
+          
+          
+
+          
+          
+
+          
+          
+
+          
+        </ul>
+      </div>
+      <div class="drsummary-tab-content">
+        <div class="drsummary-tab-pane active" id="drdetails_content">
+          <table id="drDetailsTable">
+            
+            
+          </table>
+        </div>
+        <div class="drsummary-tab-pane" id="businessSummary_content">
+          <div class="drsummary-businessSummary">
+            <span> </span>
+            <div class="data-provider-source">
+              <p>Data provided by Mergent, Inc.</p>
+            </div>
+          </div>
+        </div>
+        <div class="drsummary-tab-pane" id="relatedDr_content">
+          <div class="drsummary-relatedDrs">
+            <ol class="related-dr-list">
+              
+            </ol>
+          </div>
+        </div>
+        <div class="drsummary-tab-pane" id="fees_content">
+          <table id="drFeesTable">
+            <tr>
+              <th><b>Fee Type in US Dollar per ADS</b></th>
+              <th><b>Deposit Agreement</b></th>
+            </tr>
+            
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $('[data-toggle="drSummaryTabs"]').click(function (e) {
+      e.preventDefault();
+      var $this = $(this),
+        targ = $this.attr("data-target");
+
+      var tabListItems = document.getElementsByClassName(
+        "drsummary-tab-list-item"
+      );
+      for (i = 0; i < tabListItems.length; i++) {
+        tabListItems[i].className = tabListItems[i].className.replace(
+          "active",
+          ""
+        );
+      }
+      this.classList.add("active");
+
+      var tabContents = document.getElementsByClassName("drsummary-tab-pane");
+      for (j = 0; j < tabContents.length; j++) {
+        tabContents[j].className = tabContents[j].className.replace(
+          "active",
+          ""
+        );
+      }
+      document.getElementById(targ.substring(1)).classList.add("active");
+
+      return false;
+    });
+  </script>
+
+      </div>
+    </div>
+  </div>
+  <div class="overview-right-container">
+    
+<div class="panel-details dr-details-container">
+    <div class="panel-heading">
+        <h3>Monthly Trading Summary</h3>
+        <a class="panel-top-cta" href="#" onclick="switchTab('tradingSummary')">More</a>
+    </div>
+    <div class="panel-content adr-table">
+        <table id="tradingSummaryTable" class="panel-table trading-summary-table table">
+            <tr>
+                <th><b>Month</b></th>
+                <th><b>Month End DR Close Price</b></th>
+                <th><b>DR Trading Volume</b></th>
+                <th><b>Avg Day DR Trading Volume</b></th>
+</tr>
+
+            
+        </table>
+    </div>
+<div class="data-provider-source">
+	<p>Powered by FactSet Research Systems Inc.</p>
+</div>
+</div>
+
+    
+
+    
+<div class="panel-details dr-details-container">
+    <div class="panel-content">
+        <div class="drLinks-tab-titles">
+            <ul class="drLinks-tab-list">
+				
+				
+				
+                
+                
+            </ul>
+        </div>
+
+        <div class="drLinks-tab-content">
+            <div class="drLinks-tab-pane active" id="helpful_Links_content">
+                <ul class="helpful_Links_list">
+                    
+
+                </ul>
+
+            </div>
+			<div class="drLinks-tab-pane" id="related_Links_content">
+                <ul class="related_Links_list">
+                    	
+						
+                </ul>
+
+            </div>
+            
+			<div class="drLinks-tab-pane " id="qib_form_content">
+                <div class="qib_form_list">
+					
+
+                </div>
+
+            </div>
+            
+            
+			<div class="drLinks-tab-pane" id="custodian_Links_content">
+                <ul class="custodian_Links_list">
+                    
+
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('[data-toggle="drLinks"]').click(function (e) {
+        e.preventDefault();
+        var $this = $(this),
+            targ = $this.attr("data-target");
+
+        var tabListItems = document.getElementsByClassName("drLinks-tab-list-item");
+        for (i = 0; i < tabListItems.length; i++) {
+            tabListItems[i].className = tabListItems[i].className.replace("active", "");
+        }
+        this.classList.add("active");
+
+        var tabContents = document.getElementsByClassName("drLinks-tab-pane");
+        for (j = 0; j < tabContents.length; j++) {
+            tabContents[j].className = tabContents[j].className.replace("active", "");
+        }
+        document.getElementById(targ.substring(1)).classList.add("active");
+
+        return false;
+    });
+</script>
+
+  </div>
+</div>
+
+
+<div class="dr-info-notice panel-details dr-details-container">
+    <div class="panel-content">
+        <div class="bny-body-panel">
+            <div class="bny-body-panel-content">
+                <p>
+                    This information and data is provided for general informational purposes only.&nbsp; Certain displayed prices may not reflect direct quotes from any market or exchange, but may instead reflect an approximation of price
+                    based on a methodology that includes a calculation that includes the price of underlying securities and foreign exchange rate selected for such purpose. The Bank of New York Mellon and our information suppliers do not
+                    warrant or guarantee the accuracy, timeliness or completeness of this information or data. We provide no advice nor recommendation or endorsement with respect to any company or securities. We do not undertake any
+                    obligation to update or amend this information or data. Nothing herein shall be deemed to constitute an offer to sell or a solicitation of an offer to buy securities.<br/>
+                    Please refer to <a target="_blank" data-ng-href="https://www.bnymellon.com/us/en/terms-of-use.jsp" href="https://www.bnymellon.com/us/en/terms-of-use.jsp">Terms of Use</a>
+                </p>
+                <p>
+                    DEPOSITARY RECEIPTS:<br/>
+                    NOT FDIC, STATE OR FEDERAL AGENCY INSURED<br/>
+                    MAY LOSE VALUE<br/>
+                    NO BANK, STATE OR FEDERAL AGENCY GUARANTEE
+                </p>
+                <div class="vendor-legal">
+                    <p class="small">Data provided by Thomson Reuters, Inc.</p>
+                    <hr/>
+                    <p class="small info-legal-links">
+                        <a href="https://www.bny.com" target="_blank">BNY.COM</a> <a href="https://www.bnymellon.com/us/en/terms-of-use.jsp" target="_blank">TERMS OF USE</a>
+                        <a href="https://www.bnymellon.com/us/en/data-privacy.jsp" target="_blank">PRIVACY POLICY</a>
+                    </p>
+                    <p class="small">© 2026 The Bank of New York Mellon Corporation. Depositary Receipt business and services are conducted through The Bank of New York Mellon.</p>
+                    <p class="small">
+                        Quotes delayed at least 15 minutes. Market data provided by <a class="siteLeavingPopupModal" href="https://www.theice.com/market-data" target="_blank">ICE Data Services</a>.
+                        <a class="siteLeavingPopupModal" href="https://www.theice.com/market-data/disclaimer" target="_blank">ICE Limitations</a>.<br/>
+                        News provided by Comtex News Network and MarketWatch. Powered and implemented by <a class="siteLeavingPopupModal" href="https://www.factset.com/" target="_blank">FactSet</a>.
+                        <a class="siteLeavingPopupModal" href="https://www.factset.com/legal-statement" target="_blank">Legal Statement</a>.
+                    </p>
+                    <p class="small">
+                        Certain information included in this website is proprietary to Mergent, Inc. (Mergent) Copyright © 2003-2026. Reproduction of such information in any form is prohibited. Because of the possibility of human or
+                        mechanical error by Mergent's sources, Mergent or others, Mergent does not guarantee the accuracy, adequacy, completeness, timeliness or availability or for the results obtained from the use of such information.
+                        Mergent <a class="siteLeavingPopupModal" href="https://web.mergentassets.com/termsofuse.htm" target="_blank">Terms of Use</a> apply
+                    </p>
+                    <p class="small">Holdings information provided by <a class="siteLeavingPopupModal" href="http://www.factset.com/" target="_blank">FactSet Research Systems Inc.</a> Copyright © 2003-2026 FactSet Research Systems Inc. All rights reserved.</p>
+                    <p class="small"><span style="text-decoration: underline;">Thomson Reuters Marks:</span> The THOMSON REUTERS Kinesis Logo depicted below and THOMSON REUTERS</p>
+                    <p class="small">Redistributor shall display or print the Thomson Reuters Trademarks when Redistributor's Customers are given access to the Services.</p>
+                    <p class="small">
+                        Where Redistributor makes available on display any and all Thomson Reuters Marks attributable to the Services, Redistributor shall include the following language in the Help About section or in a general attribution
+                        page: "The THOMSON REUTERS Kinesis Logo and THOMSON REUTERS are trademarks of Thomson Reuters and its affiliated companies in the United States and other countries and used herein under license."
+                    </p>
+                    <p class="small">
+                        <span style="text-decoration: underline;">Additional Attribution Guidelines by Thomson Reuters:</span> Redistributor shall display or print the following notice in the Help About section or in a general attribution
+                        page. "Copyright ©, Thomson Reuters, 1999-2026. All Rights Reserved. Use, duplication, or sale of this service, or data contained herein, except as described in the [Authorized Products name] Subscription Agreement,
+                        is strictly prohibited."
+                    </p>
+                    <p><img src="/content/dam/adr/web/images/thomson-logo.png" alt="THOMSON REUTERS" width="100"/></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  $(".siteLeavingPopupModal").click(function (e) {
+    e.preventDefault();
+    hrefValue = $(this).attr("href");
+    $(".siteLeavingPopup").css("display", "block");
+  });
+  $(".siteLeavingPopup .close").click(function () {
+    $(".siteLeavingPopup").css("display", "none");
+  });
+  $(".siteLeavingPopup .stayPage").click(function () {
+    $(".siteLeavingPopup").css("display", "none");
+  });
+  $(".siteLeavingPopup .leavePage").click(function () {
+    $(".siteLeavingPopup").css("display", "none");
+    window.open(hrefValue, "_blank");
+  });
+</script>

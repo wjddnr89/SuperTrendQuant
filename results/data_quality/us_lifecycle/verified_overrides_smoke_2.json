@@ -1,0 +1,220 @@
+{
+  "records": {
+    "US:EODHD:58d047e9-5bb1-5cf6-bdc4-5e5d240e1c5e": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:02:49.086348Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "1a04afe27ed6b9b1f97328f09b676700b46aecf6535974407492ee7728501c64",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/90185/000135445715000214/0001354457-15-000214.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:02:49.087512Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "644bf2ad282dd4932b50f28b4330bd7838cafa6973695eca01376d98e535a235",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/90185/000119312514392852/0001193125-14-392852.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2015-11-18",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2015-08-03",
+          "2015-11-18"
+        ],
+        "last_price_date": "2015-11-18",
+        "name": "Sigma-Aldrich Corp",
+        "security_id": "US:EODHD:58d047e9-5bb1-5cf6-bdc4-5e5d240e1c5e",
+        "symbol": "SIAL"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 140.0,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 139.76,
+        "old_price_session": "2015-11-18",
+        "passed": true,
+        "relative_deviation": 0.0017142857142857792,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 0
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001354457-15-000214",
+        "cik": "90185",
+        "display_name": "Sigma-Aldrich Corp",
+        "filing_date": "2015-11-18",
+        "form": "25-NSE",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "cash_merger",
+        "cash_amount": 140.0,
+        "confidence": "high",
+        "effective_date": "2015-11-18",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "The official delisting filing establishes the November 18 completion boundary and the target proxy establishes $140 cash for each Sigma-Aldrich share."
+      },
+      "source_hash": "1a04afe27ed6b9b1f97328f09b676700b46aecf6535974407492ee7728501c64",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/90185/000135445715000214/0001354457-15-000214.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:c3447f15-035c-56e5-95a2-732d66a1eaf8": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:02:49.095480Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "3a24558288a81975357c047e3d9d361ec4e0cca064e3e1b9f22daa627d9542bb",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/50863/000119312515414642/0001193125-15-414642.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:02:49.095850Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "0289276908d78872de8b07ab1ec2b5718e8333cd22882dec575cd19f4cde0348",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/50863/000119312515209231/0001193125-15-209231.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2015-12-24",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2015-10-07",
+          "2015-12-28"
+        ],
+        "last_price_date": "2015-12-24",
+        "name": "Altera Corp",
+        "security_id": "US:EODHD:c3447f15-035c-56e5-95a2-732d66a1eaf8",
+        "symbol": "ALTR"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 54.0,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 53.96,
+        "old_price_session": "2015-12-24",
+        "passed": true,
+        "relative_deviation": 0.000740740740740725,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 4
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-15-414642",
+        "cik": "50863",
+        "display_name": "Altera Corp",
+        "filing_date": "2015-12-28",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "cash_merger",
+        "cash_amount": 54.0,
+        "confidence": "high",
+        "effective_date": "2015-12-28",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "Intel's SEC completion filing states that the acquisition closed on December 28 and every Altera share converted into $54.00 cash."
+      },
+      "source_hash": "3a24558288a81975357c047e3d9d361ec4e0cca064e3e1b9f22daa627d9542bb",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/50863/000119312515414642/0001193125-15-414642.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:f07606dc-6d08-57f1-a904-1b4c04edc39b": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T20:02:49.089531Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "267c31aef972161b993e51650db55ffc71ef0f019f97697105570b66f6f3de67",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1166691/000095010315009516/0000950103-15-009516.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2015-12-11",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2015-12-14"
+        ],
+        "last_price_date": "2015-12-11",
+        "name": "Comcast Corp",
+        "security_id": "US:EODHD:f07606dc-6d08-57f1-a904-1b4c04edc39b",
+        "symbol": "CMCSK"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 57.37,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 58.0,
+        "old_price_session": "2015-12-11",
+        "passed": true,
+        "relative_deviation": 0.010862068965517285,
+        "successor_close": 57.37,
+        "successor_price_session": "2015-12-14",
+        "terminal_gap_days": 3
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0000950103-15-009516",
+        "cik": "1166691",
+        "display_name": "Comcast Corp",
+        "filing_date": "2015-12-15",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2015-12-14",
+        "new_symbol": "CMCSA",
+        "ratio": 1.0,
+        "reason": "SEC filing states that every Class A Special share converted one-for-one into Class A common stock after the December 11 close; the daily action is placed on the first following trading session."
+      },
+      "source_hash": "267c31aef972161b993e51650db55ffc71ef0f019f97697105570b66f6f3de67",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1166691/000095010315009516/0000950103-15-009516.txt",
+      "successor_security_id": "US:EODHD:77bd2b16-43ff-5c49-9662-4aeace668429"
+    }
+  },
+  "release_version": "20260715-20260717T155657288079Z",
+  "summary": {
+    "action_type_counts": {
+      "cash_merger": 2,
+      "stock_merger": 1
+    },
+    "candidate_count": 3,
+    "collected_count": 3,
+    "eligible_count": 3,
+    "unresolved_count": 0
+  }
+}

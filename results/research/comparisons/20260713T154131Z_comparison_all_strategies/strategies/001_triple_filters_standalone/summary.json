@@ -1,0 +1,603 @@
+{
+  "run_id": "001_triple_filters_standalone",
+  "mode": "backtest",
+  "created_at": "2026-07-13T15:41:31.518058+00:00",
+  "strategy": "triple_filters_standalone",
+  "market": "US",
+  "timeframe": "1d",
+  "period": "max",
+  "metrics": {
+    "total_return": 1.02696837861451,
+    "cagr": 0.6056237167520253,
+    "mdd": -0.37601396184419034,
+    "calmar": 1.6106415670888807,
+    "sharpe": 1.2217417169962754,
+    "sortino": 1.8027809248515065,
+    "win_rate": 0.4878048780487805,
+    "payoff_ratio": 2.6448416739187746,
+    "trade_count": 41
+  },
+  "trade_returns": [
+    -0.1431248883529952,
+    -0.21799799021826727,
+    -0.18586937926784675,
+    -0.21628677412703534,
+    -0.28943550301773446,
+    0.019377996554627464,
+    0.02193739789567095,
+    0.23602567791027118,
+    1.055627173094075,
+    0.6297447707085426,
+    -0.052183199339448594,
+    0.19323479108052166,
+    0.25456736585988726,
+    0.020078094593352303,
+    -0.0012538151592776936,
+    0.39925958496007774,
+    -0.042205432463817805,
+    0.1507627468304229,
+    0.25391997104668773,
+    0.9332903804990753,
+    -0.11984130325575837,
+    -0.3487747822824354,
+    -0.042811185216164005,
+    -0.14396644163662486,
+    -0.10977179750594479,
+    0.14748843655519872,
+    -0.204971297472624,
+    -0.1586166915689764,
+    -0.13534837827827417,
+    -0.10377343592480082,
+    -0.28839487425513277,
+    0.16891886080369578,
+    0.13017584190512155,
+    0.20095949634267418,
+    0.18199317553062744,
+    0.4745050744261572,
+    -0.019912838155120904,
+    1.7963800046772391,
+    -0.158340533889765,
+    0.345802816794641,
+    -0.03989099908244209
+  ],
+  "trades": [
+    {
+      "symbol": "GEV",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-01-30 00:00:00",
+      "entry_price": 423.84181988525387,
+      "exit_price": 364.8175,
+      "quantity": 4,
+      "pnl_pct": -0.1431248883529952,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "VRT",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-01-30 00:00:00",
+      "entry_price": 147.53373671722412,
+      "exit_price": 115.89202194976808,
+      "quantity": 13,
+      "pnl_pct": -0.21799799021826727,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "RKLB",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-02-24 00:00:00",
+      "entry_price": 29.014499999999998,
+      "exit_price": 23.728129771232606,
+      "quantity": 67,
+      "pnl_pct": -0.18586937926784675,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2025-01-31 00:00:00",
+      "exit_time": "2025-02-24 00:00:00",
+      "entry_price": 655.7677224426269,
+      "exit_price": 516.2517547607422,
+      "quantity": 2,
+      "pnl_pct": -0.21628677412703534,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "RDW",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-02-25 00:00:00",
+      "entry_price": 21.69084030532837,
+      "exit_price": 15.482254771232606,
+      "quantity": 92,
+      "pnl_pct": -0.28943550301773446,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "PL",
+      "entry_time": "2025-01-23 00:00:00",
+      "exit_time": "2025-02-26 00:00:00",
+      "entry_price": 4.4022000954151155,
+      "exit_price": 4.507745228767395,
+      "quantity": 449,
+      "pnl_pct": 0.019377996554627464,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MP",
+      "entry_time": "2025-01-31 00:00:00",
+      "exit_time": "2025-04-09 00:00:00",
+      "entry_price": 21.770880228996276,
+      "exit_price": 22.34882061004639,
+      "quantity": 78,
+      "pnl_pct": 0.02193739789567095,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AXON",
+      "entry_time": "2025-04-28 00:00:00",
+      "exit_time": "2025-07-15 00:00:00",
+      "entry_price": 605.9628031311034,
+      "exit_price": 752.3636202392579,
+      "quantity": 2,
+      "pnl_pct": 0.23602567791027118,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "OUST",
+      "entry_time": "2025-05-12 00:00:00",
+      "exit_time": "2025-07-31 00:00:00",
+      "entry_price": 11.205599809169769,
+      "exit_price": 23.13842461872101,
+      "quantity": 171,
+      "pnl_pct": 1.055627173094075,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2025-04-28 00:00:00",
+      "exit_time": "2025-08-22 00:00:00",
+      "entry_price": 371.1855,
+      "exit_price": 607.6659857177734,
+      "quantity": 4,
+      "pnl_pct": 0.6297447707085426,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2025-08-01 00:00:00",
+      "exit_time": "2025-08-22 00:00:00",
+      "entry_price": 170.24508366394042,
+      "exit_price": 162.08891316986086,
+      "quantity": 22,
+      "pnl_pct": -0.052183199339448594,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "TSM",
+      "entry_time": "2025-05-14 00:00:00",
+      "exit_time": "2025-08-25 00:00:00",
+      "entry_price": 195.3776387786865,
+      "exit_price": 234.18285305023196,
+      "quantity": 9,
+      "pnl_pct": 0.19323479108052166,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2025-05-14 00:00:00",
+      "exit_time": "2025-09-05 00:00:00",
+      "entry_price": 133.2665969467163,
+      "exit_price": 167.94598377990724,
+      "quantity": 13,
+      "pnl_pct": 0.25456736585988726,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MP",
+      "entry_time": "2025-07-16 00:00:00",
+      "exit_time": "2025-09-08 00:00:00",
+      "entry_price": 61.11054183197021,
+      "exit_price": 62.61867652511597,
+      "quantity": 25,
+      "pnl_pct": 0.020078094593352303,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "RKLB",
+      "entry_time": "2025-09-09 00:00:00",
+      "exit_time": "2025-09-30 00:00:00",
+      "entry_price": 47.03350332069397,
+      "exit_price": 47.18639408493042,
+      "quantity": 32,
+      "pnl_pct": -0.0012538151592776936,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "RZLV",
+      "entry_time": "2025-09-08 00:00:00",
+      "exit_time": "2025-10-01 00:00:00",
+      "entry_price": 4.302150190830231,
+      "exit_price": 6.046975190639496,
+      "quantity": 523,
+      "pnl_pct": 0.39925958496007774,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AEHR",
+      "entry_time": "2025-08-26 00:00:00",
+      "exit_time": "2025-10-10 00:00:00",
+      "entry_price": 26.012999999999998,
+      "exit_price": 25.02748091506958,
+      "quantity": 105,
+      "pnl_pct": -0.042205432463817805,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2025-10-01 00:00:00",
+      "exit_time": "2025-10-15 00:00:00",
+      "entry_price": 34.197090305328366,
+      "exit_price": 39.53022423744202,
+      "quantity": 44,
+      "pnl_pct": 0.1507627468304229,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2025-08-26 00:00:00",
+      "exit_time": "2025-10-15 00:00:00",
+      "entry_price": 345.1024576721191,
+      "exit_price": 434.68254389953614,
+      "quantity": 7,
+      "pnl_pct": 0.25391997104668773,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "PL",
+      "entry_time": "2025-08-25 00:00:00",
+      "exit_time": "2025-10-21 00:00:00",
+      "entry_price": 6.783390209913254,
+      "exit_price": 13.173410305023195,
+      "quantity": 455,
+      "pnl_pct": 0.9332903804990753,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2025-10-28 00:00:00",
+      "exit_time": "2025-11-07 00:00:00",
+      "entry_price": 46.46321862602234,
+      "exit_price": 41.07944847488404,
+      "quantity": 71,
+      "pnl_pct": -0.11984130325575837,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "OUST",
+      "entry_time": "2025-10-28 00:00:00",
+      "exit_time": "2025-11-07 00:00:00",
+      "entry_price": 36.86842347335815,
+      "exit_price": 24.11793416118622,
+      "quantity": 90,
+      "pnl_pct": -0.3487747822824354,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "FN",
+      "entry_time": "2025-10-28 00:00:00",
+      "exit_time": "2025-11-18 00:00:00",
+      "entry_price": 428.9143622131347,
+      "exit_price": 412.40368035888673,
+      "quantity": 7,
+      "pnl_pct": -0.042811185216164005,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "COHR",
+      "entry_time": "2025-11-10 00:00:00",
+      "exit_time": "2025-11-18 00:00:00",
+      "entry_price": 159.0795,
+      "exit_price": 136.7915706100464,
+      "quantity": 18,
+      "pnl_pct": -0.14396644163662486,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MRVL",
+      "entry_time": "2025-11-10 00:00:00",
+      "exit_time": "2025-11-20 00:00:00",
+      "entry_price": 93.21658316802979,
+      "exit_price": 83.35830152511598,
+      "quantity": 30,
+      "pnl_pct": -0.10977179750594479,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2025-10-02 00:00:00",
+      "exit_time": "2025-11-24 00:00:00",
+      "entry_price": 185.0524867172241,
+      "exit_price": 213.30329866027833,
+      "quantity": 17,
+      "pnl_pct": 0.14748843655519872,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2025-10-28 00:00:00",
+      "exit_time": "2025-11-24 00:00:00",
+      "entry_price": 259.2695846557617,
+      "exit_price": 207.05642366027834,
+      "quantity": 12,
+      "pnl_pct": -0.204971297472624,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2026-01-28 00:00:00",
+      "exit_time": "2026-02-04 00:00:00",
+      "entry_price": 254.25706988525388,
+      "exit_price": 214.8925,
+      "quantity": 11,
+      "pnl_pct": -0.1586166915689764,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2026-01-28 00:00:00",
+      "exit_time": "2026-02-09 00:00:00",
+      "entry_price": 69.0345,
+      "exit_price": 59.96000667762757,
+      "quantity": 42,
+      "pnl_pct": -0.13534837827827417,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2026-01-28 00:00:00",
+      "exit_time": "2026-02-09 00:00:00",
+      "entry_price": 422.65122244262693,
+      "exit_price": 380.49965744018556,
+      "quantity": 6,
+      "pnl_pct": -0.10377343592480082,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "RDW",
+      "entry_time": "2026-01-28 00:00:00",
+      "exit_time": "2026-02-09 00:00:00",
+      "entry_price": 13.786889732837675,
+      "exit_price": 9.855069656848908,
+      "quantity": 196,
+      "pnl_pct": -0.28839487425513277,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "COHR",
+      "entry_time": "2026-01-28 00:00:00",
+      "exit_time": "2026-03-11 00:00:00",
+      "entry_price": 214.11699950408934,
+      "exit_price": 251.41422328948977,
+      "quantity": 13,
+      "pnl_pct": 0.16891886080369578,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "GEV",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-05-04 00:00:00",
+      "entry_price": 944.031777557373,
+      "exit_price": 1071.7338845214845,
+      "quantity": 2,
+      "pnl_pct": 0.13017584190512155,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2026-05-05 00:00:00",
+      "exit_time": "2026-05-21 00:00:00",
+      "entry_price": 610.0849193115234,
+      "exit_price": 735.9918053588867,
+      "quantity": 5,
+      "pnl_pct": 0.20095949634267418,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "VRT",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-05-22 00:00:00",
+      "entry_price": 281.1304852294922,
+      "exit_price": 333.7930114593506,
+      "quantity": 8,
+      "pnl_pct": 0.18199317553062744,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AEHR",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-05-22 00:00:00",
+      "entry_price": 62.521246679306024,
+      "exit_price": 92.60367652511597,
+      "quantity": 39,
+      "pnl_pct": 0.4745050744261572,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "RDW",
+      "entry_time": "2026-05-26 00:00:00",
+      "exit_time": "2026-06-08 00:00:00",
+      "entry_price": 19.654822957992554,
+      "exit_price": 19.35032061004639,
+      "quantity": 179,
+      "pnl_pct": -0.019912838155120904,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "SOXL",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-06-10 00:00:00",
+      "entry_price": 68.15406274795532,
+      "exit_price": 191.44422328948977,
+      "quantity": 37,
+      "pnl_pct": 1.7963800046772391,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "PL",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-06-10 00:00:00",
+      "entry_price": 36.518249999999995,
+      "exit_price": 30.874554389953616,
+      "quantity": 68,
+      "pnl_pct": -0.158340533889765,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "MRVL",
+      "entry_time": "2026-05-22 00:00:00",
+      "exit_time": "2026-06-10 00:00:00",
+      "entry_price": 194.81736122131346,
+      "exit_price": 263.36825,
+      "quantity": 19,
+      "pnl_pct": 0.345802816794641,
+      "exit_reason": "Triple Supertrend down"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2026-05-26 00:00:00",
+      "exit_time": "2026-06-10 00:00:00",
+      "entry_price": 484.98236022949214,
+      "exit_price": 467.7360162200928,
+      "quantity": 5,
+      "pnl_pct": -0.03989099908244209,
+      "exit_reason": "Triple Supertrend down"
+    }
+  ],
+  "skipped": [],
+  "config": {
+    "strategy": {
+      "name": "triple_filters_standalone",
+      "type": "triple_filters",
+      "params": {}
+    },
+    "scoring": {
+      "type": "relative_strength",
+      "params": {
+        "lookback_bars": 100
+      }
+    },
+    "market": "US",
+    "universe_file": "universe.json",
+    "symbols": [],
+    "timeframe": "1d",
+    "period": "max",
+    "capital": {
+      "initial_cash": 10000
+    },
+    "costs": {
+      "fee_rate": 0.00225,
+      "slippage_rate": 0.0005
+    },
+    "supertrend": {
+      "enabled": true,
+      "period": 10,
+      "multiplier": 3.0,
+      "atr_method": "wilder",
+      "symbol_multipliers": {}
+    },
+    "market_trend_filter": {
+      "enabled": true,
+      "timeframe": "1d"
+    },
+    "leader_rotation": {
+      "max_slots": 5,
+      "hurdle_atr_mult": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "exit": {
+      "sell_confirm_bars": 3
+    },
+    "execution": {
+      "order_type": "market",
+      "allocation_pct": 1.0,
+      "broker": "paper",
+      "live_confirm_required": true
+    },
+    "risk": {
+      "max_position_count": 5
+    },
+    "live": {
+      "holdings_file": "holding.json",
+      "loop_interval_seconds": 60
+    },
+    "paper": {
+      "state_file": "state/paper.json",
+      "results_dir": "results/paper",
+      "loop_interval_seconds": 60,
+      "run_once_per_candle": true
+    },
+    "backtest": {
+      "results_dir": "results/backtests"
+    },
+    "components": [
+      {
+        "type": "triple_supertrend",
+        "enabled": true,
+        "group": "entries",
+        "params": {
+          "atr_method": "wilder",
+          "settings": [
+            {
+              "period": 10,
+              "multiplier": 1.0
+            },
+            {
+              "period": 11,
+              "multiplier": 2.0
+            },
+            {
+              "period": 12,
+              "multiplier": 3.0
+            }
+          ]
+        }
+      },
+      {
+        "type": "benchmark_trend",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "timeframe": "1d"
+        }
+      },
+      {
+        "type": "ichimoku_cloud",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "tenkan": 9,
+          "kijun": 26,
+          "span_b": 52,
+          "shift": 26
+        }
+      },
+      {
+        "type": "ema_trend",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "period": 200
+        }
+      },
+      {
+        "type": "triple_supertrend_flip",
+        "enabled": true,
+        "group": "exits",
+        "params": {
+          "down_count": 2,
+          "confirm_bars": 3
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,1524 @@
+{
+  "run_id": "playground_leader_rotation_max_compare_20260715",
+  "mode": "backtest",
+  "created_at": "2026-07-21T04:14:32.648751+00:00",
+  "strategy": "leader_rotation_default",
+  "market": "US",
+  "timeframe": "1d",
+  "period": "max",
+  "metrics": {
+    "total_return": 19.97600606669384,
+    "cagr": 0.314498103190479,
+    "mdd": -0.5625702152576724,
+    "calmar": 0.5590379559046338,
+    "sharpe": 0.8236710107358121,
+    "sortino": 1.323553924235099,
+    "win_rate": 0.5798319327731093,
+    "payoff_ratio": 1.4798859230798067,
+    "trade_count": 119
+  },
+  "trade_returns": [
+    -0.24779944895964645,
+    -0.028661460526172022,
+    0.010054381218867148,
+    0.1866016510582198,
+    -0.0679453369765437,
+    -0.044008115918204194,
+    0.008484000318012663,
+    -0.1112480749665079,
+    0.3762460298143726,
+    -0.029001094248031323,
+    0.0015851519561829175,
+    -0.09571956216600719,
+    0.43842298748703024,
+    0.0346787077560371,
+    0.043458611635795785,
+    -0.05209458841511283,
+    -0.047036173255537994,
+    -0.052842771739122996,
+    -0.0824353563164626,
+    -0.03777433129573149,
+    -0.06906461548562037,
+    -0.05237996071116002,
+    0.245356676597015,
+    0.006832253764752272,
+    -0.11239235247501855,
+    -0.0855591661551105,
+    0.03141642828367308,
+    -0.019473424636068493,
+    0.029941398057293345,
+    0.01179814187411976,
+    -0.11896195359554806,
+    0.019195567401551816,
+    -0.15802646693966482,
+    0.15015603365788333,
+    0.023936170412547808,
+    -0.030780000340676628,
+    -0.0815438642036701,
+    -0.07915266429696688,
+    -0.05704345317961168,
+    0.10639300296581378,
+    0.02232941628247631,
+    -0.03642535730097729,
+    0.0031749488375856227,
+    -0.09831418592746932,
+    0.01691891167733295,
+    0.002291326568456542,
+    0.1433312643223208,
+    0.015647796828381022,
+    0.017111018362148123,
+    0.9607913577302536,
+    -0.0004903058908884983,
+    -0.048109661455612907,
+    0.3402497373771376,
+    0.020111506838261795,
+    0.010348962721653532,
+    -0.1277678838352453,
+    0.27021522537302234,
+    -0.030649765834022458,
+    0.006924973130513434,
+    0.18907069398718268,
+    0.3409284006251916,
+    -0.1849287234284086,
+    -0.14883568801421798,
+    -0.17054624193214252,
+    0.032437147139870115,
+    0.0589883419121795,
+    0.004867078078075515,
+    0.3500222189571245,
+    0.228942569994117,
+    -0.13325626898015874,
+    -0.023726551146902253,
+    0.0072880600714291255,
+    -0.03114426580522167,
+    -0.09146903998661726,
+    0.02234223148433645,
+    0.09258807889995202,
+    0.06005018065021228,
+    -0.05729496822705549,
+    0.005458868960643848,
+    0.027171933120347935,
+    0.18065116749757681,
+    0.19845842380903722,
+    0.35254051706134004,
+    -0.15677917305276445,
+    0.14074609110657144,
+    0.31164595388634386,
+    0.1781106977034781,
+    0.02655548297167787,
+    0.04979366331826496,
+    -0.10403478960655232,
+    -0.10645803993464698,
+    0.32313800960246697,
+    -0.05696084395294376,
+    0.009663064731395776,
+    0.022311484324008868,
+    0.04126913715629321,
+    -0.15749023691056596,
+    0.00993935950653091,
+    -0.19092511137833168,
+    0.06970528546270205,
+    -0.0022134791100463236,
+    0.31459904302320796,
+    0.018184417263194863,
+    0.008647475894937529,
+    0.2660631454249165,
+    -0.13435520325944916,
+    0.18235245098013242,
+    -0.08865099846072888,
+    0.003165389137746777,
+    -0.0006290998137522541,
+    0.03339232458914432,
+    0.3502457666273948,
+    0.10404540454786981,
+    -0.10963509396537907,
+    -0.12889295419858715,
+    0.36510118365790967,
+    0.02712220565678103,
+    0.2066964650233396,
+    -0.1125397902124935
+  ],
+  "trades": [
+    {
+      "symbol": "NFLX",
+      "entry_time": "2015-07-17 00:00:00",
+      "exit_time": "2015-08-24 00:00:00",
+      "entry_price": 11.73986720609665,
+      "exit_price": 8.8705625,
+      "quantity": 849,
+      "pnl_pct": -0.24779944895964645,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AMZN",
+      "entry_time": "2015-08-28 00:00:00",
+      "exit_time": "2015-09-30 00:00:00",
+      "entry_price": 25.8879375,
+      "exit_price": 25.259363359451296,
+      "quantity": 289,
+      "pnl_pct": -0.028661460526172022,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2015-10-16 00:00:00",
+      "exit_time": "2015-10-19 00:00:00",
+      "entry_price": 0.6883440233767032,
+      "exit_price": 0.6984006440639496,
+      "quantity": 10595,
+      "pnl_pct": 0.010054381218867148,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "AMZN",
+      "entry_time": "2015-10-19 00:00:00",
+      "exit_time": "2015-12-02 00:00:00",
+      "entry_price": 28.552269106864927,
+      "exit_price": 34.03297423744202,
+      "quantity": 257,
+      "pnl_pct": 0.1866016510582198,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2015-12-02 00:00:00",
+      "exit_time": "2016-01-07 00:00:00",
+      "entry_price": 0.8204099928438663,
+      "exit_price": 0.7681157204508782,
+      "quantity": 10634,
+      "pnl_pct": -0.0679453369765437,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MAT",
+      "entry_time": "2016-03-02 00:00:00",
+      "exit_time": "2016-04-22 00:00:00",
+      "entry_price": 32.28613545799255,
+      "exit_price": 31.004490457534793,
+      "quantity": 252,
+      "pnl_pct": -0.044008115918204194,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "ISRG",
+      "entry_time": "2016-04-22 00:00:00",
+      "exit_time": "2016-05-26 00:00:00",
+      "entry_price": 70.20174745559692,
+      "exit_price": 71.11664556884766,
+      "quantity": 109,
+      "pnl_pct": 0.008484000318012663,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "BBBY",
+      "entry_time": "2016-05-26 00:00:00",
+      "exit_time": "2016-06-28 00:00:00",
+      "entry_price": 17.49874477100372,
+      "exit_price": 15.622185114383699,
+      "quantity": 448,
+      "pnl_pct": -0.1112480749665079,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2016-07-05 00:00:00",
+      "exit_time": "2016-09-26 00:00:00",
+      "entry_price": 1.1605799666047096,
+      "exit_price": 1.6044473759531976,
+      "quantity": 5978,
+      "pnl_pct": 0.3762460298143726,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "STX",
+      "entry_time": "2016-09-26 00:00:00",
+      "exit_time": "2016-10-12 00:00:00",
+      "entry_price": 36.3881839313507,
+      "exit_price": 35.49224332237244,
+      "quantity": 263,
+      "pnl_pct": -0.029001094248031323,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2016-10-12 00:00:00",
+      "exit_time": "2016-10-19 00:00:00",
+      "entry_price": 16.888439160346984,
+      "exit_price": 16.991500000000002,
+      "quantity": 545,
+      "pnl_pct": 0.0015851519561829175,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NTES",
+      "entry_time": "2016-10-19 00:00:00",
+      "exit_time": "2016-11-03 00:00:00",
+      "entry_price": 53.5027397403717,
+      "exit_price": 48.59968854904175,
+      "quantity": 174,
+      "pnl_pct": -0.09571956216600719,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2016-11-10 00:00:00",
+      "exit_time": "2017-01-04 00:00:00",
+      "entry_price": 1.7881436669826507,
+      "exit_price": 2.583707538127899,
+      "quantity": 4716,
+      "pnl_pct": 0.43842298748703024,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "WDC",
+      "entry_time": "2017-01-04 00:00:00",
+      "exit_time": "2017-01-20 00:00:00",
+      "entry_price": 52.618890443801874,
+      "exit_price": 54.68919445800782,
+      "quantity": 227,
+      "pnl_pct": 0.0346787077560371,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "CSX",
+      "entry_time": "2017-01-20 00:00:00",
+      "exit_time": "2017-02-02 00:00:00",
+      "entry_price": 14.840749681949614,
+      "exit_price": 15.555550891399385,
+      "quantity": 818,
+      "pnl_pct": 0.043458611635795785,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2017-02-02 00:00:00",
+      "exit_time": "2017-02-14 00:00:00",
+      "entry_price": 2.833916230916977,
+      "exit_price": 2.6984000716209415,
+      "quantity": 4613,
+      "pnl_pct": -0.05209458841511283,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "CSX",
+      "entry_time": "2017-02-14 00:00:00",
+      "exit_time": "2017-03-22 00:00:00",
+      "entry_price": 15.88460535621643,
+      "exit_price": 15.205726463317871,
+      "quantity": 778,
+      "pnl_pct": -0.047036173255537994,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "INCY",
+      "entry_time": "2017-03-22 00:00:00",
+      "exit_time": "2017-04-03 00:00:00",
+      "entry_price": 141.820875,
+      "exit_price": 134.9325,
+      "quantity": 83,
+      "pnl_pct": -0.052842771739122996,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2017-04-03 00:00:00",
+      "exit_time": "2017-04-25 00:00:00",
+      "entry_price": 28.96447576332092,
+      "exit_price": 26.696644084930423,
+      "quantity": 383,
+      "pnl_pct": -0.0824353563164626,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2017-04-25 00:00:00",
+      "exit_time": "2017-05-05 00:00:00",
+      "entry_price": 20.543599491119384,
+      "exit_price": 19.85673346042633,
+      "quantity": 497,
+      "pnl_pct": -0.03777433129573149,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "ILMN",
+      "entry_time": "2017-05-05 00:00:00",
+      "exit_time": "2017-05-18 00:00:00",
+      "entry_price": 183.29199387359617,
+      "exit_price": 171.40258286285402,
+      "quantity": 53,
+      "pnl_pct": -0.06906461548562037,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "JD",
+      "entry_time": "2017-05-26 00:00:00",
+      "exit_time": "2017-06-12 00:00:00",
+      "entry_price": 40.950465305328365,
+      "exit_price": 38.9805,
+      "quantity": 224,
+      "pnl_pct": -0.05237996071116002,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "VRTX",
+      "entry_time": "2017-07-18 00:00:00",
+      "exit_time": "2017-07-19 00:00:00",
+      "entry_price": 129.2746117172241,
+      "exit_price": 161.71910305023195,
+      "quantity": 67,
+      "pnl_pct": 0.245356676597015,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2017-07-19 00:00:00",
+      "exit_time": "2017-07-24 00:00:00",
+      "entry_price": 4.160328979969025,
+      "exit_price": 4.207645300388337,
+      "quantity": 2140,
+      "pnl_pct": 0.006832253764752272,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "VRTX",
+      "entry_time": "2017-07-24 00:00:00",
+      "exit_time": "2017-10-26 00:00:00",
+      "entry_price": 162.4111668319702,
+      "exit_price": 144.8075648803711,
+      "quantity": 66,
+      "pnl_pct": -0.11239235247501855,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "BIDU",
+      "entry_time": "2017-10-26 00:00:00",
+      "exit_time": "2017-10-30 00:00:00",
+      "entry_price": 262.19102755737305,
+      "exit_price": 240.83952671051026,
+      "quantity": 37,
+      "pnl_pct": -0.0855591661551105,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2017-10-30 00:00:00",
+      "exit_time": "2017-11-01 00:00:00",
+      "entry_price": 5.0490234560966485,
+      "exit_price": 5.231132991552353,
+      "quantity": 1748,
+      "pnl_pct": 0.03141642828367308,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2017-11-01 00:00:00",
+      "exit_time": "2017-11-30 00:00:00",
+      "entry_price": 44.81239591598511,
+      "exit_price": 44.137919847488405,
+      "quantity": 204,
+      "pnl_pct": -0.019473424636068493,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "DLTR",
+      "entry_time": "2017-11-30 00:00:00",
+      "exit_time": "2017-12-29 00:00:00",
+      "entry_price": 104.20207652664185,
+      "exit_price": 107.80607061004639,
+      "quantity": 85,
+      "pnl_pct": 0.029941398057293345,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ROST",
+      "entry_time": "2017-12-29 00:00:00",
+      "exit_time": "2018-01-08 00:00:00",
+      "entry_price": 80.60027755737305,
+      "exit_price": 81.91901908493043,
+      "quantity": 114,
+      "pnl_pct": 0.01179814187411976,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2018-01-08 00:00:00",
+      "exit_time": "2018-02-05 00:00:00",
+      "entry_price": 45.332656373977656,
+      "exit_price": 40.11992938995362,
+      "quantity": 204,
+      "pnl_pct": -0.11896195359554806,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2018-02-16 00:00:00",
+      "exit_time": "2018-03-13 00:00:00",
+      "entry_price": 6.138067728996276,
+      "exit_price": 6.2841064169406895,
+      "quantity": 1339,
+      "pnl_pct": 0.019195567401551816,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "MELI",
+      "entry_time": "2018-03-13 00:00:00",
+      "exit_time": "2018-03-23 00:00:00",
+      "entry_price": 413.6167086639404,
+      "exit_price": 349.82500000000005,
+      "quantity": 20,
+      "pnl_pct": -0.15802646693966482,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NFLX",
+      "entry_time": "2018-05-11 00:00:00",
+      "exit_time": "2018-07-18 00:00:00",
+      "entry_price": 32.981482652664184,
+      "exit_price": 38.10493854904175,
+      "quantity": 215,
+      "pnl_pct": 0.15015603365788333,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "ALGN",
+      "entry_time": "2018-07-18 00:00:00",
+      "exit_time": "2018-09-05 00:00:00",
+      "entry_price": 374.04691534423824,
+      "exit_price": 384.7275534210205,
+      "quantity": 21,
+      "pnl_pct": 0.023936170412547808,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ORLY",
+      "entry_time": "2018-09-05 00:00:00",
+      "exit_time": "2018-10-12 00:00:00",
+      "entry_price": 22.86742890071869,
+      "exit_price": 22.26353040599823,
+      "quantity": 365,
+      "pnl_pct": -0.030780000340676628,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "SBUX",
+      "entry_time": "2018-12-04 00:00:00",
+      "exit_time": "2018-12-21 00:00:00",
+      "entry_price": 67.50373622131347,
+      "exit_price": 62.27884637260437,
+      "quantity": 120,
+      "pnl_pct": -0.0815438642036701,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NTES",
+      "entry_time": "2019-01-10 00:00:00",
+      "exit_time": "2019-02-19 00:00:00",
+      "entry_price": 50.785378320693965,
+      "exit_price": 46.9765,
+      "quantity": 144,
+      "pnl_pct": -0.07915266429696688,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "WDAY",
+      "entry_time": "2019-02-19 00:00:00",
+      "exit_time": "2019-03-05 00:00:00",
+      "entry_price": 190.28509744262695,
+      "exit_price": 180.23983683013918,
+      "quantity": 34,
+      "pnl_pct": -0.05704345317961168,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MELI",
+      "entry_time": "2019-03-05 00:00:00",
+      "exit_time": "2019-04-03 00:00:00",
+      "entry_price": 469.94484645080564,
+      "exit_price": 522.2887127990723,
+      "quantity": 13,
+      "pnl_pct": 0.10639300296581378,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "WDAY",
+      "entry_time": "2019-04-03 00:00:00",
+      "exit_time": "2019-04-26 00:00:00",
+      "entry_price": 194.60724950408934,
+      "exit_price": 199.85002194976806,
+      "quantity": 36,
+      "pnl_pct": 0.02232941628247631,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "CDNS",
+      "entry_time": "2019-04-26 00:00:00",
+      "exit_time": "2019-05-21 00:00:00",
+      "entry_price": 67.53375,
+      "exit_price": 65.36730152511598,
+      "quantity": 107,
+      "pnl_pct": -0.03642535730097729,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MELI",
+      "entry_time": "2019-06-10 00:00:00",
+      "exit_time": "2019-07-24 00:00:00",
+      "entry_price": 626.2029596557617,
+      "exit_price": 631.024356842041,
+      "quantity": 11,
+      "pnl_pct": 0.0031749488375856227,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2019-07-24 00:00:00",
+      "exit_time": "2019-08-01 00:00:00",
+      "entry_price": 33.65681938934326,
+      "exit_price": 30.484750000000002,
+      "quantity": 209,
+      "pnl_pct": -0.09831418592746932,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "TTWO",
+      "entry_time": "2019-08-01 00:00:00",
+      "exit_time": "2019-09-12 00:00:00",
+      "entry_price": 121.69081225204467,
+      "exit_price": 124.30781774520875,
+      "quantity": 51,
+      "pnl_pct": 0.01691891167733295,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "HAS",
+      "entry_time": "2019-09-12 00:00:00",
+      "exit_time": "2019-09-16 00:00:00",
+      "entry_price": 117.71883366394043,
+      "exit_price": 118.52071183013916,
+      "quantity": 54,
+      "pnl_pct": 0.002291326568456542,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "KLAC",
+      "entry_time": "2019-09-16 00:00:00",
+      "exit_time": "2019-10-28 00:00:00",
+      "entry_price": 14.883438404560088,
+      "exit_price": 17.093448283195496,
+      "quantity": 435,
+      "pnl_pct": 0.1433312643223208,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2019-10-28 00:00:00",
+      "exit_time": "2019-11-08 00:00:00",
+      "entry_price": 21.846918442726135,
+      "exit_price": 22.28884923744202,
+      "quantity": 336,
+      "pnl_pct": 0.015647796828381022,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "KLAC",
+      "entry_time": "2019-11-08 00:00:00",
+      "exit_time": "2019-11-13 00:00:00",
+      "entry_price": 17.041517446517943,
+      "exit_price": 17.4112900762558,
+      "quantity": 439,
+      "pnl_pct": 0.017111018362148123,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2019-11-13 00:00:00",
+      "exit_time": "2020-02-06 00:00:00",
+      "entry_price": 23.678501272201537,
+      "exit_price": 46.63800051116944,
+      "quantity": 323,
+      "pnl_pct": 0.9607913577302536,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AAPL",
+      "entry_time": "2020-02-06 00:00:00",
+      "exit_time": "2020-02-13 00:00:00",
+      "entry_price": 80.68282308197021,
+      "exit_price": 81.0069768600464,
+      "quantity": 186,
+      "pnl_pct": -0.0004903058908884983,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2020-02-13 00:00:00",
+      "exit_time": "2020-02-25 00:00:00",
+      "entry_price": 53.456715305328366,
+      "exit_price": 51.114429389953614,
+      "quantity": 280,
+      "pnl_pct": -0.048109661455612907,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2020-04-15 00:00:00",
+      "exit_time": "2020-06-22 00:00:00",
+      "entry_price": 49.49140050888061,
+      "exit_price": 66.62999841308594,
+      "quantity": 288,
+      "pnl_pct": 0.3402497373771376,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "REGN",
+      "entry_time": "2020-06-22 00:00:00",
+      "exit_time": "2020-07-08 00:00:00",
+      "entry_price": 634.4070718688964,
+      "exit_price": 650.084768157959,
+      "quantity": 29,
+      "pnl_pct": 0.020111506838261795,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ZM",
+      "entry_time": "2020-07-08 00:00:00",
+      "exit_time": "2020-08-04 00:00:00",
+      "entry_price": 263.9318877868652,
+      "exit_price": 267.86600000000004,
+      "quantity": 73,
+      "pnl_pct": 0.010348962721653532,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "DOCU",
+      "entry_time": "2020-08-04 00:00:00",
+      "exit_time": "2020-08-11 00:00:00",
+      "entry_price": 225.3125969467163,
+      "exit_price": 197.41123950958254,
+      "quantity": 87,
+      "pnl_pct": -0.1277678838352453,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2020-08-11 00:00:00",
+      "exit_time": "2020-09-09 00:00:00",
+      "entry_price": 93.11319898223877,
+      "exit_price": 118.8072353668213,
+      "quantity": 182,
+      "pnl_pct": 0.27021522537302234,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "ZM",
+      "entry_time": "2020-10-13 00:00:00",
+      "exit_time": "2020-10-30 00:00:00",
+      "entry_price": 494.24699999999996,
+      "exit_price": 481.25925,
+      "quantity": 44,
+      "pnl_pct": -0.030649765834022458,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "ALGN",
+      "entry_time": "2020-11-06 00:00:00",
+      "exit_time": "2020-12-02 00:00:00",
+      "entry_price": 490.69523721313476,
+      "exit_price": 496.32172232055666,
+      "quantity": 42,
+      "pnl_pct": 0.006924973130513434,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "MRNA",
+      "entry_time": "2020-12-02 00:00:00",
+      "exit_time": "2020-12-08 00:00:00",
+      "entry_price": 138.69931988525389,
+      "exit_price": 165.667125,
+      "quantity": 151,
+      "pnl_pct": 0.18907069398718268,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2020-12-08 00:00:00",
+      "exit_time": "2021-01-14 00:00:00",
+      "entry_price": 208.60757807922363,
+      "exit_price": 280.9894398803711,
+      "quantity": 113,
+      "pnl_pct": 0.3409284006251916,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "PTON",
+      "entry_time": "2021-01-14 00:00:00",
+      "exit_time": "2021-02-18 00:00:00",
+      "entry_price": 166.18305610656736,
+      "exit_price": 136.0619398803711,
+      "quantity": 200,
+      "pnl_pct": -0.1849287234284086,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "PDD",
+      "entry_time": "2021-02-18 00:00:00",
+      "exit_time": "2021-02-26 00:00:00",
+      "entry_price": 198.099,
+      "exit_price": 169.37527671051026,
+      "quantity": 136,
+      "pnl_pct": -0.14883568801421798,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AMAT",
+      "entry_time": "2021-04-06 00:00:00",
+      "exit_time": "2021-05-11 00:00:00",
+      "entry_price": 143.9519448852539,
+      "exit_price": 119.94000000000001,
+      "quantity": 160,
+      "pnl_pct": -0.17054624193214252,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MRNA",
+      "entry_time": "2021-06-11 00:00:00",
+      "exit_time": "2021-06-23 00:00:00",
+      "entry_price": 212.0059438934326,
+      "exit_price": 219.8700057296753,
+      "quantity": 88,
+      "pnl_pct": 0.032437147139870115,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2021-06-23 00:00:00",
+      "exit_time": "2021-07-12 00:00:00",
+      "entry_price": 19.017253432273865,
+      "exit_price": 20.229879771232607,
+      "quantity": 1039,
+      "pnl_pct": 0.0589883419121795,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ORLY",
+      "entry_time": "2021-07-12 00:00:00",
+      "exit_time": "2021-07-16 00:00:00",
+      "entry_price": 39.40836239433288,
+      "exit_price": 39.77876857376099,
+      "quantity": 525,
+      "pnl_pct": 0.004867078078075515,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "MRNA",
+      "entry_time": "2021-07-16 00:00:00",
+      "exit_time": "2021-08-31 00:00:00",
+      "entry_price": 277.0584734344482,
+      "exit_price": 375.72204866027835,
+      "quantity": 75,
+      "pnl_pct": 0.3500222189571245,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "TEAM",
+      "entry_time": "2021-08-31 00:00:00",
+      "exit_time": "2021-11-02 00:00:00",
+      "entry_price": 364.51215156555173,
+      "exit_price": 449.9848864593506,
+      "quantity": 76,
+      "pnl_pct": 0.228942569994117,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2021-11-02 00:00:00",
+      "exit_time": "2021-11-10 00:00:00",
+      "entry_price": 386.6465652923584,
+      "exit_price": 336.63494305419925,
+      "quantity": 85,
+      "pnl_pct": -0.13325626898015874,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2021-11-10 00:00:00",
+      "exit_time": "2021-12-10 00:00:00",
+      "entry_price": 144.00195767211912,
+      "exit_price": 141.21934828948974,
+      "quantity": 205,
+      "pnl_pct": -0.023726551146902253,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "DLTR",
+      "entry_time": "2022-03-23 00:00:00",
+      "exit_time": "2022-04-08 00:00:00",
+      "entry_price": 156.57825,
+      "exit_price": 158.43073950958254,
+      "quantity": 188,
+      "pnl_pct": 0.0072880600714291255,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "VRTX",
+      "entry_time": "2022-04-08 00:00:00",
+      "exit_time": "2022-04-27 00:00:00",
+      "entry_price": 274.5472086639404,
+      "exit_price": 267.1963215789795,
+      "quantity": 108,
+      "pnl_pct": -0.03114426580522167,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "DLTR",
+      "entry_time": "2022-07-21 00:00:00",
+      "exit_time": "2022-07-27 00:00:00",
+      "entry_price": 172.8864030532837,
+      "exit_price": 157.78107061004638,
+      "quantity": 166,
+      "pnl_pct": -0.09146903998661726,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "VRTX",
+      "entry_time": "2022-07-27 00:00:00",
+      "exit_time": "2022-08-09 00:00:00",
+      "entry_price": 286.41312400817867,
+      "exit_price": 294.1328587799072,
+      "quantity": 90,
+      "pnl_pct": 0.02234223148433645,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "CEG",
+      "entry_time": "2022-08-09 00:00:00",
+      "exit_time": "2022-10-17 00:00:00",
+      "entry_price": 75.787875,
+      "exit_price": 83.17839122009278,
+      "quantity": 352,
+      "pnl_pct": 0.09258807889995202,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NFLX",
+      "entry_time": "2022-11-14 00:00:00",
+      "exit_time": "2022-12-08 00:00:00",
+      "entry_price": 29.014499999999998,
+      "exit_price": 30.895543798446656,
+      "quantity": 1008,
+      "pnl_pct": 0.06005018065021228,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "CEG",
+      "entry_time": "2022-12-08 00:00:00",
+      "exit_time": "2022-12-23 00:00:00",
+      "entry_price": 92.37616683197021,
+      "exit_price": 87.47623664474487,
+      "quantity": 336,
+      "pnl_pct": -0.05729496822705549,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "PDD",
+      "entry_time": "2023-01-17 00:00:00",
+      "exit_time": "2023-01-25 00:00:00",
+      "entry_price": 94.55725713729858,
+      "exit_price": 95.50222805023193,
+      "quantity": 301,
+      "pnl_pct": 0.005458868960643848,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NFLX",
+      "entry_time": "2023-01-25 00:00:00",
+      "exit_time": "2023-02-09 00:00:00",
+      "entry_price": 36.07502770614624,
+      "exit_price": 37.22238062858582,
+      "quantity": 814,
+      "pnl_pct": 0.027171933120347935,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2023-02-09 00:00:00",
+      "exit_time": "2023-03-27 00:00:00",
+      "entry_price": 22.61730390071869,
+      "exit_price": 26.823581393241884,
+      "quantity": 1335,
+      "pnl_pct": 0.18065116749757681,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "META",
+      "entry_time": "2023-03-27 00:00:00",
+      "exit_time": "2023-05-23 00:00:00",
+      "entry_price": 204.91240255737304,
+      "exit_price": 246.68659255981447,
+      "quantity": 172,
+      "pnl_pct": 0.19845842380903722,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2023-05-23 00:00:00",
+      "exit_time": "2023-08-10 00:00:00",
+      "entry_price": 31.0155,
+      "exit_price": 42.1389198474884,
+      "quantity": 1375,
+      "pnl_pct": 0.35254051706134004,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2023-08-30 00:00:00",
+      "exit_time": "2023-09-21 00:00:00",
+      "entry_price": 49.06852071762085,
+      "exit_price": 41.56220868301392,
+      "quantity": 1175,
+      "pnl_pct": -0.15677917305276445,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "ZS",
+      "entry_time": "2023-09-21 00:00:00",
+      "exit_time": "2023-10-12 00:00:00",
+      "entry_price": 151.80586072540282,
+      "exit_price": 173.95297328948976,
+      "quantity": 320,
+      "pnl_pct": 0.14074609110657144,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "PDD",
+      "entry_time": "2023-10-12 00:00:00",
+      "exit_time": "2023-12-28 00:00:00",
+      "entry_price": 110.7553469467163,
+      "exit_price": 145.92700000000002,
+      "quantity": 501,
+      "pnl_pct": 0.31164595388634386,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "CRWD",
+      "entry_time": "2023-12-28 00:00:00",
+      "exit_time": "2024-02-22 00:00:00",
+      "entry_price": 64.38467716598511,
+      "exit_price": 76.19438191986085,
+      "quantity": 1118,
+      "pnl_pct": 0.1781106977034781,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2024-02-22 00:00:00",
+      "exit_time": "2024-02-26 00:00:00",
+      "entry_price": 173.2865969467163,
+      "exit_price": 178.69060877990722,
+      "quantity": 494,
+      "pnl_pct": 0.02655548297167787,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2024-02-26 00:00:00",
+      "exit_time": "2024-03-04 00:00:00",
+      "entry_price": 79.7398469467163,
+      "exit_price": 84.08793225479127,
+      "quantity": 1100,
+      "pnl_pct": 0.04979366331826496,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2024-03-04 00:00:00",
+      "exit_time": "2024-03-15 00:00:00",
+      "entry_price": 205.2625836639404,
+      "exit_price": 184.73758683013918,
+      "quantity": 445,
+      "pnl_pct": -0.10403478960655232,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2024-03-15 00:00:00",
+      "exit_time": "2024-04-22 00:00:00",
+      "entry_price": 86.97346530532836,
+      "exit_price": 78.06494427871705,
+      "quantity": 951,
+      "pnl_pct": -0.10645803993464698,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2024-05-07 00:00:00",
+      "exit_time": "2024-06-25 00:00:00",
+      "entry_price": 91.14354857254028,
+      "exit_price": 121.13939694976807,
+      "quantity": 802,
+      "pnl_pct": 0.32313800960246697,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2024-06-25 00:00:00",
+      "exit_time": "2024-06-28 00:00:00",
+      "entry_price": 140.14004232788085,
+      "exit_price": 132.75359732055665,
+      "quantity": 683,
+      "pnl_pct": -0.05696084395294376,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "TTD",
+      "entry_time": "2024-06-28 00:00:00",
+      "exit_time": "2024-07-08 00:00:00",
+      "entry_price": 98.52924335861205,
+      "exit_price": 99.93001335525513,
+      "quantity": 933,
+      "pnl_pct": 0.009663064731395776,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ARM",
+      "entry_time": "2024-07-08 00:00:00",
+      "exit_time": "2024-07-09 00:00:00",
+      "entry_price": 181.13051328277587,
+      "exit_price": 186.00695610046387,
+      "quantity": 512,
+      "pnl_pct": 0.022311484324008868,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2024-07-09 00:00:00",
+      "exit_time": "2024-07-10 00:00:00",
+      "entry_price": 251.1255,
+      "exit_price": 262.66858779907227,
+      "quantity": 372,
+      "pnl_pct": 0.04126913715629321,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ARM",
+      "entry_time": "2024-07-10 00:00:00",
+      "exit_time": "2024-07-26 00:00:00",
+      "entry_price": 183.48169438934326,
+      "exit_price": 155.28232061004638,
+      "quantity": 539,
+      "pnl_pct": -0.15749023691056596,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AZN",
+      "entry_time": "2024-08-16 00:00:00",
+      "exit_time": "2024-08-26 00:00:00",
+      "entry_price": 170.30511122131347,
+      "exit_price": 172.7735706100464,
+      "quantity": 489,
+      "pnl_pct": 0.00993935950653091,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2024-08-26 00:00:00",
+      "exit_time": "2024-09-04 00:00:00",
+      "entry_price": 129.63479232788086,
+      "exit_price": 105.35729866027833,
+      "quantity": 649,
+      "pnl_pct": -0.19092511137833168,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MELI",
+      "entry_time": "2024-09-04 00:00:00",
+      "exit_time": "2024-09-26 00:00:00",
+      "entry_price": 1997.8283710327148,
+      "exit_price": 2146.726148803711,
+      "quantity": 34,
+      "pnl_pct": 0.06970528546270205,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ARM",
+      "entry_time": "2024-09-26 00:00:00",
+      "exit_time": "2024-10-30 00:00:00",
+      "entry_price": 152.076,
+      "exit_price": 152.42375,
+      "quantity": 479,
+      "pnl_pct": -0.0022134791100463236,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_time": "2024-10-30 00:00:00",
+      "exit_time": "2024-11-22 00:00:00",
+      "entry_price": 258.1690285491943,
+      "exit_price": 340.9194513397217,
+      "quantity": 281,
+      "pnl_pct": 0.31459904302320796,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "DASH",
+      "entry_time": "2024-11-22 00:00:00",
+      "exit_time": "2024-12-06 00:00:00",
+      "entry_price": 173.19655561065673,
+      "exit_price": 177.1413807296753,
+      "quantity": 548,
+      "pnl_pct": 0.018184417263194863,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "FTNT",
+      "entry_time": "2024-12-06 00:00:00",
+      "exit_time": "2025-01-29 00:00:00",
+      "entry_price": 98.56925664138794,
+      "exit_price": 99.87003816986085,
+      "quantity": 979,
+      "pnl_pct": 0.008647475894937529,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "PLTR",
+      "entry_time": "2025-01-29 00:00:00",
+      "exit_time": "2025-02-05 00:00:00",
+      "entry_price": 79.98997194671631,
+      "exit_price": 101.72910877990724,
+      "quantity": 1220,
+      "pnl_pct": 0.2660631454249165,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "APP",
+      "entry_time": "2025-02-05 00:00:00",
+      "exit_time": "2025-02-26 00:00:00",
+      "entry_price": 377.5586801147461,
+      "exit_price": 328.3057662200928,
+      "quantity": 328,
+      "pnl_pct": -0.13435520325944916,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "PLTR",
+      "entry_time": "2025-04-28 00:00:00",
+      "exit_time": "2025-07-01 00:00:00",
+      "entry_price": 113.83688877868651,
+      "exit_price": 135.2023692703247,
+      "quantity": 943,
+      "pnl_pct": 0.18235245098013242,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "ZS",
+      "entry_time": "2025-07-01 00:00:00",
+      "exit_time": "2025-07-14 00:00:00",
+      "entry_price": 314.65725,
+      "exit_price": 288.05591220092776,
+      "quantity": 403,
+      "pnl_pct": -0.08865099846072888,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MCHP",
+      "entry_time": "2025-07-14 00:00:00",
+      "exit_time": "2025-07-17 00:00:00",
+      "entry_price": 73.6167918319702,
+      "exit_price": 74.18289122009278,
+      "quantity": 1559,
+      "pnl_pct": 0.003165389137746777,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "PLTR",
+      "entry_time": "2025-07-17 00:00:00",
+      "exit_time": "2025-08-20 00:00:00",
+      "entry_price": 151.63577755737305,
+      "exit_price": 152.22385305023195,
+      "quantity": 765,
+      "pnl_pct": -0.0006290998137522541,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "AVGO",
+      "entry_time": "2025-08-20 00:00:00",
+      "exit_time": "2025-08-29 00:00:00",
+      "entry_price": 295.6077214508056,
+      "exit_price": 306.8565047607422,
+      "quantity": 392,
+      "pnl_pct": 0.03339232458914432,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "APP",
+      "entry_time": "2025-08-29 00:00:00",
+      "exit_time": "2025-09-26 00:00:00",
+      "entry_price": 480.96036122131346,
+      "exit_price": 652.3436479187012,
+      "quantity": 249,
+      "pnl_pct": 0.3502457666273948,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "WBD",
+      "entry_time": "2025-09-26 00:00:00",
+      "exit_time": "2025-10-30 00:00:00",
+      "entry_price": 19.349670152664185,
+      "exit_price": 21.459264313697815,
+      "quantity": 8017,
+      "pnl_pct": 0.10404540454786981,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "AMD",
+      "entry_time": "2025-10-30 00:00:00",
+      "exit_time": "2025-11-20 00:00:00",
+      "entry_price": 260.04997343444825,
+      "exit_price": 232.58364694976808,
+      "quantity": 669,
+      "pnl_pct": -0.10963509396537907,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2026-01-28 00:00:00",
+      "exit_time": "2026-03-26 00:00:00",
+      "entry_price": 422.65122244262693,
+      "exit_price": 369.8349790191651,
+      "quantity": 375,
+      "pnl_pct": -0.12889295419858715,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "WDC",
+      "entry_time": "2026-04-09 00:00:00",
+      "exit_time": "2026-05-07 00:00:00",
+      "entry_price": 344.0519448852539,
+      "exit_price": 471.7839790191651,
+      "quantity": 402,
+      "pnl_pct": 0.36510118365790967,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "INTC",
+      "entry_time": "2026-05-07 00:00:00",
+      "exit_time": "2026-05-14 00:00:00",
+      "entry_price": 111.07550664138793,
+      "exit_price": 114.60267366027833,
+      "quantity": 1701,
+      "pnl_pct": 0.02712220565678103,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "MU",
+      "entry_time": "2026-05-14 00:00:00",
+      "exit_time": "2026-05-27 00:00:00",
+      "entry_price": 788.0138051147461,
+      "exit_price": 955.182143157959,
+      "quantity": 246,
+      "pnl_pct": 0.2066964650233396,
+      "exit_reason": "Leader rotation"
+    },
+    {
+      "symbol": "INTC",
+      "entry_time": "2026-05-27 00:00:00",
+      "exit_time": "2026-06-08 00:00:00",
+      "entry_price": 124.45219438934325,
+      "exit_price": 110.9445,
+      "quantity": 1776,
+      "pnl_pct": -0.1125397902124935,
+      "exit_reason": "Supertrend down"
+    }
+  ],
+  "skipped": [
+    "ALTR",
+    "ALXN",
+    "ANSS",
+    "APOL",
+    "ATVI",
+    "BMC",
+    "CA",
+    "CELG",
+    "CEPH",
+    "CERN",
+    "CTRX",
+    "CTXS",
+    "DISCA",
+    "DISCK",
+    "DISH",
+    "DTV",
+    "ENDP",
+    "FI",
+    "FLIR",
+    "FWLT",
+    "GMCR",
+    "HOLX",
+    "JOYG",
+    "KRFT",
+    "LLTC",
+    "LMCA",
+    "LMCK",
+    "MXIM",
+    "MYL",
+    "NIHD",
+    "NLOK",
+    "NUAN",
+    "PDCO",
+    "QRTEA",
+    "RIMM",
+    "SGEN",
+    "SIAL",
+    "SPLK",
+    "SRCL",
+    "VIAB",
+    "VIP",
+    "VMED",
+    "WBA",
+    "WCRX",
+    "WFM",
+    "XLNX",
+    "YHOO"
+  ],
+  "universe": {
+    "source": "history_file",
+    "profiles": [
+      "nasdaq100"
+    ],
+    "as_of": "2026-07-21",
+    "selection_hash": "e267c52f4275fd00",
+    "raw_count": 238,
+    "eligible_count": 238,
+    "rejected_count": 0,
+    "survivorship_bias_warning": null
+  },
+  "config": {
+    "strategy": {
+      "name": "leader_rotation_default",
+      "type": "leader_rotation",
+      "params": {}
+    },
+    "scoring": {
+      "type": "relative_strength",
+      "params": {
+        "lookback_bars": 100
+      }
+    },
+    "market": "US",
+    "universe": {
+      "source": "history_file",
+      "profiles": {},
+      "file": "universe.json",
+      "history_file": "data/universes/nasdaq100_quarterly_history.json",
+      "symbols": [],
+      "refresh": "daily",
+      "snapshot_dir": "state/universes",
+      "filters": {
+        "enabled": false,
+        "exclude_managed": true,
+        "exclude_suspended": true,
+        "exclude_delisting": true,
+        "exclude_etf_etn": true,
+        "exclude_spac": true,
+        "exclude_preferred": true,
+        "min_price": {
+          "US": 5.0,
+          "KR": 1000.0
+        },
+        "avg_turnover_window": 20,
+        "min_avg_turnover": {
+          "US": 10000000.0,
+          "KR": 1000000000.0
+        },
+        "min_history_daily_bars": 120
+      }
+    },
+    "universe_file": "universe.json",
+    "symbols": [],
+    "timeframe": "1d",
+    "period": "max",
+    "capital": {
+      "initial_cash": 10000
+    },
+    "costs": {
+      "fee_rate": 0.00225,
+      "slippage_rate": 0.0005
+    },
+    "supertrend": {
+      "enabled": true,
+      "period": 10,
+      "multiplier": 3.0,
+      "atr_method": "wilder",
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      }
+    },
+    "market_trend_filter": {
+      "enabled": true,
+      "timeframe": "1d"
+    },
+    "leader_rotation": {
+      "max_slots": 1,
+      "hurdle_atr_mult": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "exit": {
+      "sell_confirm_bars": 1
+    },
+    "execution": {
+      "order_type": "market",
+      "allocation_pct": 1.0,
+      "broker": "paper",
+      "live_confirm_required": true
+    },
+    "risk": {
+      "max_position_count": 1
+    },
+    "live": {
+      "holdings_file": "holding.json",
+      "loop_interval_seconds": 60
+    },
+    "paper": {
+      "state_file": "state/research_us_nasdaq100_rolling_paper.json",
+      "results_dir": "results/research/us_nasdaq100_rolling/paper",
+      "loop_interval_seconds": 60,
+      "run_once_per_candle": true
+    },
+    "backtest": {
+      "results_dir": "results/research/us_nasdaq100_rolling/backtests"
+    },
+    "components": [
+      {
+        "type": "supertrend",
+        "enabled": true,
+        "group": "entries",
+        "params": {
+          "period": 10,
+          "multiplier": 3.0,
+          "atr_method": "wilder",
+          "symbol_multipliers": {
+            "SOXL": 4.5,
+            "SOXS": 4.5
+          }
+        }
+      },
+      {
+        "type": "benchmark_trend",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "timeframe": "1d"
+        }
+      },
+      {
+        "type": "supertrend_flip",
+        "enabled": true,
+        "group": "exits",
+        "params": {
+          "confirm_bars": 1
+        }
+      }
+    ]
+  }
+}

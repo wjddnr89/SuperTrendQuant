@@ -1,0 +1,5747 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-07-21",
+  "created_at": "2026-07-21T04:11:28.908979+00:00",
+  "market": "US",
+  "source": "history_file",
+  "profiles": [
+    "nasdaq100"
+  ],
+  "selection_hash": "e267c52f4275fd00",
+  "raw_members": [
+    {
+      "symbol": "AAL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AAL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AAPL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AAPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ABNB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ABNB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADBE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADBE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADSK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADSK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AEP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AKAM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AKAM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALAB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALAB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALGN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALNY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALNY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALXN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALXN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMAT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMAT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMGN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMZN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ANSS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ANSS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "APOL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "APOL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "APP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "APP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ARM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ARM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ASML",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ASML",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ATVI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ATVI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AVGO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AVGO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AXON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AXON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AZN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AZN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BBBY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BBBY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BIDU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BIDU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BIIB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BIIB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKNG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKNG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BMC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BMC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BMRN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BMRN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CCEP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CCEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CDNS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CDNS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CDW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CDW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CEG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CEG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CELG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CELG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CEPH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CEPH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CERN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CERN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CHKP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CHKP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CHRW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CHRW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CHTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CHTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CMCSA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CMCSA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "COST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "COST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CPRT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CPRT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWV",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSCO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSGP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSGP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTAS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTAS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTRX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTRX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTSH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTSH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTXS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTXS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DASH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DASH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DDOG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DDOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DELL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DELL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DISCA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DISCA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DISCK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DISCK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DISH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DISH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DLTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DLTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DOCU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DOCU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DTV",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DTV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DXCM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DXCM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EBAY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EBAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ENDP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ENDP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ENPH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ENPH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EQIX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EQIX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ESRX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ESRX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXPD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXPD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXPE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXPE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FANG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FANG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FAST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FAST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FER",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FFIV",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FFIV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FLEX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FLEX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FLIR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FLIR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FOSL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FOSL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FOX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FOX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FOXA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FOXA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FSLR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FSLR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FTNT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FTNT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FWLT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FWLT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GEHC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GEHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GENZ",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GENZ",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GFS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GFS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GILD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GILD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GMCR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GMCR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOLD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOLD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOGL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GRMN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GRMN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HAS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HAS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HOLX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HOLX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HONA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HONA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HSIC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HSIC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "IDXX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "IDXX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ILMN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ILMN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INCY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INCY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INFY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INFY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INSM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INSM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ISRG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ISRG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "JBHT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "JBHT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "JD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "JD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "JOYG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "JOYG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KDP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KDP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KHC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KLAC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KLAC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KRFT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KRFT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LBTYA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LBTYA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LBTYK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LBTYK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LCID",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LCID",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LIFE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LIFE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LILA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LILA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LILAK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LILAK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LIN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LIN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LITE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LITE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LLTC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LLTC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LMCA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LMCA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LMCK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LMCK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LOGI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LOGI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LRCX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LRCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LULU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LULU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MAR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MAT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MAT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MCHP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MCHP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MDB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MDB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MDLZ",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MDLZ",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MELI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MELI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "META",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "META",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MICC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MICC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MNST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MNST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MPWR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MPWR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MRNA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MRNA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MRVL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MRVL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSFT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MTCH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MTCH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MXIM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MXIM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MYL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MYL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NBIS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NBIS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NCLH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NCLH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NFLX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NFLX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NIHD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NIHD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NLOK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NLOK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NTAP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NTAP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NTES",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NTES",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NUAN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NUAN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NVDA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NXPI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NXPI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ODFL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ODFL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "OKTA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "OKTA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ORCL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ORCL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ORLY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ORLY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PANW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PANW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PAYX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PAYX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PCAR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PCAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PDCO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PDCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PDD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PDD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PEP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PLTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PLTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PRGO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PRGO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PTON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PTON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PYPL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PYPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QCOM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QCOM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QGEN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QGEN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QRTEA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QRTEA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "REGN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "REGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RIMM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RIMM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RIVN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RIVN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RKLB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RKLB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SBAC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SBAC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SBUX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SBUX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SGEN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SGEN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHLD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHLD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHOP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHOP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHPG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHPG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SIAL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SIAL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SIRI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SIRI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SMCI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SMCI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNDK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNDK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNPS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNPS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPCX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPLK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPLK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPLS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPLS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SRCL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SRCL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "STX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "STX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SWKS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SWKS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TCOM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TCOM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TEAM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TEAM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TER",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TEVA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TEVA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TMUS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TMUS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TRI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TRI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TRIP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TRIP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TSCO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TSCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TSLA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TTD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TTD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TTWO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TTWO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TXN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TXN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "UAL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "UAL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ULTA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ULTA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "URBN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "URBN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VIAB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VIAB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VIP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VIP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VMED",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VMED",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VOD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VOD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRSK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRSK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRSN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRSN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRTX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRTX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WBA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WBA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WBD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WBD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WCRX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WCRX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDAY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WFM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WFM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WMT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WMT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WTW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WTW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WYNN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WYNN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XEL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XEL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XLNX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XLNX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XRAY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XRAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "YHOO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "YHOO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ZM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ZM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ZS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ZS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    }
+  ],
+  "eligible_members": [
+    {
+      "symbol": "AAL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AAL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AAPL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AAPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ABNB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ABNB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADBE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADBE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ADSK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ADSK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AEP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AKAM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AKAM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALAB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALAB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALGN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALNY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALNY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ALXN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ALXN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMAT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMAT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMGN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AMZN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ANSS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ANSS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "APOL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "APOL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "APP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "APP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ARM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ARM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ASML",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ASML",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ATVI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ATVI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AVGO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AVGO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AXON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AXON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "AZN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "AZN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BBBY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BBBY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BIDU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BIDU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BIIB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BIIB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKNG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKNG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BKR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BKR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BMC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BMC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "BMRN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "BMRN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CCEP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CCEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CDNS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CDNS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CDW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CDW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CEG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CEG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CELG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CELG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CEPH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CEPH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CERN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CERN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CHKP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CHKP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CHRW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CHRW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CHTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CHTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CMCSA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CMCSA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "COST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "COST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CPRT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CPRT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CRWV",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CRWV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSCO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSGP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSGP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CSX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CSX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTAS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTAS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTRX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTRX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTSH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTSH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "CTXS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "CTXS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DASH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DASH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DDOG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DDOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DELL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DELL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DISCA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DISCA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DISCK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DISCK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DISH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DISH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DLTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DLTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DOCU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DOCU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DTV",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DTV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "DXCM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "DXCM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EBAY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EBAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ENDP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ENDP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ENPH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ENPH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EQIX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EQIX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ESRX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ESRX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXPD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXPD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "EXPE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "EXPE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FANG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FANG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FAST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FAST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FER",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FFIV",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FFIV",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FLEX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FLEX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FLIR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FLIR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FOSL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FOSL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FOX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FOX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FOXA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FOXA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FSLR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FSLR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FTNT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FTNT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "FWLT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "FWLT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GEHC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GEHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GENZ",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GENZ",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GFS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GFS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GILD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GILD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GMCR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GMCR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOLD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOLD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GOOGL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "GRMN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "GRMN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HAS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HAS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HOLX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HOLX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HONA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HONA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "HSIC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "HSIC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "IDXX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "IDXX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ILMN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ILMN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INCY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INCY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INFY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INFY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INSM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INSM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "INTU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "INTU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ISRG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ISRG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "JBHT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "JBHT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "JD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "JD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "JOYG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "JOYG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KDP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KDP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KHC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KHC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KLAC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KLAC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "KRFT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "KRFT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LBTYA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LBTYA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LBTYK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LBTYK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LCID",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LCID",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LIFE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LIFE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LILA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LILA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LILAK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LILAK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LIN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LIN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LITE",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LITE",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LLTC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LLTC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LMCA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LMCA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LMCK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LMCK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LOGI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LOGI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LRCX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LRCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "LULU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "LULU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MAR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MAT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MAT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MCHP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MCHP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MDB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MDB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MDLZ",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MDLZ",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MELI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MELI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "META",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "META",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MICC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MICC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MNST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MNST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MPWR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MPWR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MRNA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MRNA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MRVL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MRVL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSFT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MSTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MSTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MTCH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MTCH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MU",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MU",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MXIM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MXIM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "MYL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "MYL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NBIS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NBIS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NCLH",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NCLH",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NFLX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NFLX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NIHD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NIHD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NLOK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NLOK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NTAP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NTAP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NTES",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NTES",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NUAN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NUAN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NVDA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "NXPI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "NXPI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ODFL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ODFL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "OKTA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "OKTA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ORCL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ORCL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ORLY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ORLY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PANW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PANW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PAYX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PAYX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PCAR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PCAR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PDCO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PDCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PDD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PDD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PEP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PEP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PLTR",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PLTR",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PRGO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PRGO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PTON",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PTON",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "PYPL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "PYPL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QCOM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QCOM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QGEN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QGEN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "QRTEA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "QRTEA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "REGN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "REGN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RIMM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RIMM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RIVN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RIVN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "RKLB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "RKLB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ROST",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ROST",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SBAC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SBAC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SBUX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SBUX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SGEN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SGEN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHLD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHLD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHOP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHOP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SHPG",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SHPG",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SIAL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SIAL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SIRI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SIRI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SMCI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SMCI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNDK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNDK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SNPS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SNPS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPCX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPCX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPLK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPLK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SPLS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SPLS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SRCL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SRCL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "STX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "STX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "SWKS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "SWKS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TCOM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TCOM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TEAM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TEAM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TER",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TER",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TEVA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TEVA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TMUS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TMUS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TRI",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TRI",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TRIP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TRIP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TSCO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TSCO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TSLA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TTD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TTD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TTWO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TTWO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "TXN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "TXN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "UAL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "UAL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ULTA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ULTA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "URBN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "URBN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VIAB",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VIAB",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VIP",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VIP",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VMED",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VMED",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VOD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VOD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRSK",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRSK",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRSN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRSN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "VRTX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "VRTX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WBA",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WBA",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WBD",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WBD",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WCRX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WCRX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDAY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WDC",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WDC",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WFM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WFM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WMT",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WMT",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WTW",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WTW",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "WYNN",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "WYNN",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XEL",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XEL",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XLNX",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XLNX",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "XRAY",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "XRAY",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "YHOO",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "YHOO",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ZM",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ZM",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    },
+    {
+      "symbol": "ZS",
+      "market": "US",
+      "exchange": "US",
+      "name": "",
+      "security_type": "STOCK",
+      "yfinance_symbol": "ZS",
+      "benchmark": "QQQ",
+      "profiles": [
+        "nasdaq100"
+      ]
+    }
+  ],
+  "rejected": [],
+  "filters": {
+    "enabled": false,
+    "exclude_managed": true,
+    "exclude_suspended": true,
+    "exclude_delisting": true,
+    "exclude_etf_etn": true,
+    "exclude_spac": true,
+    "exclude_preferred": true,
+    "min_price": {
+      "US": 5.0,
+      "KR": 1000.0
+    },
+    "avg_turnover_window": 20,
+    "min_avg_turnover": {
+      "US": 10000000.0,
+      "KR": 1000000000.0
+    },
+    "min_history_daily_bars": 120
+  }
+}

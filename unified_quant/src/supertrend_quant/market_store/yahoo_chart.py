@@ -173,6 +173,49 @@ class YahooChartCache:
         self.http_attempts = 0
         self._attempted_urls: set[str] = set()
 
+    def get_by_wrapper_hash(
+        self,
+        symbol: str,
+        wrapper_hash: str,
+    ) -> YahooChartCachedResponse | None:
+        """Load one immutable reviewed response without changing its date window."""
+
+        normalized = normalize_yahoo_symbol(symbol)
+        expected_hash = str(wrapper_hash).strip().lower()
+        if len(expected_hash) != 64 or any(
+            character not in "0123456789abcdef" for character in expected_hash
+        ):
+            raise ValueError("Yahoo chart cache wrapper hash is invalid.")
+        matches: list[YahooChartCachedResponse] = []
+        if not self.root.is_dir():
+            return None
+        for path in self.root.glob("*.json.gz"):
+            encoded = path.read_bytes()
+            try:
+                envelope = json.loads(gzip.decompress(encoded))
+            except Exception:
+                continue
+            if not isinstance(envelope, dict):
+                continue
+            if str(envelope.get("wrapper_sha256", "")).lower() != expected_hash:
+                continue
+            response = self._decode(
+                normalized,
+                encoded,
+                period1=envelope.get("request_period1"),
+                period2=envelope.get("request_period2"),
+            )
+            if path != self.path(
+                normalized,
+                period1=response.request_period1,
+                period2=response.request_period2,
+            ):
+                raise RuntimeError("Yahoo chart cache file path does not match its URL.")
+            matches.append(response)
+        if len(matches) > 1:
+            raise RuntimeError("Yahoo chart cache wrapper hash is duplicated.")
+        return matches[0] if matches else None
+
     @staticmethod
     def _request_bounds(period1: int, period2: int) -> tuple[int, int]:
         if isinstance(period1, bool) or isinstance(period2, bool):

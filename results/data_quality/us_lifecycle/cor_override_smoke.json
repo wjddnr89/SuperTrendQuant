@@ -1,0 +1,82 @@
+{
+  "records": {
+    "US:EODHD:2c15a3cb-4bdb-5b6f-b82e-8e17e286ee69": {
+      "artifacts": [
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:20:35.075112Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "1bc8eb1c4fe92b0dc99d731f1c2b7c60743bc6ed4b6a946b19d2701ef41e9140",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1053507/000119312521367969/d256586dex991.htm"
+        },
+        {
+          "content_type": "text/html",
+          "retrieved_at": "2026-07-17T20:20:35.553667Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "e7a0208a611ac4d840166cd363f5c15f3c9ca176203d8192f7310c1b8481bc3e",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1053507/000119312521341764/d207949dex99a1a.htm"
+        }
+      ],
+      "candidate": {
+        "active_to": "2023-08-30",
+        "exchange": "NYSE",
+        "index_remove_dates": [],
+        "last_price_date": "2023-08-30",
+        "name": "CoreSite Realty Corporation",
+        "security_id": "US:EODHD:2c15a3cb-4bdb-5b6f-b82e-8e17e286ee69",
+        "symbol": "COR"
+      },
+      "crosscheck": {
+        "basis": "date_mismatch",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "implied_consideration": 170.0,
+        "nearest_index_remove_gap_days": null,
+        "old_close": 132.36,
+        "old_price_session": "2021-12-28",
+        "passed": false,
+        "relative_deviation": 0.22141176470588228,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 610
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-21-367969",
+        "cik": "1053507",
+        "display_name": "CoreSite Realty Corporation",
+        "filing_date": "2021-12-28",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "cash_merger",
+        "cash_amount": 170.0,
+        "confidence": "high",
+        "effective_date": "2021-12-28",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "American Tower's SEC-filed completion release states that the CoreSite merger completed on December 28, 2021 and each share converted into $170 cash."
+      },
+      "source_hash": "1bc8eb1c4fe92b0dc99d731f1c2b7c60743bc6ed4b6a946b19d2701ef41e9140",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1053507/000119312521367969/d256586dex991.htm",
+      "successor_security_id": ""
+    }
+  },
+  "release_version": "20260715-20260717T155657288079Z",
+  "summary": {
+    "action_type_counts": {
+      "cash_merger": 1
+    },
+    "candidate_count": 1,
+    "collected_count": 1,
+    "eligible_count": 0,
+    "unresolved_count": 1
+  }
+}

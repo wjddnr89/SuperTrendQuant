@@ -1,0 +1,1172 @@
+{
+  "records": {
+    "US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.308065Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "9d7db1953af321183b4f85d71a019e831d899c4ab312826f79878b902d3bcb2a",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/813828/000081382822000011/0000813828-22-000011.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2022-05-27",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2022-02-17"
+        ],
+        "last_price_date": "2022-05-27",
+        "name": "Paramount Global",
+        "security_id": "US:EODHD:122d842c-3604-5d5e-bc96-10d2619909ed",
+        "symbol": "VIAC"
+      },
+      "crosscheck": {
+        "basis": "index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 29.35,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 29.35,
+        "old_price_session": "2022-02-17",
+        "passed": true,
+        "relative_deviation": 0.0,
+        "successor_close": 29.35,
+        "successor_price_session": "2022-02-17",
+        "terminal_gap_days": 99
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0000813828-22-000011",
+        "cik": "813828",
+        "display_name": "Paramount Global",
+        "filing_date": "2022-02-18",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2022-02-17",
+        "new_symbol": "PARA",
+        "ratio": null,
+        "reason": "SEC filing states that Paramount Global began trading under PARA on February 17, 2022."
+      },
+      "source_hash": "9d7db1953af321183b4f85d71a019e831d899c4ab312826f79878b902d3bcb2a",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/813828/000081382822000011/0000813828-22-000011.txt",
+      "successor_security_id": "US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537"
+    },
+    "US:EODHD:2dd21653-9767-51df-af08-07ce749ea5d6": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.272575Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "587c9e11e4e342b74e143d1498b3d40a0e6b707655a082db372855ebb0bf16c1",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/320335/000032033519000024/0000320335-19-000024.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2019-08-08",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2019-08-08"
+        ],
+        "last_price_date": "2019-08-08",
+        "name": "Torchmark Corporation",
+        "security_id": "US:EODHD:2dd21653-9767-51df-af08-07ce749ea5d6",
+        "symbol": "TMK"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 88.01,
+        "nearest_index_remove_gap_days": 1,
+        "old_close": 88.1,
+        "old_price_session": "2019-08-08",
+        "passed": true,
+        "relative_deviation": 0.0010215664018159954,
+        "successor_close": 88.01,
+        "successor_price_session": "2019-08-09",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0000320335-19-000024",
+        "cik": "320335",
+        "display_name": "Torchmark Corporation",
+        "filing_date": "2019-07-24",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2019-08-09",
+        "new_symbol": "GL",
+        "ratio": null,
+        "reason": "SEC filing states that Globe Life would begin trading under GL on August 9, 2019."
+      },
+      "source_hash": "587c9e11e4e342b74e143d1498b3d40a0e6b707655a082db372855ebb0bf16c1",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320335/000032033519000024/0000320335-19-000024.txt",
+      "successor_security_id": "US:EODHD:f1ac2066-e4b0-5e28-8248-be51a504be4b"
+    },
+    "US:EODHD:330d4f9a-dd92-5e71-9843-9c3cf5dc1058": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.259845Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "664d49ea842309e24970f447ba462504f4e7763f7dfe2c23b30f410e4cae9c6a",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/936402/000119312519004574/0001193125-19-004574.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2019-01-07",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2018-12-24"
+        ],
+        "last_price_date": "2019-01-07",
+        "name": "Shire plc",
+        "security_id": "US:EODHD:330d4f9a-dd92-5e71-9843-9c3cf5dc1058",
+        "symbol": "SHPG"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 15,
+        "old_close": 179.2,
+        "old_price_session": "2019-01-07",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-19-004574",
+        "cik": "936402",
+        "display_name": "Shire plc",
+        "filing_date": "2019-01-08",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": 90.99,
+        "confidence": "high",
+        "effective_date": "2019-01-08",
+        "new_symbol": "TAK",
+        "ratio": 5.034,
+        "reason": "SEC completion filing states that each Shire ADS received $90.99 cash and 5.034 Takeda ADSs."
+      },
+      "source_hash": "664d49ea842309e24970f447ba462504f4e7763f7dfe2c23b30f410e4cae9c6a",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/936402/000119312519004574/0001193125-19-004574.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:527e931f-3364-53a2-963a-2755a59461cb": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.304530Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "baae69fe9352e0a508e1085c572f38e0c236bcf5959b9b30a605ab75d5f1f931",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1101215/000110121522000051/0001101215-22-000051.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2022-04-01",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2020-06-22"
+        ],
+        "last_price_date": "2022-04-01",
+        "name": "Alliance Data Systems Corporation",
+        "security_id": "US:EODHD:527e931f-3364-53a2-963a-2755a59461cb",
+        "symbol": "ADS"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 651,
+        "old_close": 56.8,
+        "old_price_session": "2022-04-01",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 3
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001101215-22-000051",
+        "cik": "1101215",
+        "display_name": "Alliance Data Systems Corporation",
+        "filing_date": "2022-03-23",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2022-04-04",
+        "new_symbol": "BFH",
+        "ratio": null,
+        "reason": "SEC filing states that ADS would cease and BFH would begin trading effective April 4, 2022."
+      },
+      "source_hash": "baae69fe9352e0a508e1085c572f38e0c236bcf5959b9b30a605ab75d5f1f931",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1101215/000110121522000051/0001101215-22-000051.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:6547ea5e-2d7e-5cee-9137-2c1f2760e0f6": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.204211Z",
+          "source": "sec_edgar_search",
+          "source_hash": "8d6b4b1dd6e9c5cd535dab8c7de90870ed71e394f0d7996c6e900c31e24ecf75",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Express+Scripts+Holding+Co%22&forms=8-K&startdt=2018-10-06&enddt=2019-02-03&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.204467Z",
+          "source": "sec_edgar_search",
+          "source_hash": "df90c7bb690a9f6c7eabe9b479d46d46b7f1920ef8d4df9ece08b36361315f80",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Express+Scripts+Holding+Co%22&forms=6-K&startdt=2018-10-06&enddt=2019-02-03&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.204856Z",
+          "source": "sec_edgar_search",
+          "source_hash": "8215009238c1338105be9bf54647788e98300f270f1a63fccf1734c9fe1b4b84",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Express+Scripts+Holding+Co%22&forms=25-NSE&startdt=2018-10-06&enddt=2019-02-03&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.205150Z",
+          "source": "sec_edgar_search",
+          "source_hash": "6e26057d9fdd4debc1519eb3d2d31f8a45f204e00fea1c578418825e282005d0",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Express+Scripts+Holding%22&forms=8-K&startdt=2018-10-06&enddt=2019-02-03&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.205845Z",
+          "source": "sec_edgar_search",
+          "source_hash": "92c9de57b7a384774dd0b0cee68429f090aa9b195b4536c87966e23028545a5f",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Express+Scripts+Holding%22&forms=6-K&startdt=2018-10-06&enddt=2019-02-03&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.206119Z",
+          "source": "sec_edgar_search",
+          "source_hash": "a72df47da9713d7f46271d9ca2f8ccde618cb55d2db7bd3e07b4c7b3c7380414",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Express+Scripts+Holding%22&forms=25-NSE&startdt=2018-10-06&enddt=2019-02-03&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.206557Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "1e9c6bf78ea099b06e13b2758a0024819430d521c0667a39d7fc8caccd787a1f",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1532063/000114036118045477/0001140361-18-045477.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2018-12-20",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2018-12-21",
+          "2018-12-24"
+        ],
+        "last_price_date": "2018-12-20",
+        "name": "Express Scripts Holding Co",
+        "security_id": "US:EODHD:6547ea5e-2d7e-5cee-9137-2c1f2760e0f6",
+        "symbol": "ESRX"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 92.51332,
+        "nearest_index_remove_gap_days": 1,
+        "old_close": 92.33,
+        "old_price_session": "2018-12-20",
+        "passed": true,
+        "relative_deviation": 0.001981552494278606,
+        "successor_close": 179.8,
+        "successor_price_session": "2018-12-20",
+        "terminal_gap_days": 0
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001140361-18-045477",
+        "cik": "0001532063",
+        "display_name": "Express Scripts Holding Co.  (CIK 0001532063)",
+        "filing_date": "2018-12-20",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "2.03",
+          "3.01",
+          "3.03",
+          "5.01",
+          "5.02",
+          "5.03",
+          "8.01",
+          "9.01"
+        ],
+        "score": 17.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": 48.75,
+        "confidence": "high",
+        "effective_date": "2018-12-20",
+        "new_symbol": "CI",
+        "ratio": 0.2434,
+        "reason": "SEC completion filing contains a stock exchange ratio."
+      },
+      "source_hash": "1e9c6bf78ea099b06e13b2758a0024819430d521c0667a39d7fc8caccd787a1f",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1532063/000114036118045477/0001140361-18-045477.txt",
+      "successor_security_id": "US:EODHD:baee1025-efea-5e93-927f-220b593c7372"
+    },
+    "US:EODHD:710b6151-fd06-588c-9a0f-5cb5b9bfc799": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.278796Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "0d5b281f57147b7ede667c8e29ef0101375b08c83378d42386f1ca54d7a68d6e",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/52988/000005298819000066/0000052988-19-000066.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2019-12-09",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2019-12-10"
+        ],
+        "last_price_date": "2019-12-09",
+        "name": "Jacobs Engineering Group Inc",
+        "security_id": "US:EODHD:710b6151-fd06-588c-9a0f-5cb5b9bfc799",
+        "symbol": "JEC"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 86.3774,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 85.84,
+        "old_price_session": "2019-12-09",
+        "passed": true,
+        "relative_deviation": 0.0062215347996118315,
+        "successor_close": 86.3774,
+        "successor_price_session": "2019-12-10",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0000052988-19-000066",
+        "cik": "52988",
+        "display_name": "Jacobs Engineering Group Inc",
+        "filing_date": "2019-11-25",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2019-12-10",
+        "new_symbol": "J",
+        "ratio": null,
+        "reason": "SEC filing states that Jacobs would begin trading under J on December 10, 2019."
+      },
+      "source_hash": "0d5b281f57147b7ede667c8e29ef0101375b08c83378d42386f1ca54d7a68d6e",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/52988/000005298819000066/0000052988-19-000066.txt",
+      "successor_security_id": "US:EODHD:12d628cb-b074-59fa-802d-39a9c41f4775"
+    },
+    "US:EODHD:74df9527-7797-51a0-8a2c-48e4a2ba91dd": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.284037Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "06adc30fe76d12f4ca852dfe584999997bc787b9a540ec9480deb5baf421b640",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1623613/000119312520298224/0001193125-20-298224.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2020-11-18",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2019-12-23",
+          "2020-11-17"
+        ],
+        "last_price_date": "2020-11-18",
+        "name": "Viatris Inc",
+        "security_id": "US:EODHD:74df9527-7797-51a0-8a2c-48e4a2ba91dd",
+        "symbol": "MYL"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 15.86,
+        "nearest_index_remove_gap_days": 1,
+        "old_close": 15.855,
+        "old_price_session": "2020-11-16",
+        "passed": true,
+        "relative_deviation": 0.00031525851197976073,
+        "successor_close": 15.86,
+        "successor_price_session": "2020-11-16",
+        "terminal_gap_days": 2
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-20-298224",
+        "cik": "1623613",
+        "display_name": "Viatris Inc",
+        "filing_date": "2020-11-19",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2020-11-16",
+        "new_symbol": "VTRS",
+        "ratio": 1.0,
+        "reason": "SEC completion filing states that each Mylan share converted into one Viatris share."
+      },
+      "source_hash": "06adc30fe76d12f4ca852dfe584999997bc787b9a540ec9480deb5baf421b640",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1623613/000119312520298224/0001193125-20-298224.txt",
+      "successor_security_id": "US:EODHD:174743d5-32ab-5169-bbfa-7c4fd2fc9739"
+    },
+    "US:EODHD:7f097426-7ca9-571f-acba-1c1ad87568ad": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.328585Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "e21dbda8f6a0bec278480107f621f96e7c0d193c28f02e2104e8a33abdf10972",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/62709/000006270926000014/0000062709-26-000014.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2026-01-13",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2026-01-14"
+        ],
+        "last_price_date": "2026-01-13",
+        "name": "Marsh & McLennan Companies Inc",
+        "security_id": "US:EODHD:7f097426-7ca9-571f-acba-1c1ad87568ad",
+        "symbol": "MMC"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 183.27,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 182.7,
+        "old_price_session": "2026-01-13",
+        "passed": true,
+        "relative_deviation": 0.0031101653298413355,
+        "successor_close": 183.27,
+        "successor_price_session": "2026-01-14",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0000062709-26-000014",
+        "cik": "62709",
+        "display_name": "Marsh & McLennan Companies Inc",
+        "filing_date": "2026-01-29",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2026-01-14",
+        "new_symbol": "MRSH",
+        "ratio": null,
+        "reason": "SEC filing confirms that Marsh began trading under MRSH on January 14, 2026."
+      },
+      "source_hash": "e21dbda8f6a0bec278480107f621f96e7c0d193c28f02e2104e8a33abdf10972",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/62709/000006270926000014/0000062709-26-000014.txt",
+      "successor_security_id": "US:EODHD:52caaf4b-4064-554f-8547-5cb604115917"
+    },
+    "US:EODHD:8c3ed25d-ae9f-5bac-8467-f3f064197684": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.201871Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "67fd91224660d65020ba75f772ae2d94a51803396d9e2e4a19a0685699e80012",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1730168/000119312518317917/0001193125-18-317917.txt"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.202152Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "0c454df7ee7bd19333455aea96c80175b3b8c3035bf4b9cca4059e92ad63d532",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/356028/000119312518271770/0001193125-18-271770.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2018-11-05",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2018-11-05",
+          "2018-11-06"
+        ],
+        "last_price_date": "2018-11-05",
+        "name": "CA Technologies",
+        "security_id": "US:EODHD:8c3ed25d-ae9f-5bac-8467-f3f064197684",
+        "symbol": "CA"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 44.5,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 44.44,
+        "old_price_session": "2018-11-05",
+        "passed": true,
+        "relative_deviation": 0.0013483146067416242,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 0
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-18-317917",
+        "cik": "1730168",
+        "display_name": "CA Technologies",
+        "filing_date": "2018-11-05",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "cash_merger",
+        "cash_amount": 44.5,
+        "confidence": "high",
+        "effective_date": "2018-11-05",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC completion filing and target filing establish the November 5 closing and $44.50 per-share cash consideration."
+      },
+      "source_hash": "67fd91224660d65020ba75f772ae2d94a51803396d9e2e4a19a0685699e80012",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1730168/000119312518317917/0001193125-18-317917.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:9f13974d-7f81-5aac-a3a7-ed1d184bd76b": {
+      "artifacts": [
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.126947Z",
+          "source": "sec_edgar_search",
+          "source_hash": "b70799165f18d2237fd421cf0a384a0c34aa78a2b32f7d70a48672cf493c041f",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Allergan+Inc%22&forms=8-K&startdt=2014-12-31&enddt=2015-04-30&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.128872Z",
+          "source": "sec_edgar_search",
+          "source_hash": "089a251b0109b73cb6070ed452f9dd5d30a7c0202d3367b00d163860d8b00011",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Allergan+Inc%22&forms=6-K&startdt=2014-12-31&enddt=2015-04-30&from=0&size=50"
+        },
+        {
+          "content_type": "application/json",
+          "retrieved_at": "2026-07-17T19:51:12.129163Z",
+          "source": "sec_edgar_search",
+          "source_hash": "0d5446ae3ed4d8da670311bf6c393883f13047764b74122e44ca70fc93f68b04",
+          "source_url": "https://efts.sec.gov/LATEST/search-index?q=%22Allergan+Inc%22&forms=25-NSE&startdt=2014-12-31&enddt=2015-04-30&from=0&size=50"
+        },
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.129553Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "247cdf622803b6b29c900ed16bc6fec15ac8c5a3e1d04be98dd88a2f44976457",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/850693/000119312515096184/0001193125-15-096184.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2015-03-16",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2020-05-12"
+        ],
+        "last_price_date": "2015-03-16",
+        "name": "Allergan Inc",
+        "security_id": "US:EODHD:9f13974d-7f81-5aac-a3a7-ed1d184bd76b",
+        "symbol": "AGN"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 1883,
+        "old_close": 240.22,
+        "old_price_session": "2015-03-16",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-15-096184",
+        "cik": "0000850693",
+        "display_name": "ALLERGAN INC  (CIK 0000850693)",
+        "filing_date": "2015-03-18",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01",
+          "3.03",
+          "5.01",
+          "5.02",
+          "5.03",
+          "9.01"
+        ],
+        "score": 15.933333333333334
+      },
+      "manual_review_reason": "The successor immediately reused AGN after ACT acquired legacy Allergan; successor identity is not yet present in the master.",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": 129.22,
+        "confidence": "high",
+        "effective_date": "2015-03-17",
+        "new_symbol": "ACT",
+        "ratio": 0.3683,
+        "reason": "SEC completion filing contains a stock exchange ratio."
+      },
+      "source_hash": "247cdf622803b6b29c900ed16bc6fec15ac8c5a3e1d04be98dd88a2f44976457",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/850693/000119312515096184/0001193125-15-096184.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:b0395c88-1e0d-5135-b79f-240ac991e540": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.264517Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "596701a3f09e484f60489e5df3501c0f09e4c908905bab2f81cefb684e338fac",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/314808/000031480819000130/0000314808-19-000130.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2019-07-30",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2016-03-30"
+        ],
+        "last_price_date": "2019-07-30",
+        "name": "Valaris plc",
+        "security_id": "US:EODHD:b0395c88-1e0d-5135-b79f-240ac991e540",
+        "symbol": "ESV"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 1218,
+        "old_close": 8.27,
+        "old_price_session": "2019-07-30",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0000314808-19-000130",
+        "cik": "314808",
+        "display_name": "Valaris plc",
+        "filing_date": "2019-07-30",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "EODHD has no successor VAL price series around the 2019 ticker change; VAL_old starts only after the 2021 reorganization.",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2019-07-31",
+        "new_symbol": "VAL",
+        "ratio": null,
+        "reason": "SEC filing states that Ensco Rowan would change its name to Valaris effective July 31, 2019."
+      },
+      "source_hash": "596701a3f09e484f60489e5df3501c0f09e4c908905bab2f81cefb684e338fac",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/314808/000031480819000130/0000314808-19-000130.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:b2e91d46-5fe8-52c5-b587-c33c23de5095": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.319995Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "febef66c2d60446f7db4ed1a9634dd12c751cc8711db0487da52e20cc4f551b0",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/72333/000110465925050982/0001104659-25-050982.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2025-05-20",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2020-06-22"
+        ],
+        "last_price_date": "2025-05-20",
+        "name": "Nordstrom Inc",
+        "security_id": "US:EODHD:b2e91d46-5fe8-52c5-b587-c33c23de5095",
+        "symbol": "JWN"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 24.25,
+        "nearest_index_remove_gap_days": 1793,
+        "old_close": 24.6693,
+        "old_price_session": "2025-05-20",
+        "passed": true,
+        "relative_deviation": 0.016996834121762668,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 0
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001104659-25-050982",
+        "cik": "72333",
+        "display_name": "Nordstrom Inc",
+        "filing_date": "2025-05-20",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "cash_merger",
+        "cash_amount": 24.25,
+        "confidence": "high",
+        "effective_date": "2025-05-20",
+        "new_symbol": "",
+        "ratio": null,
+        "reason": "SEC completion filing states that each Nordstrom share converted into $24.25 cash on May 20, 2025."
+      },
+      "source_hash": "febef66c2d60446f7db4ed1a9634dd12c751cc8711db0487da52e20cc4f551b0",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/72333/000110465925050982/0001104659-25-050982.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:c17adb03-0b5b-5f4b-86e2-d564d6b96d8e": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.322266Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "d4cd0c2f981bfd0be14d2ebccfc8e852a94177e5fba86abe2c027c5510fc07d3",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/0001193125-25-254670.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2025-11-10",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2025-11-11"
+        ],
+        "last_price_date": "2025-11-10",
+        "name": "Fiserv, Inc.",
+        "security_id": "US:EODHD:c17adb03-0b5b-5f4b-86e2-d564d6b96d8e",
+        "symbol": "FI"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 64.26,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 63.8,
+        "old_price_session": "2025-11-10",
+        "passed": true,
+        "relative_deviation": 0.007158418923124929,
+        "successor_close": 64.26,
+        "successor_price_session": "2025-11-11",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-25-254670",
+        "cik": "798354",
+        "display_name": "Fiserv, Inc.",
+        "filing_date": "2025-10-29",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2025-11-11",
+        "new_symbol": "FISV",
+        "ratio": null,
+        "reason": "SEC filing states that Fiserv would trade under FISV beginning November 11, 2025."
+      },
+      "source_hash": "d4cd0c2f981bfd0be14d2ebccfc8e852a94177e5fba86abe2c027c5510fc07d3",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/0001193125-25-254670.txt",
+      "successor_security_id": "US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0"
+    },
+    "US:EODHD:c74c69bb-1063-5acb-b537-c7a8f11a0c8c": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.314602Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "066d18f9e3003742ea7e96baaf1d4cbd658640052b2ab475a3212c9f2c74e14f",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1156039/000119312522183957/0001193125-22-183957.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2022-06-27",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2022-06-28"
+        ],
+        "last_price_date": "2022-06-27",
+        "name": "Anthem Inc",
+        "security_id": "US:EODHD:c74c69bb-1063-5acb-b537-c7a8f11a0c8c",
+        "symbol": "ANTM"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 473.09,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 482.58,
+        "old_price_session": "2022-06-27",
+        "passed": true,
+        "relative_deviation": 0.01966513324215676,
+        "successor_close": 473.09,
+        "successor_price_session": "2022-06-28",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-22-183957",
+        "cik": "1156039",
+        "display_name": "Anthem Inc",
+        "filing_date": "2022-06-28",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2022-06-28",
+        "new_symbol": "ELV",
+        "ratio": null,
+        "reason": "SEC filing confirms the Elevance Health name and ELV ticker effective June 28, 2022."
+      },
+      "source_hash": "066d18f9e3003742ea7e96baaf1d4cbd658640052b2ab475a3212c9f2c74e14f",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1156039/000119312522183957/0001193125-22-183957.txt",
+      "successor_security_id": "US:EODHD:11fc4a4c-a2ff-5257-a781-ba2627e118de"
+    },
+    "US:EODHD:e2c710f1-f687-511b-93ff-233a8b8e40a7": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.291963Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "23ba82893a54686203f9e1e0f762d82869c2faca1383325bb68e9d7acc4939ed",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1468091/000119312517166747/0001193125-17-166747.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2022-03-02",
+        "exchange": "NASDAQ",
+        "index_remove_dates": [
+          "2015-12-21"
+        ],
+        "last_price_date": "2022-03-02",
+        "name": "VimpelCom Ltd",
+        "security_id": "US:EODHD:e2c710f1-f687-511b-93ff-233a8b8e40a7",
+        "symbol": "VIP"
+      },
+      "crosscheck": {
+        "basis": "date_mismatch",
+        "date_passed": false,
+        "economic_terms_passed": false,
+        "implied_consideration": null,
+        "nearest_index_remove_gap_days": 465,
+        "old_close": 294.0,
+        "old_price_session": "2017-03-30",
+        "passed": false,
+        "relative_deviation": null,
+        "successor_close": null,
+        "successor_price_session": null,
+        "terminal_gap_days": 1798
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-17-166747",
+        "cik": "1468091",
+        "display_name": "VimpelCom Ltd",
+        "filing_date": "2017-05-11",
+        "form": "6-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "ticker_change",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2017-03-30",
+        "new_symbol": "VEON",
+        "ratio": null,
+        "reason": "SEC filing states that VimpelCom changed its name to VEON effective March 30, 2017."
+      },
+      "source_hash": "23ba82893a54686203f9e1e0f762d82869c2faca1383325bb68e9d7acc4939ed",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1468091/000119312517166747/0001193125-17-166747.txt",
+      "successor_security_id": ""
+    },
+    "US:EODHD:eeb1a471-e723-50f0-84a3-d4d5449da3e1": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.153498Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "1467ee9f95a1d21adda74d321baa6cde8b031feb97ec937b5c53ab275d94a267",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/29915/000119312517274845/0001193125-17-274845.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2017-08-31",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2017-09-01"
+        ],
+        "last_price_date": "2017-08-31",
+        "name": "Dow Inc",
+        "security_id": "US:EODHD:eeb1a471-e723-50f0-84a3-d4d5449da3e1",
+        "symbol": "DOW"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": false,
+        "implied_consideration": 94.8299,
+        "nearest_index_remove_gap_days": 1,
+        "old_close": 66.65,
+        "old_price_session": "2017-08-31",
+        "passed": false,
+        "relative_deviation": 0.29716260377792225,
+        "successor_close": 94.8299,
+        "successor_price_session": "2017-08-31",
+        "terminal_gap_days": 0
+      },
+      "eligible_for_apply": false,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-17-274845",
+        "cik": "29915",
+        "display_name": "Dow Inc",
+        "filing_date": "2017-09-01",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2017-08-31",
+        "new_symbol": "DWDP",
+        "ratio": 1.0,
+        "reason": "SEC completion filing states that each legacy Dow share converted into one DowDuPont share."
+      },
+      "source_hash": "1467ee9f95a1d21adda74d321baa6cde8b031feb97ec937b5c53ab275d94a267",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/29915/000119312517274845/0001193125-17-274845.txt",
+      "successor_security_id": "US:EODHD:f174ac51-b4a4-5f29-84b0-12b8b73f0bc3"
+    },
+    "US:EODHD:f2724822-1b78-5cac-9dda-67144f42a664": {
+      "artifacts": [
+        {
+          "content_type": "text/plain",
+          "retrieved_at": "2026-07-17T19:51:12.164461Z",
+          "source": "sec_edgar_filing",
+          "source_hash": "c1e7c8b96e9ea8815f1fab6e848bdbd18e6384405be4822d73a6ecddb3258405",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1707925/000119312518313073/0001193125-18-313073.txt"
+        }
+      ],
+      "candidate": {
+        "active_to": "2018-10-30",
+        "exchange": "NYSE",
+        "index_remove_dates": [
+          "2018-10-31"
+        ],
+        "last_price_date": "2018-10-30",
+        "name": "PX",
+        "security_id": "US:EODHD:f2724822-1b78-5cac-9dda-67144f42a664",
+        "symbol": "PX"
+      },
+      "crosscheck": {
+        "basis": "eodhd_terminal_price+index_remove",
+        "date_passed": true,
+        "economic_terms_passed": true,
+        "implied_consideration": 165.47,
+        "nearest_index_remove_gap_days": 0,
+        "old_close": 164.5,
+        "old_price_session": "2018-10-30",
+        "passed": true,
+        "relative_deviation": 0.005862089804798446,
+        "successor_close": 165.47,
+        "successor_price_session": "2018-10-31",
+        "terminal_gap_days": 1
+      },
+      "eligible_for_apply": true,
+      "error": "",
+      "filing": {
+        "accession_number": "0001193125-18-313073",
+        "cik": "1707925",
+        "display_name": "PX",
+        "filing_date": "2018-10-31",
+        "form": "8-K",
+        "items": [
+          "2.01",
+          "3.01"
+        ],
+        "score": 100.0
+      },
+      "manual_review_reason": "",
+      "parsed": {
+        "action_type": "stock_merger",
+        "cash_amount": null,
+        "confidence": "high",
+        "effective_date": "2018-10-31",
+        "new_symbol": "LIN",
+        "ratio": 1.0,
+        "reason": "SEC completion filing states that each Praxair share converted into one Linde plc share."
+      },
+      "source_hash": "c1e7c8b96e9ea8815f1fab6e848bdbd18e6384405be4822d73a6ecddb3258405",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1707925/000119312518313073/0001193125-18-313073.txt",
+      "successor_security_id": "US:EODHD:4d6e6bce-789a-539f-b19d-ad03863c0ac0"
+    }
+  },
+  "release_version": "20260715-20260717T155657288079Z",
+  "summary": {
+    "action_type_counts": {
+      "cash_merger": 2,
+      "stock_merger": 6,
+      "ticker_change": 9
+    },
+    "candidate_count": 17,
+    "collected_count": 17,
+    "eligible_count": 11,
+    "unresolved_count": 6
+  }
+}

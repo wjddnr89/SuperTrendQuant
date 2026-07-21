@@ -1,0 +1,164 @@
+{
+  "run_id": "001_leader_rotation",
+  "mode": "backtest",
+  "created_at": "2026-07-13T07:33:45.886171+00:00",
+  "strategy": "leader_rotation_default",
+  "market": "US",
+  "timeframe": "30m",
+  "period": "30d",
+  "metrics": {
+    "total_return": -0.09318861497105424,
+    "cagr": -0.9999914247317627,
+    "mdd": -0.10941505452414291,
+    "calmar": -9.139431763579758,
+    "sharpe": -14.55549226324579,
+    "sortino": -15.541474732496026,
+    "win_rate": 0.3333333333333333,
+    "payoff_ratio": 0.19788875620279453,
+    "trade_count": 3
+  },
+  "trade_returns": [
+    -0.050649693856198885,
+    -0.06941156777135615,
+    0.011879386865807584
+  ],
+  "trades": [
+    {
+      "symbol": "AXON",
+      "entry_time": "2026-07-07 14:30:00-04:00",
+      "exit_time": "2026-07-08 10:00:00-04:00",
+      "entry_price": 649.2444429016113,
+      "exit_price": 619.1402872009278,
+      "quantity": 13,
+      "pnl_pct": -0.050649693856198885,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "RDW",
+      "entry_time": "2026-07-08 10:00:00-04:00",
+      "exit_time": "2026-07-10 10:00:00-04:00",
+      "entry_price": 10.895445343494414,
+      "exit_price": 10.184904580593109,
+      "quantity": 788,
+      "pnl_pct": -0.06941156777135615,
+      "exit_reason": "Supertrend down"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_time": "2026-07-10 10:00:00-04:00",
+      "exit_time": "2026-07-10 15:30:00-04:00",
+      "entry_price": 207.4336668319702,
+      "exit_price": 210.84452194976808,
+      "quantity": 38,
+      "pnl_pct": 0.011879386865807584,
+      "exit_reason": "FinalClose"
+    }
+  ],
+  "skipped": [],
+  "config": {
+    "strategy": {
+      "name": "leader_rotation_default",
+      "type": "leader_rotation",
+      "params": {}
+    },
+    "market": "US",
+    "universe_file": "universe.json",
+    "symbols": [],
+    "timeframe": "30m",
+    "period": "30d",
+    "capital": {
+      "initial_cash": 10000
+    },
+    "costs": {
+      "fee_rate": 0.00225,
+      "slippage_rate": 0.0005
+    },
+    "supertrend": {
+      "enabled": true,
+      "period": 10,
+      "multiplier": 3.0,
+      "atr_method": "wilder",
+      "symbol_multipliers": {
+        "SOXL": 4.5,
+        "SOXS": 4.5
+      }
+    },
+    "market_trend_filter": {
+      "enabled": true,
+      "timeframe": "1d"
+    },
+    "leader_rotation": {
+      "rs_period": 100,
+      "rs_period_by_market": {},
+      "max_slots": 1,
+      "hurdle_atr_mult": 1.25,
+      "allow_late_chase": true,
+      "min_rotation_profit_pct": 0.01
+    },
+    "exit": {
+      "sell_confirm_bars": 1
+    },
+    "execution": {
+      "order_type": "market",
+      "allocation_pct": 0.9,
+      "broker": "paper",
+      "live_confirm_required": true
+    },
+    "risk": {
+      "max_position_count": 1
+    },
+    "live": {
+      "holdings_file": "holding.json",
+      "loop_interval_seconds": 60
+    },
+    "paper": {
+      "state_file": "state/paper.json",
+      "results_dir": "results/paper",
+      "loop_interval_seconds": 60,
+      "run_once_per_candle": true
+    },
+    "backtest": {
+      "results_dir": "results/backtests"
+    },
+    "components": [
+      {
+        "type": "supertrend",
+        "enabled": true,
+        "group": "entries",
+        "params": {
+          "period": 10,
+          "multiplier": 3.0,
+          "atr_method": "wilder",
+          "symbol_multipliers": {
+            "SOXL": 4.5,
+            "SOXS": 4.5
+          }
+        }
+      },
+      {
+        "type": "benchmark_trend",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "timeframe": "1d"
+        }
+      },
+      {
+        "type": "relative_strength",
+        "enabled": true,
+        "group": "filters",
+        "params": {
+          "lookback_bars": 100
+        }
+      },
+      {
+        "type": "supertrend_flip",
+        "enabled": true,
+        "group": "exits",
+        "params": {
+          "confirm_bars": 1
+        }
+      }
+    ]
+  }
+}

@@ -457,8 +457,6 @@ def data_main() -> None:
         print(json.dumps(result.__dict__, indent=2, ensure_ascii=False))
         return
     if args.command == "sync":
-        from .market_store.ingest import configured_daily_synchronizer
-        from .market_store.preflight import expected_completed_us_session
         from .market_store.storage import ObjectNotFound
 
         if args.remote_only and args.source_only:
@@ -497,6 +495,9 @@ def data_main() -> None:
                     }
                 )
         if not args.remote_only:
+            from .market_store.ingest import configured_daily_synchronizer
+            from .market_store.preflight import expected_completed_us_session
+
             expected = expected_completed_us_session()
             current = repository.current_manifest("daily_price_raw")
             if not args.force and current is not None and current.completed_session >= expected:

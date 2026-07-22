@@ -379,7 +379,7 @@ class ParquetDuckDBIntegrationTest(unittest.TestCase):
             self.assertEqual(status["corporate_actions"]["unresolved_action_count"], 1)
             self.assertGreater(status["corporate_actions"]["size_bytes"], 0)
 
-    def test_top_level_preflight_falls_back_to_one_provider_sync_when_local_is_stale(self):
+    def test_top_level_loader_does_not_sync_when_local_release_is_stale(self):
         with tempfile.TemporaryDirectory() as directory:
             config = parse_config(
                 {
@@ -400,25 +400,22 @@ class ParquetDuckDBIntegrationTest(unittest.TestCase):
             )
             with (
                 patch(
-                    "supertrend_quant.market_store.preflight.expected_completed_us_session",
-                    return_value="2026-07-15",
-                ),
-                patch(
                     "supertrend_quant.market_store.ingest.DailyDataSynchronizer"
                 ) as synchronizer_type,
+                patch.object(
+                    LocalDatasetRepository,
+                    "current_release",
+                    return_value=(
+                        SimpleNamespace(completed_session="2026-07-14"),
+                        Path(directory) / "releases" / "current.json",
+                    ),
+                ),
                 patch.object(ParquetMarketDataProvider, "load", return_value=loaded),
             ):
-                synchronizer_type.return_value.sync.return_value = SimpleNamespace(
-                    completed_session="2026-07-15"
-                )
-
                 result = load_configured_market_data(config, ["AAA"])
 
             self.assertIs(result, loaded)
-            synchronizer_type.return_value.sync.assert_called_once_with(
-                "2026-07-15",
-                refresh_security_master=True,
-            )
+            synchronizer_type.assert_not_called()
 
     def test_release_is_not_published_until_every_referenced_dataset_is_remote(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -25,6 +25,30 @@ class PreparedBacktest(Protocol):
     ) -> OrderPlan:
         ...
 
+    def report_frames(self, symbols: set[str]) -> dict[str, pd.DataFrame]:
+        """Return the exact precomputed strategy features used by the run."""
+        ...
+
+
+def build_prepared_report_frames(
+    prepared: Mapping[str, pd.DataFrame],
+    market_filter_trends: Mapping[str, pd.Series],
+    symbols: set[str],
+) -> dict[str, pd.DataFrame]:
+    """Project prepared strategy state into report-ready symbol frames."""
+    result: dict[str, pd.DataFrame] = {}
+    for symbol in sorted(symbols):
+        source = prepared.get(symbol)
+        if source is None or source.empty:
+            continue
+        frame = source.copy()
+        trend = market_filter_trends.get(symbol)
+        if trend is not None and not trend.empty:
+            aligned = trend.reindex(frame.index, method="ffill")
+            frame["MarketFilterTrend"] = aligned
+        result[symbol] = frame
+    return result
+
 
 class BacktestPreparableStrategy(Protocol):
     """Optional strategy extension consumed by the canonical runner."""

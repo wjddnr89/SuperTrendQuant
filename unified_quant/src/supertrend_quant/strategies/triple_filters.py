@@ -10,7 +10,12 @@ import pandas as pd
 from ..config import AppConfig
 from ..portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quantity
 from ..ranking import create_scorer
-from .base import BenchmarkInput, PreparedBacktest, reject_unknown_params
+from .base import (
+    BenchmarkInput,
+    PreparedBacktest,
+    build_prepared_report_frames,
+    reject_unknown_params,
+)
 from .common import (
     asset_filters_allow_buy,
     active_universe_symbols,
@@ -70,6 +75,11 @@ class PreparedTripleFiltersBacktest(PreparedBacktest):
             account,
             mode,
             market_filter_states=market_filter_states,
+        )
+
+    def report_frames(self, symbols: set[str]) -> dict[str, pd.DataFrame]:
+        return build_prepared_report_frames(
+            self.prepared, self.market_filter_trends, symbols
         )
 
 

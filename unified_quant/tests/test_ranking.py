@@ -9,6 +9,7 @@ import pandas as pd
 from supertrend_quant.config import ScoringConfig, load_split_config
 from supertrend_quant.portfolio import AccountSnapshot, Position
 from supertrend_quant.ranking import (
+    DualMomentumScorer,
     RelativeStrengthScorer,
     available_scorers,
     create_scorer,
@@ -32,6 +33,44 @@ def score_frame(score: float, *, buy: bool = True, trend: int = 1) -> pd.DataFra
 
 
 class RankingTest(unittest.TestCase):
+    def test_dual_momentum_requires_positive_absolute_and_excess_return(self):
+        index = pd.date_range("2026-01-01", periods=3, freq="D")
+        benchmark = pd.DataFrame({"Close": [100.0, 102.0, 104.04]}, index=index)
+        frames = {
+            "LEADER": pd.DataFrame({"Close": [100.0, 110.0, 121.0]}, index=index),
+            "LAGGER": pd.DataFrame({"Close": [100.0, 101.0, 102.01]}, index=index),
+            "LOSER": pd.DataFrame({"Close": [100.0, 90.0, 81.0]}, index=index),
+        }
+        scorer = DualMomentumScorer({"lookback_bars": 1}, "US")
+
+        scored = scorer.add_scores(
+            frames,
+            {symbol: benchmark for symbol in frames},
+        )
+
+        self.assertAlmostEqual(scored["LEADER"]["Score"].iloc[-1], 0.08)
+        self.assertTrue(scored["LAGGER"]["Score"].isna().all())
+        self.assertTrue(scored["LOSER"]["Score"].isna().all())
+
+    def test_dual_momentum_resets_at_identity_segment_boundary(self):
+        index = pd.date_range("2026-01-01", periods=4, freq="D")
+        asset = pd.DataFrame(
+            {
+                "Close": [100.0, 110.0, 50.0, 60.0],
+                "IdentitySegment": ["old", "old", "new", "new"],
+            },
+            index=index,
+        )
+        benchmark = pd.DataFrame({"Close": [100.0, 101.0, 102.0, 103.0]}, index=index)
+
+        scored = DualMomentumScorer({"lookback_bars": 1}, "US").add_scores(
+            {"AAA": asset},
+            {"AAA": benchmark},
+        )["AAA"]
+
+        self.assertTrue(pd.isna(scored["Score"].iloc[2]))
+        self.assertGreater(scored["Score"].iloc[3], 0.0)
+
     def test_relative_strength_adds_causal_score_without_mutating_input(self):
         index = pd.date_range("2026-01-05 09:30", periods=4, freq="30min")
         asset = pd.DataFrame({"Close": [100.0, 110.0, 121.0, 133.1]}, index=index)
@@ -98,7 +137,7 @@ class RankingTest(unittest.TestCase):
     def test_simple_supertrend_fills_open_slots_in_score_order(self):
         config = load_split_config(
             "configs/strategies/simple_supertrend.yaml",
-            "configs/runtimes/simulation.yaml",
+            "configs/runtimes/research_sp500.yaml",
         )
         config = replace(
             config,
@@ -123,7 +162,7 @@ class RankingTest(unittest.TestCase):
     def test_leader_exit_still_runs_without_a_valid_score(self):
         config = load_split_config(
             "configs/strategies/leader_rotation.yaml",
-            "configs/runtimes/simulation.yaml",
+            "configs/runtimes/research_sp500.yaml",
         )
         config = replace(
             config,

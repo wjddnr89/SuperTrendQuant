@@ -12,10 +12,27 @@ class Position:
 
 
 @dataclass(frozen=True)
+class PositionEconomics:
+    """Execution-price economics for one open position.
+
+    ``entry_cost`` is the actual all-in cash paid.  ``distributions`` contains
+    net economic distributions accrued while the position was held.  Marked
+    fields are populated only when a raw executable quote is available.
+    """
+
+    entry_cost: float
+    distributions: float = 0.0
+    raw_mark: float | None = None
+    estimated_exit_proceeds: float | None = None
+    net_return_pct: float | None = None
+
+
+@dataclass(frozen=True)
 class AccountSnapshot:
     cash: float
     positions: dict[str, Position] = field(default_factory=dict)
     total_asset_value: float | None = None
+    position_economics: dict[str, PositionEconomics] = field(default_factory=dict)
 
     @property
     def total_position_count(self) -> int:
@@ -26,11 +43,13 @@ class AccountSnapshot:
 class OrderIntent:
     symbol: str
     side: str
-    quantity: float
+    quantity: float | None
     order_type: str = "market"
     price: float | None = None
     reason: str = ""
     client_order_id: str | None = None
+    cash_allocation_pct: float | None = None
+    required_sell_symbols: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -68,3 +87,42 @@ def estimate_quantity(
         return 0
     unit_cost = price * (1.0 + slippage_rate) * (1.0 + fee_rate)
     return int((cash * allocation_pct) // unit_cost)
+
+
+def mark_position_economics(
+    account: AccountSnapshot,
+    raw_prices: dict[str, float],
+    *,
+    fee_rate: float,
+    slippage_rate: float,
+) -> AccountSnapshot:
+    """Attach projected raw-price liquidation returns to known entry state."""
+
+    marked: dict[str, PositionEconomics] = {}
+    for symbol, position in account.positions.items():
+        economics = account.position_economics.get(symbol)
+        raw_mark = raw_prices.get(symbol)
+        if economics is None or economics.entry_cost <= 0 or raw_mark is None:
+            continue
+        try:
+            raw_mark = float(raw_mark)
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(raw_mark) or raw_mark <= 0:
+            continue
+        exit_fill = raw_mark * (1.0 - slippage_rate)
+        exit_proceeds = position.quantity * exit_fill * (1.0 - fee_rate)
+        economic_recovery = exit_proceeds + economics.distributions
+        marked[symbol] = PositionEconomics(
+            entry_cost=economics.entry_cost,
+            distributions=economics.distributions,
+            raw_mark=raw_mark,
+            estimated_exit_proceeds=exit_proceeds,
+            net_return_pct=economic_recovery / economics.entry_cost - 1.0,
+        )
+    return AccountSnapshot(
+        cash=account.cash,
+        positions=dict(account.positions),
+        total_asset_value=account.total_asset_value,
+        position_economics=marked,
+    )

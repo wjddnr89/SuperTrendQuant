@@ -18,7 +18,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 UNIFIED_ROOT = REPOSITORY_ROOT / "unified_quant"
 TRIPLE_PATH = UNIFIED_ROOT / "configs/strategies/triple_filters.yaml"
 STANDALONE_TRIPLE_PATH = UNIFIED_ROOT / "configs/strategies/triple_filters_standalone.yaml"
-RUNTIME_PATH = UNIFIED_ROOT / "configs/runtimes/research_us.yaml"
+RUNTIME_PATH = UNIFIED_ROOT / "configs/runtimes/research_sp500.yaml"
 
 
 def synthetic_ohlc(periods: int = 240) -> pd.DataFrame:

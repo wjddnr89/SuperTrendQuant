@@ -21,7 +21,7 @@ class SharedDataConfigTest(unittest.TestCase):
         shared = load_data_store_config(ROOT / "configs" / "data.yaml")
         config = load_split_config(
             STRATEGY,
-            ROOT / "configs" / "runtimes" / "simulation.yaml",
+            ROOT / "configs" / "runtimes" / "research_sp500.yaml",
         )
 
         self.assertEqual(config.data_store, shared)

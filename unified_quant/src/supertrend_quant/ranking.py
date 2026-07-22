@@ -170,6 +170,90 @@ class RelativeStrengthScorer:
         return rank_scores(scores)
 
 
+@register_scorer
+class DualMomentumScorer:
+    """Rank positive absolute momentum by positive benchmark excess return."""
+
+    scoring_type = "dual_momentum"
+
+    def __init__(self, params: Mapping[str, Any], market: str):
+        self.params = dict(params)
+        self.market = str(market).upper()
+        self.validate_params(self.params, self.market)
+        self.lookback_bars = _positive_int(
+            self.params["lookback_bars"],
+            "scoring.params.lookback_bars",
+        )
+
+    @classmethod
+    def validate_params(cls, params: Mapping[str, Any], market: str | None = None) -> None:
+        unknown = set(params) - {"lookback_bars"}
+        if unknown:
+            raise ValueError(
+                f"Unsupported params for scoring type={cls.scoring_type}: "
+                + ", ".join(sorted(unknown))
+            )
+        if "lookback_bars" not in params:
+            raise ValueError("scoring.params.lookback_bars is required for dual_momentum.")
+        if isinstance(params["lookback_bars"], Mapping):
+            raise ValueError("dual_momentum lookback_bars must be a positive integer.")
+        _positive_int(params["lookback_bars"], "scoring.params.lookback_bars")
+
+    def warmup_bars(self) -> int:
+        return self.lookback_bars + 1
+
+    def add_scores(
+        self,
+        frames: dict[str, pd.DataFrame],
+        benchmark: BenchmarkInput,
+    ) -> dict[str, pd.DataFrame]:
+        scored: dict[str, pd.DataFrame] = {}
+        for symbol, frame in frames.items():
+            out = frame.copy()
+            out["Score"] = float("nan")
+            symbol_benchmark = _benchmark_for_symbol(symbol, benchmark)
+            if (
+                "Close" not in out
+                or symbol_benchmark is None
+                or symbol_benchmark.empty
+                or "Close" not in symbol_benchmark
+            ):
+                scored[symbol] = out
+                continue
+            benchmark_return = symbol_benchmark["Close"].pct_change(
+                self.lookback_bars,
+                fill_method=None,
+            )
+            aligned_benchmark_return = benchmark_return.reindex(out.index, method="ffill")
+            if "IdentitySegment" in out and out["IdentitySegment"].nunique(
+                dropna=False
+            ) > 1:
+                symbol_return = out.groupby(
+                    "IdentitySegment",
+                    sort=False,
+                    dropna=False,
+                )["Close"].transform(
+                    lambda values: values.pct_change(
+                        self.lookback_bars,
+                        fill_method=None,
+                    )
+                )
+            else:
+                symbol_return = out["Close"].pct_change(
+                    self.lookback_bars,
+                    fill_method=None,
+                )
+            excess_return = symbol_return - aligned_benchmark_return
+            out["Score"] = excess_return.where(
+                (symbol_return > 0.0) & (excess_return > 0.0)
+            )
+            scored[symbol] = out
+        return scored
+
+    def rank(self, scores: Mapping[str, Any]) -> tuple[str, ...]:
+        return rank_scores(scores)
+
+
 def effective_relative_strength_lookback(params: Mapping[str, Any], market: str) -> int:
     lookback = params.get("lookback_bars")
     if not isinstance(lookback, Mapping):
@@ -209,6 +293,7 @@ def _benchmark_for_symbol(symbol: str, benchmark: BenchmarkInput) -> pd.DataFram
 
 __all__ = [
     "BenchmarkInput",
+    "DualMomentumScorer",
     "RelativeStrengthScorer",
     "Scorer",
     "available_scorers",

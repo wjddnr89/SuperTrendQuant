@@ -43,7 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--runtime",
-        default=str(UNIFIED_ROOT / "configs" / "runtimes" / "research_us_nasdaq100_rolling.yaml"),
+        default=str(UNIFIED_ROOT / "configs" / "runtimes" / "research_nasdaq100.yaml"),
     )
     parser.add_argument("--period", default="3y")
     parser.add_argument("--train-ratio", type=float, default=0.6)

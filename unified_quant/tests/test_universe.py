@@ -25,7 +25,7 @@ from supertrend_quant.universe import (
 
 
 STRATEGY = "configs/strategies/simple_supertrend.yaml"
-SIMULATION = "configs/runtimes/simulation.yaml"
+RESEARCH_SP500 = "configs/runtimes/research_sp500.yaml"
 
 
 def member(symbol: str, *, profile: str = "sp500", name: str = "", security_type: str = "STOCK") -> UniverseMember:
@@ -48,7 +48,7 @@ def history(close: float = 10.0, volume: float = 2_000_000.0, bars: int = 130) -
 
 
 def profile_config(tmp: str, profiles=("sp500",), *, filters_enabled: bool = False):
-    base = load_split_config(STRATEGY, SIMULATION)
+    base = load_split_config(STRATEGY, RESEARCH_SP500)
     filters = replace(base.universe.filters, enabled=filters_enabled)
     universe = replace(
         base.universe,
@@ -178,7 +178,7 @@ class UniverseRegistryAndResolutionTest(unittest.TestCase):
 
 class UniverseConfigTest(unittest.TestCase):
     def test_active_runtime_defaults_and_balanced_thresholds(self):
-        us = load_split_config(STRATEGY, "configs/runtimes/research_us.yaml")
+        us = load_split_config(STRATEGY, "configs/runtimes/research_sp500.yaml")
         kr = load_split_config(STRATEGY, "configs/runtimes/research_kr.yaml")
         live = load_split_config(STRATEGY, "configs/runtimes/live_toss.yaml")
 
@@ -194,7 +194,7 @@ class UniverseConfigTest(unittest.TestCase):
         self.assertFalse(live.universe.filters.enabled)
 
     def test_split_export_uses_nested_universe_and_roundtrips(self):
-        config = load_split_config(STRATEGY, SIMULATION)
+        config = load_split_config(STRATEGY, RESEARCH_SP500)
         _, runtime = config_to_split_dicts(config)
         reloaded = strict_split_roundtrip(config)
 
@@ -204,7 +204,7 @@ class UniverseConfigTest(unittest.TestCase):
         self.assertEqual(reloaded.universe, config.universe)
 
     def test_research_cache_key_changes_with_universe_filter(self):
-        config = load_split_config(STRATEGY, SIMULATION)
+        config = load_split_config(STRATEGY, RESEARCH_SP500)
         changed = replace(
             config,
             universe=replace(
@@ -302,7 +302,7 @@ class UniverseConfigTest(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            base = load_split_config(STRATEGY, SIMULATION)
+            base = load_split_config(STRATEGY, RESEARCH_SP500)
             config = replace(
                 base,
                 market="US",

@@ -13,7 +13,7 @@ class ResearchExportTest(unittest.TestCase):
     def test_triple_research_config_promotes_through_strict_parser(self):
         config = load_split_config(
             ROOT / "configs/strategies/triple_filters.yaml",
-            ROOT / "configs/runtimes/research_us.yaml",
+            ROOT / "configs/runtimes/research_sp500.yaml",
         )
 
         promoted = strict_split_roundtrip(config)

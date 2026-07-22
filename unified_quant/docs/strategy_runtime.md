@@ -7,24 +7,24 @@ Commands in this guide run from the repository root.
 ```bash
 uv run quant-backtest \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml
 
 uv run quant-search \
   --strategy unified_quant/configs/strategies/triple_filters.yaml \
-  --runtime unified_quant/configs/runtimes/research_us.yaml
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml
 
 uv run quant-optimize \
   --strategy unified_quant/configs/strategies/triple_filters.yaml \
-  --runtime unified_quant/configs/runtimes/research_us.yaml \
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml \
   --n-trials 100
 
 uv run quant-compare-strategies \
-  --runtime unified_quant/configs/runtimes/simulation.yaml \
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml \
   --rank-by calmar
 
 uv run quant-paper \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml \
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml \
   --once
 
 uv run quant-live \
@@ -145,12 +145,21 @@ Backtests write beneath their runtime's `backtest.results_dir`:
   completed session, quality/warnings, and processed corporate-action IDs;
 - `equity.csv`: historical account equity.
 - `universe_snapshot.json`: membership, filters, exclusions, and as-of hash.
+- `trades.csv` and `fills.csv`: completed round trips and chronological actual
+  executions, including fees, slippage, and terminal exits;
+- `portfolio.csv` and `positions.csv`: account and per-symbol position history;
+- `benchmarks.csv` and `chart_data.parquet`: benchmark curves plus adjusted/raw
+  chart data and exact prepared strategy features for traded symbols;
+- `artifacts.json`: versioned artifact manifest and report status;
+- `report.html`: self-contained Korean Plotly report. `--no-report` skips only
+  this file while retaining all data artifacts.
 
 Strategy comparisons write beneath `results/research/comparisons/<run_id>`:
 
 - `comparison.csv`: ranked metrics for every successful strategy YAML;
 - `summary.json`: winner, comparison settings, common date range, and failures;
-- `strategies/`: the normal backtest summary and equity files for each strategy.
+- `report.html`: one self-contained performance comparison for all strategies;
+- `strategies/`: core summary and equity files only, without per-strategy reports.
 
 Paper runs write beneath `paper.results_dir`:
 
@@ -163,8 +172,8 @@ Compare saved runs with:
 
 ```bash
 uv run quant-compare \
-  --paper-dir results/paper/<paper_run_id> \
-  --backtest-dir results/backtests/<backtest_run_id>
+  --paper-dir results/research/sp500/paper/<paper_run_id> \
+  --backtest-dir results/research/sp500/backtests/<backtest_run_id>
 ```
 
 ## Live profile compatibility

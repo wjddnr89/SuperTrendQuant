@@ -10,7 +10,14 @@ import requests
 
 from .env import load_env
 from .ledger import PortfolioLedger
-from .portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position
+from .portfolio import (
+    AccountSnapshot,
+    OrderIntent,
+    OrderPlan,
+    Position,
+    PositionEconomics,
+    estimate_quantity,
+)
 
 
 class PaperBroker:
@@ -25,7 +32,22 @@ class PaperBroker:
             for symbol, raw in state.get("positions", {}).items()
             if float(raw.get("quantity", 0)) > 0
         }
-        return AccountSnapshot(cash=float(state.get("cash", self.initial_cash)), positions=positions)
+        raw_economics = state.get("position_economics", {})
+        position_economics = {
+            symbol: PositionEconomics(
+                entry_cost=float(raw["entry_cost"]),
+                distributions=float(raw.get("distributions", 0.0)),
+            )
+            for symbol, raw in raw_economics.items()
+            if symbol in positions
+            and isinstance(raw, dict)
+            and float(raw.get("entry_cost", 0.0)) > 0
+        }
+        return AccountSnapshot(
+            cash=float(state.get("cash", self.initial_cash)),
+            positions=positions,
+            position_economics=position_economics,
+        )
 
     def get_metadata(self, key: str, default=None):
         return self._load_state().get("metadata", {}).get(key, default)
@@ -53,6 +75,12 @@ class PaperBroker:
             unresolved_event_ids=metadata.get("unresolved_corporate_action_ids", ()),
             dividend_tax_rate=dividend_tax_rate,
         )
+        actions = tuple(actions)
+        actions_by_event_id = {
+            str(action.get("event_id") or ""): action
+            for action in actions
+            if str(action.get("event_id") or "")
+        }
         events = ledger.apply_actions(actions, through=through)
         if not events:
             return ()
@@ -68,6 +96,61 @@ class PaperBroker:
             event_id: receivable.to_dict()
             for event_id, receivable in ledger.cash_receivables.items()
         }
+        economics = {
+            symbol: {
+                "entry_cost": item.entry_cost,
+                "distributions": item.distributions,
+            }
+            for symbol, item in account.position_economics.items()
+        }
+        for event in events:
+            action = actions_by_event_id.get(event.event_id, {})
+            source = economics.get(event.symbol)
+            if source is not None:
+                economic_delta = (
+                    event.accrual_delta
+                    if event.action_type in {"cash_dividend", "special_dividend"}
+                    else event.accrual_delta or event.cash_delta
+                )
+                source["distributions"] += economic_delta
+            if event.event_id not in ledger.processed_event_ids:
+                continue
+            new_symbol = str(action.get("new_symbol") or "").strip()
+            if not new_symbol or new_symbol == event.symbol or source is None:
+                continue
+            if event.action_type == "spinoff":
+                metadata_value = action.get("metadata", {})
+                if isinstance(metadata_value, str):
+                    try:
+                        metadata_value = json.loads(metadata_value)
+                    except json.JSONDecodeError:
+                        metadata_value = {}
+                try:
+                    fraction = float(metadata_value.get("cost_basis_fraction", 0.0))
+                except (AttributeError, TypeError, ValueError):
+                    fraction = 0.0
+                fraction = min(max(fraction, 0.0), 1.0)
+                child_cost = source["entry_cost"] * fraction
+                source["entry_cost"] -= child_cost
+                child = economics.setdefault(
+                    new_symbol,
+                    {"entry_cost": 0.0, "distributions": 0.0},
+                )
+                child["entry_cost"] += child_cost
+            elif event.action_type in {"ticker_change", "stock_merger"}:
+                moved = economics.pop(event.symbol)
+                target = economics.setdefault(
+                    new_symbol,
+                    {"entry_cost": 0.0, "distributions": 0.0},
+                )
+                target["entry_cost"] += moved["entry_cost"]
+                target["distributions"] += moved["distributions"]
+        economics = {
+            symbol: value
+            for symbol, value in economics.items()
+            if symbol in ledger.positions and value["entry_cost"] > 0
+        }
+        state["position_economics"] = economics
         state.setdefault("corporate_action_events", []).extend(
             {
                 "event_id": event.event_id,
@@ -97,20 +180,30 @@ class PaperBroker:
         if fee_rate < 0 or slippage_rate < 0:
             raise ValueError("fee_rate and slippage_rate must be non-negative.")
 
-        validated_orders: list[tuple[OrderIntent, str, float]] = []
+        validated_orders: list[tuple[OrderIntent, str, float | None]] = []
         for order in plan.orders:
             side = str(order.side).strip().lower()
             if side not in {"buy", "sell"}:
                 raise ValueError(f"Unsupported paper order side: {order.side}")
-            quantity = float(order.quantity)
-            if not math.isfinite(quantity) or quantity <= 0:
+            quantity = float(order.quantity) if order.quantity is not None else None
+            is_cash_allocated_buy = (
+                side == "buy"
+                and order.cash_allocation_pct is not None
+                and 0.0 < order.cash_allocation_pct <= 1.0
+            )
+            if not is_cash_allocated_buy and (
+                quantity is None or not math.isfinite(quantity) or quantity <= 0
+            ):
                 raise ValueError(f"Paper order quantity must be positive: {order.quantity}")
             validated_orders.append((order, side, quantity))
 
         state = self._load_state()
         cash = float(state.get("cash", self.initial_cash))
         positions = state.setdefault("positions", {})
+        economics = state.setdefault("position_economics", {})
         fills: list[str] = []
+        filled_sell_symbols: set[str] = set()
+        cash_allocation_base: float | None = None
 
         for order, side, quantity in validated_orders:
             raw_price = prices.get(order.symbol)
@@ -123,6 +216,32 @@ class PaperBroker:
                 continue
 
             if side == "buy":
+                if order.required_sell_symbols and not set(
+                    order.required_sell_symbols
+                ).issubset(filled_sell_symbols):
+                    fills.append(f"SKIP BUY {order.symbol}: prerequisite sell not filled")
+                    continue
+                if order.cash_allocation_pct is not None:
+                    if cash_allocation_base is None:
+                        cash_allocation_base = cash
+                    target_quantity = estimate_quantity(
+                        cash_allocation_base,
+                        price,
+                        order.cash_allocation_pct,
+                        fee_rate=fee_rate,
+                        slippage_rate=slippage_rate,
+                    )
+                    affordable_quantity = estimate_quantity(
+                        cash,
+                        price,
+                        1.0,
+                        fee_rate=fee_rate,
+                        slippage_rate=slippage_rate,
+                    )
+                    quantity = min(target_quantity, affordable_quantity)
+                if quantity is None or quantity <= 0:
+                    fills.append(f"SKIP BUY {order.symbol}: insufficient cash")
+                    continue
                 fill_price = price * (1.0 + slippage_rate)
                 cost = quantity * fill_price * (1.0 + fee_rate)
                 if cost > cash:
@@ -134,6 +253,11 @@ class PaperBroker:
                 new_qty = old_qty + quantity
                 avg_price = ((old_qty * float(existing["avg_price"])) + (quantity * fill_price)) / new_qty
                 positions[order.symbol] = {"quantity": new_qty, "avg_price": avg_price}
+                economic = economics.setdefault(
+                    order.symbol,
+                    {"entry_cost": 0.0, "distributions": 0.0},
+                )
+                economic["entry_cost"] = float(economic.get("entry_cost", 0.0)) + cost
                 fills.append(f"BUY {order.symbol} {quantity:g} @ {fill_price:.4f}")
             else:
                 existing = positions.get(order.symbol)
@@ -146,8 +270,15 @@ class PaperBroker:
                 remaining = float(existing["quantity"]) - sell_qty
                 if remaining > 0:
                     existing["quantity"] = remaining
+                    economic = economics.get(order.symbol)
+                    if economic is not None:
+                        retained_fraction = remaining / (remaining + sell_qty)
+                        economic["entry_cost"] *= retained_fraction
+                        economic["distributions"] *= retained_fraction
                 else:
                     positions.pop(order.symbol, None)
+                    economics.pop(order.symbol, None)
+                filled_sell_symbols.add(order.symbol)
                 fills.append(f"SELL {order.symbol} {sell_qty:g} @ {fill_price:.4f}")
 
         state["cash"] = cash
@@ -265,6 +396,8 @@ class TossBroker:
         return res.status_code in {200, 204}
 
     def place_order(self, order: OrderIntent) -> bool:
+        if order.quantity is None or order.quantity <= 0:
+            raise ValueError("Live orders require a resolved positive quantity.")
         token = self._token()
         payload = {
             "symbol": str(order.symbol),

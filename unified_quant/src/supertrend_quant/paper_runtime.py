@@ -11,7 +11,7 @@ from .data_cache import YahooStateCache
 from .live_runtime import _daily_data_gap
 from .market_store.provider import ensure_configured_data_ready, load_configured_market_data
 from .market_store.realtime import FrameQuoteProvider, QuoteProvider
-from .portfolio import OrderPlan
+from .portfolio import OrderPlan, mark_position_economics
 from .results import PaperRunRecorder
 from .runtime import check_market_schedule, last_completed_bar_end
 from .strategies import build_order_plan
@@ -157,6 +157,12 @@ class PaperRuntime:
             )
             return plan, ["Paper orders blocked by quote gap."]
         prices = {symbol: quote.price for symbol, quote in quotes.items()}
+        account_before = mark_position_economics(
+            account_before,
+            prices,
+            fee_rate=config.costs.fee_rate,
+            slippage_rate=config.costs.slippage_rate,
+        )
         plan = build_order_plan(
             config,
             bars,

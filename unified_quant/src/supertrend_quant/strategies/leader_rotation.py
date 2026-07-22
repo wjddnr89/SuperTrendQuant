@@ -10,7 +10,12 @@ import pandas as pd
 from ..config import AppConfig
 from ..portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quantity
 from ..ranking import create_scorer
-from .base import BenchmarkInput, PreparedBacktest, reject_unknown_params
+from .base import (
+    BenchmarkInput,
+    PreparedBacktest,
+    build_prepared_report_frames,
+    reject_unknown_params,
+)
 from .common import (
     asset_filters_allow_buy,
     benchmark_for_strategy_symbol,
@@ -63,6 +68,11 @@ class PreparedLeaderBacktest(PreparedBacktest):
             market_filter_states=market_filter_states,
         )
 
+    def report_frames(self, symbols: set[str]) -> dict[str, pd.DataFrame]:
+        return build_prepared_report_frames(
+            self.prepared, self.market_filter_trends, symbols
+        )
+
 
 @register_strategy
 class LeaderRotationStrategy:
@@ -101,17 +111,10 @@ class LeaderRotationStrategy:
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput = None,
         filter_benchmark: BenchmarkInput = None,
-        execution_bars: dict[str, pd.DataFrame] | None = None,
         universe_schedule: tuple[Mapping[str, Any], ...] = (),
     ) -> PreparedLeaderBacktest:
         market_filter_data = filter_benchmark if filter_benchmark is not None else benchmark
         prepared = self._prepare_leader_data(bars, benchmark)
-        if execution_bars:
-            for symbol, frame in prepared.items():
-                execution_frame = execution_bars.get(symbol)
-                if execution_frame is None or execution_frame.empty or "Close" not in execution_frame:
-                    continue
-                frame["ExecutionClose"] = execution_frame["Close"].reindex(frame.index)
         market_filter_trends = precompute_market_filter_trends(
             self.config,
             list(bars),
@@ -191,24 +194,20 @@ class LeaderRotationStrategy:
                     current_score = _finite_float(held_row.get("Score"))
                     hurdle = replacement["atr_pct"] * config.leader_rotation.hurdle_atr_mult
                     if current_score is not None and replacement["score"] - current_score > hurdle:
-                        execution_close = float(
-                            held_row.get("ExecutionClose", held_row["Close"])
-                        )
+                        economics = account.position_economics.get(symbol)
                         profit_pct = (
-                            (execution_close - held.avg_price) / held.avg_price
-                            if held.avg_price > 0
-                            else 0.0
+                            _finite_float(economics.net_return_pct)
+                            if economics is not None
+                            else None
                         )
-                        if profit_pct >= config.leader_rotation.min_rotation_profit_pct:
+                        if (
+                            profit_pct is not None
+                            and profit_pct >= config.leader_rotation.min_rotation_profit_pct
+                        ):
                             sell_reason = "Leader rotation"
                 if sell_reason:
                     orders.append(sell_all(held, sell_reason))
                     sell_symbols.add(symbol)
-                    estimated_cash += _estimated_sell_proceeds(
-                        held,
-                        float(held_row.get("ExecutionClose", held_row["Close"])),
-                        config,
-                    )
 
         kept_symbols = set(held_positions) - sell_symbols
         open_slots = max(0, max_positions - len(kept_symbols))
@@ -217,6 +216,30 @@ class LeaderRotationStrategy:
             for candidate in candidates
             if candidate["symbol"] not in kept_symbols and candidate["symbol"] not in sell_symbols
         ]
+
+        if sell_symbols and open_slots > 0:
+            selected = buy_candidates[:open_slots]
+            if selected:
+                cash_allocation_pct = config.execution.allocation_pct / len(selected)
+                required_sells = tuple(sorted(sell_symbols))
+                for candidate in selected:
+                    orders.append(
+                        OrderIntent(
+                            symbol=candidate["symbol"],
+                            side="buy",
+                            quantity=None,
+                            order_type=config.execution.order_type,
+                            reason="Post-sell leader entry",
+                            cash_allocation_pct=cash_allocation_pct,
+                            required_sell_symbols=required_sells,
+                        )
+                    )
+            return OrderPlan(
+                strategy_name=config.strategy.name,
+                mode=mode,
+                orders=tuple(orders),
+            )
+
         remaining_buy_budget = estimated_cash * config.execution.allocation_pct
 
         for candidate in buy_candidates:
@@ -291,7 +314,7 @@ class LeaderRotationStrategy:
                 continue
             score = _finite_float(row.get("Score"))
             atr_pct = _finite_float(row.get("ATR_pct"))
-            price = _finite_float(row.get("ExecutionClose", row.get("Close")))
+            price = _finite_float(row.get("Close"))
             if score is None or atr_pct is None or price is None:
                 continue
             candidate_scores[symbol] = score
@@ -323,11 +346,6 @@ def _first_replacement_candidate(
         if symbol not in held_symbols or symbol in sell_symbols:
             return candidate
     return None
-
-
-def _estimated_sell_proceeds(position, price: float, config: AppConfig) -> float:
-    fill = price * (1.0 - config.costs.slippage_rate)
-    return position.quantity * max(0.0, fill) * (1.0 - config.costs.fee_rate)
 
 
 def _estimated_buy_cost(quantity: float, price: float, config: AppConfig) -> float:

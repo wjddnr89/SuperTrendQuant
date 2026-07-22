@@ -23,9 +23,9 @@ PACKAGE_ROOT = UNIFIED_ROOT / "src" / "supertrend_quant"
 
 
 class ConfigAndStrategyTest(unittest.TestCase):
-    def test_strategy_examples_load_with_simulation_runtime(self):
-        simple_config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
-        leader_config = load_split_config("configs/strategies/leader_rotation.yaml", "configs/runtimes/simulation.yaml")
+    def test_strategy_examples_load_with_sp500_runtime(self):
+        simple_config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
+        leader_config = load_split_config("configs/strategies/leader_rotation.yaml", "configs/runtimes/research_sp500.yaml")
 
         self.assertEqual(simple_config.strategy.type, "simple_supertrend")
         self.assertEqual(leader_config.strategy.type, "leader_rotation")
@@ -42,7 +42,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
         for path in config_paths:
             with self.subTest(path=str(path)):
                 runtime = CONFIG_ROOT / "runtimes" / (
-                    "live_toss.yaml" if "main_jo" in path.name else "simulation.yaml"
+                    "live_toss.yaml" if "main_jo" in path.name else "research_sp500.yaml"
                 )
                 config = load_split_config(path, runtime)
                 self.assertIn(config.strategy.type, {"simple_supertrend", "leader_rotation", "triple_filters"})
@@ -51,7 +51,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
     def test_split_config_composes_strategy_universe_and_runtime(self):
         config = load_split_config(
             "configs/strategies/leader_rotation.yaml",
-            "configs/runtimes/simulation.yaml",
+            "configs/runtimes/research_sp500.yaml",
         )
 
         self.assertEqual(config.strategy.name, "leader_rotation_default")
@@ -69,17 +69,16 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.scoring.type, "relative_strength")
         self.assertEqual(config.scoring.params, {"lookback_bars": 100})
         self.assertEqual(config.leader_rotation.max_slots, 1)
-        self.assertEqual(config.leader_rotation.min_rotation_profit_pct, 0.0)
         self.assertEqual(config.exit.sell_confirm_bars, 1)
         self.assertEqual(config.execution.broker, "paper")
-        self.assertEqual(config.paper.state_file, "state/paper.json")
-        self.assertEqual(config.paper.results_dir, "results/paper")
-        self.assertEqual(config.backtest.results_dir, "results/backtests")
+        self.assertEqual(config.paper.state_file, "state/research_sp500_paper.json")
+        self.assertEqual(config.paper.results_dir, "results/research/sp500/paper")
+        self.assertEqual(config.backtest.results_dir, "results/research/sp500/backtests")
         self.assertNotIn("relative_strength", {component.type for component in config.components})
         self.assertEqual(len(config.components), 3)
 
     def test_strategy_registry_creates_registered_strategy(self):
-        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
 
         strategy = create_strategy(config)
 
@@ -90,7 +89,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertIn("triple_filters", available_strategies())
 
     def test_unknown_strategy_type_lists_available_strategies(self):
-        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
         bad_config = config.__class__(
             **{
                 **config.__dict__,
@@ -113,7 +112,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
             register_strategy(DuplicateSimpleSupertrend)
 
     def test_strategy_specific_params_reject_unknown_keys(self):
-        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
         bad_config = config.__class__(
             **{
                 **config.__dict__,
@@ -190,7 +189,7 @@ signals:
             )
 
             with self.assertRaisesRegex(ValueError, "Unsupported component"):
-                load_split_config(path, "configs/runtimes/simulation.yaml")
+                load_split_config(path, "configs/runtimes/research_sp500.yaml")
 
     def test_scoring_section_is_required(self):
         source = (CONFIG_ROOT / "strategies/simple_supertrend.yaml").read_text(encoding="utf-8")
@@ -203,7 +202,7 @@ signals:
             path = Path(tmp) / "missing_scoring.yaml"
             path.write_text(missing, encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "scoring"):
-                load_split_config(path, "configs/runtimes/simulation.yaml")
+                load_split_config(path, "configs/runtimes/research_sp500.yaml")
 
     def test_scoring_type_and_params_are_validated_during_load(self):
         source = (CONFIG_ROOT / "strategies/simple_supertrend.yaml").read_text(encoding="utf-8")
@@ -214,7 +213,7 @@ signals:
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "Available scorers"):
-                load_split_config(unknown_path, "configs/runtimes/simulation.yaml")
+                load_split_config(unknown_path, "configs/runtimes/research_sp500.yaml")
 
             invalid_path = Path(tmp) / "invalid_scoring.yaml"
             invalid_path.write_text(
@@ -222,7 +221,7 @@ signals:
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "positive integer"):
-                load_split_config(invalid_path, "configs/runtimes/simulation.yaml")
+                load_split_config(invalid_path, "configs/runtimes/research_sp500.yaml")
 
     def test_runtime_cannot_override_strategy_owned_position_sizing(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -256,7 +255,7 @@ execution:
         self.assertTrue(_trend_down_confirmed(two_down, 2))
 
     def test_simple_supertrend_returns_order_plan(self):
-        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+        config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
         config = config.__class__(
             **{
                 **config.__dict__,

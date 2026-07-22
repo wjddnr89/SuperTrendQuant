@@ -1,0 +1,17 @@
+Canonical Min-Rotation-Profit Ablation
+Fixed: sell=1, positions=1, dual_momentum/150, hurdle=2.0, ST=10/3.0
+Universe/runner: Nasdaq-100 index_events + canonical
+Rotation profit basis: raw signal-date close / raw average entry price
+
+Rotate only at +1% or better (current)
+  Threshold: +1.00%
+  Return: +26522.64%
+  CAGR: +68.21%
+  MDD: -40.67%
+  Sharpe: 1.30
+  Calmar: 1.68
+  Worst year: -12.08%
+  Trades: 105
+  Rotation exits: 60 (losses=0)
+  Average rotation P&L: +10.27%
+  Worst rotation P&L: +0.54%

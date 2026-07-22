@@ -1,0 +1,65 @@
+Canonical Dual-Momentum Simplified Search
+Period: 2015-10-19 00:00:00 -> 2026-07-15 00:00:00
+Universe: Nasdaq-100 index_events
+Runner: canonical (raw next-session open + corporate-action ledger)
+Fixed: dual_momentum, sell_confirm=1, max_positions=3, ST=10/3.0
+Search: rs_period x hurdle x asset_filter
+Completed: 63/63
+
+Legacy base control
+  Return +27732.44% | CAGR +68.91% | MDD -42.60% | Sharpe 1.32
+
+Sell confirmation x position-count ablation
+  sell=5, positions=1 | Return +27732.44% | CAGR +68.91% | MDD -42.60% | Sharpe 1.32
+  sell=1, positions=1 | Return +27877.15% | CAGR +68.99% | MDD -44.07% | Sharpe 1.34
+  sell=5, positions=3 | Return +2603.77% | CAGR +35.94% | MDD -41.94% | Sharpe 1.01
+  sell=1, positions=3 | Return +1787.79% | CAGR +31.47% | MDD -38.76% | Sharpe 0.97
+
+Top 5 by Return
+  1. filter-ema_trend_rs-125_h-1p5_pos-3_sell-1 | Return +2529.75% | CAGR +35.59% | MDD -39.44% | Sharpe 1.02 | Calmar 0.90 | Win +53.28% | Payoff 1.74
+  2. filter-none_rs-125_h-1p5_pos-3_sell-1 | Return +2529.75% | CAGR +35.59% | MDD -39.44% | Sharpe 1.02 | Calmar 0.90 | Win +53.28% | Payoff 1.74
+  3. filter-none_rs-175_h-1p0_pos-3_sell-1 | Return +2442.87% | CAGR +35.17% | MDD -48.52% | Sharpe 1.01 | Calmar 0.72 | Win +47.60% | Payoff 2.28
+  4. filter-ema_trend_rs-175_h-1p0_pos-3_sell-1 | Return +2442.87% | CAGR +35.17% | MDD -48.52% | Sharpe 1.01 | Calmar 0.72 | Win +47.60% | Payoff 2.28
+  5. filter-none_rs-125_h-2p0_pos-3_sell-1 | Return +2442.75% | CAGR +35.17% | MDD -43.16% | Sharpe 1.00 | Calmar 0.81 | Win +51.23% | Payoff 1.84
+
+Top 5 by MDD
+  1. filter-ichimoku_cloud_plus_ema_trend_rs-125_h-1p5_pos-3_sell-1 | Return +2118.10% | CAGR +33.46% | MDD -38.26% | Sharpe 1.02 | Calmar 0.87 | Win +52.52% | Payoff 1.94
+  2. filter-ichimoku_cloud_rs-125_h-1p5_pos-3_sell-1 | Return +2118.10% | CAGR +33.46% | MDD -38.26% | Sharpe 1.02 | Calmar 0.87 | Win +52.52% | Payoff 1.94
+  3. filter-ichimoku_cloud_rs-150_h-2p0_pos-3_sell-1 | Return +1787.79% | CAGR +31.47% | MDD -38.76% | Sharpe 0.97 | Calmar 0.81 | Win +55.02% | Payoff 1.93
+  4. filter-ichimoku_cloud_plus_ema_trend_rs-150_h-2p0_pos-3_sell-1 | Return +1787.79% | CAGR +31.47% | MDD -38.76% | Sharpe 0.97 | Calmar 0.81 | Win +55.02% | Payoff 1.93
+  5. filter-ichimoku_cloud_rs-125_h-1p0_pos-3_sell-1 | Return +2064.64% | CAGR +33.16% | MDD -39.07% | Sharpe 1.01 | Calmar 0.85 | Win +54.13% | Payoff 1.77
+
+Top 5 by Sharpe
+  1. filter-ichimoku_cloud_plus_ema_trend_rs-175_h-1p0_pos-3_sell-1 | Return +2180.57% | CAGR +33.81% | MDD -44.98% | Sharpe 1.02 | Calmar 0.75 | Win +50.00% | Payoff 2.08
+  2. filter-ichimoku_cloud_rs-175_h-1p0_pos-3_sell-1 | Return +2180.57% | CAGR +33.81% | MDD -44.98% | Sharpe 1.02 | Calmar 0.75 | Win +50.00% | Payoff 2.08
+  3. filter-ichimoku_cloud_plus_ema_trend_rs-125_h-1p5_pos-3_sell-1 | Return +2118.10% | CAGR +33.46% | MDD -38.26% | Sharpe 1.02 | Calmar 0.87 | Win +52.52% | Payoff 1.94
+  4. filter-ichimoku_cloud_rs-125_h-1p5_pos-3_sell-1 | Return +2118.10% | CAGR +33.46% | MDD -38.26% | Sharpe 1.02 | Calmar 0.87 | Win +52.52% | Payoff 1.94
+  5. filter-none_rs-125_h-1p5_pos-3_sell-1 | Return +2529.75% | CAGR +35.59% | MDD -39.44% | Sharpe 1.02 | Calmar 0.90 | Win +53.28% | Payoff 1.74
+
+Top 5 by Calmar
+  1. filter-ema_trend_rs-125_h-1p5_pos-3_sell-1 | Return +2529.75% | CAGR +35.59% | MDD -39.44% | Sharpe 1.02 | Calmar 0.90 | Win +53.28% | Payoff 1.74
+  2. filter-none_rs-125_h-1p5_pos-3_sell-1 | Return +2529.75% | CAGR +35.59% | MDD -39.44% | Sharpe 1.02 | Calmar 0.90 | Win +53.28% | Payoff 1.74
+  3. filter-ichimoku_cloud_plus_ema_trend_rs-125_h-1p5_pos-3_sell-1 | Return +2118.10% | CAGR +33.46% | MDD -38.26% | Sharpe 1.02 | Calmar 0.87 | Win +52.52% | Payoff 1.94
+  4. filter-ichimoku_cloud_rs-125_h-1p5_pos-3_sell-1 | Return +2118.10% | CAGR +33.46% | MDD -38.26% | Sharpe 1.02 | Calmar 0.87 | Win +52.52% | Payoff 1.94
+  5. filter-ichimoku_cloud_rs-125_h-1p0_pos-3_sell-1 | Return +2064.64% | CAGR +33.16% | MDD -39.07% | Sharpe 1.01 | Calmar 0.85 | Win +54.13% | Payoff 1.77
+
+Top 5 by Win Rate
+  1. filter-ichimoku_cloud_rs-150_h-2p0_pos-3_sell-1 | Return +1787.79% | CAGR +31.47% | MDD -38.76% | Sharpe 0.97 | Calmar 0.81 | Win +55.02% | Payoff 1.93
+  2. filter-ichimoku_cloud_plus_ema_trend_rs-150_h-2p0_pos-3_sell-1 | Return +1787.79% | CAGR +31.47% | MDD -38.76% | Sharpe 0.97 | Calmar 0.81 | Win +55.02% | Payoff 1.93
+  3. filter-ichimoku_cloud_plus_ema_trend_rs-150_h-1p5_pos-3_sell-1 | Return +1434.97% | CAGR +28.96% | MDD -39.41% | Sharpe 0.92 | Calmar 0.73 | Win +54.35% | Payoff 1.88
+  4. filter-ichimoku_cloud_rs-150_h-1p5_pos-3_sell-1 | Return +1434.97% | CAGR +28.96% | MDD -39.41% | Sharpe 0.92 | Calmar 0.73 | Win +54.35% | Payoff 1.88
+  5. filter-ichimoku_cloud_plus_ema_trend_rs-150_h-1p0_pos-3_sell-1 | Return +1300.66% | CAGR +27.87% | MDD -39.36% | Sharpe 0.89 | Calmar 0.71 | Win +54.31% | Payoff 1.89
+
+Top 5 by Payoff
+  1. filter-ichimoku_cloud_rs-200_h-2p0_pos-3_sell-1 | Return +1437.66% | CAGR +28.99% | MDD -42.87% | Sharpe 0.92 | Calmar 0.68 | Win +49.05% | Payoff 2.30
+  2. filter-ichimoku_cloud_plus_ema_trend_rs-200_h-2p0_pos-3_sell-1 | Return +1437.66% | CAGR +28.99% | MDD -42.87% | Sharpe 0.92 | Calmar 0.68 | Win +49.05% | Payoff 2.30
+  3. filter-ichimoku_cloud_plus_ema_trend_rs-200_h-1p5_pos-3_sell-1 | Return +875.52% | CAGR +23.64% | MDD -44.22% | Sharpe 0.80 | Calmar 0.53 | Win +48.15% | Payoff 2.29
+  4. filter-ichimoku_cloud_rs-200_h-1p5_pos-3_sell-1 | Return +875.52% | CAGR +23.64% | MDD -44.22% | Sharpe 0.80 | Calmar 0.53 | Win +48.15% | Payoff 2.29
+  5. filter-none_rs-175_h-1p0_pos-3_sell-1 | Return +2442.87% | CAGR +35.17% | MDD -48.52% | Sharpe 1.01 | Calmar 0.72 | Win +47.60% | Payoff 2.28
+
+Top 5 by Worst Year
+  1. filter-ema_trend_rs-175_h-1p5_pos-3_sell-1 | Return +1926.68% | CAGR +32.34% | MDD -48.56% | Sharpe 0.95 | Calmar 0.67 | Win +46.96% | Payoff 2.25
+  2. filter-ema_trend_rs-175_h-2p0_pos-3_sell-1 | Return +1858.73% | CAGR +31.92% | MDD -48.38% | Sharpe 0.94 | Calmar 0.66 | Win +47.26% | Payoff 2.18
+  3. filter-none_rs-175_h-2p0_pos-3_sell-1 | Return +1858.73% | CAGR +31.92% | MDD -48.38% | Sharpe 0.94 | Calmar 0.66 | Win +47.26% | Payoff 2.18
+  4. filter-ema_trend_rs-175_h-1p0_pos-3_sell-1 | Return +2442.87% | CAGR +35.17% | MDD -48.52% | Sharpe 1.01 | Calmar 0.72 | Win +47.60% | Payoff 2.28
+  5. filter-none_rs-175_h-1p0_pos-3_sell-1 | Return +2442.87% | CAGR +35.17% | MDD -48.52% | Sharpe 1.01 | Calmar 0.72 | Win +47.60% | Payoff 2.28

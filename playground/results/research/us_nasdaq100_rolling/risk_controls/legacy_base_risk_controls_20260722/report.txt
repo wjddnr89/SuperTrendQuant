@@ -1,0 +1,73 @@
+Legacy Base Risk-Control Comparison
+Universe: Nasdaq-100 index_events
+Runner: canonical
+Signal parameters: dual_momentum/150, hurdle=2.0, positions=1, ST=10/3.0
+New variants: sell_confirm=1
+
+Legacy: sell=5, close-confirmed ST, 100% allocation
+  Return: +27732.44%
+  CAGR: +68.91%
+  MDD: -42.60%
+  Sharpe: 1.32
+  Calmar: 1.62
+  Worst year: -26.33%
+  Trades: 76
+  Stops: 0 (intraday=0, gap=0)
+
+Baseline: sell=1, close-confirmed ST, 100% allocation
+  Return: +27877.15%
+  CAGR: +68.99%
+  MDD: -44.07%
+  Sharpe: 1.34
+  Calmar: 1.57
+  Worst year: -12.74%
+  Trades: 74
+  Stops: 0 (intraday=0, gap=0)
+
+Prior-day ST stop, 100% allocation
+  Return: +7045.76%
+  CAGR: +48.82%
+  MDD: -48.57%
+  Sharpe: 1.11
+  Calmar: 1.01
+  Worst year: -27.40%
+  Trades: 106
+  Stops: 74 (intraday=65, gap=9)
+  Average stop P&L: +1.90%
+  Worst stop P&L: -18.47%
+
+Prior-day ST stop + 15% catastrophe, 100% allocation
+  Return: +7425.19%
+  CAGR: +49.54%
+  MDD: -48.56%
+  Sharpe: 1.12
+  Calmar: 1.02
+  Worst year: -27.40%
+  Trades: 107
+  Stops: 75 (intraday=66, gap=9)
+  Average stop P&L: +1.95%
+  Worst stop P&L: -15.46%
+
+Prior-day ST stop + 15% catastrophe, 75% allocation
+  Return: +5433.32%
+  CAGR: +45.32%
+  MDD: -43.67%
+  Sharpe: 1.15
+  Calmar: 1.04
+  Worst year: -24.81%
+  Trades: 107
+  Stops: 75 (intraday=66, gap=9)
+  Average stop P&L: +1.95%
+  Worst stop P&L: -15.46%
+
+Prior-day ST stop + 15% catastrophe, 80% allocation
+  Return: +5791.00%
+  CAGR: +46.17%
+  MDD: -44.47%
+  Sharpe: 1.14
+  Calmar: 1.04
+  Worst year: -25.10%
+  Trades: 107
+  Stops: 75 (intraday=66, gap=9)
+  Average stop P&L: +1.95%
+  Worst stop P&L: -15.46%

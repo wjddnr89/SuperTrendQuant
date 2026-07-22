@@ -1,0 +1,22 @@
+{
+  "name": "canonical_dual_momentum_legacy_base",
+  "purpose": "Frozen reference for the previously selected dual-momentum combination.",
+  "universe": "index_events:nasdaq100",
+  "runner": "canonical",
+  "timeframe": "1d",
+  "entry": "single",
+  "market_filter": "1d",
+  "asset_filter": "ichimoku_cloud+ema_trend",
+  "rs_method": "dual_momentum",
+  "rs_period": 150,
+  "sell_confirm_bars": 5,
+  "hurdle": 2.0,
+  "max_positions": 1,
+  "st_period": 10,
+  "st_multiplier": 3.0,
+  "fee_rate": 0.001,
+  "slippage_rate": 0.0005,
+  "signal_price_mode": "total_return_adjusted",
+  "execution_price_mode": "raw_next_session_open",
+  "corporate_actions": "canonical_ledger"
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 from bisect import bisect_right
 from collections.abc import Mapping
 import inspect
+import math
 import re
 from dataclasses import dataclass, field, replace
 
@@ -19,6 +20,9 @@ from .strategies import build_order_plan, create_strategy
 from .strategies.base import PreparedBacktest
 from .strategies.common import active_universe_symbols
 from .universe import resolve_universe
+
+
+_PREPARED_BACKTEST_UNSET = object()
 
 
 @dataclass(frozen=True)
@@ -42,6 +46,20 @@ class BacktestResult:
     @property
     def validated_session(self) -> str:
         return self.completed_session
+
+
+@dataclass(frozen=True)
+class IntradayStopPolicy:
+    """Prior-session signal levels executed against the next raw OHLC bar."""
+
+    signal_levels: Mapping[str, pd.Series]
+    catastrophe_loss_pct: float | None = None
+
+    def __post_init__(self) -> None:
+        if self.catastrophe_loss_pct is not None and not (
+            0.0 < float(self.catastrophe_loss_pct) < 1.0
+        ):
+            raise ValueError("catastrophe_loss_pct must be between 0 and 1.")
 
 
 @dataclass(frozen=True)
@@ -113,6 +131,9 @@ def run_backtest_on_data(
     config: AppConfig,
     market_data,
     run_index: pd.Index | None = None,
+    *,
+    prepared_backtest: PreparedBacktest | None | object = _PREPARED_BACKTEST_UNSET,
+    intraday_stop_policy: IntradayStopPolicy | None = None,
 ) -> BacktestResult:
     """Run the canonical strategy/order path against already loaded market data.
 
@@ -433,7 +454,12 @@ def run_backtest_on_data(
     idx = idx.intersection(eligible, sort=False)
     if len(idx) < 2:
         raise RuntimeError("Not enough bars remain after strategy warm-up.")
-    prepared_backtest = _prepare_backtest(strategy, market_data)
+    if prepared_backtest is _PREPARED_BACKTEST_UNSET:
+        prepared_backtest = _prepare_backtest(strategy, market_data)
+    elif prepared_backtest is not None and not callable(
+        getattr(prepared_backtest, "build_order_plan", None)
+    ):
+        raise TypeError("prepared_backtest must provide build_order_plan().")
     apply_actions_before_open(idx[0])
 
     for i in range(0, len(idx) - 1):
@@ -535,6 +561,18 @@ def run_backtest_on_data(
                 continue
             raw_price = float(df.loc[exec_ts, "Open"])
             if order.side.lower() == "buy":
+                if intraday_stop_policy is not None:
+                    entry_stop = _raw_intraday_stop_level(
+                        intraday_stop_policy,
+                        symbol=order.symbol,
+                        signal_ts=signal_ts,
+                        exec_ts=exec_ts,
+                        avg_price=0.0,
+                        signal_bars=market_data.bars.get(order.symbol),
+                        execution_bars=execution_bars.get(order.symbol),
+                    )
+                    if entry_stop is not None and raw_price <= entry_stop:
+                        continue
                 affordable_quantity = estimate_quantity(
                     ledger.cash,
                     raw_price,
@@ -576,6 +614,61 @@ def run_backtest_on_data(
                         "corporate_action_cash": distributions,
                         "pnl_pct": pnl_pct,
                         "exit_reason": order.reason,
+                    }
+                )
+
+        if intraday_stop_policy is not None:
+            for symbol, position in list(ledger.positions.items()):
+                stop_level = _raw_intraday_stop_level(
+                    intraday_stop_policy,
+                    symbol=symbol,
+                    signal_ts=signal_ts,
+                    exec_ts=exec_ts,
+                    avg_price=position.avg_price,
+                    signal_bars=market_data.bars.get(symbol),
+                    execution_bars=execution_bars.get(symbol),
+                )
+                if stop_level is None:
+                    continue
+                execution_frame = execution_bars.get(symbol)
+                if execution_frame is None or exec_ts not in execution_frame.index:
+                    continue
+                execution_row = execution_frame.loc[exec_ts]
+                raw_open = float(execution_row["Open"])
+                raw_low = float(execution_row["Low"])
+                if raw_open <= stop_level:
+                    trigger = "gap_open"
+                    raw_fill = raw_open
+                elif raw_low <= stop_level:
+                    trigger = "intraday"
+                    raw_fill = stop_level
+                else:
+                    continue
+
+                fill = raw_fill * (1.0 - config.costs.slippage_rate)
+                proceeds = position.quantity * fill * (1.0 - config.costs.fee_rate)
+                ledger.sell(symbol, position.quantity, proceeds)
+                entry_value = entry_values.pop(
+                    symbol,
+                    position.quantity * position.avg_price,
+                )
+                distributions = entry_distributions.pop(symbol, 0.0)
+                economic_proceeds = proceeds + distributions
+                pnl_pct = economic_proceeds / entry_value - 1.0 if entry_value else 0.0
+                trade_returns.append(pnl_pct)
+                trade_records.append(
+                    {
+                        "symbol": symbol,
+                        "entry_time": entry_times.pop(symbol, None),
+                        "exit_time": exec_ts,
+                        "entry_price": position.avg_price,
+                        "exit_price": fill,
+                        "quantity": position.quantity,
+                        "corporate_action_cash": distributions,
+                        "pnl_pct": pnl_pct,
+                        "exit_reason": "Intraday protective stop",
+                        "stop_level": stop_level,
+                        "stop_trigger": trigger,
                     }
                 )
 
@@ -650,6 +743,42 @@ def run_backtest_on_data(
         corporate_action_cash=corporate_action_cash,
         unresolved_corporate_action_ids=tuple(sorted(ledger.unresolved_event_ids)),
     )
+
+
+def _raw_intraday_stop_level(
+    policy: IntradayStopPolicy,
+    *,
+    symbol: str,
+    signal_ts,
+    exec_ts,
+    avg_price: float,
+    signal_bars: pd.DataFrame | None,
+    execution_bars: pd.DataFrame | None,
+) -> float | None:
+    candidates: list[float] = []
+    levels = policy.signal_levels.get(symbol)
+    if levels is not None and signal_ts in levels.index:
+        adjusted_level = pd.to_numeric(
+            pd.Series([levels.loc[signal_ts]]),
+            errors="coerce",
+        ).iloc[0]
+        if (
+            pd.notna(adjusted_level)
+            and signal_bars is not None
+            and exec_ts in signal_bars.index
+            and execution_bars is not None
+            and exec_ts in execution_bars.index
+        ):
+            adjusted_open = float(signal_bars.loc[exec_ts, "Open"])
+            raw_open = float(execution_bars.loc[exec_ts, "Open"])
+            if adjusted_open > 0.0 and raw_open > 0.0:
+                candidates.append(float(adjusted_level) * raw_open / adjusted_open)
+
+    if policy.catastrophe_loss_pct is not None and avg_price > 0.0:
+        candidates.append(avg_price * (1.0 - float(policy.catastrophe_loss_pct)))
+
+    finite = [value for value in candidates if math.isfinite(value) and value > 0.0]
+    return max(finite) if finite else None
 
 
 def _scheduled_corporate_actions(actions):

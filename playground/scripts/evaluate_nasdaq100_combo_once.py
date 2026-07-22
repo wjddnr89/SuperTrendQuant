@@ -41,6 +41,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--period", default="max")
     parser.add_argument("--start", default="2010-01-01")
+    parser.add_argument("--end", default="")
     parser.add_argument("--data-source", choices=("local", "yahoo"), default="local")
     parser.add_argument("--entry", default="single")
     parser.add_argument("--market-filter", default="1d")
@@ -97,6 +98,10 @@ def main() -> None:
     )
     full_idx = market_index(market_data)
     requested_idx = run_index_from_start(full_idx, args.start)
+    if args.end:
+        requested_idx = requested_idx[requested_idx <= pd.Timestamp(args.end)]
+    if len(requested_idx) < 2:
+        raise RuntimeError("Not enough bars remain in the requested date range.")
     active_by_position = prepare_active_universe(market_data, full_idx)
     print(
         f"[single-eval] timeline {full_idx[0]} -> {full_idx[-1]}, requested={len(requested_idx)}",

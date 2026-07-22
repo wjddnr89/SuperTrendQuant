@@ -1,0 +1,33 @@
+{
+  "params": {
+    "entry": "single",
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_method": "dual_momentum",
+    "rs_period": 150,
+    "sell_confirm_bars": 5,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0
+  },
+  "data_source": "local",
+  "fee_rate": 0.001,
+  "slippage_rate": 0.0005,
+  "start": "2015-10-19 00:00:00",
+  "end": "2026-07-15 00:00:00",
+  "metrics": {
+    "total_return": 20.327866049057658,
+    "cagr": 0.3297282216327182,
+    "mdd": -0.4704221732851508,
+    "calmar": 0.70091981279303,
+    "sharpe": 0.9910221094433016,
+    "sortino": 1.7293740492481136,
+    "win_rate": 0.7211538461538461,
+    "payoff_ratio": 1.3664293794239135,
+    "trade_count": 104
+  },
+  "qqq_return": 6.145455415200001,
+  "alpha": 14.182410633857657,
+  "trade_count": 104
+}

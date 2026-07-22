@@ -1,0 +1,32 @@
+{
+  "completed_at": "2026-07-22T13:28:49.889320",
+  "requested_start": "2015-10-19",
+  "requested_end": "2026-07-15",
+  "variants": [
+    {
+      "run_key": "st_stop_100pct",
+      "label": "Prior-day ST stop, 100% allocation",
+      "allocation_pct": 1.0,
+      "catastrophe_loss_pct": null
+    },
+    {
+      "run_key": "st_stop_cat15_100pct",
+      "label": "Prior-day ST stop + 15% catastrophe, 100% allocation",
+      "allocation_pct": 1.0,
+      "catastrophe_loss_pct": 0.15
+    },
+    {
+      "run_key": "st_stop_cat15_75pct",
+      "label": "Prior-day ST stop + 15% catastrophe, 75% allocation",
+      "allocation_pct": 0.75,
+      "catastrophe_loss_pct": 0.15
+    },
+    {
+      "run_key": "st_stop_cat15_80pct",
+      "label": "Prior-day ST stop + 15% catastrophe, 80% allocation",
+      "allocation_pct": 0.8,
+      "catastrophe_loss_pct": 0.15
+    }
+  ],
+  "legacy_config": "C:\\Users\\wjddn\\OneDrive\\바탕 화면\\trading_bot\\SuperTrendQuant\\playground\\configs\\canonical_dual_momentum_legacy_base.json"
+}

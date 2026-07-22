@@ -1,0 +1,27 @@
+Nasdaq-100 Pure Universe A/B
+Period: 2015-10-19 00:00:00 -> 2026-07-15 00:00:00
+Price mode: total_return_adjusted
+Prices/execution/corporate actions: identical canonical local bundle
+Membership differs on 2288/2699 sessions
+
+index_events
+  Return: +27732.44%
+  CAGR: +68.91%
+  QQQ: +614.55%
+  Alpha: +27117.89%
+  MDD: -42.60%
+  Sharpe: 1.32
+  Win rate: +67.11%
+  Payoff: 2.41
+  Trades: 76
+
+wikipedia_quarterly
+  Return: +29524.50%
+  CAGR: +69.90%
+  QQQ: +614.55%
+  Alpha: +28909.95%
+  MDD: -49.42%
+  Sharpe: 1.33
+  Win rate: +68.92%
+  Payoff: 2.29
+  Trades: 74

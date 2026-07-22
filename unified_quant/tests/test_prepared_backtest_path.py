@@ -8,9 +8,9 @@ import pandas as pd
 
 from supertrend_quant.config import StrategyIdentity, load_split_config
 from supertrend_quant.data import MarketData
-from supertrend_quant.portfolio import AccountSnapshot, OrderPlan, Position
+from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position
 from supertrend_quant.research import search_configs
-from supertrend_quant.runners import run_backtest_on_data
+from supertrend_quant.runners import IntradayStopPolicy, run_backtest_on_data
 from supertrend_quant.strategies import available_strategies, create_strategy, register_strategy
 
 
@@ -127,6 +127,22 @@ class InstrumentedPreparableStrategy:
     ) -> OrderPlan:
         self.__class__.legacy_calls += 1
         return OrderPlan(self.config.strategy.name, mode, ())
+
+
+class BuyOncePreparedBacktest:
+    def __init__(self, strategy_name: str):
+        self.strategy_name = strategy_name
+        self.placed = False
+
+    def build_order_plan(self, signal_ts, account, mode="backtest") -> OrderPlan:
+        if self.placed:
+            return OrderPlan(self.strategy_name, mode, ())
+        self.placed = True
+        return OrderPlan(
+            self.strategy_name,
+            mode,
+            (OrderIntent("AAA", "buy", 10, reason="Test entry"),),
+        )
 
 
 class PreparedBacktestAcceptanceTest(unittest.TestCase):
@@ -250,6 +266,92 @@ class PreparedBacktestAcceptanceTest(unittest.TestCase):
         self.assertTrue(
             all(account.positions == {} for account in InstrumentedPreparableStrategy.prepared_accounts)
         )
+
+    def test_canonical_runner_accepts_reusable_prepared_backtest(self):
+        if InstrumentedPreparableStrategy.strategy_type not in available_strategies():
+            register_strategy(InstrumentedPreparableStrategy)
+        base = load_split_config(SIMPLE_PATH, RUNTIME_PATH)
+        config = replace(
+            base,
+            strategy=StrategyIdentity(
+                "instrumented_preparable_reuse",
+                InstrumentedPreparableStrategy.strategy_type,
+            ),
+        )
+        index = pd.date_range("2026-01-05 09:30", periods=6, freq="30min")
+        market_data = MarketData(bars={"AAA": trend_frame(index, 10.0, 0.1)})
+        strategy = InstrumentedPreparableStrategy(config)
+        prepared = strategy.prepare_backtest(market_data.bars)
+        InstrumentedPreparableStrategy.reset()
+
+        result = run_backtest_on_data(
+            config,
+            market_data,
+            prepared_backtest=prepared,
+        )
+
+        self.assertFalse(result.equity.empty)
+        self.assertEqual(InstrumentedPreparableStrategy.prepare_calls, 0)
+        self.assertEqual(InstrumentedPreparableStrategy.legacy_calls, 0)
+        self.assertEqual(
+            InstrumentedPreparableStrategy.prepared_timestamps,
+            list(index[1:-1]),
+        )
+
+    def test_intraday_stop_uses_stop_level_or_gap_open_without_lookahead(self):
+        if InstrumentedPreparableStrategy.strategy_type not in available_strategies():
+            register_strategy(InstrumentedPreparableStrategy)
+        base = load_split_config(SIMPLE_PATH, RUNTIME_PATH)
+        config = replace(
+            base,
+            strategy=StrategyIdentity(
+                "instrumented_intraday_stop",
+                InstrumentedPreparableStrategy.strategy_type,
+            ),
+            costs=replace(base.costs, fee_rate=0.0, slippage_rate=0.0),
+        )
+        index = pd.date_range("2026-01-05 09:30", periods=6, freq="30min")
+
+        for label, opens, lows, expected_fill, expected_trigger in (
+            (
+                "intraday cross",
+                [100.0] * 6,
+                [99.0, 99.0, 94.0, 99.0, 99.0, 99.0],
+                95.0,
+                "intraday",
+            ),
+            (
+                "next-session gap",
+                [100.0, 100.0, 100.0, 90.0, 90.0, 90.0],
+                [99.0, 99.0, 99.0, 89.0, 89.0, 89.0],
+                90.0,
+                "gap_open",
+            ),
+        ):
+            with self.subTest(label=label):
+                frame = pd.DataFrame(
+                    {
+                        "Open": opens,
+                        "High": [value + 1.0 for value in opens],
+                        "Low": lows,
+                        "Close": opens,
+                    },
+                    index=index,
+                )
+                result = run_backtest_on_data(
+                    config,
+                    MarketData(bars={"AAA": frame}, execution_bars={"AAA": frame}),
+                    prepared_backtest=BuyOncePreparedBacktest(config.strategy.name),
+                    intraday_stop_policy=IntradayStopPolicy(
+                        signal_levels={"AAA": pd.Series(95.0, index=index)},
+                    ),
+                )
+
+                self.assertEqual(len(result.trade_records), 1)
+                trade = result.trade_records[0]
+                self.assertEqual(trade["exit_price"], expected_fill)
+                self.assertEqual(trade["stop_trigger"], expected_trigger)
+                self.assertEqual(trade["exit_reason"], "Intraday protective stop")
 
     def test_two_configuration_synthetic_search_completes_with_holdout(self):
         config, market_data = leader_fixture()

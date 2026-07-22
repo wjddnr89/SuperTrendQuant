@@ -1,0 +1,44 @@
+{
+  "completed_at": "2026-07-22T16:11:34.146232",
+  "requested_start": "2015-10-19",
+  "requested_end": "2026-07-15",
+  "fixed_params": {
+    "rs_method": "dual_momentum",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_period": 150,
+    "sell_confirm_bars": 1,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0,
+    "fee_rate": 0.001,
+    "slippage_rate": 0.0005
+  },
+  "variants": [
+    {
+      "run_key": "minus_1pct_gate",
+      "label": "Rotate at -1% or better",
+      "min_rotation_profit_pct": -0.01
+    },
+    {
+      "run_key": "minus_2pct_gate",
+      "label": "Rotate at -2% or better",
+      "min_rotation_profit_pct": -0.02
+    },
+    {
+      "run_key": "minus_3pct_gate",
+      "label": "Rotate at -3% or better",
+      "min_rotation_profit_pct": -0.03
+    },
+    {
+      "run_key": "minus_5pct_gate",
+      "label": "Rotate at -5% or better",
+      "min_rotation_profit_pct": -0.05
+    },
+    {
+      "run_key": "minus_10pct_gate",
+      "label": "Rotate at -10% or better",
+      "min_rotation_profit_pct": -0.1
+    }
+  ]
+}

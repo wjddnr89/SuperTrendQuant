@@ -32,4 +32,4 @@ rotation:
   hurdle:
     multiplier: 1.25
   allow_late_chase: true
-  min_rotation_profit_pct: 0.01
+  min_rotation_profit_pct: 0.0

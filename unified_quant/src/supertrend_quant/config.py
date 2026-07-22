@@ -45,7 +45,7 @@ class LeaderRotationConfig:
     max_slots: int = 1
     hurdle_atr_mult: float = 1.25
     allow_late_chase: bool = True
-    min_rotation_profit_pct: float = 0.01
+    min_rotation_profit_pct: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -320,7 +320,7 @@ def compose_split_config(
             "max_slots": max_positions,
             "hurdle_atr_mult": hurdle_raw.get("multiplier", 1.25),
             "allow_late_chase": rotation_raw.get("allow_late_chase", True),
-            "min_rotation_profit_pct": rotation_raw.get("min_rotation_profit_pct", 0.01),
+            "min_rotation_profit_pct": rotation_raw.get("min_rotation_profit_pct", 0.0),
         },
         "exit": {
             "sell_confirm_bars": _find_exit_component_value(strategy_raw, "confirm_bars", default=1),

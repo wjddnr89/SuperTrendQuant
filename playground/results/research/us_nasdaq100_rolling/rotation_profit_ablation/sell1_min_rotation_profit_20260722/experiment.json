@@ -1,0 +1,34 @@
+{
+  "completed_at": "2026-07-22T15:41:41.109763",
+  "requested_start": "2015-10-19",
+  "requested_end": "2026-07-15",
+  "fixed_params": {
+    "rs_method": "dual_momentum",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_period": 150,
+    "sell_confirm_bars": 1,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0,
+    "fee_rate": 0.001,
+    "slippage_rate": 0.0005
+  },
+  "variants": [
+    {
+      "run_key": "no_gate",
+      "label": "No profit gate",
+      "min_rotation_profit_pct": -1.0
+    },
+    {
+      "run_key": "breakeven_gate",
+      "label": "Rotate only at breakeven or better",
+      "min_rotation_profit_pct": 0.0
+    },
+    {
+      "run_key": "one_percent_gate",
+      "label": "Rotate only at +1% or better (current)",
+      "min_rotation_profit_pct": 0.01
+    }
+  ]
+}

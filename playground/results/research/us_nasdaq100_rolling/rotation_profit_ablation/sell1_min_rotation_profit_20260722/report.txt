@@ -1,0 +1,42 @@
+Canonical Min-Rotation-Profit Ablation
+Fixed: sell=1, positions=1, dual_momentum/150, hurdle=2.0, ST=10/3.0
+Universe/runner: Nasdaq-100 index_events + canonical
+
+No profit gate
+  Threshold: -100.00%
+  Return: +8760.74%
+  CAGR: +51.83%
+  MDD: -38.57%
+  Sharpe: 1.15
+  Calmar: 1.34
+  Worst year: +10.20%
+  Trades: 140
+  Rotation exits: 99 (losses=41)
+  Average rotation P&L: +3.76%
+  Worst rotation P&L: -10.92%
+
+Rotate only at breakeven or better
+  Threshold: +0.00%
+  Return: +35925.57%
+  CAGR: +73.02%
+  MDD: -41.85%
+  Sharpe: 1.39
+  Calmar: 1.74
+  Worst year: -11.25%
+  Trades: 75
+  Rotation exits: 33 (losses=1)
+  Average rotation P&L: +16.80%
+  Worst rotation P&L: -3.40%
+
+Rotate only at +1% or better (current)
+  Threshold: +1.00%
+  Return: +27877.15%
+  CAGR: +68.99%
+  MDD: -44.07%
+  Sharpe: 1.34
+  Calmar: 1.57
+  Worst year: -12.74%
+  Trades: 74
+  Rotation exits: 31 (losses=0)
+  Average rotation P&L: +18.04%
+  Worst rotation P&L: +0.72%

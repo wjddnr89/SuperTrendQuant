@@ -69,6 +69,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.scoring.type, "relative_strength")
         self.assertEqual(config.scoring.params, {"lookback_bars": 100})
         self.assertEqual(config.leader_rotation.max_slots, 1)
+        self.assertEqual(config.leader_rotation.min_rotation_profit_pct, 0.0)
         self.assertEqual(config.exit.sell_confirm_bars, 1)
         self.assertEqual(config.execution.broker, "paper")
         self.assertEqual(config.paper.state_file, "state/paper.json")

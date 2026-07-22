@@ -101,10 +101,17 @@ class LeaderRotationStrategy:
         bars: dict[str, pd.DataFrame],
         benchmark: BenchmarkInput = None,
         filter_benchmark: BenchmarkInput = None,
+        execution_bars: dict[str, pd.DataFrame] | None = None,
         universe_schedule: tuple[Mapping[str, Any], ...] = (),
     ) -> PreparedLeaderBacktest:
         market_filter_data = filter_benchmark if filter_benchmark is not None else benchmark
         prepared = self._prepare_leader_data(bars, benchmark)
+        if execution_bars:
+            for symbol, frame in prepared.items():
+                execution_frame = execution_bars.get(symbol)
+                if execution_frame is None or execution_frame.empty or "Close" not in execution_frame:
+                    continue
+                frame["ExecutionClose"] = execution_frame["Close"].reindex(frame.index)
         market_filter_trends = precompute_market_filter_trends(
             self.config,
             list(bars),
@@ -184,8 +191,11 @@ class LeaderRotationStrategy:
                     current_score = _finite_float(held_row.get("Score"))
                     hurdle = replacement["atr_pct"] * config.leader_rotation.hurdle_atr_mult
                     if current_score is not None and replacement["score"] - current_score > hurdle:
+                        execution_close = float(
+                            held_row.get("ExecutionClose", held_row["Close"])
+                        )
                         profit_pct = (
-                            (float(held_row["Close"]) - held.avg_price) / held.avg_price
+                            (execution_close - held.avg_price) / held.avg_price
                             if held.avg_price > 0
                             else 0.0
                         )
@@ -194,7 +204,11 @@ class LeaderRotationStrategy:
                 if sell_reason:
                     orders.append(sell_all(held, sell_reason))
                     sell_symbols.add(symbol)
-                    estimated_cash += _estimated_sell_proceeds(held, float(held_row["Close"]), config)
+                    estimated_cash += _estimated_sell_proceeds(
+                        held,
+                        float(held_row.get("ExecutionClose", held_row["Close"])),
+                        config,
+                    )
 
         kept_symbols = set(held_positions) - sell_symbols
         open_slots = max(0, max_positions - len(kept_symbols))
@@ -277,7 +291,7 @@ class LeaderRotationStrategy:
                 continue
             score = _finite_float(row.get("Score"))
             atr_pct = _finite_float(row.get("ATR_pct"))
-            price = _finite_float(row.get("Close"))
+            price = _finite_float(row.get("ExecutionClose", row.get("Close")))
             if score is None or atr_pct is None or price is None:
                 continue
             candidate_scores[symbol] = score

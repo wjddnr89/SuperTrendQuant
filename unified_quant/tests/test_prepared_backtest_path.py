@@ -12,6 +12,7 @@ from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, OrderPlan, 
 from supertrend_quant.research import search_configs
 from supertrend_quant.runners import IntradayStopPolicy, run_backtest_on_data
 from supertrend_quant.strategies import available_strategies, create_strategy, register_strategy
+from supertrend_quant.strategies.leader_rotation import PreparedLeaderBacktest
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -146,6 +147,60 @@ class BuyOncePreparedBacktest:
 
 
 class PreparedBacktestAcceptanceTest(unittest.TestCase):
+    def test_rotation_profit_gate_uses_raw_execution_close(self):
+        config, _ = leader_fixture()
+        config = replace(
+            config,
+            leader_rotation=replace(
+                config.leader_rotation,
+                hurdle_atr_mult=0.0,
+                min_rotation_profit_pct=0.01,
+            ),
+        )
+        strategy = create_strategy(config)
+        timestamp = pd.Timestamp("2026-01-05 10:00")
+        prepared = {
+            "AAA": pd.DataFrame(
+                {
+                    "Close": [50.0],
+                    "ExecutionClose": [110.0],
+                    "Trend": [1],
+                    "Score": [0.10],
+                    "ATR_pct": [0.01],
+                },
+                index=[timestamp],
+            ),
+            "BBB": pd.DataFrame(
+                {
+                    "Close": [25.0],
+                    "ExecutionClose": [60.0],
+                    "Trend": [1],
+                    "Score": [0.50],
+                    "ATR_pct": [0.01],
+                },
+                index=[timestamp],
+            ),
+        }
+        backtest = PreparedLeaderBacktest(
+            strategy,
+            prepared,
+            {
+                "AAA": pd.Series([1], index=[timestamp]),
+                "BBB": pd.Series([1], index=[timestamp]),
+            },
+        )
+
+        plan = backtest.build_order_plan(
+            timestamp,
+            AccountSnapshot(
+                cash=500.0,
+                positions={"AAA": Position("AAA", 5, 100.0)},
+            ),
+        )
+
+        self.assertEqual(tuple(order.side for order in plan.orders), ("sell", "buy"))
+        self.assertEqual(plan.orders[0].reason, "Leader rotation")
+
     def test_prepared_leader_matches_normal_plan_at_multiple_timestamps_and_accounts(self):
         config, market_data = leader_fixture()
         strategy = create_strategy(config)

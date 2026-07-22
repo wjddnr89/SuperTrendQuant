@@ -1,0 +1,69 @@
+Canonical Min-Rotation-Profit Ablation
+Fixed: sell=1, positions=1, dual_momentum/150, hurdle=2.0, ST=10/3.0
+Universe/runner: Nasdaq-100 index_events + canonical
+Rotation profit basis: raw signal-date close / raw average entry price
+
+Rotate at -1% or better
+  Threshold: -1.00%
+  Return: +23659.02%
+  CAGR: +66.44%
+  MDD: -40.67%
+  Sharpe: 1.28
+  Calmar: 1.63
+  Worst year: -19.57%
+  Trades: 116
+  Rotation exits: 72 (losses=10)
+  Average rotation P&L: +8.22%
+  Worst rotation P&L: -3.54%
+
+Rotate at -2% or better
+  Threshold: -2.00%
+  Return: +14856.48%
+  CAGR: +59.42%
+  MDD: -40.66%
+  Sharpe: 1.20
+  Calmar: 1.46
+  Worst year: -11.95%
+  Trades: 120
+  Rotation exits: 76 (losses=19)
+  Average rotation P&L: +6.87%
+  Worst rotation P&L: -3.54%
+
+Rotate at -3% or better
+  Threshold: -3.00%
+  Return: +17811.70%
+  CAGR: +62.12%
+  MDD: -44.64%
+  Sharpe: 1.22
+  Calmar: 1.39
+  Worst year: -13.77%
+  Trades: 128
+  Rotation exits: 85 (losses=24)
+  Average rotation P&L: +6.29%
+  Worst rotation P&L: -4.74%
+
+Rotate at -5% or better
+  Threshold: -5.00%
+  Return: +10006.56%
+  CAGR: +53.70%
+  MDD: -47.36%
+  Sharpe: 1.12
+  Calmar: 1.13
+  Worst year: -8.13%
+  Trades: 134
+  Rotation exits: 92 (losses=33)
+  Average rotation P&L: +5.01%
+  Worst rotation P&L: -5.52%
+
+Rotate at -10% or better
+  Threshold: -10.00%
+  Return: +7968.80%
+  CAGR: +50.51%
+  MDD: -38.58%
+  Sharpe: 1.08
+  Calmar: 1.31
+  Worst year: -12.50%
+  Trades: 139
+  Rotation exits: 98 (losses=40)
+  Average rotation P&L: +3.91%
+  Worst rotation P&L: -10.92%

@@ -1120,6 +1120,10 @@ def _prepare_backtest(strategy, market_data) -> PreparedBacktest | None:
         "filter_benchmark": market_data.filter_benchmark,
     }
     parameters = inspect.signature(prepare).parameters
+    if "execution_bars" in parameters:
+        kwargs["execution_bars"] = (
+            getattr(market_data, "execution_bars", None) or market_data.bars
+        )
     if "universe_schedule" in parameters or any(
         parameter.kind == inspect.Parameter.VAR_KEYWORD
         for parameter in parameters.values()

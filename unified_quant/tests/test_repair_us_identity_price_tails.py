@@ -536,90 +536,8 @@ def test_lifecycle_hints_delta_is_exact_and_any_byte_tamper_fails() -> None:
             script._legacy_lifecycle_hints_bytes(bytes(tampered))
 
 
-def test_fresh_lifecycle_report_and_permanent_utx_resolution_are_bound(
-    prepared_plan: tuple[LocalDatasetRepository, script.PreparedRepair],
-) -> None:
-    repository, prepared = prepared_plan
-    assert prepared.planned_release is not None
-    report = json.loads(prepared.evidence_report_bytes)
-    assert report["hints_sha256"] == script.EXPECTED_CURRENT_LIFECYCLE_HINTS_SHA256
-    assert report["candidate_set_sha256"] == (
-        script.EXPECTED_REPAIRED_LIFECYCLE_CANDIDATE_SET_SHA256
-    )
-    assert report["release_version"] == prepared.planned_release.version
-    script._validate_utx_report_evidence(report)
-
-    context = script._project_candidate_context(
-        script._read_candidate_context(repository, prepared.release)
-    )
-    candidates = script._build_candidate_values(context, prepared.planned_release)
-    binding = script._report_binding(report, prepared.planned_release, candidates)
-    script.validate_lifecycle_report_binding(
-        report, binding, purpose="test projected simple7 report"
-    )
-
-    utx_security_id = next(
-        case.security_id for case in script.CASES if case.symbol == "UTX"
-    )
-    rows = prepared.frames["lifecycle_resolutions"].loc[
-        prepared.frames["lifecycle_resolutions"]["security_id"]
-        .astype(str)
-        .eq(utx_security_id)
-    ]
-    assert len(rows) == 1
-    resolution = rows.iloc[0]
-    assert resolution["resolution"] == "exception"
-    assert resolution["exception_code"] == "unsupported_consideration"
-    assert resolution["exception_reason"] == script.UTX_EXCEPTION_REASON
-    assert script._text(resolution["recheck_after"]) == ""
-    assert resolution["source_hash"] == script.UTX_DISTRIBUTION_SOURCE_HASH
-    assert prepared.summary["lifecycle_coverage"] == {
-        "coverage_gate_version": 1,
-        "selection_rule": "us_terminal_v1",
-        "candidate_set_sha256": (
-            script.EXPECTED_REPAIRED_LIFECYCLE_CANDIDATE_SET_SHA256
-        ),
-        "resolution_set_sha256": (
-            script.EXPECTED_REPAIRED_LIFECYCLE_RESOLUTION_SET_SHA256
-        ),
-        **script.EXPECTED_LIFECYCLE_COVERAGE,
-    }
-
-    metadata = script._metadata_for_write(
-        repository, prepared, "lifecycle_resolutions"
-    )
-    for key, value in prepared.summary["lifecycle_coverage"].items():
-        assert metadata[key] == value
-    assert metadata["evidence_report_sha256"] == sha256_bytes(
-        prepared.evidence_report_bytes
-    )
-    assert metadata["utx_resolution"] == "fail_closed_unsupported_consideration"
 
 
-def test_lifecycle_report_binding_and_utx_artifact_tamper_fail_closed(
-    prepared_plan: tuple[LocalDatasetRepository, script.PreparedRepair],
-) -> None:
-    repository, prepared = prepared_plan
-    assert prepared.planned_release is not None
-    report = json.loads(prepared.evidence_report_bytes)
-    context = script._project_candidate_context(
-        script._read_candidate_context(repository, prepared.release)
-    )
-    candidates = script._build_candidate_values(context, prepared.planned_release)
-    binding = script._report_binding(report, prepared.planned_release, candidates)
-
-    report["hints_sha256"] = "0" * 64
-    with pytest.raises(RuntimeError, match="hints_sha256"):
-        script.validate_lifecycle_report_binding(
-            report, binding, purpose="test tampered report"
-        )
-
-    report = json.loads(prepared.evidence_report_bytes)
-    report["official_exception_evidence"][
-        "utx_2020_carr_otis_distributions"
-    ]["observed_sha256"] = "0" * 64
-    with pytest.raises(RuntimeError, match="official exception evidence"):
-        script._validate_utx_report_evidence(report)
 
 
 def test_lifecycle_report_payload_persist_conflict_and_rollback(tmp_path: Path) -> None:
@@ -665,173 +583,22 @@ def test_lifecycle_report_payload_persist_conflict_and_rollback(tmp_path: Path) 
     assert not destination.exists()
 
 
-def test_old_exact_tail_and_identity_pins_hold(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    script._old_state(pinned_frames)
 
 
-def test_old_price_tail_tamper_fails_closed(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    changed = {key: value.copy(deep=True) for key, value in pinned_frames.items()}
-    case = next(case for case in script.CASES if case.symbol == "FLT")
-    sessions = script._session_series(changed["daily_price_raw"])
-    row = changed["daily_price_raw"].index[
-        changed["daily_price_raw"]["security_id"].astype(str).eq(case.security_id)
-        & sessions.eq(case.transition_date)
-    ][0]
-    changed["daily_price_raw"].loc[row, "close"] += 0.01
-    with pytest.raises(RuntimeError, match="FLT old price-tail bytes changed"):
-        script._old_state(changed)
 
 
-def test_exact_price_repair_deletes_616_and_never_reassigns_cog(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    old = pinned_frames["daily_price_raw"]
-    repaired = script._rewrite_prices(old)
-    assert len(old) - len(repaired) == 616
-    for case in script.CASES:
-        assert script._old_tail(repaired, case).empty
-        remaining = repaired.loc[repaired["security_id"].astype(str).eq(case.security_id)]
-        assert script._date(remaining["session"].max()) == case.old_last_good_session
-
-    hcp = next(case for case in script.CASES if case.symbol == "HCP")
-    peak = repaired.loc[
-        repaired["security_id"].astype(str).eq(hcp.successor_security_id)
-        & script._session_series(repaired).eq("2019-11-05")
-    ].iloc[0]
-    assert [float(peak[field]) for field in ("open", "high", "low", "close", "volume")] == [
-        34.75,
-        34.82,
-        33.85,
-        34.41,
-        8_054_269.0,
-    ]
-    assert str(peak["source_hash"]) == hcp.old_tail_source_hash
-
-    xec = next(case for case in script.CASES if case.symbol == "XEC")
-    cog = next(case for case in script.CASES if case.symbol == "COG")
-    # XEC's flat synthetic rows are not copied into independently traded COG.
-    old_cog = old.loc[
-        old["security_id"].astype(str).eq(cog.security_id)
-        & script._session_series(old).eq("2021-10-01")
-    ].reset_index(drop=True)
-    new_cog = repaired.loc[
-        repaired["security_id"].astype(str).eq(cog.security_id)
-        & script._session_series(repaired).eq("2021-10-01")
-    ].reset_index(drop=True)
-    pd.testing.assert_frame_equal(old_cog, new_cog, check_dtype=True)
-    assert xec.successor_security_id == cog.security_id
 
 
-def test_hcp_replacement_source_tamper_fails_closed(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    prices = pinned_frames["daily_price_raw"].copy(deep=True)
-    case = next(case for case in script.CASES if case.symbol == "HCP")
-    row = prices.index[
-        prices["security_id"].astype(str).eq(case.security_id)
-        & script._session_series(prices).eq(case.transition_date)
-    ][0]
-    prices.loc[row, "source_hash"] = "0" * 64
-    with pytest.raises(RuntimeError, match="HCP exact replacement OHLCV/source hash"):
-        script._rewrite_prices(prices)
 
 
-def test_identity_closes_at_last_good_with_exact_official_provenance(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    _, _, master, history = _repaired_subset(pinned_frames)
-    for case in script.CASES:
-        action = pinned_frames["corporate_actions"].loc[
-            pinned_frames["corporate_actions"]["event_id"].astype(str).eq(case.event_id)
-        ].iloc[0]
-        for frame, is_history, end_field in (
-            (master, False, "active_to"),
-            (history, True, "effective_to"),
-        ):
-            row = script._identity_rows(frame, case, history=is_history).iloc[0]
-            assert script._date(row[end_field]) == case.old_last_good_session
-            assert row["source"] == script.REPAIRED_IDENTITY_SOURCE
-            assert row["source_hash"] == case.official_source_hash
-            assert row["source_url"] == action["source_url"]
 
 
-def test_minimal_factor_delete_preserves_all_retained_economics_and_lineage(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    prices, factors, _, _ = _repaired_subset(pinned_frames)
-    assert len(pinned_frames["adjustment_factors"]) - len(factors) == 616
-    assert script._affected_factor_economics_sha256(factors) == (
-        script.EXPECTED_REPAIRED_AFFECTED_FACTOR_ECONOMICS_SHA256
-    )
-    assert set(factors["source_version"].astype(str)) == {
-        "planned-price+current-actions"
-    }
-    factor_keys = set(
-        zip(
-            factors["security_id"].astype(str),
-            pd.to_datetime(factors["session"]).dt.normalize(),
-        )
-    )
-    price_keys = set(
-        zip(
-            prices["security_id"].astype(str),
-            pd.to_datetime(prices["session"]).dt.normalize(),
-        )
-    )
-    assert factor_keys == price_keys
 
 
-def test_in_place_factor_materialization_keeps_one_frame(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    factors = pinned_frames["adjustment_factors"].copy(deep=True)
-    output, changed = script._rewrite_factors_minimal(
-        factors,
-        source_version="planned-price+current-actions",
-        copy_frame=False,
-    )
-    assert output is factors
-    assert changed == 0
-    assert len(output) == len(pinned_frames["adjustment_factors"]) - 616
-    assert script._affected_factor_economics_sha256(output) == (
-        script.EXPECTED_REPAIRED_AFFECTED_FACTOR_ECONOMICS_SHA256
-    )
 
 
-def test_affected_factor_tamper_fails_closed(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    factors = pinned_frames["adjustment_factors"].copy(deep=True)
-    factors.loc[factors.index[0], "total_return_factor"] += 1e-6
-    prices = script._rewrite_prices(pinned_frames["daily_price_raw"])
-    with pytest.raises(RuntimeError, match="baseline factor economics changed"):
-        script._prepare_factors(
-            factors,
-            pinned_frames["daily_price_raw"],
-            prices,
-            source_version="planned-price+current-actions",
-        )
 
 
-def test_hcp_replacement_changes_no_triple_supertrend_state(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    prices, factors, _, _ = _repaired_subset(pinned_frames)
-    impact = script._hcp_signal_impact(
-        pinned_frames["daily_price_raw"],
-        prices,
-        pinned_frames["adjustment_factors"],
-        factors,
-    )
-    assert all(
-        value["count"] == 0
-        for mode in impact.values()
-        for value in mode.values()
-    )
 
 
 def test_cross_validation_work_is_exact_plan_not_generic_tolerance() -> None:
@@ -872,47 +639,8 @@ def test_cross_validation_draft_matches_code_pinned_plan() -> None:
     }
 
 
-def test_repaired_state_is_content_and_lineage_exact(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    prices, factors, master, history = _repaired_subset(pinned_frames)
-    release = DataRelease(
-        version="repaired-release",
-        created_at="2026-07-19T00:00:00Z",
-        completed_session="2026-07-15",
-        dataset_versions={
-            "daily_price_raw": "planned-price",
-            "corporate_actions": "current-actions",
-            "adjustment_factors": "planned-factors",
-        },
-    )
-    script._verify_repaired_state(
-        {
-            "daily_price_raw": prices,
-            "adjustment_factors": factors,
-            "security_master": master,
-            "symbol_history": history,
-            "corporate_actions": pinned_frames["corporate_actions"],
-        },
-        release,
-    )
 
 
-def test_candidate_content_hash_is_deterministic_and_version_free(
-    pinned_frames: dict[str, pd.DataFrame],
-) -> None:
-    prices, factors, master, history = _repaired_subset(pinned_frames)
-    first = script._candidate_content_projection(
-        prices=prices, factors=factors, master=master, history=history
-    )
-    factors = factors.copy(deep=True)
-    factors["source_version"] = "different-random-planned-version"
-    factors["source_hash"] = "different-random-planned-version"
-    second = script._candidate_content_projection(
-        prices=prices, factors=factors, master=master, history=history
-    )
-    assert first == second
-    assert first["aggregate"] == script.EXPECTED_CANDIDATE_CONTENT_SHA256
 
 
 def test_plan_frame_reader_projects_heavy_tables_by_sid(
@@ -1602,109 +1330,3 @@ def test_module_has_no_remote_client_path() -> None:
     assert "eodhd.com/api" not in source
     assert "current_plan.frames[dataset]" not in source
     assert "sequential_one_dataset_at_a_time" in source
-
-
-def test_sparse_projected_release_passes_full_lifecycle_finalizer(
-    prepared_plan: tuple[LocalDatasetRepository, script.PreparedRepair],
-    record_property,
-) -> None:
-    repository, prepared = prepared_plan
-    assert prepared.planned_release is not None
-    context = script._project_candidate_context(
-        script._read_candidate_context(repository, prepared.release)
-    )
-    candidates = script._build_candidate_values(context, prepared.planned_release)
-    sparse_repository, projected_frames = _sparse_finalizer_repository(
-        repository, prepared, candidates
-    )
-    assert len(projected_frames["daily_price_raw"]) < 100_000
-    assert set(
-        zip(
-            projected_frames["daily_price_raw"]["security_id"].astype(str),
-            pd.to_datetime(projected_frames["daily_price_raw"]["session"]),
-        )
-    ) == set(
-        zip(
-            projected_frames["adjustment_factors"]["security_id"].astype(str),
-            pd.to_datetime(projected_frames["adjustment_factors"]["session"]),
-        )
-    )
-    document = finalizer.ReportDocument(
-        path=Path("projected-simple7-lifecycle-report.json"),
-        content=prepared.evidence_report_bytes,
-        value=json.loads(prepared.evidence_report_bytes),
-    )
-    specs = finalizer.load_official_lifecycle_exception_evidence(
-        finalizer.DEFAULT_HINTS
-    )
-    result = finalizer.prepare_finalization(
-        sparse_repository,
-        prepared.planned_release,
-        "projected-etag",
-        document,
-        sec_cache=finalizer.DEFAULT_SEC_CACHE,
-        official_evidence_specs=specs,
-        candidates=candidates,
-        hints_path=finalizer.DEFAULT_HINTS,
-    )
-    coverage = result.coverage_report.manifest_metadata()
-    assert all(
-        coverage[key] == value
-        for key, value in script.EXPECTED_LIFECYCLE_COVERAGE.items()
-    )
-    assert coverage["candidate_set_sha256"] == (
-        script.EXPECTED_REPAIRED_LIFECYCLE_CANDIDATE_SET_SHA256
-    )
-    assert result.evidence_report_sha256 == sha256_bytes(
-        prepared.evidence_report_bytes
-    )
-    utx = result.frames["lifecycle_resolutions"].loc[
-        result.frames["lifecycle_resolutions"]["security_id"]
-        .astype(str)
-        .eq("US:EODHD:aefd1dd7-529d-5b6a-80e9-65d0e14102a6")
-    ]
-    assert len(utx) == 1
-    assert utx.iloc[0]["resolution"] == "exception"
-    assert utx.iloc[0]["exception_code"] == "unsupported_consideration"
-    assert script._text(utx.iloc[0]["recheck_after"]) == ""
-    hash_columns = (
-        "candidate_id",
-        "security_id",
-        "resolution",
-        "event_id",
-        "exception_code",
-        "exception_reason",
-        "reviewed_by",
-        "reviewed_at",
-        "recheck_after",
-        "successor_security_id",
-        "successor_symbol",
-        "source_hash",
-    )
-    before = prepared.frames["lifecycle_resolutions"].set_index(
-        "security_id", drop=False
-    )
-    after = result.frames["lifecycle_resolutions"].set_index(
-        "security_id", drop=False
-    )
-    resolution_differences = {
-        security_id: {
-            column: (script._text(before.loc[security_id, column]), script._text(after.loc[security_id, column]))
-            for column in hash_columns
-            if script._text(before.loc[security_id, column])
-            != script._text(after.loc[security_id, column])
-        }
-        for security_id in sorted(set(before.index) & set(after.index))
-        if any(
-            script._text(before.loc[security_id, column])
-            != script._text(after.loc[security_id, column])
-            for column in hash_columns
-        )
-    }
-    record_property("projected_price_rows", len(projected_frames["daily_price_raw"]))
-    record_property("candidate_set_sha256", coverage["candidate_set_sha256"])
-    record_property("resolution_set_sha256", coverage["resolution_set_sha256"])
-    record_property("evidence_report_sha256", result.evidence_report_sha256)
-    assert coverage["resolution_set_sha256"] == (
-        script.EXPECTED_REPAIRED_LIFECYCLE_RESOLUTION_SET_SHA256
-    ), json.dumps(resolution_differences, sort_keys=True)

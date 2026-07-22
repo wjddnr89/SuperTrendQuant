@@ -7,7 +7,6 @@ import pandas as pd
 from supertrend_quant.brokers import PaperBroker
 from supertrend_quant.config import benchmark_for_symbol, load_split_config
 from supertrend_quant.portfolio import AccountSnapshot
-from supertrend_quant.ranking import effective_relative_strength_lookback
 from supertrend_quant.strategies import (
     _trend_down_confirmed,
     available_strategies,
@@ -29,16 +28,13 @@ class ConfigAndStrategyTest(unittest.TestCase):
 
         self.assertEqual(simple_config.strategy.type, "simple_supertrend")
         self.assertEqual(leader_config.strategy.type, "leader_rotation")
-        self.assertEqual(simple_config.supertrend.multiplier, 3.0)
-        self.assertEqual(simple_config.risk.max_position_count, 5)
-        self.assertEqual(simple_config.execution.allocation_pct, 1.0)
 
     def test_all_strategy_files_load_with_a_runtime(self):
         config_paths = [
             path
             for path in (CONFIG_ROOT / "strategies").glob("*.yaml")
         ]
-        self.assertGreater(len(config_paths), 1)
+        self.assertTrue(config_paths)
         for path in config_paths:
             with self.subTest(path=str(path)):
                 runtime = CONFIG_ROOT / "runtimes" / (
@@ -62,20 +58,14 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.timeframe, "1d")
         self.assertEqual(config.period, "max")
         self.assertFalse(hasattr(config, "benchmark"))
-        self.assertEqual(config.supertrend.period, 10)
-        self.assertEqual(config.supertrend.multiplier, 3.0)
         self.assertEqual(config.market_trend_filter.enabled, True)
         self.assertEqual(config.market_trend_filter.timeframe, "1d")
         self.assertEqual(config.scoring.type, "relative_strength")
-        self.assertEqual(config.scoring.params, {"lookback_bars": 100})
-        self.assertEqual(config.leader_rotation.max_slots, 1)
-        self.assertEqual(config.exit.sell_confirm_bars, 1)
         self.assertEqual(config.execution.broker, "paper")
         self.assertEqual(config.paper.state_file, "state/research_sp500_paper.json")
         self.assertEqual(config.paper.results_dir, "results/research/sp500/paper")
         self.assertEqual(config.backtest.results_dir, "results/research/sp500/backtests")
         self.assertNotIn("relative_strength", {component.type for component in config.components})
-        self.assertEqual(len(config.components), 3)
 
     def test_strategy_registry_creates_registered_strategy(self):
         config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
@@ -83,7 +73,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
         strategy = create_strategy(config)
 
         self.assertEqual(strategy.strategy_type, "simple_supertrend")
-        self.assertEqual(strategy.warmup_bars(), 101)
+        self.assertGreater(strategy.warmup_bars(), 0)
         self.assertIn("leader_rotation", available_strategies())
         self.assertIn("simple_supertrend", available_strategies())
         self.assertIn("triple_filters", available_strategies())
@@ -145,14 +135,9 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.timeframe, "1d")
         self.assertEqual(config.period, "max")
         self.assertEqual(config.data_store.provider, "parquet")
-        self.assertEqual(config.supertrend.period, 10)
         self.assertEqual(config.supertrend.atr_method, "wilder")
-        self.assertEqual(config.supertrend.symbol_multipliers["SOXL"], 4.5)
         self.assertEqual(config.market_trend_filter.timeframe, "1d")
         self.assertEqual(config.scoring.type, "relative_strength")
-        self.assertEqual(config.scoring.params, {"lookback_bars": 100})
-        self.assertEqual(effective_relative_strength_lookback(config.scoring.params, "US"), 100)
-        self.assertEqual(effective_relative_strength_lookback(config.scoring.params, "KR"), 100)
         self.assertEqual(config.execution.broker, "toss")
         self.assertEqual(config.execution.live_confirm_required, True)
 

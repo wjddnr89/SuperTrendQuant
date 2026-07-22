@@ -68,6 +68,15 @@ def _small_post_symc_contract(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(script, "EXPECTED_ACTION_ROWS_AFTER", 2)
     monkeypatch.setattr(script, "EXPECTED_LIFECYCLE_COVERAGE", empty_coverage)
     monkeypatch.setattr(script, "_candidate_values", lambda *_: ())
+    monkeypatch.setattr(
+        script,
+        "_verify_triple_supertrend_preflight",
+        lambda: {
+            "summary_sha256": "fixture",
+            "event_window_position_count": 0,
+            "expected_existing_run_equity_effect": "none",
+        },
+    )
 
 
 def _source_fields(source_hash: str = "a" * 64) -> dict[str, object]:

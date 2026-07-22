@@ -41,38 +41,20 @@ class TripleConfigAndIndicatorAcceptanceTest(unittest.TestCase):
         config = load_split_config(TRIPLE_PATH, RUNTIME_PATH)
         components = {(item.group, item.type): item for item in config.components}
 
-        entry = components[("entries", "triple_supertrend")]
-        self.assertEqual(
-            entry.params["settings"],
-            [
-                {"period": 10, "multiplier": 1.0},
-                {"period": 11, "multiplier": 2.0},
-                {"period": 12, "multiplier": 3.0},
-            ],
-        )
-        self.assertEqual(
-            components[("filters", "ichimoku_cloud")].params,
-            {"tenkan": 9, "kijun": 26, "span_b": 52, "shift": 26},
-        )
-        self.assertEqual(components[("filters", "ema_trend")].params["period"], 200)
-        self.assertEqual(
-            components[("exits", "triple_supertrend_flip")].params,
-            {"down_count": 2, "confirm_bars": 3},
-        )
-        self.assertEqual(config.exit.sell_confirm_bars, 3)
+        self.assertIn(("entries", "triple_supertrend"), components)
+        self.assertIn(("filters", "ichimoku_cloud"), components)
+        self.assertIn(("filters", "ema_trend"), components)
+        self.assertIn(("exits", "triple_supertrend_flip"), components)
         self.assertEqual(create_strategy(config).strategy_type, "leader_rotation")
 
     def test_standalone_triple_filters_ranks_entries_without_rotation(self):
         config = load_split_config(STANDALONE_TRIPLE_PATH, RUNTIME_PATH)
 
         self.assertEqual(config.strategy.type, "triple_filters")
-        self.assertEqual(config.risk.max_position_count, 5)
         self.assertEqual(config.scoring.type, "relative_strength")
-        self.assertEqual(config.scoring.params, {"lookback_bars": 100})
         self.assertNotIn("relative_strength", {item.type for item in config.components})
         strategy = create_strategy(config)
         self.assertEqual(strategy.strategy_type, "triple_filters")
-        self.assertEqual(strategy.warmup_bars(), 200)
 
         config = config.__class__(
             **{

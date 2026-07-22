@@ -1,4 +1,4 @@
-name: research_us
+name: research_sp500
 market: US
 universe:
   source: index_events
@@ -26,10 +26,10 @@ execution:
   live_confirm_required: true
 
 paper:
-  state_file: state/research_us_paper.json
-  results_dir: results/research/us/paper
+  state_file: state/research_sp500_paper.json
+  results_dir: results/research/sp500/paper
   loop_interval_seconds: 60
   run_once_per_candle: true
 
 backtest:
-  results_dir: results/research/us/backtests
+  results_dir: results/research/sp500/backtests

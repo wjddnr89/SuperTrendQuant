@@ -214,7 +214,9 @@ class StrategyComparisonTest(unittest.TestCase):
             )
             self.assertTrue((run_dir / "comparison.csv").exists())
             self.assertTrue((run_dir / "summary.json").exists())
+            self.assertTrue((run_dir / "report.html").exists())
             self.assertTrue((run_dir / "strategies" / "001_only" / "summary.json").exists())
+            self.assertFalse((run_dir / "strategies" / "001_only" / "report.html").exists())
             summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["winner"]["strategy_name"], "only")
             self.assertEqual(summary["rank_by"], "composite")
@@ -230,6 +232,18 @@ class StrategyComparisonTest(unittest.TestCase):
                 cli.compare_strategies_main()
             save_result.assert_not_called()
             self.assertIn("Best strategy: only", output.getvalue())
+
+            with patch(
+                "sys.argv", ["quant-compare-strategies", "--no-report"]
+            ), patch.object(
+                research, "compare_strategies", return_value=result
+            ), patch.object(
+                research, "format_comparison_table", return_value="comparison table"
+            ), patch.object(
+                research, "save_comparison_result", return_value=Path("saved")
+            ) as save_result:
+                cli.compare_strategies_main()
+            self.assertFalse(save_result.call_args.kwargs["generate_report"])
 
 
 if __name__ == "__main__":

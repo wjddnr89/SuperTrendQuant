@@ -3,7 +3,6 @@ from __future__ import annotations
 from bisect import bisect_right
 from collections.abc import Mapping
 import inspect
-import math
 import re
 from dataclasses import dataclass, field, replace
 
@@ -15,14 +14,29 @@ from .data import market_index
 from .metrics import calculate_metrics, format_float, format_pct
 from .ledger import PortfolioLedger
 from .market_store.provider import ensure_configured_data_ready, load_configured_market_data
-from .portfolio import OrderPlan, Position, estimate_quantity
+from .portfolio import (
+    AccountSnapshot,
+    OrderIntent,
+    OrderPlan,
+    Position,
+    PositionEconomics,
+    estimate_quantity,
+    mark_position_economics,
+)
 from .strategies import build_order_plan, create_strategy
 from .strategies.base import PreparedBacktest
 from .strategies.common import active_universe_symbols
 from .universe import resolve_universe
 
 
-_PREPARED_BACKTEST_UNSET = object()
+@dataclass(frozen=True)
+class BacktestArtifacts:
+    fills: tuple[dict[str, object], ...] = field(default_factory=tuple)
+    portfolio: tuple[dict[str, object], ...] = field(default_factory=tuple)
+    positions: tuple[dict[str, object], ...] = field(default_factory=tuple)
+    benchmarks: dict[str, pd.Series] = field(default_factory=dict)
+    chart_frames: dict[str, pd.DataFrame] = field(default_factory=dict)
+    warnings: tuple[str, ...] = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)
@@ -42,24 +56,11 @@ class BacktestResult:
     dividend_tax_rate: float = 0.0
     corporate_action_cash: float = 0.0
     unresolved_corporate_action_ids: tuple[str, ...] = field(default_factory=tuple)
+    artifacts: BacktestArtifacts = field(default_factory=BacktestArtifacts)
 
     @property
     def validated_session(self) -> str:
         return self.completed_session
-
-
-@dataclass(frozen=True)
-class IntradayStopPolicy:
-    """Prior-session signal levels executed against the next raw OHLC bar."""
-
-    signal_levels: Mapping[str, pd.Series]
-    catastrophe_loss_pct: float | None = None
-
-    def __post_init__(self) -> None:
-        if self.catastrophe_loss_pct is not None and not (
-            0.0 < float(self.catastrophe_loss_pct) < 1.0
-        ):
-            raise ValueError("catastrophe_loss_pct must be between 0 and 1.")
 
 
 @dataclass(frozen=True)
@@ -91,7 +92,7 @@ def run_backtest(config: AppConfig) -> BacktestResult:
         symbols,
         resolved_universe=resolved,
     )
-    return run_backtest_on_data(config, market_data)
+    return run_backtest_on_data(config, market_data, capture_artifacts=True)
 
 
 def _configured_completed_session(config: AppConfig) -> str:
@@ -132,8 +133,7 @@ def run_backtest_on_data(
     market_data,
     run_index: pd.Index | None = None,
     *,
-    prepared_backtest: PreparedBacktest | None | object = _PREPARED_BACKTEST_UNSET,
-    intraday_stop_policy: IntradayStopPolicy | None = None,
+    capture_artifacts: bool = False,
 ) -> BacktestResult:
     """Run the canonical strategy/order path against already loaded market data.
 
@@ -182,6 +182,47 @@ def run_backtest_on_data(
     equity_points: list[tuple[pd.Timestamp, float]] = []
     trade_returns: list[float] = []
     trade_records: list[dict[str, object]] = []
+    fills: list[dict[str, object]] = []
+    portfolio_records: list[dict[str, object]] = []
+    position_records: list[dict[str, object]] = []
+
+    def record_account(timestamp) -> None:
+        if not capture_artifacts:
+            return
+        positions_value = 0.0
+        for symbol, position in ledger.positions.items():
+            mark_price = _close_on(execution_bars.get(symbol), timestamp)
+            if mark_price is None:
+                raise RuntimeError(
+                    "Held position has no price for portfolio reporting: "
+                    f"{symbol}/{pd.Timestamp(timestamp).date()}"
+                )
+            market_value = position.quantity * mark_price
+            positions_value += market_value
+            position_records.append(
+                {
+                    "timestamp": timestamp,
+                    "symbol": symbol,
+                    "identity_segment": _identity_segment_on(
+                        market_data.bars.get(symbol), timestamp
+                    ),
+                    "quantity": position.quantity,
+                    "avg_price": position.avg_price,
+                    "mark_price": mark_price,
+                    "market_value": market_value,
+                }
+            )
+        equity = ledger.cash + ledger.receivable_value + positions_value
+        portfolio_records.append(
+            {
+                "timestamp": timestamp,
+                "cash": ledger.cash,
+                "receivables": ledger.receivable_value,
+                "positions_value": positions_value,
+                "equity": equity,
+                "position_count": len(ledger.positions),
+            }
+        )
 
     def apply_actions_before_open(timestamp) -> dict[str, _PreOpenOrderTransition]:
         nonlocal action_cursor, corporate_action_cash
@@ -314,9 +355,8 @@ def run_backtest_on_data(
                     quantity * held_before.avg_price,
                 )
                 distributions = entry_distributions.pop(event.symbol, 0.0)
-                economic_proceeds = (
-                    event.accrual_delta or event.cash_delta
-                ) + distributions
+                settlement_proceeds = event.accrual_delta or event.cash_delta
+                economic_proceeds = settlement_proceeds + distributions
                 pnl_pct = (
                     economic_proceeds / entry_value - 1.0
                     if entry_value
@@ -325,6 +365,7 @@ def run_backtest_on_data(
                 trade_returns.append(pnl_pct)
                 trade_records.append(
                     {
+                        "trade_id": len(trade_records) + 1,
                         "symbol": event.symbol,
                         "entry_time": entry_times.pop(event.symbol, None),
                         "exit_time": cutoff,
@@ -336,6 +377,9 @@ def run_backtest_on_data(
                         ),
                         "quantity": quantity,
                         "corporate_action_cash": distributions,
+                        "entry_cost": entry_value,
+                        "exit_proceeds": settlement_proceeds,
+                        "pnl_cash": economic_proceeds - entry_value,
                         "pnl_pct": pnl_pct,
                         "exit_reason": (
                             "CashMerger"
@@ -345,6 +389,37 @@ def run_backtest_on_data(
                         "corporate_action_event_id": event.event_id,
                     }
                 )
+                if capture_artifacts:
+                    settlement_price = (
+                        (event.accrual_delta or event.cash_delta) / quantity
+                        if quantity
+                        else 0.0
+                    )
+                    fills.append(
+                        {
+                            "timestamp": pd.Timestamp(timestamp),
+                            "signal_timestamp": None,
+                            "symbol": event.symbol,
+                            "identity_segment": _identity_segment_on(
+                                market_data.bars.get(event.symbol), timestamp
+                            ),
+                            "side": "sell",
+                            "event_type": "corporate_action",
+                            "quantity": quantity,
+                            "raw_price": settlement_price,
+                            "fill_price": settlement_price,
+                            "gross_value": event.accrual_delta or event.cash_delta,
+                            "fee": 0.0,
+                            "slippage": 0.0,
+                            "net_cash_flow": event.accrual_delta or event.cash_delta,
+                            "reason": (
+                                "CashMerger"
+                                if event.action_type == "cash_merger"
+                                else "Delisting"
+                            ),
+                            "corporate_action_event_id": event.event_id,
+                        }
+                    )
 
         # Settle cash receivables even on sessions with no newly effective
         # actions.  Applying each due action separately below lets us measure
@@ -454,26 +529,41 @@ def run_backtest_on_data(
     idx = idx.intersection(eligible, sort=False)
     if len(idx) < 2:
         raise RuntimeError("Not enough bars remain after strategy warm-up.")
-    if prepared_backtest is _PREPARED_BACKTEST_UNSET:
-        prepared_backtest = _prepare_backtest(strategy, market_data)
-    elif prepared_backtest is not None and not callable(
-        getattr(prepared_backtest, "build_order_plan", None)
-    ):
-        raise TypeError("prepared_backtest must provide build_order_plan().")
+    prepared_backtest = _prepare_backtest(strategy, market_data)
     apply_actions_before_open(idx[0])
 
     for i in range(0, len(idx) - 1):
         signal_ts = idx[i]
         exec_ts = idx[i + 1]
         positions = ledger.positions
-        equity_points.append(
-            (
-                signal_ts,
-                _portfolio_value(ledger.cash, positions, execution_bars, signal_ts)
-                + ledger.receivable_value,
-            )
+        equity_value = (
+            _portfolio_value(ledger.cash, positions, execution_bars, signal_ts)
+            + ledger.receivable_value
         )
-        account = ledger.snapshot()
+        equity_points.append((signal_ts, equity_value))
+        record_account(signal_ts)
+        raw_marks = {
+            symbol: mark
+            for symbol in ledger.positions
+            if (mark := _close_on(execution_bars.get(symbol), signal_ts)) is not None
+        }
+        account = mark_position_economics(
+            AccountSnapshot(
+                cash=ledger.cash,
+                positions=dict(ledger.positions),
+                position_economics={
+                    symbol: PositionEconomics(
+                        entry_cost=entry_values[symbol],
+                        distributions=entry_distributions.get(symbol, 0.0),
+                    )
+                    for symbol in ledger.positions
+                    if symbol in entry_values
+                },
+            ),
+            raw_marks,
+            fee_rate=config.costs.fee_rate,
+            slippage_rate=config.costs.slippage_rate,
+        )
         if prepared_backtest is not None:
             plan = prepared_backtest.build_order_plan(signal_ts, account, mode="backtest")
         else:
@@ -499,8 +589,24 @@ def run_backtest_on_data(
         # receive the distribution, while an ex-date-open seller must.
         symbol_transitions = apply_actions_before_open(exec_ts)
         positions = ledger.positions
+        filled_sell_symbols: set[str] = set()
+        cash_allocation_base: float | None = None
         for planned_order in plan.orders:
             order = planned_order
+            if order.required_sell_symbols:
+                resolved_dependencies: list[str] = []
+                for required_symbol in order.required_sell_symbols:
+                    required_transition = symbol_transitions.get(required_symbol)
+                    if required_transition is None:
+                        resolved_dependencies.append(required_symbol)
+                    elif required_transition.successor_symbol is not None:
+                        resolved_dependencies.append(required_transition.successor_symbol)
+                    else:
+                        resolved_dependencies.append(required_symbol)
+                order = replace(
+                    order,
+                    required_sell_symbols=tuple(sorted(set(resolved_dependencies))),
+                )
             if order.side.lower() == "buy" and _buy_crosses_identity_boundary(
                 order.symbol,
                 signal_ts,
@@ -535,9 +641,13 @@ def run_backtest_on_data(
                 order = replace(
                     order,
                     symbol=successor,
-                    quantity=order.quantity * quantity_ratio,
+                    quantity=(
+                        order.quantity * quantity_ratio
+                        if order.quantity is not None
+                        else None
+                    ),
                 )
-                if order.quantity <= 0:
+                if order.quantity is not None and order.quantity <= 0:
                     continue
             if order.side.lower() == "buy" and _retired_symbol_blocks_buy(
                 retired_symbols,
@@ -561,18 +671,10 @@ def run_backtest_on_data(
                 continue
             raw_price = float(df.loc[exec_ts, "Open"])
             if order.side.lower() == "buy":
-                if intraday_stop_policy is not None:
-                    entry_stop = _raw_intraday_stop_level(
-                        intraday_stop_policy,
-                        symbol=order.symbol,
-                        signal_ts=signal_ts,
-                        exec_ts=exec_ts,
-                        avg_price=0.0,
-                        signal_bars=market_data.bars.get(order.symbol),
-                        execution_bars=execution_bars.get(order.symbol),
-                    )
-                    if entry_stop is not None and raw_price <= entry_stop:
-                        continue
+                if order.required_sell_symbols and not set(
+                    order.required_sell_symbols
+                ).issubset(filled_sell_symbols):
+                    continue
                 affordable_quantity = estimate_quantity(
                     ledger.cash,
                     raw_price,
@@ -580,7 +682,21 @@ def run_backtest_on_data(
                     fee_rate=config.costs.fee_rate,
                     slippage_rate=config.costs.slippage_rate,
                 )
-                quantity = min(order.quantity, affordable_quantity)
+                if order.cash_allocation_pct is not None:
+                    if cash_allocation_base is None:
+                        cash_allocation_base = ledger.cash
+                    target_quantity = estimate_quantity(
+                        cash_allocation_base,
+                        raw_price,
+                        order.cash_allocation_pct,
+                        fee_rate=config.costs.fee_rate,
+                        slippage_rate=config.costs.slippage_rate,
+                    )
+                    quantity = min(target_quantity, affordable_quantity)
+                else:
+                    if order.quantity is None:
+                        continue
+                    quantity = min(order.quantity, affordable_quantity)
                 if quantity <= 0:
                     continue
                 fill = raw_price * (1.0 + config.costs.slippage_rate)
@@ -590,14 +706,38 @@ def run_backtest_on_data(
                     entry_values[order.symbol] = cost
                     entry_times[order.symbol] = exec_ts
                     entry_distributions[order.symbol] = 0.0
+                    if capture_artifacts:
+                        gross_value = quantity * fill
+                        fills.append(
+                            {
+                                "timestamp": exec_ts,
+                                "signal_timestamp": signal_ts,
+                                "symbol": order.symbol,
+                                "identity_segment": _identity_segment_on(
+                                    market_data.bars.get(order.symbol), exec_ts
+                                ),
+                                "side": "buy",
+                                "event_type": "trade",
+                                "quantity": quantity,
+                                "raw_price": raw_price,
+                                "fill_price": fill,
+                                "gross_value": gross_value,
+                                "fee": cost - gross_value,
+                                "slippage": abs(fill - raw_price) * quantity,
+                                "net_cash_flow": -cost,
+                                "reason": order.reason,
+                                "corporate_action_event_id": "",
+                            }
+                        )
             else:
                 position = positions.get(order.symbol)
-                if not position:
+                if not position or order.quantity is None:
                     continue
                 qty = min(position.quantity, order.quantity)
                 fill = raw_price * (1.0 - config.costs.slippage_rate)
                 proceeds = qty * fill * (1.0 - config.costs.fee_rate)
                 ledger.sell(order.symbol, qty, proceeds)
+                filled_sell_symbols.add(order.symbol)
                 entry_value = entry_values.pop(order.symbol, qty * position.avg_price)
                 distributions = entry_distributions.pop(order.symbol, 0.0)
                 economic_proceeds = proceeds + distributions
@@ -605,6 +745,7 @@ def run_backtest_on_data(
                 trade_returns.append(pnl_pct)
                 trade_records.append(
                     {
+                        "trade_id": len(trade_records) + 1,
                         "symbol": order.symbol,
                         "entry_time": entry_times.pop(order.symbol, None),
                         "exit_time": exec_ts,
@@ -612,65 +753,36 @@ def run_backtest_on_data(
                         "exit_price": fill,
                         "quantity": qty,
                         "corporate_action_cash": distributions,
+                        "entry_cost": entry_value,
+                        "exit_proceeds": proceeds,
+                        "pnl_cash": economic_proceeds - entry_value,
                         "pnl_pct": pnl_pct,
                         "exit_reason": order.reason,
                     }
                 )
-
-        if intraday_stop_policy is not None:
-            for symbol, position in list(ledger.positions.items()):
-                stop_level = _raw_intraday_stop_level(
-                    intraday_stop_policy,
-                    symbol=symbol,
-                    signal_ts=signal_ts,
-                    exec_ts=exec_ts,
-                    avg_price=position.avg_price,
-                    signal_bars=market_data.bars.get(symbol),
-                    execution_bars=execution_bars.get(symbol),
-                )
-                if stop_level is None:
-                    continue
-                execution_frame = execution_bars.get(symbol)
-                if execution_frame is None or exec_ts not in execution_frame.index:
-                    continue
-                execution_row = execution_frame.loc[exec_ts]
-                raw_open = float(execution_row["Open"])
-                raw_low = float(execution_row["Low"])
-                if raw_open <= stop_level:
-                    trigger = "gap_open"
-                    raw_fill = raw_open
-                elif raw_low <= stop_level:
-                    trigger = "intraday"
-                    raw_fill = stop_level
-                else:
-                    continue
-
-                fill = raw_fill * (1.0 - config.costs.slippage_rate)
-                proceeds = position.quantity * fill * (1.0 - config.costs.fee_rate)
-                ledger.sell(symbol, position.quantity, proceeds)
-                entry_value = entry_values.pop(
-                    symbol,
-                    position.quantity * position.avg_price,
-                )
-                distributions = entry_distributions.pop(symbol, 0.0)
-                economic_proceeds = proceeds + distributions
-                pnl_pct = economic_proceeds / entry_value - 1.0 if entry_value else 0.0
-                trade_returns.append(pnl_pct)
-                trade_records.append(
-                    {
-                        "symbol": symbol,
-                        "entry_time": entry_times.pop(symbol, None),
-                        "exit_time": exec_ts,
-                        "entry_price": position.avg_price,
-                        "exit_price": fill,
-                        "quantity": position.quantity,
-                        "corporate_action_cash": distributions,
-                        "pnl_pct": pnl_pct,
-                        "exit_reason": "Intraday protective stop",
-                        "stop_level": stop_level,
-                        "stop_trigger": trigger,
-                    }
-                )
+                if capture_artifacts:
+                    gross_value = qty * fill
+                    fills.append(
+                        {
+                            "timestamp": exec_ts,
+                            "signal_timestamp": signal_ts,
+                            "symbol": order.symbol,
+                            "identity_segment": _identity_segment_on(
+                                market_data.bars.get(order.symbol), exec_ts
+                            ),
+                            "side": "sell",
+                            "event_type": "trade",
+                            "quantity": qty,
+                            "raw_price": raw_price,
+                            "fill_price": fill,
+                            "gross_value": gross_value,
+                            "fee": gross_value - proceeds,
+                            "slippage": abs(fill - raw_price) * qty,
+                            "net_cash_flow": proceeds,
+                            "reason": order.reason,
+                            "corporate_action_event_id": "",
+                        }
+                    )
 
     positions = ledger.positions
     if positions:
@@ -692,6 +804,7 @@ def run_backtest_on_data(
             trade_returns.append(pnl_pct)
             trade_records.append(
                 {
+                    "trade_id": len(trade_records) + 1,
                     "symbol": symbol,
                     "entry_time": entry_times.pop(symbol, None),
                     "exit_time": final_ts,
@@ -699,10 +812,36 @@ def run_backtest_on_data(
                     "exit_price": final_price,
                     "quantity": position.quantity,
                     "corporate_action_cash": distributions,
+                    "entry_cost": entry_value,
+                    "exit_proceeds": proceeds,
+                    "pnl_cash": economic_proceeds - entry_value,
                     "pnl_pct": pnl_pct,
                     "exit_reason": "FinalClose",
                 }
             )
+            if capture_artifacts:
+                gross_value = position.quantity * final_price
+                fills.append(
+                    {
+                        "timestamp": final_ts,
+                        "signal_timestamp": final_ts,
+                        "symbol": symbol,
+                        "identity_segment": _identity_segment_on(
+                            market_data.bars.get(symbol), final_ts
+                        ),
+                        "side": "sell",
+                        "event_type": "final_close",
+                        "quantity": position.quantity,
+                        "raw_price": final_close,
+                        "fill_price": final_price,
+                        "gross_value": gross_value,
+                        "fee": gross_value - proceeds,
+                        "slippage": abs(final_price - final_close) * position.quantity,
+                        "net_cash_flow": proceeds,
+                        "reason": "FinalClose",
+                        "corporate_action_event_id": "",
+                    }
+                )
 
     equity_points.append(
         (
@@ -711,8 +850,22 @@ def run_backtest_on_data(
             + ledger.receivable_value,
         )
     )
+    record_account(idx[-1])
 
     equity = pd.Series([point[1] for point in equity_points], index=[point[0] for point in equity_points], name="equity")
+    if capture_artifacts:
+        _enrich_trade_durations(trade_records)
+        artifacts = _build_backtest_artifacts(
+            config,
+            market_data,
+            idx,
+            prepared_backtest,
+            fills,
+            portfolio_records,
+            position_records,
+        )
+    else:
+        artifacts = BacktestArtifacts()
     unresolved_warnings = (
         (
             "Unresolved corporate actions were left unapplied: "
@@ -742,43 +895,142 @@ def run_backtest_on_data(
         dividend_tax_rate=config.data_store.dividend_tax_rate,
         corporate_action_cash=corporate_action_cash,
         unresolved_corporate_action_ids=tuple(sorted(ledger.unresolved_event_ids)),
+        artifacts=artifacts,
     )
 
 
-def _raw_intraday_stop_level(
-    policy: IntradayStopPolicy,
-    *,
-    symbol: str,
-    signal_ts,
-    exec_ts,
-    avg_price: float,
-    signal_bars: pd.DataFrame | None,
-    execution_bars: pd.DataFrame | None,
-) -> float | None:
-    candidates: list[float] = []
-    levels = policy.signal_levels.get(symbol)
-    if levels is not None and signal_ts in levels.index:
-        adjusted_level = pd.to_numeric(
-            pd.Series([levels.loc[signal_ts]]),
-            errors="coerce",
-        ).iloc[0]
-        if (
-            pd.notna(adjusted_level)
-            and signal_bars is not None
-            and exec_ts in signal_bars.index
-            and execution_bars is not None
-            and exec_ts in execution_bars.index
-        ):
-            adjusted_open = float(signal_bars.loc[exec_ts, "Open"])
-            raw_open = float(execution_bars.loc[exec_ts, "Open"])
-            if adjusted_open > 0.0 and raw_open > 0.0:
-                candidates.append(float(adjusted_level) * raw_open / adjusted_open)
+def _build_backtest_artifacts(
+    config: AppConfig,
+    market_data,
+    run_index: pd.Index,
+    prepared_backtest: PreparedBacktest | None,
+    fills: list[dict[str, object]],
+    portfolio_records: list[dict[str, object]],
+    position_records: list[dict[str, object]],
+) -> BacktestArtifacts:
+    traded_symbols = {
+        str(fill.get("symbol") or "") for fill in fills if fill.get("symbol")
+    }
+    warnings: list[str] = []
+    prepared_frames: dict[str, pd.DataFrame] = {}
+    report_frames = getattr(prepared_backtest, "report_frames", None)
+    if traded_symbols and callable(report_frames):
+        prepared_frames = report_frames(traded_symbols)
+    elif traded_symbols:
+        warnings.append(
+            "The strategy does not expose prepared report features; price and fills only."
+        )
 
-    if policy.catastrophe_loss_pct is not None and avg_price > 0.0:
-        candidates.append(avg_price * (1.0 - float(policy.catastrophe_loss_pct)))
+    start, end = run_index[0], run_index[-1]
+    chart_frames: dict[str, pd.DataFrame] = {}
+    execution_bars = getattr(market_data, "execution_bars", None) or market_data.bars
+    for symbol in sorted(traded_symbols):
+        signal_source = prepared_frames.get(symbol)
+        if signal_source is None:
+            signal_source = market_data.bars.get(symbol)
+        if signal_source is None or signal_source.empty:
+            warnings.append(f"Missing signal chart data for traded symbol: {symbol}")
+            continue
+        signal = _bounded_frame(signal_source, start, end)
+        if signal.empty:
+            warnings.append(f"Empty signal chart range for traded symbol: {symbol}")
+            continue
+        renamed = {
+            column: f"Signal_{column}"
+            for column in ("Open", "High", "Low", "Close", "Volume")
+            if column in signal
+        }
+        signal = signal.rename(columns=renamed)
+        raw_source = execution_bars.get(symbol)
+        raw = _bounded_frame(raw_source, start, end) if raw_source is not None else pd.DataFrame()
+        if not raw.empty:
+            raw = raw.rename(
+                columns={
+                    column: f"Raw_{column}"
+                    for column in ("Open", "High", "Low", "Close", "Volume", "IdentitySegment")
+                    if column in raw
+                }
+            )
+            signal = signal.join(raw, how="left", rsuffix="_raw")
+        else:
+            warnings.append(f"Missing raw execution chart data for traded symbol: {symbol}")
+        signal = signal.replace([float("inf"), float("-inf")], float("nan"))
+        signal.insert(0, "Symbol", symbol)
+        signal.index.name = "Timestamp"
+        chart_frames[symbol] = signal
 
-    finite = [value for value in candidates if math.isfinite(value) and value > 0.0]
-    return max(finite) if finite else None
+    benchmark_equity: dict[str, pd.Series] = {}
+    try:
+        from .research.benchmarks import build_benchmark_report
+
+        benchmark_report = build_benchmark_report(config, market_data, run_index=run_index)
+        benchmark_equity = {
+            name: item.equity.copy() for name, item in benchmark_report.items()
+        }
+    except Exception as exc:
+        warnings.append(f"Benchmark report unavailable: {exc}")
+
+    peak = 0.0
+    for row in portfolio_records:
+        equity = float(row.get("equity", 0.0))
+        peak = max(peak, equity)
+        row["drawdown"] = equity / peak - 1.0 if peak else 0.0
+
+    return BacktestArtifacts(
+        fills=tuple(fills),
+        portfolio=tuple(portfolio_records),
+        positions=tuple(position_records),
+        benchmarks=benchmark_equity,
+        chart_frames=chart_frames,
+        warnings=tuple(warnings),
+    )
+
+
+def _bounded_frame(
+    frame: pd.DataFrame | None, start, end
+) -> pd.DataFrame:
+    if frame is None or frame.empty:
+        return pd.DataFrame()
+    try:
+        return frame.loc[start:end].copy()
+    except (KeyError, TypeError, ValueError):
+        start_date = pd.Timestamp(start).date()
+        end_date = pd.Timestamp(end).date()
+        mask = [start_date <= pd.Timestamp(item).date() <= end_date for item in frame.index]
+        return frame.loc[mask].copy()
+
+
+def _identity_segment_on(frame: pd.DataFrame | None, timestamp) -> str:
+    if frame is None or frame.empty or "IdentitySegment" not in frame:
+        return ""
+    try:
+        value = frame.loc[timestamp, "IdentitySegment"]
+    except (KeyError, TypeError):
+        try:
+            available = frame.loc[:timestamp, "IdentitySegment"]
+        except TypeError:
+            timestamp_date = pd.Timestamp(timestamp).date()
+            available = frame.loc[
+                [pd.Timestamp(item).date() <= timestamp_date for item in frame.index],
+                "IdentitySegment",
+            ]
+        if available.empty:
+            return ""
+        value = available.iloc[-1]
+    if isinstance(value, pd.Series):
+        value = value.iloc[-1]
+    return "" if pd.isna(value) else str(value)
+
+
+def _enrich_trade_durations(trades: list[dict[str, object]]) -> None:
+    for trade in trades:
+        entry = pd.to_datetime(trade.get("entry_time"), errors="coerce")
+        exit_ = pd.to_datetime(trade.get("exit_time"), errors="coerce")
+        trade["holding_days"] = (
+            float((exit_ - entry).total_seconds() / 86_400.0)
+            if not pd.isna(entry) and not pd.isna(exit_)
+            else None
+        )
 
 
 def _scheduled_corporate_actions(actions):
@@ -1120,10 +1372,6 @@ def _prepare_backtest(strategy, market_data) -> PreparedBacktest | None:
         "filter_benchmark": market_data.filter_benchmark,
     }
     parameters = inspect.signature(prepare).parameters
-    if "execution_bars" in parameters:
-        kwargs["execution_bars"] = (
-            getattr(market_data, "execution_bars", None) or market_data.bars
-        )
     if "universe_schedule" in parameters or any(
         parameter.kind == inspect.Parameter.VAR_KEYWORD
         for parameter in parameters.values()
@@ -1181,6 +1429,22 @@ def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[
     )
     symbols = list(resolved.symbols if resolved.entries_allowed else resolved.exit_only_symbols)
     market_data = load_configured_market_data(config, symbols, resolved_universe=resolved)
+    if market_data.corporate_actions:
+        through = market_data.completed_session or str(market_index(market_data)[-1])
+        broker.apply_corporate_actions(
+            market_data.corporate_actions,
+            through=through,
+            dividend_tax_rate=config.data_store.dividend_tax_rate,
+        )
+    account = broker.get_account()
+    execution_bars = market_data.execution_bars or market_data.bars
+    raw_prices = _latest_prices(execution_bars)
+    account = mark_position_economics(
+        account,
+        raw_prices,
+        fee_rate=config.costs.fee_rate,
+        slippage_rate=config.costs.slippage_rate,
+    )
     strategy_bars = _operational_strategy_bars(
         market_data.bars,
         symbols,
@@ -1194,8 +1458,12 @@ def run_paper_once(config: AppConfig, state_path: str) -> tuple[OrderPlan, list[
         benchmark=market_data.benchmark,
         filter_benchmark=market_data.filter_benchmark,
     )
-    execution_bars = market_data.execution_bars or market_data.bars
-    fills = broker.execute_plan(plan, _latest_prices(execution_bars), config.costs.fee_rate, config.costs.slippage_rate)
+    fills = broker.execute_plan(
+        plan,
+        raw_prices,
+        config.costs.fee_rate,
+        config.costs.slippage_rate,
+    )
     return plan, fills
 
 
@@ -1235,6 +1503,11 @@ def run_live_once(config: AppConfig, assume_yes: bool = False) -> tuple[OrderPla
 
     results = []
     for order in plan.orders:
+        if order.quantity is None:
+            results.append(
+                f"SKIPPED {order.side.upper()} {order.symbol}: dependent sizing requires hybrid live runtime"
+            )
+            continue
         ok = broker.place_order(order)
         results.append(f"{'SENT' if ok else 'FAILED'} {order.side.upper()} {order.symbol} {order.quantity:g}")
     return plan, results
@@ -1261,8 +1534,11 @@ def print_backtest_result(result: BacktestResult) -> None:
     metrics = result.metrics
     print("Backtest Summary")
     print(f"Return      : {format_pct(float(metrics['total_return']))}")
+    print(f"CAGR        : {format_pct(float(metrics.get('cagr', 0.0)))}")
     print(f"MDD         : {format_pct(float(metrics['mdd']))}")
+    print(f"Calmar      : {format_float(float(metrics.get('calmar', 0.0)))}")
     print(f"Sharpe      : {format_float(float(metrics['sharpe']))}")
+    print(f"Sortino     : {format_float(float(metrics.get('sortino', 0.0)))}")
     print(f"Win Rate    : {format_pct(float(metrics['win_rate']))}")
     print(f"Payoff      : {format_float(float(metrics['payoff_ratio']))}")
     print(f"Trades      : {metrics['trade_count']}")
@@ -1333,4 +1609,14 @@ def _slice_benchmark_frame(df: pd.DataFrame | None, signal_ts) -> pd.DataFrame |
 def _print_order_plan(plan: OrderPlan) -> None:
     print("Live Order Plan")
     for order in plan.orders:
-        print(f"{order.side.upper():4} {order.symbol:8} qty={order.quantity:g} type={order.order_type} reason={order.reason}")
+        quantity = (
+            f"{order.quantity:g}"
+            if order.quantity is not None
+            else f"cash:{order.cash_allocation_pct:.2%}"
+            if order.cash_allocation_pct is not None
+            else "pending"
+        )
+        print(
+            f"{order.side.upper():4} {order.symbol:8} qty={quantity} "
+            f"type={order.order_type} reason={order.reason}"
+        )

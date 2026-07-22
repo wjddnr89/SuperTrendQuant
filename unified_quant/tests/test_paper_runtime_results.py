@@ -101,7 +101,7 @@ class PaperRuntimeResultsTest(unittest.TestCase):
             tmp_path = Path(tmp)
             config = load_split_config(
                 "configs/strategies/simple_supertrend.yaml",
-                "configs/runtimes/simulation.yaml",
+                "configs/runtimes/research_sp500.yaml",
             )
             config = config.__class__(
                 **{
@@ -140,7 +140,7 @@ class PaperRuntimeResultsTest(unittest.TestCase):
     def test_paper_once_records_cycle_equity_and_skips_duplicate_candle(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/simulation.yaml")
+            config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
             config = config.__class__(
                 **{
                     **config.__dict__,
@@ -184,7 +184,7 @@ class PaperRuntimeResultsTest(unittest.TestCase):
     def test_saved_backtest_and_paper_outputs_can_be_compared(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            config = load_split_config("configs/strategies/leader_rotation.yaml", "configs/runtimes/simulation.yaml")
+            config = load_split_config("configs/strategies/leader_rotation.yaml", "configs/runtimes/research_sp500.yaml")
             backtest_equity = pd.Series(
                 [10_000, 10_500, 11_000],
                 index=pd.date_range("2026-01-01", periods=3, freq="30min"),

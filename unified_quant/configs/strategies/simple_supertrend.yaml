@@ -2,7 +2,7 @@ name: simple_supertrend_default
 type: simple_supertrend
 
 portfolio:
-  max_positions: 5
+  max_positions: 10
   allocation_pct: 1.0
 
 scoring:

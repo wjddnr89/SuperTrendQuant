@@ -35,8 +35,8 @@ DEFAULT_STRATEGY = Path(
 )
 DEFAULT_DATA = Path("unified_quant/configs/data.yaml")
 DEFAULT_RUNTIMES = (
-    Path("unified_quant/configs/runtimes/research_us.yaml"),
-    Path("unified_quant/configs/runtimes/research_us_nasdaq100_rolling.yaml"),
+    Path("unified_quant/configs/runtimes/research_sp500.yaml"),
+    Path("unified_quant/configs/runtimes/research_nasdaq100.yaml"),
 )
 PRICE_COLUMNS = ("Open", "High", "Low", "Close")
 

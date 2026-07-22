@@ -2,7 +2,7 @@ name: triple_supertrend_alone
 type: triple_filters
 
 portfolio:
-  max_positions: 5
+  max_positions: 10
   allocation_pct: 1.0
 
 scoring:
@@ -17,11 +17,11 @@ signals:
       atr_method: wilder
       settings:
         - period: 10
+          multiplier: 3
+        - period: 60
+          multiplier: 1.5
+        - period: 200
           multiplier: 1.0
-        - period: 11
-          multiplier: 2.0
-        - period: 12
-          multiplier: 3.0
 
   filters: []
 

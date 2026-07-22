@@ -1,0 +1,49 @@
+name: leader_rotation_dual_momentum_nasdaq100
+type: leader_rotation
+
+portfolio:
+  max_positions: 1
+  allocation_pct: 1.0
+
+scoring:
+  type: dual_momentum
+  params:
+    lookback_bars: 150
+
+signals:
+  entries:
+    - type: supertrend
+      enabled: true
+      period: 10
+      multiplier: 3.0
+      atr_method: wilder
+      symbol_multipliers: {}
+
+  filters:
+    # The Nasdaq-100 index_events runtime resolves this benchmark to QQQ.
+    - type: benchmark_trend
+      enabled: true
+      timeframe: 1d
+
+    - type: ichimoku_cloud
+      enabled: true
+      tenkan: 9
+      kijun: 26
+      span_b: 52
+      shift: 26
+
+    - type: ema_trend
+      enabled: true
+      period: 200
+
+  exits:
+    - type: supertrend_flip
+      confirm_bars: 1
+
+rotation:
+  hurdle:
+    multiplier: 2.0
+  # Preserve the playground research behavior: eligible leaders may be
+  # entered even when their Supertrend was already up before the current bar.
+  allow_late_chase: true
+  min_rotation_profit_pct: 0.01

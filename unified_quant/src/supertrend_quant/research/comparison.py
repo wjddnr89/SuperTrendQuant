@@ -244,6 +244,8 @@ def save_comparison_result(
     result: StrategyComparisonResult,
     root_dir: str | Path = "results/research/comparisons",
     run_id: str | None = None,
+    *,
+    generate_report: bool = True,
 ) -> Path:
     resolved_run_id = run_id or make_run_id("all_strategies", "comparison")
     run_dir = Path(root_dir) / resolved_run_id
@@ -277,7 +279,13 @@ def save_comparison_result(
             row.config,
             strategy_root,
             run_id=_strategy_result_id(row),
+            artifact_level="core",
+            generate_report=False,
         )
+    if generate_report:
+        from ..reporting import render_comparison_report
+
+        render_comparison_report(result, run_dir / "report.html")
     return run_dir
 
 

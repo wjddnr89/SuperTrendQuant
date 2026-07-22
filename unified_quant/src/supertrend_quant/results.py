@@ -62,6 +62,8 @@ def order_to_dict(order: OrderIntent) -> dict[str, Any]:
         "price": order.price,
         "reason": order.reason,
         "client_order_id": order.client_order_id,
+        "cash_allocation_pct": order.cash_allocation_pct,
+        "required_sell_symbols": list(order.required_sell_symbols),
     }
 
 
@@ -130,7 +132,17 @@ class PaperRunRecorder:
         )
 
 
-def save_backtest_result(result, config: AppConfig, root_dir: str | Path, run_id: str | None = None) -> Path:
+def save_backtest_result(
+    result,
+    config: AppConfig,
+    root_dir: str | Path,
+    run_id: str | None = None,
+    *,
+    artifact_level: str = "full",
+    generate_report: bool = True,
+) -> Path:
+    if artifact_level not in {"full", "core"}:
+        raise ValueError("artifact_level must be 'full' or 'core'.")
     run_id = run_id or make_run_id(config.strategy.name, "backtest")
     run_dir = Path(root_dir) / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -173,7 +185,165 @@ def save_backtest_result(result, config: AppConfig, root_dir: str | Path, run_id
     if universe_snapshot:
         _write_json(run_dir / "universe_snapshot.json", universe_snapshot)
     result.equity.rename("equity").to_csv(run_dir / "equity.csv", header=True)
+    if artifact_level == "core":
+        return run_dir
+
+    artifacts = getattr(result, "artifacts", None)
+    trade_columns = (
+        "trade_id",
+        "symbol",
+        "entry_time",
+        "exit_time",
+        "entry_price",
+        "exit_price",
+        "quantity",
+        "entry_cost",
+        "exit_proceeds",
+        "corporate_action_cash",
+        "pnl_cash",
+        "pnl_pct",
+        "holding_days",
+        "exit_reason",
+        "corporate_action_event_id",
+    )
+    fill_columns = (
+        "timestamp",
+        "signal_timestamp",
+        "symbol",
+        "identity_segment",
+        "side",
+        "event_type",
+        "quantity",
+        "raw_price",
+        "fill_price",
+        "gross_value",
+        "fee",
+        "slippage",
+        "net_cash_flow",
+        "reason",
+        "corporate_action_event_id",
+    )
+    portfolio_columns = (
+        "timestamp",
+        "cash",
+        "receivables",
+        "positions_value",
+        "equity",
+        "drawdown",
+        "position_count",
+    )
+    position_columns = (
+        "timestamp",
+        "symbol",
+        "identity_segment",
+        "quantity",
+        "avg_price",
+        "mark_price",
+        "market_value",
+    )
+    _records_frame(getattr(result, "trade_records", ()), trade_columns).to_csv(
+        run_dir / "trades.csv", index=False
+    )
+    _records_frame(getattr(artifacts, "fills", ()), fill_columns).to_csv(
+        run_dir / "fills.csv", index=False
+    )
+    _records_frame(getattr(artifacts, "portfolio", ()), portfolio_columns).to_csv(
+        run_dir / "portfolio.csv", index=False
+    )
+    _records_frame(getattr(artifacts, "positions", ()), position_columns).to_csv(
+        run_dir / "positions.csv", index=False
+    )
+
+    benchmarks = {"strategy": result.equity.rename("strategy")}
+    benchmarks.update(getattr(artifacts, "benchmarks", {}) or {})
+    benchmark_frame = pd.concat(benchmarks.values(), axis=1, join="outer").sort_index()
+    benchmark_frame.index.name = "timestamp"
+    benchmark_frame.to_csv(run_dir / "benchmarks.csv")
+
+    chart_frames = getattr(artifacts, "chart_frames", {}) or {}
+    chart_parts = [frame.reset_index() for frame in chart_frames.values()]
+    if chart_parts:
+        chart_frame = pd.concat(chart_parts, ignore_index=True, sort=False)
+    else:
+        chart_frame = pd.DataFrame(
+            columns=(
+                "Timestamp",
+                "Symbol",
+                "Signal_Open",
+                "Signal_High",
+                "Signal_Low",
+                "Signal_Close",
+                "Signal_Volume",
+                "Raw_Open",
+                "Raw_High",
+                "Raw_Low",
+                "Raw_Close",
+                "Raw_Volume",
+            )
+        )
+    chart_frame.to_parquet(run_dir / "chart_data.parquet", index=False)
+
+    fixed_chart_columns = {
+        "Timestamp",
+        "Symbol",
+        "IdentitySegment",
+        "Raw_IdentitySegment",
+        *{
+            f"{prefix}_{column}"
+            for prefix in ("Signal", "Raw")
+            for column in ("Open", "High", "Low", "Close", "Volume")
+        },
+    }
+    manifest = {
+        "schema_version": "backtest_artifacts/v1",
+        "artifact_level": artifact_level,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "files": [
+            "summary.json",
+            "equity.csv",
+            *(["universe_snapshot.json"] if universe_snapshot else []),
+            "trades.csv",
+            "fills.csv",
+            "portfolio.csv",
+            "positions.csv",
+            "benchmarks.csv",
+            "chart_data.parquet",
+        ],
+        "price_views": {
+            "signal": "total_return_adjusted strategy decision prices",
+            "raw": "raw execution prices",
+        },
+        "chart_symbols": sorted(chart_frames),
+        "indicator_columns": sorted(set(chart_frame.columns) - fixed_chart_columns),
+        "warnings": list(getattr(artifacts, "warnings", ()) or ()),
+        "report": {"status": "pending" if generate_report else "skipped"},
+    }
+    _write_json(run_dir / "artifacts.json", manifest)
+    if not generate_report:
+        return run_dir
+
+    try:
+        from .reporting import render_backtest_report
+
+        render_backtest_report(result, config, run_dir / "report.html")
+    except Exception as exc:
+        manifest["report"] = {"status": "failed", "error": str(exc)}
+        _write_json(run_dir / "artifacts.json", manifest)
+        raise
+    manifest["files"].append("report.html")
+    manifest["report"] = {"status": "complete"}
+    _write_json(run_dir / "artifacts.json", manifest)
     return run_dir
+
+
+def _records_frame(records, columns: tuple[str, ...]) -> pd.DataFrame:
+    frame = pd.DataFrame(list(records))
+    for column in columns:
+        if column not in frame:
+            frame[column] = pd.Series(dtype="object")
+    return frame.loc[
+        :, list(columns) + [column for column in frame if column not in columns]
+    ]
 
 
 def _universe_result_summary(snapshot: dict[str, Any] | None) -> dict[str, Any] | None:

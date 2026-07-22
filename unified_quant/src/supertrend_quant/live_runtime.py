@@ -20,6 +20,14 @@ from .strategies import build_order_plan
 from .universe import resolve_universe
 
 
+def _quantity_label(order: OrderIntent) -> str:
+    if order.quantity is not None:
+        return f"{order.quantity:g}"
+    if order.cash_allocation_pct is not None:
+        return f"cash:{order.cash_allocation_pct:.2%}"
+    return "pending"
+
+
 class HybridLiveRuntime:
     def __init__(
         self,
@@ -193,13 +201,17 @@ class HybridLiveRuntime:
         for order in plan.orders:
             if order.side.lower() == "buy":
                 refreshed_account = self.broker.get_account(session_market)
-                if order.reason == "Post-sell leader entry":
-                    if not required_sell_symbols or not required_sell_symbols.issubset(accepted_sell_symbols):
+                is_dependent_buy = bool(order.required_sell_symbols) or (
+                    order.reason == "Post-sell leader entry"
+                )
+                dependencies = set(order.required_sell_symbols) or required_sell_symbols
+                if is_dependent_buy:
+                    if not dependencies or not dependencies.issubset(accepted_sell_symbols):
                         results.append(f"SKIPPED BUY {order.symbol}: prerequisite sell was not accepted")
                         continue
                     remaining = {
                         symbol
-                        for symbol in required_sell_symbols
+                        for symbol in dependencies
                         if (
                             (position := refreshed_account.positions.get(symbol)) is not None
                             and position.quantity > 0
@@ -220,8 +232,10 @@ class HybridLiveRuntime:
                     results.append(f"SKIPPED BUY {order.symbol}: realtime quote unavailable")
                     continue
                 allocation = (
-                    config.execution.allocation_pct
-                    if order.reason == "Post-sell leader entry"
+                    order.cash_allocation_pct
+                    if order.cash_allocation_pct is not None
+                    else config.execution.allocation_pct
+                    if is_dependent_buy
                     else 1.0
                 )
                 affordable_qty = estimate_quantity(
@@ -233,8 +247,10 @@ class HybridLiveRuntime:
                 )
                 qty = (
                     affordable_qty
-                    if order.reason == "Post-sell leader entry"
+                    if is_dependent_buy
                     else min(order.quantity, affordable_qty)
+                    if order.quantity is not None
+                    else 0
                 )
                 if qty <= 0:
                     results.append(f"SKIPPED BUY {order.symbol}: insufficient refreshed cash")
@@ -247,6 +263,8 @@ class HybridLiveRuntime:
                     price=order.price,
                     reason=order.reason,
                     client_order_id=order.client_order_id,
+                    cash_allocation_pct=order.cash_allocation_pct,
+                    required_sell_symbols=order.required_sell_symbols,
                 )
             if order.client_order_id is None:
                 order = replace(
@@ -255,7 +273,9 @@ class HybridLiveRuntime:
                 )
             ok = self.broker.place_order(order)
             status = "SENT" if ok else "FAILED"
-            results.append(f"{status} {order.side.upper()} {order.symbol} {order.quantity:g}")
+            results.append(
+                f"{status} {order.side.upper()} {order.symbol} {_quantity_label(order)}"
+            )
             if ok and order.side.lower() == "sell":
                 accepted_sell_symbols.add(order.symbol)
             if ok:
@@ -306,26 +326,29 @@ class HybridLiveRuntime:
             if side not in {"buy", "sell"}:
                 notes.append(f"Skipped invalid live order side for {order.symbol}: {order.side}")
                 continue
-            if side == "buy" and order.reason == "Post-sell leader entry":
+            if side == "buy" and (
+                order.required_sell_symbols or order.reason == "Post-sell leader entry"
+            ):
                 dependent_buys.append(order)
                 continue
             if order.symbol in open_symbols:
                 notes.append(f"Skipped {order.symbol}: an open order already exists.")
                 continue
             if side == "sell" and order.reason == "Leader rotation":
-                position = account.positions.get(order.symbol)
-                current_price = realtime_prices.get(order.symbol)
-                if position is None or position.avg_price <= 0:
-                    notes.append(f"Skipped rotation sell {order.symbol}: cost basis unavailable.")
+                economics = account.position_economics.get(order.symbol)
+                profit_pct = economics.net_return_pct if economics is not None else None
+                if profit_pct is None:
+                    notes.append(
+                        f"Skipped rotation sell {order.symbol}: economic ledger unavailable."
+                    )
                     continue
-                if current_price is None or pd.isna(current_price) or current_price <= 0:
-                    notes.append(f"Skipped rotation sell {order.symbol}: realtime quote unavailable.")
-                    continue
-                profit_pct = (current_price - position.avg_price) / position.avg_price
                 if profit_pct < config.leader_rotation.min_rotation_profit_pct:
                     notes.append(f"Skipped rotation sell {order.symbol}: minimum profit not met.")
                     continue
             if side == "buy":
+                if order.quantity is None:
+                    notes.append(f"Skipped buy {order.symbol}: unresolved cash allocation.")
+                    continue
                 current_price = realtime_prices.get(order.symbol)
                 if current_price is None or pd.isna(current_price) or current_price <= 0:
                     notes.append(f"Skipped buy {order.symbol}: realtime quote unavailable.")
@@ -349,6 +372,8 @@ class HybridLiveRuntime:
                     price=order.price,
                     reason=order.reason,
                     client_order_id=order.client_order_id,
+                    cash_allocation_pct=order.cash_allocation_pct,
+                    required_sell_symbols=order.required_sell_symbols,
                 )
             guarded_orders.append(order)
             if side == "sell":
@@ -407,6 +432,11 @@ class HybridLiveRuntime:
             cash=account.cash,
             positions=positions,
             total_asset_value=account.total_asset_value,
+            position_economics={
+                symbol: economics
+                for symbol, economics in account.position_economics.items()
+                if symbol in positions
+            },
         )
 
     def _safe_prices(self, symbols: list[str]) -> dict[str, float]:
@@ -438,12 +468,15 @@ class HybridLiveRuntime:
     def _print_order_plan(self, plan: OrderPlan) -> None:
         print("Live Order Plan")
         for order in plan.orders:
-            print(f"{order.side.upper():4} {order.symbol:8} qty={order.quantity:g} type={order.order_type} reason={order.reason}")
+            print(
+                f"{order.side.upper():4} {order.symbol:8} "
+                f"qty={_quantity_label(order)} type={order.order_type} reason={order.reason}"
+            )
 
     def _order_message(self, order: OrderIntent) -> str:
         if order.side.lower() == "buy":
-            return f"🟩 *[추세 주도주 매수 주문 전송]*\n• 종목: {order.symbol} | 수량: {order.quantity:g}주"
-        return f"🚨 *[매도 주문 전송]*\n• 종목: {order.symbol} | 수량: {order.quantity:g}주 | 사유: {order.reason}"
+            return f"🟩 *[추세 주도주 매수 주문 전송]*\n• 종목: {order.symbol} | 수량: {_quantity_label(order)}주"
+        return f"🚨 *[매도 주문 전송]*\n• 종목: {order.symbol} | 수량: {_quantity_label(order)}주 | 사유: {order.reason}"
 
 
 def _daily_data_gap(symbols: list[str], market_data) -> str | None:

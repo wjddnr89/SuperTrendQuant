@@ -1,7 +1,7 @@
 # Nasdaq-100 point-in-time daily research runtime.
 # Membership comes from stored anchors and actual effective-date events.
 
-name: research_us_nasdaq100_rolling
+name: research_nasdaq100
 market: US
 universe:
   source: index_events
@@ -29,10 +29,10 @@ execution:
   live_confirm_required: true
 
 paper:
-  state_file: state/research_us_nasdaq100_rolling_paper.json
-  results_dir: results/research/us_nasdaq100_rolling/paper
+  state_file: state/research_nasdaq100_paper.json
+  results_dir: results/research/nasdaq100/paper
   loop_interval_seconds: 60
   run_once_per_candle: true
 
 backtest:
-  results_dir: results/research/us_nasdaq100_rolling/backtests
+  results_dir: results/research/nasdaq100/backtests

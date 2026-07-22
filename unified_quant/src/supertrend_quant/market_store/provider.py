@@ -11,10 +11,7 @@ from ..config import AppConfig
 from ..data import MarketData
 from .adjustments import apply_adjustment_factors
 from .models import DataQuality
-from .preflight import DailyPreflight
 from .repository import LocalDatasetRepository
-from .schemas import DATASET_SPECS
-from .storage import DatasetCache, ObjectNotFound, R2ObjectStore, publish_repository
 
 
 INDEX_BENCHMARK_ETFS = {
@@ -48,15 +45,6 @@ OLD_SYMBOL_ACTIONS = frozenset(
 # by ``_actions_in_symbol_intervals`` so the terminal event is not discarded by
 # the earlier requested-interval filter.
 OLD_SYMBOL_ACTION_MAX_CALENDAR_GAP = pd.Timedelta(days=10)
-
-REQUIRED_SYNC_DATASETS = (
-    "security_master",
-    "symbol_history",
-    "daily_price_raw",
-    "corporate_actions",
-    "adjustment_factors",
-)
-
 
 class ParquetMarketDataProvider:
     """Query immutable Parquet versions with DuckDB and convert once to pandas."""
@@ -1379,75 +1367,20 @@ def ensure_configured_data_ready(
     *,
     force_sync: bool = False,
 ) -> None:
-    """Run the shared preflight before universe resolution or market-data loading."""
+    """Require a local Parquet dataset without enforcing session freshness."""
     if config.data_store.provider == "yahoo" or config.market == "KR":
         return
     repository = LocalDatasetRepository(config.data_store.local_cache_dir)
     release, _ = repository.current_release()
     price_manifest = repository.current_manifest("daily_price_raw")
-    completed = (
-        release.completed_session
-        if release is not None
-        else (price_manifest.completed_session if price_manifest is not None else "")
-    )
-
-    def sync_callback(expected: str) -> str:
-        remote_store = None
-        if config.data_store.r2.enabled:
-            remote_store = R2ObjectStore(config.data_store.r2)
-            cache = DatasetCache(
-                config.data_store.local_cache_dir,
-                remote_store,
-            )
-            try:
-                cache.sync_release()
-            except ObjectNotFound:
-                datasets = list(REQUIRED_SYNC_DATASETS)
-                if config.universe.source == "index_events":
-                    datasets.extend(("index_constituent_anchors", "index_membership_events"))
-                for dataset in datasets:
-                    try:
-                        cache.sync(dataset)
-                    except ObjectNotFound:
-                        continue
-            updated_release, _ = repository.current_release()
-            updated = repository.current_manifest("daily_price_raw")
-            remote_completed = (
-                updated_release.completed_session
-                if updated_release is not None
-                else (updated.completed_session if updated is not None else "")
-            )
-            if remote_completed >= expected:
-                return remote_completed
-
-        # R2 may itself be stale (or disabled). The same preflight then performs
-        # one provider sync for this expected session and validates a new local
-        # cross-dataset release before consumers are allowed to proceed.
-        from .ingest import configured_daily_synchronizer
-
-        synced = configured_daily_synchronizer(
-            repository, config.data_store.ingest_source
-        ).sync(
-            expected,
-            refresh_security_master=True,
+    if release is None and price_manifest is None:
+        raise RuntimeError(
+            "Market data is missing. Run quant-data sync before loading Parquet data."
         )
-        if remote_store is not None and config.data_store.publish_enabled:
-            published = publish_repository(repository, remote_store, tuple(DATASET_SPECS))
-            conflicts = [item for item in published if item.conflict]
-            if conflicts:
-                details = "; ".join(item.detail for item in conflicts)
-                raise RuntimeError(f"R2 publication conflict: {details}")
-        return synced.completed_session
-
-    preflight = DailyPreflight(Path(config.data_store.local_cache_dir) / "state" / "preflight.json")
-    result = preflight.run(
-        completed,
-        auto_sync=config.data_store.auto_sync,
-        sync=sync_callback,
-        force=force_sync,
-    )
-    if not result.ready:
-        raise RuntimeError(result.warning + " Run quant-data sync or provide --force for a manual sync.")
+    # Retain the keyword for API compatibility. Freshness is intentionally a
+    # data-operations concern and no longer blocks backtest, research, paper,
+    # or live consumers.
+    _ = force_sync
 
 
 def load_configured_market_data(
@@ -1458,7 +1391,7 @@ def load_configured_market_data(
     force_sync: bool = False,
     allow_stale: bool = False,
 ) -> MarketData:
-    """Load the configured source, normally enforcing daily Parquet freshness."""
+    """Load the configured source without enforcing daily-session freshness."""
     if config.data_store.provider == "yahoo" or config.market == "KR":
         from ..data import download_market_data
 

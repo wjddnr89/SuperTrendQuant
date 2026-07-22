@@ -10,7 +10,13 @@ from supertrend_quant.config import benchmark_for_symbol, load_split_config
 from supertrend_quant.data_cache import YahooStateCache, align_stock_to_benchmark_history
 from supertrend_quant.holdings import HoldingsStore
 from supertrend_quant.live_runtime import HybridLiveRuntime
-from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position
+from supertrend_quant.portfolio import (
+    AccountSnapshot,
+    OrderIntent,
+    OrderPlan,
+    Position,
+    PositionEconomics,
+)
 from supertrend_quant.runtime import check_market_schedule
 
 
@@ -194,6 +200,10 @@ class LiveRuntimeTest(unittest.TestCase):
                     allow_late_chase=True,
                     min_rotation_profit_pct=0.01,
                 ),
+                "market_trend_filter": config.market_trend_filter.__class__(
+                    enabled=False,
+                    timeframe=config.market_trend_filter.timeframe,
+                ),
                 "execution": config.execution.__class__(
                     order_type="market",
                     allocation_pct=0.9,
@@ -239,7 +249,13 @@ class LiveRuntimeTest(unittest.TestCase):
 
         broker = FakeBroker()
         broker.prices = {"SOXL": 120, "AMD": 70}
-        broker.account = AccountSnapshot(cash=0, positions={"SOXL": Position("SOXL", 10, 100)})
+        broker.account = AccountSnapshot(
+            cash=0,
+            positions={"SOXL": Position("SOXL", 10, 100)},
+            position_economics={
+                "SOXL": PositionEconomics(1000.0, net_return_pct=0.2)
+            },
+        )
         runtime = HybridLiveRuntime(
             config,
             broker=broker,

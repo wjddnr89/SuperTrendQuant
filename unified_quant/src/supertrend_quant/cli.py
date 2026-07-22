@@ -110,6 +110,7 @@ def backtest_main() -> None:
     parser.add_argument("--results-dir", default=None, help="Directory where backtest run results are saved.")
     parser.add_argument("--run-id", default=None, help="Optional stable run id for saved results.")
     parser.add_argument("--no-save", action="store_true", help="Do not save backtest summary/equity files.")
+    parser.add_argument("--no-report", action="store_true", help="Save data artifacts without report.html.")
     args = parser.parse_args()
 
     config = _load_cli_config(args, parser)
@@ -118,7 +119,13 @@ def backtest_main() -> None:
     result = run_backtest(config)
     print_backtest_result(result)
     if not args.no_save:
-        run_dir = save_backtest_result(result, config, args.results_dir or config.backtest.results_dir, args.run_id)
+        run_dir = save_backtest_result(
+            result,
+            config,
+            args.results_dir or config.backtest.results_dir,
+            args.run_id,
+            generate_report=not args.no_report,
+        )
         print(f"Saved       : {run_dir}")
 
 
@@ -146,7 +153,14 @@ def paper_main() -> None:
     for note in plan.notes:
         print(note)
     for order in plan.orders:
-        print(f"{order.side.upper():4} {order.symbol:8} qty={order.quantity:g} reason={order.reason}")
+        quantity = (
+            f"{order.quantity:g}"
+            if order.quantity is not None
+            else f"cash:{order.cash_allocation_pct:.2%}"
+            if order.cash_allocation_pct is not None
+            else "pending"
+        )
+        print(f"{order.side.upper():4} {order.symbol:8} qty={quantity} reason={order.reason}")
     for fill in fills:
         print(fill)
     print(f"Saved       : {runtime.recorder.run_dir}")
@@ -180,8 +194,8 @@ def compare_main() -> None:
     parser = argparse.ArgumentParser(description="Compare saved paper results against a saved backtest.")
     parser.add_argument("--paper-dir", default=None, help="Paper run directory. Defaults to latest under --paper-root.")
     parser.add_argument("--backtest-dir", default=None, help="Backtest run directory. Defaults to latest under --backtest-root.")
-    parser.add_argument("--paper-root", default="results/paper")
-    parser.add_argument("--backtest-root", default="results/backtests")
+    parser.add_argument("--paper-root", default="results/research/sp500/paper")
+    parser.add_argument("--backtest-root", default="results/research/sp500/backtests")
     parser.add_argument("--interval", default="1d")
     args = parser.parse_args()
 
@@ -212,13 +226,14 @@ def compare_strategies_main() -> None:
     )
     parser.add_argument(
         "--runtime",
-        default=str(unified_root / "configs" / "runtimes" / "simulation.yaml"),
+        default=str(unified_root / "configs" / "runtimes" / "research_sp500.yaml"),
         help="Shared runtime YAML applied to every strategy.",
     )
     parser.add_argument("--rank-by", choices=["calmar", "composite"], default="calmar")
     parser.add_argument("--results-dir", default="results/research/comparisons")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--no-save", action="store_true")
+    parser.add_argument("--no-report", action="store_true", help="Save comparison data without report.html.")
     args = parser.parse_args()
 
     result = compare_strategies(
@@ -237,7 +252,12 @@ def compare_strategies_main() -> None:
         for error in result.errors:
             print(f"- {error.strategy_path}: {error.error}")
     if not args.no_save:
-        run_dir = save_comparison_result(result, args.results_dir, args.run_id)
+        run_dir = save_comparison_result(
+            result,
+            args.results_dir,
+            args.run_id,
+            generate_report=not args.no_report,
+        )
         print(f"Saved       : {run_dir}")
 
 

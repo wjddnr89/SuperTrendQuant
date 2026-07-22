@@ -79,7 +79,10 @@ def calculate_supertrend(
     dn = src + multiplier * atr
     final_up = up.copy()
     final_dn = dn.copy()
-    trend = pd.Series(1, index=df.index, dtype="int64")
+    # A direction cannot be inferred merely because ATR has become available:
+    # the first valid upper/lower bands normally straddle the close.  Keep the
+    # state neutral until price actually crosses a previously valid band.
+    trend = pd.Series(0, index=df.index, dtype="int64")
 
     for i in range(1, len(df)):
         prev_up = final_up.iloc[i - 1]
@@ -93,9 +96,21 @@ def calculate_supertrend(
             final_dn.iloc[i] = min(dn.iloc[i], dn1)
 
         prev_trend = trend.iloc[i - 1]
-        if prev_trend == -1 and not pd.isna(dn1) and close.iloc[i] > dn1:
+        # Direction changes must use yesterday's *valid* final band.  In
+        # particular, do not turn the first ATR-ready row bullish or bearish by
+        # comparing it with a same-row fallback band.
+        crossed_upper = not pd.isna(prev_dn) and close.iloc[i] > prev_dn
+        crossed_lower = not pd.isna(prev_up) and close.iloc[i] < prev_up
+        if prev_trend == 0:
+            if crossed_upper:
+                trend.iloc[i] = 1
+            elif crossed_lower:
+                trend.iloc[i] = -1
+            else:
+                trend.iloc[i] = 0
+        elif prev_trend == -1 and crossed_upper:
             trend.iloc[i] = 1
-        elif prev_trend == 1 and not pd.isna(up1) and close.iloc[i] < up1:
+        elif prev_trend == 1 and crossed_lower:
             trend.iloc[i] = -1
         else:
             trend.iloc[i] = prev_trend
@@ -150,6 +165,12 @@ def add_triple_supertrend(
         trend_column = f"TripleST{index}_Trend"
         out[trend_column] = st.get("Trend", pd.Series(index=df.index, dtype="int64"))
         out[f"TripleST{index}_ATR"] = st.get("ATR", pd.Series(np.nan, index=df.index, dtype=float))
+        out[f"TripleST{index}_Up"] = st.get(
+            "Supertrend_Up", pd.Series(np.nan, index=df.index, dtype=float)
+        )
+        out[f"TripleST{index}_Down"] = st.get(
+            "Supertrend_Down", pd.Series(np.nan, index=df.index, dtype=float)
+        )
         trend_columns.append(trend_column)
 
     out["TripleAllUp"] = out[trend_columns].eq(1).all(axis=1)

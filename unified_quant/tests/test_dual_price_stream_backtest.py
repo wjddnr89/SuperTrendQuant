@@ -1261,7 +1261,9 @@ class DualPriceStreamBacktestTest(unittest.TestCase):
                     "supertrend_quant.runners.create_strategy",
                     return_value=_BuyOldAndHoldStrategy(),
                 ):
-                    result = run_backtest_on_data(config, market_data)
+                    result = run_backtest_on_data(
+                        config, market_data, capture_artifacts=True
+                    )
 
                 self.assertEqual(len(result.trade_records), 1)
                 trade = result.trade_records[0]
@@ -1280,6 +1282,10 @@ class DualPriceStreamBacktestTest(unittest.TestCase):
                     float("inf") if expected_pnl > 0 else 0.0,
                 )
                 self.assertEqual(result.corporate_action_cash, settlement)
+                terminal_fill = result.artifacts.fills[-1]
+                self.assertEqual(terminal_fill["event_type"], "corporate_action")
+                self.assertEqual(terminal_fill["side"], "sell")
+                self.assertEqual(terminal_fill["fill_price"], settlement)
 
     def test_preopen_ticker_change_cancels_stale_old_buy(self):
         config = self._operational_config()

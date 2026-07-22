@@ -21,21 +21,21 @@ uv sync
 # Backtest
 uv run quant-backtest \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml
 
 # US grid search
 uv run quant-search \
   --strategy unified_quant/configs/strategies/triple_filters.yaml \
-  --runtime unified_quant/configs/runtimes/research_us.yaml \
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml \
   --timeframes 30m,1h,2h,4h,1d \
   --show-best-config
 
-# Compare every strategy YAML on one shared simulation runtime
+# Compare every strategy YAML on the shared S&P 500 research runtime
 uv run quant-compare-strategies
 
 # Compare with the US research runtime and composite ranking
 uv run quant-compare-strategies \
-  --runtime unified_quant/configs/runtimes/research_us.yaml \
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml \
   --rank-by composite
 
 # KR Optuna optimization
@@ -48,7 +48,7 @@ uv run quant-optimize \
 # One paper cycle
 uv run quant-paper \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
-  --runtime unified_quant/configs/runtimes/simulation.yaml \
+  --runtime unified_quant/configs/runtimes/research_sp500.yaml \
   --once
 
 # Live Toss runtime (loops and asks before sending orders)
@@ -80,8 +80,8 @@ position has disappeared from the refreshed account.
 - `configs/strategies/triple_filters.yaml`: leader rotation with Triple SuperTrend, Ichimoku, and EMA filters.
 - `configs/strategies/triple_filters_standalone.yaml`: independent multi-position version that ranks new entries by relative strength without rotating existing holdings.
 - `configs/data.yaml`: shared Parquet, validation, local-cache, and optional R2 settings.
-- `configs/runtimes/simulation.yaml`: backtest and paper defaults.
-- `configs/runtimes/research_us.yaml`: US research defaults.
+- `configs/runtimes/research_sp500.yaml`: point-in-time S&P 500 research, backtest, and paper defaults.
+- `configs/runtimes/research_nasdaq100.yaml`: point-in-time Nasdaq-100 research defaults.
 - `configs/runtimes/research_kr.yaml`: KR research defaults.
 - `configs/runtimes/live_toss.yaml`: live Toss execution profile.
 
@@ -89,7 +89,16 @@ position has disappeared from the refreshed account.
 `configs/strategies`, aligns all candidates to the same post-warmup date range,
 and selects one winner by Calmar ratio (default) or an equal-weight composite
 percentile score. Results are saved beneath `results/research/comparisons` with
-the comparison table, summary, and each strategy's normal backtest artifacts.
+one portable comparison report plus the table, summary, and each strategy's
+core `summary.json`/`equity.csv` artifacts.
+
+Normal backtests automatically create a self-contained Korean `report.html`
+alongside the compatible `summary.json`, `equity.csv`, and universe snapshot.
+The run directory also contains `trades.csv`, `fills.csv`, `portfolio.csv`,
+`positions.csv`, `benchmarks.csv`, `chart_data.parquet`, and an
+`artifacts.json` schema manifest. The report embeds Plotly and all chart data,
+so it opens without a network connection. Use `--no-report` to keep all data
+artifacts while skipping HTML generation; `--no-save` skips both.
 
 Strategy YAML owns signal and portfolio behavior. Runtime YAML owns market,
 universe, data period, capital, costs, broker, and output paths. Data YAML owns

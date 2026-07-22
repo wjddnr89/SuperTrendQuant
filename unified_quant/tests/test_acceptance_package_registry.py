@@ -20,7 +20,7 @@ from supertrend_quant.strategies import available_strategies, create_strategy, r
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 UNIFIED_ROOT = REPOSITORY_ROOT / "unified_quant"
 STRATEGY_PATH = UNIFIED_ROOT / "configs/strategies/simple_supertrend.yaml"
-RUNTIME_PATH = UNIFIED_ROOT / "configs/runtimes/simulation.yaml"
+RUNTIME_PATH = UNIFIED_ROOT / "configs/runtimes/research_sp500.yaml"
 
 
 class ExtensionProbeStrategy:

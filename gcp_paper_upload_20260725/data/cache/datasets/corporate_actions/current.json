@@ -1,0 +1,7 @@
+{
+  "dataset": "corporate_actions",
+  "manifest_path": "datasets/corporate_actions/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-corporate_actions/manifest.json",
+  "manifest_sha256": "f894f8e110504dc8e537addc7b168857c805f9c5c82f5cc2ed9158fbd5ef03f3",
+  "updated_at": "2026-07-21T04:40:56.625228Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-corporate_actions"
+}

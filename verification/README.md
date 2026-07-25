@@ -1,21 +1,22 @@
 # Verification
 
-`verification` is an isolated robustness-test layer for playground strategy combos.
-It imports the existing playground backtest helpers, but writes verification code
-and outputs only under this folder.
+`verification` is an isolated robustness-test layer for selected strategy combos.
+It executes every scenario through `unified_quant`'s canonical runner, including
+point-in-time `index_events`, raw execution prices, corporate-action accounting,
+identity segments, fees, slippage, and sell-funded rotation sizing.
 
 ## Quick Start
 
 Run every verification test for the default dual-momentum top combo:
 
 ```powershell
-C:\Users\wjddn\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe SuperTrendQuant\verification\verify_combo.py --config SuperTrendQuant\verification\configs\dual_momentum_top.json --tests all
+SuperTrendQuant\.venv\Scripts\python.exe SuperTrendQuant\verification\verify_combo.py --config SuperTrendQuant\verification\configs\canonical_dual_momentum_best.json --tests all --run-id canonical_best_v1
 ```
 
 Run only cheaper diagnostics first:
 
 ```powershell
-C:\Users\wjddn\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe SuperTrendQuant\verification\verify_combo.py --tests parameter_stability,trade_contribution,cost_execution_stress
+SuperTrendQuant\.venv\Scripts\python.exe SuperTrendQuant\verification\verify_combo.py --tests parameter_stability,trade_contribution,cost_execution_stress --run-id canonical_best_v1
 ```
 
 Outputs are saved under:
@@ -52,6 +53,11 @@ SuperTrendQuant\verification\results\<run_id>
 
 ## Editing A Combo
 
-Change `base_combo` in `configs\dual_momentum_top.json`.
-Change `validation_space` to control which neighboring combos are used during
-walk-forward optimization, parameter stability, and purged CV.
+Change `base_combo` in `configs\canonical_dual_momentum_best.json`.
+The canonical best config intentionally evaluates only `base_combo`. Walk-forward
+and purged CV therefore measure temporal robustness without selecting among
+neighboring parameter combinations.
+
+Each completed parameter-period evaluation is appended to
+`evaluation_checkpoint.jsonl`. Reusing the same `--run-id` resumes the run
+without recomputing completed candidate evaluations.

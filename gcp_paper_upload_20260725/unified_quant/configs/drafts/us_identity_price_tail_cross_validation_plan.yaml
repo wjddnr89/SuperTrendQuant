@@ -1,0 +1,111 @@
+schema: us_identity_price_tail_cross_validation_change_plan/v1
+status: post_apply_only_not_authorized
+repair_operation: repair_us_identity_price_tails
+repair_registry_sha256: 5e5274d6ddec6eec037bdd127ea1c38a93c0e218ef96e3ed5b9e9af5fd3259ee
+candidate_content_sha256: 6e41ecd8c75b693860628616f34784b1a1cf339cf4271f504ed9e224b3b62b03
+exception_inventory_sha256: a0e9d2d31f1fa24c219519918e6b8dd9e27a33907c96661a6df21216a651fe25
+generic_date_tolerance: false
+generic_successor_inheritance: false
+
+# This is deliberately not merged into us_cross_validation.yaml yet.  The
+# repaired release must be committed first, then every entry below must be
+# re-bound to that release and its freshly generated offline report.
+policy_changes:
+  - add seven exact reviewed_identity_tail_no_data_transitions entries
+  - add only finite successor chains whose final target has passed price evidence
+  - pin the complete transition inventory SHA in both Python and YAML
+
+verifier_requirements:
+  - require the repaired-release manifest operation and registry SHA
+  - require exact old master active_to and symbol effective_to
+  - require no old-SID price or factor key on or after transition_date
+  - require the exact official action and archived official payload SHA
+  - require the exact successor identity interval and successor target ID
+  - require a passed successor price target or separately pinned finite chain
+  - reject cycles, dead ends, no-data inheritance, and every unlisted target
+
+entries:
+  - symbol: FLT
+    target_id: f1d33b3660eab9c87a6d293a44cd07f559d36fbb7f5250adde9590a94e70e0ee
+    security_id: US:EODHD:41894e44-7e71-54dd-abfc-3454cc10286a
+    old_identity_to: "2024-03-22"
+    event_id: cc034dd705e7770f8504c36b2f27604f7834f6e02cfb04edc355c3b70371a8e6
+    action_type: ticker_change
+    transition_date: "2024-03-25"
+    official_source_hash: efc96eeaa39ea2e90b85b9fb456e698396766bd1b33bc73b49496b511fb5b6fe
+    successor_symbol: CPAY
+    successor_security_id: US:EODHD:cfae90d2-b677-53c6-9405-a6f663155e84
+    successor_target_id: cbbeaa4a07c0eb4f4b3ad6cd84b8068f9a73d8e5f1d6bf23ae53ab6c1932ecab
+    successor_path: passed
+  - symbol: CDAY
+    target_id: 0e8ae718d558c843f3add73eccc7549680728dde024cb664c157d0d3f112c6c0
+    security_id: US:EODHD:46664b7c-7250-543d-abe8-8df5137c4f4b
+    old_identity_to: "2024-01-31"
+    event_id: efeec2d1b30106a50d0909c6568d5162ec615d0d4e2f05492a37af466718de8c
+    action_type: ticker_change
+    transition_date: "2024-02-01"
+    official_source_hash: 3662c4cee13538e74aeef83060398400ed3867243db4ae6612a2f6ecb4f85b5c
+    successor_symbol: DAY
+    successor_security_id: US:EODHD:9fe90f09-82b7-5358-a46c-09051044402a
+    successor_target_id: 6474aa4dd0199ae11fcd95db904ce6ae57fdacb9db716e82679520e3550b22d5
+    successor_path: finite_chain_required
+  - symbol: XEC
+    target_id: 5a7d992833e6db3ede1850047f5dedf2a806e2055304ff54490e177a60a07bd8
+    security_id: US:EODHD:64cd243f-ab9c-516f-967d-15b06ccfcca2
+    old_identity_to: "2021-09-30"
+    event_id: 4a8be9ecafc3d03c987213c87627904a4aefcf49027d35da3ede76f3c46ffdc2
+    action_type: stock_merger
+    transition_date: "2021-10-01"
+    official_source_hash: cd18f9c67f680493dce1af86c085622ce643861778066b187d64dc58771c3067
+    successor_symbol: COG
+    successor_security_id: US:EODHD:e5169183-3360-57f2-846e-da37cb18541a
+    successor_target_id: aed2031265aeba347424145a0518f26e021ec0608fb262842f5be5661ca1add6
+    successor_path: finite_chain_required
+  - symbol: HCP
+    target_id: db3ded074c2702bbea5ba8cd96b43422af814773ede30fa2516bc6f1e38f3d25
+    security_id: US:EODHD:ad5cea39-7b69-5c0f-93a2-d20add8a8215
+    old_identity_to: "2019-11-04"
+    event_id: c1fcf2e0a945029e70d7fec9b7fd1fe4594b55fb1393a7ada6779e5847865cea
+    action_type: ticker_change
+    transition_date: "2019-11-05"
+    official_source_hash: 95bdb7778547e2ba5f7cffdec705fa82bca3624cdef8687c0acde96aa807aa11
+    successor_symbol: PEAK
+    successor_security_id: US:EODHD:e2fd43dd-fa96-5923-9657-d0debbb1624f
+    successor_target_id: 3f03ec2b1a12bb81f0f1c509f6332b45c4928958926828120535333341a38679
+    successor_path: finite_chain_required
+  - symbol: UTX
+    target_id: b35f720518c5b28fc0aff4b1bdd9a13231da9d9ed57ca4444371dec3aa56dbed
+    security_id: US:EODHD:aefd1dd7-529d-5b6a-80e9-65d0e14102a6
+    old_identity_to: "2020-04-02"
+    event_id: 1eebcc8f193de474779068560d90da76961560ffd1fe459dabc10d3c1085374b
+    action_type: ticker_change
+    transition_date: "2020-04-03"
+    official_source_hash: 86de499c88aaeb73714cd648434fc88016ce47ab5fa1ed5dd770c26bb63b523d
+    successor_symbol: RTX
+    successor_security_id: US:EODHD:88af8b3e-5e83-5344-9e82-923a06cf467f
+    successor_target_id: 3ef54278e2c2a2432a153d547a254eb32bce5506a8aa5c365d6fda2dbcd00c95
+    successor_path: passed
+  - symbol: COG
+    target_id: aed2031265aeba347424145a0518f26e021ec0608fb262842f5be5661ca1add6
+    security_id: US:EODHD:e5169183-3360-57f2-846e-da37cb18541a
+    old_identity_to: "2021-10-01"
+    event_id: 4a4620d5793b1264ccbe8c1d2a6467bdd0912e1a20e0c454471607541d2ae8dc
+    action_type: ticker_change
+    transition_date: "2021-10-04"
+    official_source_hash: cd18f9c67f680493dce1af86c085622ce643861778066b187d64dc58771c3067
+    successor_symbol: CTRA
+    successor_security_id: US:EODHD:97c04993-9845-5645-a7dd-027c590e3502
+    successor_target_id: c2b2bae7a161d772a3d93e68d225d16b33bb171730a4190834506ac4031c4020
+    successor_path: finite_chain_required
+  - symbol: CTRP
+    target_id: 0043cc09f8d447c3b32e26cebb651aba0118eeca87e1cea5ec0535a8f42cfee9
+    security_id: US:EODHD:e7669b68-15d6-5ce8-99c9-19f55990f369
+    old_identity_to: "2019-11-04"
+    event_id: 793f1775c345b9ab44ed255b72a5a2ec62f356329d152607717f5c39d7c568d1
+    action_type: ticker_change
+    transition_date: "2019-11-05"
+    official_source_hash: ae16823ad948aa72f7fc8517af9309af877764c146ff02b6863f68b700cab855
+    successor_symbol: TCOM
+    successor_security_id: US:EODHD:0cc06130-d930-5632-887c-023597219f54
+    successor_target_id: b4ca2124443b0b05a5ce3fbacfcc5fc1b45dab595e5812273bd5af2ad09a1478
+    successor_path: passed

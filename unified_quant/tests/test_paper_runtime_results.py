@@ -8,7 +8,9 @@ import pandas as pd
 
 from supertrend_quant.config import load_split_config, parse_config
 from supertrend_quant.data import MarketData
+from supertrend_quant.market_store.realtime import TossRealtimeQuoteProvider
 from supertrend_quant.paper_runtime import PaperRuntime
+from supertrend_quant.portfolio import AccountSnapshot, Position
 from supertrend_quant.results import PaperRunRecorder, compare_paper_to_backtest, save_backtest_result
 
 
@@ -51,7 +53,95 @@ class EmptyQuoteProvider:
         return {}
 
 
+class RecordingNotifier:
+    def __init__(self):
+        self.messages = []
+
+    def send(self, message):
+        self.messages.append(message)
+        return True
+
+
 class PaperRuntimeResultsTest(unittest.TestCase):
+    def test_toss_quote_source_keeps_paper_broker_and_selects_toss_quotes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config = load_split_config(
+                "configs/strategies/leader_rotation_dual_momentum_nasdaq100.yaml",
+                "configs/runtimes/paper_toss_nasdaq100_canonical.yaml",
+            )
+            config = config.__class__(
+                **{
+                    **config.__dict__,
+                    "paper": config.paper.__class__(
+                        state_file=str(tmp_path / "paper.json"),
+                        results_dir=str(tmp_path / "results"),
+                        loop_interval_seconds=60,
+                        run_once_per_candle=True,
+                        quote_source="toss",
+                    ),
+                }
+            )
+
+            runtime = PaperRuntime(config)
+
+            self.assertEqual(config.execution.broker, "paper")
+            self.assertIsInstance(runtime.quote_provider, TossRealtimeQuoteProvider)
+
+    def test_paper_telegram_reports_start_fills_summary_and_errors_without_duplicates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = parse_config(
+                {
+                    "strategy": {"name": "telegram-test", "type": "equal", "params": {}},
+                    "scoring": {"type": "relative_strength", "params": {"lookback_bars": 1}},
+                    "market": "US",
+                    "universe": {"source": "symbols", "symbols": ["AAA"]},
+                    "capital": {"initial_cash": 10_000},
+                    "paper": {
+                        "state_file": str(root / "paper.json"),
+                        "results_dir": str(root / "results"),
+                        "telegram_enabled": True,
+                    },
+                }
+            )
+            notifier = RecordingNotifier()
+            runtime = PaperRuntime(config, notifier=notifier)
+
+            runtime._notify_start_once()
+            runtime._notify_start_once()
+            runtime._notify_fills(["BUY AAA 2 @ 100.0000", "SKIP BBB: no price"])
+            account = AccountSnapshot(
+                cash=9_800,
+                positions={"AAA": Position("AAA", 2, 100)},
+            )
+            runtime._notify_summary(
+                session_market="US",
+                candle_value="2026-07-24T00:00:00-04:00",
+                account=account,
+                prices={"AAA": 110},
+                fills=["BUY AAA 2 @ 100.0000"],
+            )
+            runtime._notify_summary(
+                session_market="US",
+                candle_value="2026-07-24T00:00:00-04:00",
+                account=account,
+                prices={"AAA": 110},
+                fills=[],
+            )
+
+            with patch.object(runtime, "_run_once", side_effect=RuntimeError("boom")):
+                with self.assertRaisesRegex(RuntimeError, "boom"):
+                    runtime.run_once(ignore_schedule=True)
+
+            self.assertEqual(len(notifier.messages), 4)
+            self.assertIn("가상계좌 운용 시작", notifier.messages[0])
+            self.assertIn("BUY AAA 2", notifier.messages[1])
+            self.assertNotIn("SKIP BBB", notifier.messages[1])
+            self.assertIn("총자산: $10,020.00", notifier.messages[2])
+            self.assertIn("누적수익률: +0.20%", notifier.messages[2])
+            self.assertIn("RuntimeError: boom", notifier.messages[3])
+
     def test_stale_daily_history_blocks_all_paper_strategy_orders(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

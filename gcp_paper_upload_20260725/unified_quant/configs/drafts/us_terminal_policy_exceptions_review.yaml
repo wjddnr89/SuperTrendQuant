@@ -1,0 +1,130 @@
+schema: us_terminal_policy_exceptions_review/v1
+reviewed_terminal_policy_exceptions:
+  - event_id: 350bb85a7395ef9272e5f2867afdd4e523c99c258752120977ec1f35e36a2c8a
+    security_id: US:EODHD:faece1b7-4b1a-5c1f-951b-b1178ed57161
+    action_type: cash_merger
+    effective_date: "2022-12-22"
+    new_security_id: ""
+    new_symbol: ""
+    ratio: null
+    cash_amount: 380.0
+    currency: USD
+    source_kind: official_lower_bound_policy
+    source_url: "https://www.sec.gov/Archives/edgar/data/815094/000119312522311074/0001193125-22-311074.txt"
+    source_hash: f98bc807432739e4f2447ffbc6a70f7651bd8982b901989fc31dcffaa56ec593
+    candidate_id: 76a94b17cf5b10aed59bf7e924b1df483e3fcab9a628db9b220d8b22b269278c
+    symbol: ABMD
+    last_price_date: "2022-12-21"
+    ex_date: "2022-12-22"
+    announcement_date: "2022-11-01"
+    payment_date: "2022-12-22"
+    action_metadata_sha256: d96a0c9ce94d676ea228ac2f0dc6fae86b638a5992666a3d3670b4cd7edb4f4b
+    report_effective_date: "2022-12-22"
+    report_action_type: cash_merger
+    report_new_symbol: ""
+    report_ratio: null
+    report_cash_amount: 35.0
+    report_source_url: "https://www.sec.gov/Archives/edgar/data/200406/000119312522311072/0001193125-22-311072.txt"
+    report_source_hash: 2ee8f9067eb842d175b082b80f143cfa77d99a4df037310818b3d441a5a2bdcb
+    report_candidate_active_to: "2022-12-21"
+    report_manual_review_reason: >-
+      Consideration included $380 cash plus a contingent value right worth up
+      to $35, which the action schema cannot represent.
+    report_crosscheck_passed: false
+    report_crosscheck_date_passed: true
+    report_crosscheck_economic_terms_passed: false
+    allowed_report_mismatches: [cash_amount, source_hash, source_url]
+    policy_code: abmd_nontradeable_cvr_lower_bound/v1
+    required_release_warning: >-
+      ABMD 2022-12-22 merger models only the guaranteed $380/share cash leg;
+      one non-tradeable CVR per share (up to $35 contingent cash) is marked at
+      $0 under the as-of-2026-07-15 lower-bound policy, so returns may be
+      understated; J&J still reported about $0.4bn of aggregate ABMD CVR
+      liability at 2025 year-end, so $0 is not a fair-value estimate.
+    lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    filing_accession_number: 0001193125-22-311072
+    filing_date: "2022-12-22"
+
+  - event_id: cb355a88e767bd5f557350ddf9c13f1b324da6e8f96c622a2e1f8eeea01fa36a
+    security_id: US:EODHD:0337dd23-67ad-5354-b972-50babd1ae5a0
+    action_type: stock_merger
+    effective_date: "2019-11-21"
+    new_security_id: US:EODHD:25d16784-a5a9-5eee-bf6e-81519b64ef0b
+    new_symbol: BMY
+    ratio: 1.0
+    cash_amount: 50.0
+    currency: USD
+    source_kind: official_crosscheck
+    source_url: "https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt"
+    source_hash: 157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211
+    candidate_id: dcaad5c3a8565d37f4d045db599f64c56e21a4cd7897aa6fb574e69a023120f1
+    symbol: CELG
+    last_price_date: "2019-11-20"
+    ex_date: "2019-11-21"
+    announcement_date: "2019-11-20"
+    payment_date: "2019-11-21"
+    action_metadata_sha256: 861767e544cda076ffc7544b79acb91b57d6c81e109cd9e062b4a88ad410156d
+    report_effective_date: "2019-11-20"
+    report_action_type: stock_merger
+    report_new_symbol: BMY
+    report_ratio: 1.0
+    report_cash_amount: 50.0
+    report_source_url: "https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt"
+    report_source_hash: 157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211
+    report_candidate_active_to: "2019-11-20"
+    report_manual_review_reason: >-
+      Consideration included a separately tradable contingent value right not
+      represented by the action schema.
+    report_crosscheck_passed: true
+    report_crosscheck_date_passed: true
+    report_crosscheck_economic_terms_passed: true
+    allowed_report_mismatches: [effective_date]
+    policy_code: celg_next_session_cvr_delivery/v1
+    required_release_warning: >-
+      CELG/BMYRT official_exit_mark uses only the hash-pinned BMY 2020 10-K
+      first-trade close of USD 2.30 as a retrospective first-session close exit
+      mark for a non-index child, with cash available next session; the
+      2019-11-21..2020-12-31 280-session trading path is unsupported.
+    lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    filing_accession_number: 0001140361-19-021048
+    filing_date: "2019-11-20"
+
+  - event_id: f553d393e8bda37561276fec20d5b9bce5f722609e466e96bc9e199c624891c1
+    security_id: US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+    action_type: stock_merger
+    effective_date: "2025-08-07"
+    new_security_id: US:EODHD:fe84848c-624b-5aba-b542-24af3959f97f
+    new_symbol: PSKY
+    ratio: 1.0
+    cash_amount: null
+    currency: USD
+    source_kind: sec_filing_default_stock_policy
+    source_url: "https://www.sec.gov/Archives/edgar/data/813828/000119312525175027/0001193125-25-175027.txt"
+    source_hash: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+    candidate_id: 22590705691d87ce58407ff1748c94c2ede7747b095b2925e34d87dd36327dee
+    symbol: PARA
+    last_price_date: "2025-08-06"
+    ex_date: "2025-08-07"
+    announcement_date: "2025-08-07"
+    payment_date: ""
+    action_metadata_sha256: d572fb834301574fb9c00c69b8e7427c66037dc0e996fea6adec200b8cd0bcb6
+    report_effective_date: "2025-08-06"
+    report_action_type: stock_merger
+    report_new_symbol: PSKY
+    report_ratio: 1.0
+    report_cash_amount: 15.0
+    report_source_url: "https://www.sec.gov/Archives/edgar/data/813828/000119312525175027/0001193125-25-175027.txt"
+    report_source_hash: 61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be
+    report_candidate_active_to: "2025-08-07"
+    report_manual_review_reason: >-
+      Shareholder election and proration made the $15 cash and one-share
+      alternatives mutually exclusive, not additive.
+    report_crosscheck_passed: false
+    report_crosscheck_date_passed: true
+    report_crosscheck_economic_terms_passed: false
+    allowed_report_mismatches: [cash_amount, effective_date]
+    policy_code: para_no_election_default_stock/v1
+    required_release_warning: ""
+    lifecycle_evidence_report_sha256: 7760962880440d35d900305061c611041d449494cf17273a5502817892860554
+    filing_accession_number: 0001193125-25-175027
+    filing_date: "2025-08-07"

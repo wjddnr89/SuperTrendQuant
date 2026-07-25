@@ -1,0 +1,7 @@
+{
+  "dataset": "index_constituent_anchors",
+  "manifest_path": "datasets/index_constituent_anchors/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-index_constituent_anchors/manifest.json",
+  "manifest_sha256": "caf1ca4c7bf2ba03e19250a71a28fadbb37babcbec54238c95ea00069135bf82",
+  "updated_at": "2026-07-21T04:41:09.865032Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-index_constituent_anchors"
+}

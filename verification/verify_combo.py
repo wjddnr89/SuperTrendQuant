@@ -1,44 +1,38 @@
 from __future__ import annotations
 
 import argparse
-import itertools
 import json
 import math
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND_ROOT = PROJECT_ROOT / "playground"
+UNIFIED_ROOT = PROJECT_ROOT / "unified_quant"
 sys.path.insert(0, str(PLAYGROUND_ROOT / "scripts"))
-sys.path.insert(0, str(PLAYGROUND_ROOT / "src"))
+sys.path.insert(0, str(UNIFIED_ROOT / "src"))
 
-from search_nasdaq100_daily_3y_grid import (  # noqa: E402
-    build_fast_leader_plan,
-    close_at_or_before_position,
-    open_at_position,
-    portfolio_value_fast,
-    prepare_active_universe,
-    prepare_candidate_lists,
-    prepare_exit_down_states,
-    prepare_market_filter_states,
-    prepare_row_positions,
-    qqq_return_for_index,
-    run_prepared_backtest,
-)
 from supertrend_quant.config import AppConfig, load_split_config  # noqa: E402
 from supertrend_quant.data import MarketData, market_index  # noqa: E402
-from supertrend_quant.metrics import calculate_metrics, format_float, format_pct  # noqa: E402
-from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, Position, estimate_quantity  # noqa: E402
+from supertrend_quant.metrics import format_float, format_pct  # noqa: E402
+from supertrend_quant.portfolio import OrderIntent, OrderPlan  # noqa: E402
 from supertrend_quant.research import apply_config_overlay  # noqa: E402
 from supertrend_quant.research.data_resolver import download_for_config  # noqa: E402
-from supertrend_quant.runners import BacktestResult, _select_run_index  # noqa: E402
+import supertrend_quant.runners as canonical_runners  # noqa: E402
+from supertrend_quant.runners import (  # noqa: E402
+    BacktestResult,
+    _prepare_backtest,
+    run_backtest_on_data,
+)
 from supertrend_quant.strategies import create_strategy  # noqa: E402
+from supertrend_quant.strategies.leader_rotation import PreparedLeaderBacktest  # noqa: E402
 
 
 PARAM_KEYS = (
@@ -52,6 +46,7 @@ PARAM_KEYS = (
     "max_positions",
     "st_period",
     "st_multiplier",
+    "min_rotation_profit_pct",
 )
 
 PREP_KEYS = (
@@ -94,19 +89,88 @@ DEFAULT_TESTS = (
 @dataclass
 class PreparedBundle:
     config: AppConfig
-    strategy: Any
     prepared_backtest: Any
-    row_positions: dict[str, Any]
-    market_filter_states: dict[str, list[bool]]
-    candidates_by_position: list[list[dict[str, float | str]]]
-    exit_cache: dict[int, dict[str, list[bool]]] = field(default_factory=dict)
+
+
+class DelayedPreparedBacktest:
+    """Delay canonical order intents while leaving fills and ledger handling canonical."""
+
+    def __init__(self, delegate: PreparedLeaderBacktest, entry_delay_bars: int, exit_delay_bars: int):
+        self.delegate = delegate
+        self.entry_delay_bars = int(entry_delay_bars)
+        self.exit_delay_bars = int(exit_delay_bars)
+        self.step = -1
+        self.queued: dict[int, list[OrderIntent]] = {}
+        self.pending_buys: set[str] = set()
+        self.pending_sells: set[str] = set()
+
+    @property
+    def report_frames(self):
+        return getattr(self.delegate, "report_frames", None)
+
+    def build_order_plan(self, signal_ts, account, mode="backtest"):
+        self.step += 1
+        due = self.queued.pop(self.step, [])
+        releasable: list[OrderIntent] = []
+        for order in due:
+            if order.side.lower() != "buy" or not order.required_sell_symbols:
+                releasable.append(order)
+                continue
+            unresolved = set(order.required_sell_symbols).intersection(account.positions)
+            if unresolved:
+                self.queued.setdefault(self.step + 1, []).append(order)
+                continue
+            releasable.append(replace(order, required_sell_symbols=()))
+        due = releasable
+        due_buys = {order.symbol for order in due if order.side.lower() == "buy"}
+        due_sells = {order.symbol for order in due if order.side.lower() == "sell"}
+        self.pending_buys.difference_update(due_buys)
+        self.pending_sells.difference_update(due_sells)
+
+        plan = self.delegate.build_order_plan(signal_ts, account, mode=mode)
+        immediate: list[OrderIntent] = []
+        plan_sell_symbols = {
+            order.symbol for order in plan.orders if order.side.lower() == "sell"
+        }
+        for order in plan.orders:
+            side = order.side.lower()
+            if side == "buy":
+                if order.symbol in due_buys or order.symbol in self.pending_buys:
+                    continue
+                delay = self.entry_delay_bars
+                if order.required_sell_symbols and plan_sell_symbols.intersection(
+                    order.required_sell_symbols
+                ):
+                    delay = max(delay, self.exit_delay_bars)
+                pending = self.pending_buys
+            else:
+                if order.symbol in due_sells or order.symbol in self.pending_sells:
+                    continue
+                delay = self.exit_delay_bars
+                pending = self.pending_sells
+            if delay <= 0:
+                immediate.append(order)
+            else:
+                self.queued.setdefault(self.step + delay, []).append(order)
+                pending.add(order.symbol)
+
+        released = sorted(
+            [*due, *immediate],
+            key=lambda order: 0 if order.side.lower() == "sell" else 1,
+        )
+        return OrderPlan(plan.strategy_name, mode, tuple(released), plan.notes)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Verify one strategy combo with robustness tests.")
     parser.add_argument(
         "--config",
-        default=str(PROJECT_ROOT / "verification" / "configs" / "dual_momentum_top.json"),
+        default=str(
+            PROJECT_ROOT
+            / "verification"
+            / "configs"
+            / "canonical_dual_momentum_best.json"
+        ),
         help="JSON verification config.",
     )
     parser.add_argument(
@@ -157,11 +221,14 @@ def normalize_combo(combo: dict[str, Any]) -> dict[str, Any]:
     normalized["asset_filter"] = str(normalized.get("asset_filter", "ichimoku_cloud+ema_trend"))
     normalized["rs_method"] = str(normalized.get("rs_method", "dual_momentum"))
     normalized["rs_period"] = int(normalized.get("rs_period", 150))
-    normalized["sell_confirm_bars"] = int(normalized.get("sell_confirm_bars", 5))
+    normalized["sell_confirm_bars"] = int(normalized.get("sell_confirm_bars", 1))
     normalized["hurdle"] = float(normalized.get("hurdle", 2.0))
     normalized["max_positions"] = int(normalized.get("max_positions", 1))
     normalized["st_period"] = int(normalized.get("st_period", 10))
     normalized["st_multiplier"] = float(normalized.get("st_multiplier", 3.0))
+    normalized["min_rotation_profit_pct"] = float(
+        normalized.get("min_rotation_profit_pct", 0.0)
+    )
     return normalized
 
 
@@ -242,6 +309,21 @@ def calculate_cagr(equity: pd.Series) -> float:
     return (float(equity.iloc[-1]) / float(equity.iloc[0])) ** (1.0 / years) - 1.0
 
 
+def benchmark_return_for_index(data: MarketData, index: pd.Index) -> float:
+    frames = getattr(data, "benchmark", None) or {}
+    frame = next(
+        (value for value in frames.values() if value is not None and not value.empty),
+        None,
+    )
+    if frame is None or "Close" not in frame or len(index) < 2:
+        return float("nan")
+    close = pd.to_numeric(frame["Close"], errors="coerce").dropna()
+    selected = close.loc[(close.index >= index[0]) & (close.index <= index[-1])]
+    if len(selected) < 2:
+        return float("nan")
+    return float(selected.iloc[-1] / selected.iloc[0] - 1.0)
+
+
 def flatten_row(row: dict[str, Any]) -> dict[str, Any]:
     params = row.get("params", {})
     flat = {key: value for key, value in row.items() if key not in {"params", "result"}}
@@ -255,7 +337,7 @@ class VerificationEngine:
         self.raw = load_json(config_path)
         self.args = cli_args
         self.objective = str(cli_args.objective or self.raw.get("objective", "total_return"))
-        self.start = str(self.raw.get("start", "2010-01-01"))
+        self.start = str(self.raw.get("start", "2015-10-19"))
         self.end = self.raw.get("end")
         self.period = str(self.raw.get("period", "max"))
         self.base_combo = normalize_combo(self.raw.get("base_combo", {}))
@@ -268,26 +350,88 @@ class VerificationEngine:
             PLAYGROUND_ROOT / "configs" / "runtimes" / "research_us_nasdaq100_rolling.yaml",
         )
         base = load_split_config(self.strategy_path, self.runtime_path)
-        self.base_config = base.__class__(**{**base.__dict__, "period": self.period, "timeframe": "1d"})
+        base = replace(
+            base,
+            period=self.period,
+            timeframe="1d",
+            data_store=replace(base.data_store, provider="parquet"),
+        )
+        universe = replace(
+            base.universe,
+            source="index_events",
+            profiles={"US": ("nasdaq100",)},
+            history_file="",
+            file="",
+            symbols=(),
+            filters=replace(base.universe.filters, enabled=False),
+        )
+        self.base_config = replace(base, universe=universe, universe_file="", symbols=())
         if "costs" in self.raw:
             self.base_config = apply_config_overlay(self.base_config, self.raw["costs"])
 
         self.market_data: MarketData | None = None
         self.full_idx: pd.Index | None = None
         self.requested_idx: pd.Index | None = None
-        self.active_by_position: list[set[str] | None] | None = None
         self.prepared_cache: dict[tuple[Any, ...], PreparedBundle] = {}
         self.qqq_cache: dict[tuple[object, object], float] = {}
+        self.evaluation_cache: dict[str, dict[str, Any]] = {}
+        self.evaluation_checkpoint: Path | None = None
+
+    def attach_run_dir(self, run_dir: Path) -> None:
+        self.evaluation_checkpoint = run_dir / "evaluation_checkpoint.jsonl"
+        if not self.evaluation_checkpoint.exists():
+            return
+        for line in self.evaluation_checkpoint.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            self.evaluation_cache[str(record["key"])] = dict(record["row"])
+        print(
+            f"[verification] resumed evaluations={len(self.evaluation_cache)}",
+            flush=True,
+        )
+
+    @staticmethod
+    def evaluation_key(
+        combo: dict[str, Any],
+        start: str | None,
+        end: str | None,
+        stress: dict[str, Any],
+    ) -> str:
+        payload = {
+            "params": normalize_combo(combo),
+            "start": start,
+            "end": end,
+            "stress": stress,
+        }
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+    def checkpoint_evaluation(self, key: str, row: dict[str, Any]) -> None:
+        self.evaluation_cache[key] = dict(row)
+        if self.evaluation_checkpoint is None:
+            return
+        record = json.dumps(
+            json_safe({"key": key, "row": row}),
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+        with self.evaluation_checkpoint.open("a", encoding="utf-8") as handle:
+            handle.write(record + "\n")
 
     def load_data(self) -> None:
         print("[verification] downloading shared market data...", flush=True)
-        self.market_data = download_for_config(self.base_config)
+        self.market_data = download_for_config(self.base_config, allow_stale=True)
         self.full_idx = market_index(self.market_data)
         self.requested_idx = date_index(self.full_idx, self.start, self.end)
-        self.active_by_position = prepare_active_universe(self.market_data, self.full_idx)
         print(
             f"[verification] timeline {self.full_idx[0]} -> {self.full_idx[-1]}, "
             f"requested {self.requested_idx[0]} -> {self.requested_idx[-1]}",
+            flush=True,
+        )
+        print(
+            f"[verification] universe=index_events:nasdaq100 runner=unified_quant "
+            f"price_mode={self.base_config.data_store.price_mode} "
+            f"data_quality={self.market_data.data_quality}",
             flush=True,
         )
 
@@ -299,76 +443,77 @@ class VerificationEngine:
         return dict(self.raw.get(name, {}))
 
     def candidate_grid(self, settings: dict[str, Any] | None = None) -> list[dict[str, Any]]:
-        settings = settings or {}
-        space = settings.get("space") or self.raw.get("validation_space") or {}
-        values = []
-        for key in PARAM_KEYS:
-            values.append(as_list(space.get(key, self.base_combo.get(key))))
-        combos = [normalize_combo(dict(zip(PARAM_KEYS, product))) for product in itertools.product(*values)]
-        seen: set[tuple[Any, ...]] = set()
-        unique: list[dict[str, Any]] = []
-        for combo in combos:
-            key = combo_key(combo)
-            if key not in seen:
-                seen.add(key)
-                unique.append(combo)
-        limit = self.args.max_candidates or settings.get("max_candidates") or self.raw.get("max_candidates")
-        if limit is not None:
-            unique = unique[: int(limit)]
-        return unique
+        return [dict(self.base_combo)]
+
+    def config_for(
+        self,
+        combo: dict[str, Any],
+        *,
+        cost_multiplier: float = 1.0,
+        adverse_slippage: float = 0.0,
+    ) -> AppConfig:
+        combo = normalize_combo(combo)
+        config = apply_config_overlay(
+            self.base_config,
+            {
+                "entry": combo["entry"],
+                "market_filter": combo["market_filter"],
+                "asset_filter": combo["asset_filter"],
+                "sell_confirm_bars": combo["sell_confirm_bars"],
+                "max_positions": combo["max_positions"],
+                "st_period": combo["st_period"],
+                "st_multiplier": combo["st_multiplier"],
+                "fee_rate": self.base_config.costs.fee_rate * cost_multiplier,
+                "slippage_rate": (
+                    self.base_config.costs.slippage_rate * cost_multiplier
+                    + adverse_slippage
+                ),
+            },
+        )
+        return replace(
+            config,
+            scoring=replace(
+                config.scoring,
+                type=combo["rs_method"],
+                params={"lookback_bars": combo["rs_period"]},
+            ),
+            leader_rotation=replace(
+                config.leader_rotation,
+                hurdle_atr_mult=combo["hurdle"],
+                min_rotation_profit_pct=combo["min_rotation_profit_pct"],
+            ),
+        )
 
     def prepare_bundle(self, combo: dict[str, Any]) -> PreparedBundle:
         self.ensure_loaded()
         assert self.market_data is not None
-        assert self.full_idx is not None
-        assert self.active_by_position is not None
         combo = normalize_combo(combo)
         key = combo_key(combo, PREP_KEYS)
         if key in self.prepared_cache:
             return self.prepared_cache[key]
 
-        config = apply_config_overlay(self.base_config, combo)
+        config = self.config_for(combo)
         strategy = create_strategy(config)
         print(f"[verification] preparing {dict(zip(PREP_KEYS, key))}", flush=True)
-        prepared = strategy.prepare_backtest(
-            self.market_data.bars,
-            benchmark=self.market_data.benchmark,
-            filter_benchmark=self.market_data.filter_benchmark,
-            universe_schedule=self.market_data.universe_schedule,
-        )
-        row_positions = prepare_row_positions(prepared.prepared, self.full_idx)
-        market_filter_states = prepare_market_filter_states(prepared, self.full_idx)
-        candidates_by_position = prepare_candidate_lists(
-            config,
-            strategy,
-            prepared.prepared,
-            market_filter_states,
-            self.active_by_position,
-            row_positions,
-            self.full_idx,
-        )
+        prepared = _prepare_backtest(strategy, self.market_data)
+        if not isinstance(prepared, PreparedLeaderBacktest):
+            raise TypeError("Canonical verification requires PreparedLeaderBacktest.")
         bundle = PreparedBundle(
             config=config,
-            strategy=strategy,
             prepared_backtest=prepared,
-            row_positions=row_positions,
-            market_filter_states=market_filter_states,
-            candidates_by_position=candidates_by_position,
         )
         self.prepared_cache[key] = bundle
         return bundle
 
-    def exit_states(self, bundle: PreparedBundle, config: AppConfig) -> dict[str, list[bool]]:
-        assert self.full_idx is not None
-        confirm = int(config.exit.sell_confirm_bars)
-        if confirm not in bundle.exit_cache:
-            bundle.exit_cache[confirm] = prepare_exit_down_states(
-                config,
-                bundle.prepared_backtest.prepared,
-                self.full_idx,
-                bundle.row_positions,
-            )
-        return bundle.exit_cache[confirm]
+    @staticmethod
+    def prepared_for_config(bundle: PreparedBundle, config: AppConfig) -> PreparedLeaderBacktest:
+        source = bundle.prepared_backtest
+        return PreparedLeaderBacktest(
+            create_strategy(config),
+            source.prepared,
+            source.market_filter_trends,
+            source.universe_schedule,
+        )
 
     def evaluate_combo(
         self,
@@ -384,58 +529,47 @@ class VerificationEngine:
         assert self.market_data is not None
         assert self.full_idx is not None
         combo = normalize_combo(combo)
-        run_idx = date_index(self.full_idx, start or self.start, end or self.end)
-        config = apply_config_overlay(self.base_config, combo)
         stress = dict(stress or {})
-        cost_multiplier = float(stress.get("cost_multiplier", 1.0))
-        if cost_multiplier != 1.0:
-            config = apply_config_overlay(
-                config,
-                {
-                    "fee_rate": config.costs.fee_rate * cost_multiplier,
-                    "slippage_rate": config.costs.slippage_rate * cost_multiplier,
-                },
-            )
+        effective_start = start or self.start
+        effective_end = end or self.end
+        cache_key = self.evaluation_key(combo, effective_start, effective_end, stress)
+        if not include_result and cache_key in self.evaluation_cache:
+            cached = dict(self.evaluation_cache[cache_key])
+            cached["label"] = label
+            print(f"[verification] cache hit {label}", flush=True)
+            return cached, None
 
-        bundle = self.prepare_bundle(combo)
-        exit_states = self.exit_states(bundle, config)
-        entry_delay = int(stress.get("entry_delay_bars", 0))
-        exit_delay = int(stress.get("exit_delay_bars", 0))
+        run_idx = date_index(self.full_idx, effective_start, effective_end)
+        cost_multiplier = float(stress.get("cost_multiplier", 1.0))
         entry_penalty = float(stress.get("entry_price_penalty", 0.0))
         exit_penalty = float(stress.get("exit_price_penalty", 0.0))
-        if entry_delay or exit_delay or entry_penalty or exit_penalty:
-            result = run_execution_stress_backtest(
-                config,
-                self.market_data,
-                bundle.prepared_backtest.prepared,
-                bundle.candidates_by_position,
-                bundle.market_filter_states,
-                exit_states,
-                self.active_by_position or [],
-                bundle.row_positions,
-                bundle.strategy.warmup_bars(),
-                run_idx,
-                entry_delay_bars=entry_delay,
-                exit_delay_bars=exit_delay,
-                entry_price_penalty=entry_penalty,
-                exit_price_penalty=exit_penalty,
+        if not math.isclose(entry_penalty, exit_penalty, abs_tol=1e-12):
+            raise ValueError(
+                "Canonical verification without runner changes supports only equal "
+                "entry/exit adverse-fill penalties."
             )
-        else:
-            result = run_prepared_backtest(
+        config = self.config_for(
+            combo,
+            cost_multiplier=cost_multiplier,
+            adverse_slippage=entry_penalty,
+        )
+        bundle = self.prepare_bundle(combo)
+        prepared: Any = self.prepared_for_config(bundle, config)
+        entry_delay = int(stress.get("entry_delay_bars", 0))
+        exit_delay = int(stress.get("exit_delay_bars", 0))
+        if entry_delay or exit_delay:
+            prepared = DelayedPreparedBacktest(prepared, entry_delay, exit_delay)
+        with patch.object(canonical_runners, "_prepare_backtest", return_value=prepared):
+            result = run_backtest_on_data(
                 config,
                 self.market_data,
-                bundle.prepared_backtest.prepared,
-                bundle.candidates_by_position,
-                bundle.market_filter_states,
-                exit_states,
-                self.active_by_position or [],
-                bundle.row_positions,
-                bundle.strategy.warmup_bars(),
-                run_idx,
+                run_index=run_idx,
             )
 
-        qqq_return = qqq_return_for_index(self.market_data, result.equity.index, self.qqq_cache)
+        qqq_return = benchmark_return_for_index(self.market_data, result.equity.index)
         row = self.result_row(label, combo, result, qqq_return, stress)
+        if not include_result:
+            self.checkpoint_evaluation(cache_key, row)
         return row, result if include_result else None
 
     def result_row(
@@ -479,6 +613,12 @@ class VerificationEngine:
             "payoff_ratio": float(metrics.get("payoff_ratio", 0.0)),
             "payoff_display": format_float(float(metrics.get("payoff_ratio", 0.0))),
             "trade_count": int(metrics.get("trade_count", 0)),
+            "data_quality": result.data_quality,
+            "data_version": result.data_version,
+            "price_mode": result.price_mode,
+            "unresolved_corporate_action_count": len(
+                result.unresolved_corporate_action_ids
+            ),
         }
         for key, value in (stress or {}).items():
             row[f"stress_{key}"] = value
@@ -547,6 +687,8 @@ class VerificationEngine:
         if not trades.empty:
             trades.insert(0, "trade_no", range(1, len(trades) + 1))
             trades["pnl_pct_display"] = trades["pnl_pct"].astype(float).map(format_pct)
+            if "pnl_value" not in trades:
+                trades["pnl_value"] = trades.get("pnl_cash", 0.0)
             trades["pnl_value_rank"] = trades["pnl_value"].astype(float).rank(ascending=False, method="first")
         trades.to_csv(run_dir / "trade_contribution_trades.csv", index=False)
         result.equity.rename("equity").to_frame().to_csv(run_dir / "trade_contribution_equity.csv")
@@ -714,41 +856,44 @@ class VerificationEngine:
                 f"train_segments={train_segments}, candidates={len(candidates)}",
                 flush=True,
             )
-            scored_rows: list[dict[str, Any]] = []
-            for index, combo in enumerate(candidates, start=1):
-                print(f"[verification] {label} candidate {index}/{len(candidates)}", flush=True)
-                segment_rows = []
-                for segment_start, segment_end in train_segments:
-                    try:
-                        segment_row, _ = self.evaluate_combo(
-                            combo,
-                            start=segment_start,
-                            end=segment_end,
-                            label=f"{label}_train",
-                        )
-                        segment_rows.append(segment_row)
-                    except Exception as exc:  # noqa: BLE001
-                        segment_rows.append({"params": combo, "error": str(exc)})
-                valid_segments = [row for row in segment_rows if "error" not in row]
-                if not valid_segments:
-                    scored_rows.append({"label": f"{label}_train", "params": combo, "error": "no valid segments"})
+            best_combo = dict(candidates[0])
+            best_train: dict[str, Any] | None = None
+            if len(candidates) > 1:
+                scored_rows: list[dict[str, Any]] = []
+                for index, combo in enumerate(candidates, start=1):
+                    print(f"[verification] {label} candidate {index}/{len(candidates)}", flush=True)
+                    segment_rows = []
+                    for segment_start, segment_end in train_segments:
+                        try:
+                            segment_row, _ = self.evaluate_combo(
+                                combo,
+                                start=segment_start,
+                                end=segment_end,
+                                label=f"{label}_train",
+                            )
+                            segment_rows.append(segment_row)
+                        except Exception as exc:  # noqa: BLE001
+                            segment_rows.append({"params": combo, "error": str(exc)})
+                    valid_segments = [row for row in segment_rows if "error" not in row]
+                    if not valid_segments:
+                        scored_rows.append({"label": f"{label}_train", "params": combo, "error": "no valid segments"})
+                        continue
+                    aggregate = aggregate_segment_rows(valid_segments, f"{label}_train")
+                    aggregate["params"] = combo
+                    scored_rows.append(aggregate)
+                valid = [row for row in scored_rows if "error" not in row]
+                if not valid:
                     continue
-                aggregate = aggregate_segment_rows(valid_segments, f"{label}_train")
-                aggregate["params"] = combo
-                scored_rows.append(aggregate)
-            valid = [row for row in scored_rows if "error" not in row]
-            if not valid:
-                continue
-            best_train = max(valid, key=lambda row: metric_value(row, objective))
-            best_combo = dict(best_train["params"])
-            if save_train_candidates:
-                for row in scored_rows:
-                    row["fold"] = fold_no
-                    row["validation_start"] = val_start
-                    row["validation_end"] = val_end
-                    row["purge_days"] = purge_days
-                    row["embargo_days"] = embargo_days
-                    train_rows.append(row)
+                best_train = max(valid, key=lambda row: metric_value(row, objective))
+                best_combo = dict(best_train["params"])
+                if save_train_candidates:
+                    for row in scored_rows:
+                        row["fold"] = fold_no
+                        row["validation_start"] = val_start
+                        row["validation_end"] = val_end
+                        row["purge_days"] = purge_days
+                        row["embargo_days"] = embargo_days
+                        train_rows.append(row)
             validation_row, _ = self.evaluate_combo(
                 best_combo,
                 start=val_start,
@@ -762,7 +907,12 @@ class VerificationEngine:
             validation_row["purge_days"] = purge_days
             validation_row["embargo_days"] = embargo_days
             validation_row["objective"] = objective
-            validation_row["train_objective_value"] = metric_value(best_train, objective)
+            validation_row["train_objective_value"] = (
+                metric_value(best_train, objective) if best_train is not None else None
+            )
+            validation_row["selection_mode"] = (
+                "optimized" if best_train is not None else "fixed_single_combo"
+            )
             fold_rows.append(validation_row)
 
         self.save_rows(run_dir, "purged_embargoed_cv", fold_rows)
@@ -871,16 +1021,6 @@ def default_stress_scenarios(adverse_rate: float) -> list[dict[str, Any]]:
             "exit_delay_bars": 1,
         },
         {
-            "scenario": "entry_open_worse_0p5pct",
-            "description": "Buy fills 0.5% worse than open",
-            "entry_price_penalty": adverse_rate,
-        },
-        {
-            "scenario": "exit_open_worse_0p5pct",
-            "description": "Sell fills 0.5% worse than open",
-            "exit_price_penalty": adverse_rate,
-        },
-        {
             "scenario": "entry_exit_open_worse_0p5pct",
             "description": "Buy and sell fills 0.5% worse than open",
             "entry_price_penalty": adverse_rate,
@@ -913,214 +1053,6 @@ def default_stress_scenarios(adverse_rate: float) -> list[dict[str, Any]]:
             "exit_price_penalty": adverse_rate,
         },
     ]
-
-
-def run_execution_stress_backtest(
-    config: AppConfig,
-    market_data: MarketData,
-    prepared: dict[str, pd.DataFrame],
-    candidates_by_position: list[list[dict[str, float | str]]],
-    market_filter_states: dict[str, list[bool]],
-    exit_down_states: dict[str, list[bool]],
-    active_by_position: list[set[str] | None],
-    row_positions: dict[str, Any],
-    warmup_bars: int,
-    run_index: pd.Index | None = None,
-    *,
-    entry_delay_bars: int = 0,
-    exit_delay_bars: int = 0,
-    entry_price_penalty: float = 0.0,
-    exit_price_penalty: float = 0.0,
-) -> BacktestResult:
-    if entry_delay_bars < 0 or exit_delay_bars < 0:
-        raise ValueError("Delay bars must be non-negative.")
-    if entry_price_penalty < 0 or exit_price_penalty < 0:
-        raise ValueError("Price penalties must be non-negative.")
-    if config.costs.slippage_rate + exit_price_penalty >= 1.0:
-        raise ValueError("Exit slippage plus price penalty must be below 100%.")
-
-    full_idx = market_index(market_data)
-    idx = _select_run_index(full_idx, run_index)
-    if len(idx) < 2:
-        raise RuntimeError("Not enough common bars to run a backtest.")
-    first_full_position = int(full_idx.get_indexer([idx[0]])[0])
-    first_target_position = max(first_full_position, int(warmup_bars))
-    idx = idx.intersection(full_idx[first_target_position:], sort=False)
-    if len(idx) < 2:
-        raise RuntimeError("Not enough bars remain after strategy warm-up.")
-
-    cash = float(config.capital.initial_cash)
-    positions: dict[str, Position] = {}
-    entry_values: dict[str, float] = {}
-    entry_times: dict[str, object] = {}
-    equity_points: list[tuple[pd.Timestamp, float]] = []
-    trade_returns: list[float] = []
-    trade_records: list[dict[str, object]] = []
-    pending_orders: dict[int, list[OrderIntent]] = {}
-    pending_buy_symbols: set[str] = set()
-    pending_sell_symbols: set[str] = set()
-    last_full_position = int(full_idx.get_loc(idx[-1]))
-    max_positions = max(1, int(config.risk.max_position_count))
-    buy_slippage = config.costs.slippage_rate + entry_price_penalty
-    sell_slippage = config.costs.slippage_rate + exit_price_penalty
-
-    def execute_due_orders(exec_position: int, exec_ts: pd.Timestamp) -> None:
-        nonlocal cash
-        due_orders = pending_orders.pop(exec_position, [])
-        due_orders = sorted(due_orders, key=lambda order: 0 if order.side.lower() == "sell" else 1)
-        for order in due_orders:
-            side = order.side.lower()
-            if side == "buy":
-                pending_buy_symbols.discard(order.symbol)
-            else:
-                pending_sell_symbols.discard(order.symbol)
-
-            raw_price = open_at_position(prepared, row_positions, order.symbol, exec_position, exec_ts)
-            if raw_price is None:
-                continue
-            if side == "buy":
-                if order.symbol in positions:
-                    continue
-                affordable_quantity = estimate_quantity(
-                    cash,
-                    raw_price,
-                    1.0,
-                    fee_rate=config.costs.fee_rate,
-                    slippage_rate=buy_slippage,
-                )
-                quantity = min(order.quantity, affordable_quantity)
-                if quantity <= 0:
-                    continue
-                fill = raw_price * (1.0 + buy_slippage)
-                cost = quantity * fill * (1.0 + config.costs.fee_rate)
-                if cost <= cash:
-                    cash -= cost
-                    positions[order.symbol] = Position(order.symbol, quantity, fill)
-                    entry_values[order.symbol] = cost
-                    entry_times[order.symbol] = exec_ts
-            else:
-                position = positions.get(order.symbol)
-                if not position:
-                    continue
-                qty = min(position.quantity, order.quantity)
-                fill = raw_price * (1.0 - sell_slippage)
-                proceeds = qty * fill * (1.0 - config.costs.fee_rate)
-                cash += proceeds
-                entry_value = entry_values.pop(order.symbol, qty * position.avg_price)
-                pnl_pct = proceeds / entry_value - 1.0 if entry_value else 0.0
-                trade_returns.append(pnl_pct)
-                trade_records.append(
-                    {
-                        "symbol": order.symbol,
-                        "entry_time": entry_times.pop(order.symbol, None),
-                        "exit_time": exec_ts,
-                        "entry_price": position.avg_price,
-                        "exit_price": fill,
-                        "quantity": qty,
-                        "entry_value": entry_value,
-                        "exit_value": proceeds,
-                        "pnl_value": proceeds - entry_value,
-                        "pnl_pct": pnl_pct,
-                        "exit_reason": order.reason,
-                        "entry_delay_bars": entry_delay_bars,
-                        "exit_delay_bars": exit_delay_bars,
-                        "entry_price_penalty": entry_price_penalty,
-                        "exit_price_penalty": exit_price_penalty,
-                    }
-                )
-                positions.pop(order.symbol, None)
-
-    for signal_ts in idx:
-        full_position = int(full_idx.get_loc(signal_ts))
-        execute_due_orders(full_position, signal_ts)
-        equity_points.append(
-            (
-                signal_ts,
-                portfolio_value_fast(cash, positions, prepared, row_positions, full_position),
-            )
-        )
-        if full_position >= last_full_position:
-            continue
-
-        account = AccountSnapshot(cash=cash, positions=positions.copy())
-        plan = build_fast_leader_plan(
-            config,
-            prepared,
-            candidates_by_position[full_position],
-            market_filter_states,
-            exit_down_states,
-            active_by_position[full_position],
-            row_positions,
-            full_position,
-            account,
-            mode="verification",
-        )
-        for order in plan.orders:
-            side = order.side.lower()
-            if side == "buy":
-                planned_positions = len(positions) - len(pending_sell_symbols) + len(pending_buy_symbols)
-                if planned_positions >= max_positions:
-                    continue
-                if order.symbol in positions or order.symbol in pending_buy_symbols:
-                    continue
-                pending_buy_symbols.add(order.symbol)
-                delay = entry_delay_bars
-            else:
-                if order.symbol not in positions or order.symbol in pending_sell_symbols:
-                    continue
-                pending_sell_symbols.add(order.symbol)
-                delay = exit_delay_bars
-            exec_position = full_position + 1 + delay
-            if exec_position <= last_full_position:
-                pending_orders.setdefault(exec_position, []).append(order)
-
-    if positions:
-        final_ts = idx[-1]
-        final_full_position = int(full_idx.get_loc(final_ts))
-        for symbol, position in list(positions.items()):
-            final_close = close_at_or_before_position(prepared, row_positions, symbol, final_full_position)
-            if final_close is None:
-                continue
-            final_price = final_close * (1.0 - sell_slippage)
-            proceeds = position.quantity * final_price * (1.0 - config.costs.fee_rate)
-            cash += proceeds
-            entry_value = entry_values.pop(symbol, position.quantity * position.avg_price)
-            pnl_pct = proceeds / entry_value - 1.0 if entry_value else 0.0
-            trade_returns.append(pnl_pct)
-            trade_records.append(
-                {
-                    "symbol": symbol,
-                    "entry_time": entry_times.pop(symbol, None),
-                    "exit_time": final_ts,
-                    "entry_price": position.avg_price,
-                    "exit_price": final_price,
-                    "quantity": position.quantity,
-                    "entry_value": entry_value,
-                    "exit_value": proceeds,
-                    "pnl_value": proceeds - entry_value,
-                    "pnl_pct": pnl_pct,
-                    "exit_reason": "FinalClose",
-                    "entry_delay_bars": entry_delay_bars,
-                    "exit_delay_bars": exit_delay_bars,
-                    "entry_price_penalty": entry_price_penalty,
-                    "exit_price_penalty": exit_price_penalty,
-                }
-            )
-            positions.pop(symbol, None)
-
-    equity = pd.Series(
-        [point[1] for point in equity_points],
-        index=[point[0] for point in equity_points],
-        name="equity",
-    )
-    return BacktestResult(
-        equity=equity,
-        metrics=calculate_metrics(equity, trade_returns, config.timeframe),
-        trades=trade_returns,
-        skipped=market_data.skipped,
-        trade_records=tuple(trade_records),
-        universe_snapshot=getattr(market_data, "universe_snapshot", None),
-    )
 
 
 def save_result_files(run_dir: Path, stem: str, result: BacktestResult) -> None:
@@ -1170,14 +1102,28 @@ def main() -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
 
     engine = VerificationEngine(config_path, args)
+    engine.attach_run_dir(run_dir)
     engine.load_data()
-    summary: dict[str, Any] = {
-        "config": str(config_path),
-        "objective": engine.objective,
-        "base_combo": engine.base_combo,
-        "tests": {},
-        "run_dir": str(run_dir),
-    }
+    summary_path = run_dir / "summary.json"
+    if summary_path.exists():
+        summary = load_json(summary_path)
+        summary.update(
+            {
+                "config": str(config_path),
+                "objective": engine.objective,
+                "base_combo": engine.base_combo,
+                "run_dir": str(run_dir),
+            }
+        )
+        summary.setdefault("tests", {})
+    else:
+        summary = {
+            "config": str(config_path),
+            "objective": engine.objective,
+            "base_combo": engine.base_combo,
+            "tests": {},
+            "run_dir": str(run_dir),
+        }
     runners = {
         "parameter_stability": engine.run_parameter_stability,
         "trade_contribution": engine.run_trade_contribution,
@@ -1189,11 +1135,11 @@ def main() -> None:
     for test in tests:
         print(f"[verification] running {test}", flush=True)
         summary["tests"][test] = runners[test](run_dir)
-    (run_dir / "summary.json").write_text(
-        json.dumps(json_safe(summary), ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    write_report(run_dir, summary)
+        summary_path.write_text(
+            json.dumps(json_safe(summary), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        write_report(run_dir, summary)
     print("[verification] done")
     print(f"saved_dir={run_dir}")
     print(f"summary_json={run_dir / 'summary.json'}")

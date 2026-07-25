@@ -1,0 +1,7 @@
+{
+  "dataset": "index_membership_events",
+  "manifest_path": "datasets/index_membership_events/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-index_membership_events/manifest.json",
+  "manifest_sha256": "95258421d546428c619fd61da3bb8baaecd603460e03b72ae4e41e70c63a3030",
+  "updated_at": "2026-07-21T04:41:10.976490Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-index_membership_events"
+}

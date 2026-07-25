@@ -1,0 +1,41 @@
+# Canonical Nasdaq-100 forward paper runtime.
+# Signals use completed local Parquet sessions. Toss supplies quotes only;
+# orders and holdings remain inside PaperBroker.
+
+name: paper_toss_nasdaq100_canonical
+market: US
+universe:
+  source: index_events
+  profiles:
+    US: [nasdaq100]
+  refresh: daily
+  snapshot_dir: state/universes
+  filters:
+    enabled: false
+
+data:
+  timeframe: 1d
+  period: max
+
+capital:
+  initial_cash: 10000
+
+costs:
+  fee_rate: 0.001
+  slippage_rate: 0.0005
+
+execution:
+  order_type: market
+  broker: paper
+  live_confirm_required: true
+
+paper:
+  state_file: state/paper_toss_nasdaq100_canonical.json
+  results_dir: results/paper/nasdaq100_canonical
+  loop_interval_seconds: 60
+  run_once_per_candle: true
+  quote_source: toss
+  telegram_enabled: true
+
+backtest:
+  results_dir: results/research/nasdaq100/backtests

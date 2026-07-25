@@ -1,0 +1,7 @@
+{
+  "dataset": "adjustment_factors",
+  "manifest_path": "datasets/adjustment_factors/versions/release-exact-factors-20260715-da009d5f18a94da6b137a488279a51be-adjustment_factors/manifest.json",
+  "manifest_sha256": "18d7c655b42ab3d948c633d1c66ccd0ced5e2c881cf492c2d75b8d2a0accc79a",
+  "updated_at": "2026-07-21T04:40:55.227426Z",
+  "version": "release-exact-factors-20260715-da009d5f18a94da6b137a488279a51be-adjustment_factors"
+}

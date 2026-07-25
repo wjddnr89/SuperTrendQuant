@@ -1,0 +1,7 @@
+{
+  "dataset": "lifecycle_resolutions",
+  "manifest_path": "datasets/lifecycle_resolutions/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-lifecycle_resolutions/manifest.json",
+  "manifest_sha256": "c2e01b375f4f0554f6b6958dc07a4d8a046ab8386da73a56c90b2c32b1313b45",
+  "updated_at": "2026-07-21T04:41:11.229066Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-lifecycle_resolutions"
+}

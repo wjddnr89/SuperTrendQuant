@@ -1,0 +1,185 @@
+{
+  "completed_session": "2026-07-15",
+  "conflict_count": 0,
+  "created_at": "2026-07-19T04:29:02.147310Z",
+  "dataset": "index_membership_events",
+  "files": [
+    {
+      "max_session": "2015-12-29",
+      "min_session": "2015-01-27",
+      "path": "year=2015/part-00000.parquet",
+      "row_count": 90,
+      "sha256": "162e2667b8f47c94caba7e5e8b70a2a66f2a283d2787101599946144d12b71f8",
+      "size_bytes": 14180
+    },
+    {
+      "max_session": "2016-12-19",
+      "min_session": "2016-01-04",
+      "path": "year=2016/part-00001.parquet",
+      "row_count": 81,
+      "sha256": "997339b69bd59cac964895cc8a83e00ade9d361d0a63889696cfd7166f080e6c",
+      "size_bytes": 13651
+    },
+    {
+      "max_session": "2017-12-29",
+      "min_session": "2017-01-05",
+      "path": "year=2017/part-00002.parquet",
+      "row_count": 78,
+      "sha256": "2f5d4c62ea7125e8e5d23f5440c2a59b1704d8db29ec4bd8bb7e7ee704eb3a08",
+      "size_bytes": 13676
+    },
+    {
+      "max_session": "2018-12-24",
+      "min_session": "2018-01-03",
+      "path": "year=2018/part-00003.parquet",
+      "row_count": 66,
+      "sha256": "ff8d781f82954e7c0913cd825677f26d2b105414b89e3626f674967fc0c42206",
+      "size_bytes": 15507
+    },
+    {
+      "max_session": "2019-12-23",
+      "min_session": "2019-01-02",
+      "path": "year=2019/part-00004.parquet",
+      "row_count": 76,
+      "sha256": "eaf85027f0dab23a8097513ef5d523022dc62b4f7897d83143761fcfe5692c45",
+      "size_bytes": 13385
+    },
+    {
+      "max_session": "2020-12-21",
+      "min_session": "2020-01-28",
+      "path": "year=2020/part-00005.parquet",
+      "row_count": 63,
+      "sha256": "7b5eacd6ac3c7cd450f27f8928636c424f5d7bf43edf604c6a9455441399cbf6",
+      "size_bytes": 12855
+    },
+    {
+      "max_session": "2021-12-20",
+      "min_session": "2021-01-07",
+      "path": "year=2021/part-00006.parquet",
+      "row_count": 59,
+      "sha256": "8e5b5250ea113da5ac3b1d28d45379b2afff10da08643db40c1d808950ce4e7f",
+      "size_bytes": 14992
+    },
+    {
+      "max_session": "2022-12-22",
+      "min_session": "2022-01-10",
+      "path": "year=2022/part-00007.parquet",
+      "row_count": 68,
+      "sha256": "f4d2e0e62fcecfc00c519e250fb143880528915bcf5b54ebd4e7b818b5978729",
+      "size_bytes": 15497
+    },
+    {
+      "max_session": "2023-12-18",
+      "min_session": "2023-01-04",
+      "path": "year=2023/part-00008.parquet",
+      "row_count": 54,
+      "sha256": "805687abd7aab163114463cd51e76c35c6ba93b3aef0a3b074de459986955d87",
+      "size_bytes": 14691
+    },
+    {
+      "max_session": "2024-12-23",
+      "min_session": "2024-02-01",
+      "path": "year=2024/part-00009.parquet",
+      "row_count": 54,
+      "sha256": "149db98445d41bc59cb59e43cc479e86dc509cf362327459ed931c05f5218d1d",
+      "size_bytes": 14611
+    },
+    {
+      "max_session": "2025-12-22",
+      "min_session": "2025-03-24",
+      "path": "year=2025/part-00010.parquet",
+      "row_count": 58,
+      "sha256": "6493b6231a3407bf9152c7f67165ca5768748eb513ce5512078762a3b5b172ec",
+      "size_bytes": 14871
+    },
+    {
+      "max_session": "2026-06-30",
+      "min_session": "2026-01-05",
+      "path": "year=2026/part-00011.parquet",
+      "row_count": 46,
+      "sha256": "1597760959ea63eff35434a584cfcb6182d4af614917e8489a14795a25780073",
+      "size_bytes": 14224
+    }
+  ],
+  "metadata": {
+    "adjustment_factor_economic_rows_changed": 0,
+    "canonical_event_id": "fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd",
+    "canonical_ids": [
+      "US:EODHD:a060087d-109e-58e9-91f9-b4c398a3d415",
+      "US:EODHD:97548dea-74f0-55a8-b906-47d5c2a072e1",
+      "US:EODHD:30662d16-c6e4-5187-9721-2b23ac10e4d0"
+    ],
+    "canonical_security_id": "US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3",
+    "cross_validation_market_date_inventory_sha256": "7980e766ca1e655b0f13814231b839efcf3fdda32fc57ec572e69fcaa56fda99",
+    "eodhd_calls": 0,
+    "evidence_report_object_path": "archives/2026-07-15/7760962880440d35d900305061c611041d449494cf17273a5502817892860554.json.gz",
+    "evidence_report_sha256": "7760962880440d35d900305061c611041d449494cf17273a5502817892860554",
+    "evidence_sha256": [
+      "ba6d15da235a1f5f6a186fb7b9e52b7b438c25cf76d4f28d9fac81953b7fc299",
+      "80f610bb05f197ef740bae2b23c03af96786118ff08dc23a4c78038a577c4842",
+      "5112367c6043776743c2532071d2d857d77faae96c8317f77af0aa0c8e9259b1",
+      "f3f09f3deb8f242d01652d48e46077d6646052258e75a9f55752c71dd4559863",
+      "d4cd0c2f981bfd0be14d2ebccfc8e852a94177e5fba86abe2c027c5510fc07d3",
+      "213b36fee89ff78865bc656ce97f5eac6ee40b886ad83c3c4964ef4a680ccd38",
+      "03de7ec01c810004fcd2357010aab3204215c688c4409402f5175c527428c6f2",
+      "74ac2547dad15740f6abbe75c0093593d7b6bb78ddb46e2aec0aefe7f625f0ab",
+      "d43e8a1a466d1d0b4fa54f027a326d68008a437d72a6ea2a40b76d41df8685cf",
+      "a7faf8d40dae03a9d8721a9cfdf60f19da15f7674e8bae4fbae2073c1d8c8480",
+      "b8dd9f1f71acaf14d09ddc9fbfb05cb9af3ef3ddc148a25e4cccd762faf65fec",
+      "44a20f47a72dfe278ab23fa2354836b7897da3d0882e5e0268988d252c81b98c"
+    ],
+    "full_lifecycle_finalizer_gate_passed": true,
+    "inherits_parent": false,
+    "input_release_version": "20260715-20260719T031437502501Z",
+    "input_versions": {
+      "adjustment_factors": "identity-price-tails-20260715-61a03b855b9c4bd1a82dc975a9407293-adjustment_factors",
+      "corporate_actions": "early-terminal-history-2026-07-15-566e79bcc7ac4e268c4cc304e14b700e-corporate_actions",
+      "daily_price_raw": "identity-price-tails-20260715-61a03b855b9c4bd1a82dc975a9407293-daily_price_raw",
+      "index_constituent_anchors": "market-transitions-20260715-0cd5221df34d80c5-index_constituent_anchors",
+      "index_membership_events": "market-transitions-20260715-0cd5221df34d80c5-index_membership_events",
+      "lifecycle_resolutions": "identity-price-tails-20260715-61a03b855b9c4bd1a82dc975a9407293-lifecycle_resolutions",
+      "security_master": "identity-price-tails-20260715-61a03b855b9c4bd1a82dc975a9407293-security_master",
+      "source_archive": "identity-price-tails-20260715-61a03b855b9c4bd1a82dc975a9407293-source_archive",
+      "symbol_history": "identity-price-tails-20260715-61a03b855b9c4bd1a82dc975a9407293-symbol_history"
+    },
+    "krft_source_hash": "ba6d15da235a1f5f6a186fb7b9e52b7b438c25cf76d4f28d9fac81953b7fc299",
+    "krft_transition_event_id": "39caca00fbedb7b23e8b5294cdf3bdc5aba9014f98bf72b6a6da341602651192",
+    "lifecycle_hints_sha256": "3fd60e760466ffba8b00c6ea191944dc4c00ceb21199f0bb45e96f0d5d969866",
+    "network_accessed": false,
+    "operation": "repair_us_symc_nlok_identity",
+    "output_versions": {
+      "adjustment_factors": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-adjustment_factors",
+      "corporate_actions": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-corporate_actions",
+      "daily_price_raw": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-daily_price_raw",
+      "index_constituent_anchors": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-index_constituent_anchors",
+      "index_membership_events": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-index_membership_events",
+      "lifecycle_resolutions": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-lifecycle_resolutions",
+      "security_master": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-security_master",
+      "source_archive": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-source_archive",
+      "symbol_history": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-symbol_history"
+    },
+    "parent_release_kind": "identity_price_tails_descendant",
+    "policy": "us_market_transition_dates/v1",
+    "r2_accessed": false,
+    "raw_price_rows_changed": 0,
+    "retired_ids": [
+      "US:EODHD:4a2f472a-4d2d-5c8b-8784-b7b3069f3cfe",
+      "US:EODHD:c17adb03-0b5b-5f4b-86e2-d564d6b96d8e",
+      "US:EODHD:f20c2934-d9ae-539d-9dde-a022873d3131"
+    ],
+    "retired_security_id": "US:EODHD:e92a676b-43f3-5d6b-9b7a-5d314fd6135f",
+    "schema": "us_symc_nlok_identity_repair/v1",
+    "strict_symc_nlok_gate": "passed",
+    "yhoo_source_hash": "274d98161c66f9480a4825eae722974405fffe2e3a0b73091d22f1a9acb07ca9",
+    "yhoo_transition_event_id": "ea791beeaa569aaf19b1df04e59df3710d45382cd70e5d82078d7247286272c6"
+  },
+  "official_coverage_end": "",
+  "official_coverage_start": "",
+  "parent_version": "market-transitions-20260715-0cd5221df34d80c5-index_membership_events",
+  "published_by": "jh",
+  "quality": "valid",
+  "source_mode": "",
+  "unresolved_action_count": 0,
+  "version": "symc-nlok-identity-20260715-e39d1a1fdf0b427f9c5285ff14bb95e0-index_membership_events",
+  "warnings": []
+}

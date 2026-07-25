@@ -141,6 +141,24 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.execution.broker, "toss")
         self.assertEqual(config.execution.live_confirm_required, True)
 
+    def test_canonical_nasdaq100_paper_runtime_uses_toss_quotes_only(self):
+        config = load_split_config(
+            "configs/strategies/leader_rotation_dual_momentum_nasdaq100.yaml",
+            "configs/runtimes/paper_toss_nasdaq100_canonical.yaml",
+        )
+
+        self.assertEqual(config.market, "US")
+        self.assertEqual(config.universe.source, "index_events")
+        self.assertEqual(config.universe.profiles, {"US": ("nasdaq100",)})
+        self.assertEqual(config.execution.broker, "paper")
+        self.assertEqual(config.paper.quote_source, "toss")
+        self.assertTrue(config.paper.telegram_enabled)
+        self.assertEqual(config.costs.fee_rate, 0.001)
+        self.assertEqual(config.costs.slippage_rate, 0.0005)
+        self.assertEqual(config.scoring.type, "dual_momentum")
+        self.assertEqual(config.scoring.params["lookback_bars"], 150)
+        self.assertEqual(config.leader_rotation.min_rotation_profit_pct, 0.0)
+
     def test_benchmark_is_auto_mapped_by_symbol(self):
         self.assertEqual(benchmark_for_symbol("SOXL", "US", "universe.json"), "QQQ")
         self.assertEqual(benchmark_for_symbol("005930", "KR", "universe.json"), "^KS11")

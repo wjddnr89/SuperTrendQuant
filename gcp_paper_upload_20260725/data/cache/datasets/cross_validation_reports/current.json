@@ -1,0 +1,7 @@
+{
+  "dataset": "cross_validation_reports",
+  "manifest_path": "datasets/cross_validation_reports/versions/cross-validation-20260715-193d764a2d7c450a82e27bf9f8967008-reports/manifest.json",
+  "manifest_sha256": "08f343aa373af2d68bf2960b4be00758390b367054f7824e622fd927ce1a43c4",
+  "updated_at": "2026-07-21T04:40:56.799046Z",
+  "version": "cross-validation-20260715-193d764a2d7c450a82e27bf9f8967008-reports"
+}

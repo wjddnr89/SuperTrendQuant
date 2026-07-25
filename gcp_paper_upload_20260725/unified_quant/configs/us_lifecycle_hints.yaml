@@ -1,0 +1,1265 @@
+official_exception_evidence:
+  # Stage 1 fetches only these exact official URLs and records the observed
+  # SHA-256 in the lifecycle report.  Stage 2 remains fail-closed until a
+  # reviewer copies that observed hash into source_sha256 and replays from the
+  # immutable cache.  Never infer or pre-fill a hash.
+  aaba_2019_liquidation_distributions:
+    candidate_symbols: [AABA]
+    candidate_name_contains: [Altaba]
+    candidate_security_ids:
+      - US:EODHD:9b1bbdaa-839c-5d59-8bda-99b2087022e6
+    candidate_last_price_dates: [2019-10-02]
+    binding_status: bound
+    effective_date: 2019-10-04
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: AABA multi-stage liquidation distributions are not one terminal cash event.
+    source_url: https://www.sec.gov/Archives/edgar/data/1011006/000119312519262790/0001193125-19-262790.txt
+    source_sha256: "01cea25a16cb222ab50254d9c9758a0a7cb0751e045e0696e05d203464f9682d"
+    required_text_groups:
+      - ["October 4, 2019"]
+      - [Plan of Complete Liquidation and Dissolution]
+      - [post-dissolution liquidating distributions]
+      - [rights to receive any post-dissolution liquidating distributions]
+  abmd_2022_cvr_consideration:
+    candidate_symbols: [ABMD]
+    candidate_name_contains: [ABIOMED]
+    candidate_security_ids:
+      - US:EODHD:faece1b7-4b1a-5c1f-951b-b1178ed57161
+    # 2022-12-22 and 2022-12-23 are zero-volume provider carry-forward bars;
+    # the reviewed legal identity ends on the last real session, 2022-12-21.
+    candidate_last_price_dates: [2022-12-21]
+    binding_status: bound
+    effective_date: 2022-12-22
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: ABMD consideration included cash plus an unrepresentable contingent value right.
+    source_url: https://www.sec.gov/Archives/edgar/data/815094/000119312522311074/0001193125-22-311074.txt
+    source_sha256: "f98bc807432739e4f2447ffbc6a70f7651bd8982b901989fc31dcffaa56ec593"
+    required_text_groups:
+      - ["December 22, 2022"]
+      - ["$380.00"]
+      - [one non-tradeable contractual contingent value right per Company Share]
+      - ["$35.00"]
+  brcm_2016_election_proration:
+    candidate_symbols: [BRCM]
+    candidate_name_contains: [Broadcom]
+    candidate_security_ids:
+      - US:EODHD:b2681128-10c6-54e9-afac-d2aeb03fed8f
+    candidate_last_price_dates: [2016-01-29]
+    binding_status: bound
+    effective_date: 2016-02-01
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: BRCM cash-stock elections and proration are not one fixed consideration row.
+    source_url: https://www.sec.gov/Archives/edgar/data/1649345/000119312516446881/0001193125-16-446881.txt
+    source_sha256: "dbbf858108178aa8b0a6bc04095dd10fd0c8a00bd92496f5b866a72c27011db8"
+    required_text_groups:
+      - ["February 1, 2016"]
+      - ["$54.50"]
+      - ["0.4378"]
+      - [subject to proration]
+  celg_2019_cvr_consideration:
+    candidate_symbols: [CELG]
+    candidate_name_contains: [Celgene]
+    candidate_security_ids:
+      - US:EODHD:0337dd23-67ad-5354-b972-50babd1ae5a0
+    candidate_last_price_dates: [2019-11-20]
+    binding_status: bound
+    effective_date: 2019-11-20
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: CELG consideration included a separately tradable contingent value right.
+    source_url: https://www.sec.gov/Archives/edgar/data/14272/000114036119021048/0001140361-19-021048.txt
+    source_sha256: "157cae6dae5486f16c63a51e61d79aab2ce2f37d0e8584337fb21d7d0ec6f211"
+    required_text_groups:
+      - ["November 20, 2019"]
+      - [contingent value right]
+      - ["$50.00"]
+      - ["$9.00"]
+  dvmt_2018_class_v_election_proration:
+    candidate_symbols: [DVMT]
+    candidate_name_contains: [Dell Technologies]
+    candidate_security_ids:
+      - US:EODHD:1123af95-e37a-5697-b0a1-1a6c126fa501
+    candidate_last_price_dates: [2018-12-27]
+    binding_status: bound
+    effective_date: 2018-12-28
+    filing_date: 2018-12-28
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: DVMT holders could elect USD 120 cash or 1.8066 DELL Class C shares, with the cash election subject to a USD 14 billion cap and proration, so no one fixed consideration row represents every holder.
+    source_url: https://www.sec.gov/Archives/edgar/data/1571996/000119312518360943/0001193125-18-360943.txt
+    source_sha256: "06755cccff50fabc62963bc7817c15575618a57d7954d415862dd82da36aa25f"
+    required_text_groups:
+      - ["December 28, 2018"]
+      - ["$120.00 in cash"]
+      - [1.8066 shares of Class C Common Stock]
+      - ["$14 billion cap on the aggregate cash consideration", "cap of $14 billion on the aggregate cash consideration"]
+      - [proration factor of approximately 0.6414]
+  ggp_2018_election_proration:
+    candidate_symbols: [GGP]
+    candidate_name_contains: [General Growth Properties]
+    candidate_security_ids:
+      - US:EODHD:b9fbee49-31b7-527c-9295-1006f06cb15f
+    candidate_last_price_dates: [2018-08-27]
+    binding_status: bound
+    effective_date: 2018-08-27
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: GGP cash-stock elections and proration are not one fixed consideration row.
+    source_url: https://www.sec.gov/Archives/edgar/data/1496048/000119312518260735/0001193125-18-260735.txt
+    source_sha256: "bc11b758d8cec833a99b8d21508628e66143a6bdf4f4094e05897b98017a63ea"
+    required_text_groups:
+      - ["August 27, 2018"]
+      - [at the election of holders]
+      - [subject to proration]
+      - [BPY Units]
+  legacy_dnr_2020_warrant_consideration:
+    candidate_symbols: [DNR]
+    candidate_name_contains: [Denbury Resources]
+    candidate_security_ids:
+      - US:EODHD:6d9d4638-4922-5f6c-89fd-6b79db60c1c3
+    candidate_last_price_dates: [2020-07-28]
+    binding_status: bound
+    effective_date: 2020-09-18
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: Legacy DNR shares were cancelled under the 2020 reorganization and holders received pro-rata Series B Warrants with nonzero, path-dependent value that cannot be represented as a zero-cash delisting.
+    source_url: https://www.sec.gov/Archives/edgar/data/945764/000094576420000137/den-20200918x8kemergen.htm
+    source_sha256: "79295f28796f0e0c5de91e88a6accde76517e25267a189eccbf852674cb78229"
+    required_text_groups:
+      - ["September 18, 2020"]
+      - [cancelled, canceled]
+      - [pro rata]
+      - ["45.45%"]
+      - ["1,315,793"]
+      - [Series B Warrants]
+      - ["0.00259485"]
+      - ["$35.41", "35.41"]
+  legacy_do_2021_warrant_consideration:
+    candidate_symbols: [DO]
+    candidate_name_contains: [Diamond Offshore]
+    candidate_security_ids:
+      - US:EODHD:2826c370-0467-5e82-9617-dcece5be407f
+    candidate_last_price_dates: [2020-04-24]
+    binding_status: bound
+    effective_date: 2021-04-23
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: Legacy DO shares were cancelled under the 2021 reorganization and holders received pro-rata Emergence Warrants with nonzero, path-dependent value that cannot be represented as a zero-cash delisting.
+    source_url: https://www.sec.gov/Archives/edgar/data/949039/000119312521196262/d180977ds1.htm
+    source_sha256: "048886a54f9b70198d2e70805aedc56a4eb11c4e84f970f89bc931006594d210"
+    required_text_groups:
+      - ["April 23, 2021"]
+      - [cancelled, canceled]
+      - [pro rata]
+      - ["7,526,894"]
+      - [Emergence Warrants]
+      - [one New Diamond Common Share per Emergence Warrant, one share of New Diamond Common Stock, one (1) share of New Diamond Common Stock, exercisable for one New Diamond Common Share]
+      - ["$29.22", "29.22"]
+  legacy_ne_2021_warrant_consideration:
+    candidate_symbols: [NE]
+    candidate_name_contains: [Noble Corporation]
+    candidate_security_ids:
+      - US:EODHD:81b3ca1f-cf1b-5234-bc24-4399b8ecf149
+    candidate_last_price_dates: [2020-10-22]
+    binding_status: bound
+    effective_date: 2021-02-05
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: Legacy NE shares were cancelled or exchanged under the 2021 reorganization and holders received pro-rata Tranche 3 Warrants with nonzero, path-dependent value that cannot be represented as a zero-cash delisting.
+    source_url: https://www.sec.gov/Archives/edgar/data/1458891/000119312521032043/d109435d8k.htm
+    source_sha256: "9bdaadb02c741ee474a15aa6a95f0674a6fa41d4acd3f99384cc10d9dc60e65f"
+    required_text_groups:
+      - ["February 5, 2021"]
+      - [cancelled, canceled, exchanged]
+      - [pro rata]
+      - ["2,777,698"]
+      - [Tranche 3 Warrants]
+      - [one New Share per Warrant, one (1) New Share, exercisable for one New Share]
+      - ["$124.40", "124.40"]
+  legacy_val_2021_warrant_consideration:
+    candidate_symbols: [VAL]
+    candidate_name_contains: [Valaris]
+    candidate_security_ids:
+      - US:EODHD:b0395c88-1e0d-5135-b79f-240ac991e540
+    candidate_last_price_dates: [2021-04-27]
+    binding_status: bound
+    effective_date: 2021-04-30
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: Legacy VAL interests ceased after the 2021 reorganization and holders received warrants with nonzero, path-dependent value that cannot be represented as a zero-cash delisting.
+    source_url: https://www.sec.gov/Archives/edgar/data/314808/000110465921058903/tm2114630d1_8k.htm
+    source_sha256: 895fe74de611eb55e89524949f408b1e9b6fc6d84a0f9b538e18ad4ab8abc25e
+    required_text_groups:
+      - ["April 30, 2021"]
+      - ["5,645,161 warrants"]
+      - [138.88]
+      - [one New Common Share per Warrant, one new share, one New Share]
+  mallinckrodt_2022_cancellation:
+    candidate_symbols: [MNK]
+    candidate_name_contains: [Mallinckrodt]
+    # The repaired legacy issuer is deliberately separate from both the reused
+    # Muniholdings ticker and the later reorganized Mallinckrodt security.
+    candidate_security_ids:
+      - US:EODHD:81d711c5-9688-5f2b-9f36-63c8fe3211bf
+    candidate_last_price_dates: [2022-06-15]
+    binding_status: bound
+    effective_date: 2022-06-16
+    filing_date: 2022-06-22
+    resolution_kind: applied_event
+    exception_code: ""
+    action_type: delisting
+    cash_amount: 0.0
+    claim: Mallinckrodt's 2022 plan cancelled all predecessor ordinary shares with no legacy-equity distribution; after exact identity repair this is a verified zero-recovery delisting, not a permanent exception.
+    source_url: https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm
+    source_sha256: bbb74e06d7d7cf833057c440ad546eaa7b9d6d7f1b2b02c85e6bd239a5840c10
+    required_text_groups:
+      - ["June 16, 2022"]
+      - [all existing ordinary shares, existing ordinary shares]
+      - [cancelled, canceled]
+      - [100% of the new Mallinckrodt Ordinary Shares to holders of the Guaranteed Unsecured Notes]
+  mallinckrodt_2023_cancellation:
+    candidate_symbols: [MNK]
+    candidate_name_contains: [Mallinckrodt]
+    # This is the separately repaired post-2022 issuer; there is no successor
+    # link from the cancelled 2022 shares.
+    candidate_security_ids:
+      - US:EODHD:647b8b62-0015-5a56-8a63-4da7ba287025
+    candidate_last_price_dates: [2023-11-13]
+    binding_status: bound
+    effective_date: 2023-11-14
+    filing_date: ""
+    resolution_kind: applied_event
+    exception_code: ""
+    action_type: delisting
+    cash_amount: 0.0
+    claim: Mallinckrodt's 2023 plan cancelled the predecessor ordinary shares without consideration; after exact identity repair this is a verified zero-recovery delisting, never an exception on the reused Muniholdings ticker.
+    source_url: https://www.sec.gov/Archives/edgar/data/1567892/000156789224000008/mnk-20231229.htm
+    source_sha256: a8981dfbe1b3dcc287fb6c0ebc8f014be96724ec2a7a878301e9e5bedfcbf7d5
+    required_text_groups:
+      - ["November 14, 2023"]
+      - [All of Mallinckrodt ordinary shares were cancelled for no consideration, all ordinary shares were cancelled with no consideration]
+  para_2025_election_proration:
+    candidate_symbols: [PARA]
+    candidate_name_contains: [Paramount Global]
+    candidate_security_ids:
+      - US:EODHD:f60b749b-3d84-552a-9dc9-39e742f67537
+    candidate_last_price_dates: [2025-08-06]
+    binding_status: bound
+    effective_date: 2025-08-07
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: PARA shareholder election and proration alternatives are mutually exclusive.
+    source_url: https://www.sec.gov/Archives/edgar/data/813828/000119312525175027/0001193125-25-175027.txt
+    source_sha256: "61ea922a72a55f05b79c2cf00e9c4b0367434c35bf25a78fd4d815d3b20e68be"
+    required_text_groups:
+      - ["August 7, 2025"]
+      - [cash election]
+      - [stock election]
+      - [proration]
+  tfcf_2019_disney_proration:
+    candidate_symbols: [TFCF]
+    candidate_name_contains: [Twenty-First Century Fox]
+    candidate_security_ids:
+      - US:EODHD:acd9ed55-bf0c-5b15-b624-1a917bf6078e
+    candidate_last_price_dates: [2019-03-19]
+    binding_status: bound
+    effective_date: 2019-03-20
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: Twenty-First Century Fox Class B holders were subject to Disney cash-or-stock elections and proration, so no single fixed cash-and-stock lifecycle action can represent every holder's consideration.
+    source_url: https://www.sec.gov/Archives/edgar/data/1308161/000119312519079716/d710665dex991.htm
+    source_sha256: "08ba720b0e5326b652fb94cde8ba44c45bcac09a81b77d70f006e934e9d36d93"
+    required_text_groups:
+      - ["Twenty-First Century Fox, Inc."]
+      - ["NASDAQ: TFCFA, TFCF"]
+      - ["acquisition of 21CF"]
+      - ["March 20, 2019"]
+      - ["each share of 21CF common stock"]
+      - ["$51.572626", "51.572626"]
+      - ["0.4517"]
+      - [election, elections]
+      - [proration, prorated]
+  tfcfa_2019_disney_proration:
+    candidate_symbols: [TFCFA]
+    candidate_name_contains: [Twenty-First Century Fox]
+    candidate_security_ids:
+      - US:EODHD:9398e16f-425d-5a51-8720-35fba7433f28
+    candidate_last_price_dates: [2019-03-19]
+    binding_status: bound
+    effective_date: 2019-03-20
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: Twenty-First Century Fox Class A holders were subject to Disney cash-or-stock elections and proration, so no single fixed cash-and-stock lifecycle action can represent every holder's consideration.
+    source_url: https://www.sec.gov/Archives/edgar/data/1308161/000119312519079716/d710665dex991.htm
+    # The two share classes intentionally bind to the same official filing but
+    # remain separate candidate identities and lifecycle resolutions.
+    source_sha256: "08ba720b0e5326b652fb94cde8ba44c45bcac09a81b77d70f006e934e9d36d93"
+    required_text_groups:
+      - ["Twenty-First Century Fox, Inc."]
+      - ["NASDAQ: TFCFA, TFCF"]
+      - ["acquisition of 21CF"]
+      - ["March 20, 2019"]
+      - ["each share of 21CF common stock"]
+      - ["$51.572626", "51.572626"]
+      - ["0.4517"]
+      - [election, elections]
+      - [proration, prorated]
+  twc_2016_election_proration:
+    candidate_symbols: [TWC]
+    candidate_name_contains: [Time Warner Cable]
+    candidate_security_ids:
+      - US:EODHD:9533a56f-c357-577e-b72f-b85ffbba62af
+    candidate_last_price_dates: [2016-05-17]
+    binding_status: bound
+    effective_date: 2016-05-18
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: TWC shareholder elections and proration produced multiple consideration paths.
+    source_url: https://www.sec.gov/Archives/edgar/data/1091667/000119312516596195/0001193125-16-596195.txt
+    source_sha256: "cc9f4970248f806f27e8a35ade2a145f77ad1e429fdcd55c591873569e77de3f"
+    required_text_groups:
+      - ["May 18, 2016"]
+      - ["$100.00"]
+      - ["0.48908178"]
+      - [election]
+  utx_2020_carr_otis_distributions:
+    candidate_symbols: [UTX]
+    candidate_name_contains: [Raytheon Technologies]
+    candidate_security_ids:
+      - US:EODHD:aefd1dd7-529d-5b6a-80e9-65d0e14102a6
+    candidate_last_price_dates: [2020-04-02]
+    binding_status: bound
+    effective_date: 2020-04-03
+    filing_date: 2020-04-03
+    resolution_kind: exception
+    exception_code: unsupported_consideration
+    claim: UTX-to-RTX raw ticker-change price equality is invalid because the current canonical action inventory omits the CARR 1.0-share and OTIS 0.5-share distributions; keep fail-closed until exact spin-off actions are modeled.
+    source_url: https://www.sec.gov/Archives/edgar/data/101829/000114036120008397/0001140361-20-008397.txt
+    source_sha256: "8b3131e8bf46b322c0c7c9e37e32c624c05336e3f3acaddf86c777ce17f7d6a2"
+    required_text_groups:
+      - ["April 2, 2020"]
+      - [Separation and the Distributions]
+      - [one share of Carrier common stock for each share of the Company’s common stock held as of the Record Date]
+      - [one-half share of Otis common stock for each share of the Company’s common stock held as of the Record Date]
+
+# Verified terminal events in this registry are keyed by the exact frozen
+# candidate identity and terminal price date.  A reused ticker must never
+# inherit one of these events through the symbol-only hints below.
+identity_bound_hints:
+  # The frozen report predates this identity-bound legal-cancellation hint and
+  # therefore retains parsed=null.  Cross-validation accepts that one report
+  # row only through the separately code-pinned SIVBQ event gate, which binds
+  # this exact hint, the SEC HTML bytes, the applied resolution and the
+  # 2024-11-08 engine transition.  Symbol-only SIVB hints cannot authorize it.
+  "US:EODHD:181d58e2-2b82-5f5d-8c33-311c5d7b5129|2024-11-07":
+    candidate_symbol: SIVBQ
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: "2024-11-07"
+      cash_amount: 0.0
+      confidence: high
+      cik: "719739"
+      accession_number: 0001193125-24-254186
+      filing_date: "2024-11-08"
+      form: 8-K
+      items: [1.02, 1.03, 3.03, 5.01, 5.02, 5.03, 7.01, 9.01]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/719739/000119312524254186/d904756d8k.htm
+      reason: SVB Financial Group's confirmed plan became effective on November 7, 2024, cancelling legacy SIVBQ common equity for no distribution; the stored engine transition occurs on the following session.
+  "US:EODHD:9f13974d-7f81-5aac-a3a7-ed1d184bd76b|2015-03-16":
+    candidate_symbol: AGN
+    related_symbols: [ACT]
+    related_names: [Actavis]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2015-03-17
+      ratio: 0.3683
+      cash_amount: 129.22
+      new_symbol: ACT
+      confidence: high
+      cik: "850693"
+      accession_number: 0001193125-15-096184
+      filing_date: 2015-03-17
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/850693/000119312515096184/0001193125-15-096184.txt
+      reason: SEC completion filing states that each legacy Allergan share received $129.22 cash and 0.3683 Actavis shares on March 17, 2015.
+  "US:EODHD:79ce1c42-8ff6-5c13-b9cf-3df82c913734|2020-05-08":
+    candidate_symbol: AGN
+    related_symbols: [ABBV]
+    related_names: [AbbVie]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2020-05-08
+      ratio: 0.866
+      cash_amount: 120.30
+      new_symbol: ABBV
+      confidence: high
+      cik: "1551152"
+      accession_number: 0001104659-20-058837
+      filing_date: 2020-05-08
+      form: 8-K
+      items: [2.01, 3.01, 3.03]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1551152/000110465920058837/tm2018740d2_8k.htm
+      reason: AbbVie's SEC completion filing states that each Actavis-line Allergan share converted into $120.30 cash plus 0.8660 AbbVie share on May 8, 2020.
+  "US:SEC:7992d65b-3a26-5cae-b96d-bd01f695d1c1|2017-08-31":
+    candidate_symbol: DD
+    related_symbols: [DWDP]
+    related_names: [DowDuPont]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2017-09-01
+      ratio: 1.282
+      new_symbol: DWDP
+      confidence: high
+      cik: "30554"
+      accession_number: 0001193125-17-274840
+      filing_date: 2017-09-01
+      form: 8-K
+      items: [2.01, 3.01, 3.03, 5.01]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/30554/000119312517274840/0001193125-17-274840.txt
+      reason: DuPont's SEC completion filing states that each legacy DuPont share converted into 1.282 DowDuPont shares when the merger closed on August 31, 2017, with DWDP trading from September 1, 2017.
+  "US:EODHD:5c946c06-0214-5b7b-8e7c-31f91485a215|2017-12-29":
+    candidate_symbol: LILA
+    related_symbols: [LILA]
+    related_names: [Liberty Latin America]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2018-01-02
+      ratio: 1.0
+      new_symbol: LILA
+      confidence: high
+      cik: "1570585"
+      accession_number: 0001570585-17-000401
+      filing_date: 2017-12-12
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm
+      reason: Liberty Global's SEC-filed release states that each Class A LiLAC tracking share was replaced one-for-one by a Class A Liberty Latin America share, with the new company beginning trade on January 2, 2018.
+  "US:EODHD:24bfb026-6327-5e04-9e32-15589dcb45ba|2017-12-29":
+    candidate_symbol: LILAK
+    related_symbols: [LILAK]
+    related_names: [Liberty Latin America]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2018-01-02
+      ratio: 1.0
+      new_symbol: LILAK
+      confidence: high
+      cik: "1570585"
+      accession_number: 0001570585-17-000401
+      filing_date: 2017-12-12
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1570585/000157058517000401/ex991split-offrecordanddis.htm
+      reason: Liberty Global's SEC-filed release states that each Class C LiLAC tracking share was replaced one-for-one by a Class C Liberty Latin America share, with the new company beginning trade on January 2, 2018.
+  "US:EODHD:de36b2d8-e15a-5d33-8493-4cc37d0c6ce0|2017-07-03":
+    candidate_symbol: BHI
+    related_symbols: [BHGE]
+    related_names: [Baker Hughes]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2017-07-05
+      ratio: 1.0
+      cash_amount: 17.50
+      new_symbol: BHGE
+      confidence: high
+      cik: "808362"
+      accession_number: 0001193125-17-220863
+      filing_date: 2017-07-03
+      form: 8-K12B
+      items: [2.01, 3.01, 3.03, 5.01]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/808362/000119312517220863/d343454d8k12b.htm
+      reason: The SEC completion filing states that each BHI share converted into one BHGE share and the resulting share received a $17.50 special dividend, with BHGE trading from July 5, 2017.
+  "US:EODHD:5fa7bd33-c752-57c7-873c-e9d812d90e05|2017-02-24":
+    candidate_symbol: SE
+    related_symbols: [ENB]
+    related_names: [Enbridge]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2017-02-27
+      ratio: 0.984
+      new_symbol: ENB
+      confidence: high
+      cik: "1373835"
+      accession_number: 0001193125-17-057856
+      filing_date: 2017-02-27
+      form: 8-K
+      items: [2.01, 3.01, 3.03, 5.01]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1373835/000119312517057856/0001193125-17-057856.txt
+      reason: Spectra Energy's SEC completion filing states that the stock-for-stock merger completed on February 27, 2017 and each SE share converted into 0.984 Enbridge common share, with ENB remaining the NYSE symbol.
+  "US:EODHD:53a2ef22-39f2-506c-80b4-bb0f698f43dd|2020-01-24":
+    candidate_symbol: ECA
+    related_symbols: [OVV]
+    related_names: [Ovintiv]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2020-01-27
+      ratio: 0.2
+      new_symbol: OVV
+      confidence: high
+      cik: "876661"
+      accession_number: 0000876661-20-000056
+      filing_date: 2020-01-27
+      form: 25-NSE
+      items: []
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/876661/000087666120000056/ruleprovisionnotice.htm
+      reason: NYSE's SEC-filed Rule 12d2-2 notice states that Encana's domicile and name change became effective after January 24, 2020, every five ECA shares were exchanged for one OVV share, and ECA trading was suspended when OVV continued on January 27, 2020.
+  # Post-repair cache-only replay. This path accepts no arbitrary release
+  # event: the collector code pins the exact terminal action, resolution, all
+  # raw/derived archive rows, rejected dividend decision, and zero index scope.
+  "US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622|2024-08-07":
+    candidate_symbol: NTCOY
+    expected_action: delisting
+    existing_release_event:
+      contract: ntco_ntcoy_price_identity_terminal_only/v1
+
+symbols:
+  FTR:
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: 2021-04-30
+      cash_amount: 0.0
+      cik: "20520"
+      accession_number: 0001140361-21-015200
+      filing_date: 2021-04-30
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/20520/000114036121015200/brhc10023786_8k12g3.htm
+        - https://www.sec.gov/Archives/edgar/data/20520/000114036120019176/brhc10014613_ex2-1.htm
+      reason: SEC emergence filing and confirmed plan state that legacy common stock was cancelled with no distribution.
+  CHK:
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: 2021-02-09
+      cash_amount: 0.0
+      cik: "895126"
+      accession_number: 0000895126-21-000033
+      filing_date: 2021-02-09
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/895126/000089512621000033/chk-20210209.htm
+      reason: SEC emergence filing states that pre-effective equity interests were cancelled without any distribution.
+  WIN:
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: 2020-09-21
+      cash_amount: 0.0
+      cik: "1282266"
+      accession_number: 0001140361-20-021072
+      filing_date: 2020-09-22
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1282266/000114036120021072/brhc10015294_8k.htm
+      reason: SEC emergence filing and confirmed plan state that legacy common stock was cancelled with no distribution.
+  ENDP:
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: 2024-04-23
+      cash_amount: 0.0
+      cik: "2008861"
+      accession_number: 0001193125-24-178089
+      filing_date: 2024-07-17
+      form: S-1
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/2008861/000119312524178089/d15705ds1.htm
+        - https://www.sec.gov/Archives/edgar/data/1593034/000119312524075864/d813107d8k.htm
+      reason: Successor SEC registration and confirmed plan establish the effective date and cancellation of legacy equity with no distribution.
+  SIVB:
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: 2024-11-07
+      cash_amount: 0.0
+      cik: "719739"
+      accession_number: 0001193125-24-254186
+      filing_date: 2024-11-08
+      form: 8-K
+      items: [1.03, 3.03]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/719739/000119312524254186/d904756d8k.htm
+      reason: SEC emergence filing states that no common equity holder received a distribution and all pre-effective common equity was cancelled on November 7, 2024.
+  MNK:
+    expected_action: delisting
+    manual_review: true
+    manual_review_reason: The provider reused MNK for an unrelated Muniholdings fund and for reorganized Mallinckrodt shares; the 2022 legacy cancellation and the 2023 reorganized-share cancellation must be assigned to separate security identities with no successor link.
+    verified_event:
+      action_type: delisting
+      effective_date: 2022-06-16
+      cash_amount: 0.0
+      cik: "1567892"
+      accession_number: 0001193125-22-178880
+      filing_date: 2022-06-22
+      form: 8-K
+      items: [1.01, 3.02, 3.03, 5.01]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1567892/000119312522178880/d311224d8k.htm
+      reason: SEC emergence filing states that all legacy Mallinckrodt ordinary shares were cancelled and all new ordinary shares were issued to unsecured noteholders, leaving legacy equity with no distribution.
+  BBBY:
+    expected_action: delisting
+    verified_event:
+      action_type: delisting
+      effective_date: 2023-09-29
+      cash_amount: 0.0
+      cik: "886158"
+      accession_number: 0001193125-23-247428
+      filing_date: 2023-09-29
+      form: 8-K
+      items: [1.03, 3.03]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/886158/000119312523247428/d579010d8k.htm
+        - https://www.sec.gov/Archives/edgar/data/886158/000119312523115523/d89202d8k.htm
+      reason: SEC filing states that the plan became effective on September 29, 2023 and all legacy BBBY equity was cancelled without consideration; the May 3 Nasdaq suspension was not the economic termination because BBBYQ continued OTC.
+  COV:
+    related_symbols: [MDT]
+    related_names: [Medtronic]
+    expected_action: stock_merger
+    anchor_dates: [2015-01-26]
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2015-01-26
+      cash_amount: 35.19
+      ratio: 0.956
+      new_symbol: MDT
+      confidence: high
+      cik: "1385187"
+      accession_number: 0001193125-15-020714
+      filing_date: 2015-01-26
+      form: 8-K
+      items: [2.01, 3.01, 3.03, 8.01]
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1385187/000119312515020714/d860155d8k.htm
+        - https://www.sec.gov/Archives/edgar/data/1613103/000119312515020681/d859999dex991.htm
+      reason: Covidien's SEC completion filing states that each COV share converted into $35.19 cash plus 0.956 MDT share on January 26, 2015, with COV trading suspended before the January 27 open.
+  CCE: {related_symbols: [CCEP], related_names: [Coca-Cola European Partners], expected_action: stock_merger}
+  KRFT: {related_symbols: [KHC], related_names: [Kraft Heinz], expected_action: stock_merger}
+  DOW:
+    related_symbols: [DWDP]
+    related_names: [DowDuPont]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2017-09-01
+      ratio: 1.0
+      new_symbol: DWDP
+      cik: "29915"
+      accession_number: 0001193125-17-274845
+      filing_date: 2017-09-01
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/29915/000119312517274845/0001193125-17-274845.txt
+      reason: SEC completion filing states a one-for-one conversion on August 31; the daily action is placed on DowDuPont's first trading session, September 1.
+  PX:
+    related_symbols: [LIN]
+    related_names: [Linde]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2018-10-31
+      ratio: 1.0
+      new_symbol: LIN
+      cik: "1707925"
+      accession_number: 0001193125-18-313073
+      filing_date: 2018-10-31
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1707925/000119312518313073/0001193125-18-313073.txt
+      reason: SEC completion filing states that each Praxair share converted into one Linde plc share.
+  KORS: {related_symbols: [CPRI], related_names: [Capri Holdings], expected_action: ticker_change, anchor_dates: [2019-01-02]}
+  HRS: {related_symbols: [LHX], related_names: [L3Harris Technologies], expected_action: ticker_change, anchor_dates: [2019-07-01]}
+  TMK:
+    related_symbols: [GL]
+    related_names: [Globe Life]
+    expected_action: ticker_change
+    anchor_dates: [2019-08-09]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2019-08-09
+      new_symbol: GL
+      cik: "320335"
+      accession_number: 0000320335-19-000024
+      filing_date: 2019-07-24
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/320335/000032033519000024/0000320335-19-000024.txt
+      reason: SEC filing states that Globe Life would begin trading under GL on August 9, 2019.
+  BHGE: {related_symbols: [BKR], related_names: [Baker Hughes], expected_action: ticker_change, anchor_dates: [2019-10-18]}
+  CTRP: {related_symbols: [TCOM], related_names: [Trip.com Group], expected_action: ticker_change, anchor_dates: [2019-11-05]}
+  HCP: {related_symbols: [PEAK], related_names: [Healthpeak Properties], expected_action: ticker_change, anchor_dates: [2019-11-05]}
+  CBS: {related_symbols: [VIAC], related_names: [ViacomCBS], expected_action: ticker_change, anchor_dates: [2019-12-05]}
+  BBT: {related_symbols: [TFC], related_names: [Truist Financial], expected_action: ticker_change, anchor_dates: [2019-12-09]}
+  JEC:
+    related_symbols: [J]
+    related_names: [Jacobs Solutions]
+    expected_action: ticker_change
+    anchor_dates: [2019-12-10]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2019-12-10
+      new_symbol: J
+      cik: "52988"
+      accession_number: 0000052988-19-000066
+      filing_date: 2019-11-25
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/52988/000005298819000066/0000052988-19-000066.txt
+      reason: SEC filing states that Jacobs would begin trading under J on December 10, 2019.
+  SYMC: {related_symbols: [NLOK], related_names: [NortonLifeLock], expected_action: ticker_change, anchor_dates: [2019-11-05]}
+  MYL:
+    related_symbols: [VTRS]
+    related_names: [Viatris]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2020-11-16
+      ratio: 1.0
+      new_symbol: VTRS
+      cik: "1623613"
+      accession_number: 0001193125-20-298224
+      filing_date: 2020-11-19
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1623613/000119312520298224/0001193125-20-298224.txt
+      reason: SEC completion filing states that each Mylan share converted into one Viatris share.
+  CTL:
+    related_symbols: [LUMN]
+    related_names: [Lumen Technologies]
+    expected_action: ticker_change
+    anchor_dates: [2020-09-18]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2020-09-18
+      new_symbol: LUMN
+      cik: "18926"
+      accession_number: 0000018926-20-000028
+      filing_date: 2020-11-05
+      form: 10-Q
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/18926/000001892620000028/ctl-20200930.htm
+        - https://www.sec.gov/Archives/edgar/data/18926/000119312520247184/0001193125-20-247184.txt
+      reason: CenturyLink's SEC quarterly report states that its stock began trading under LUMN effective September 18, 2020.
+  LB: {related_symbols: [BBWI], related_names: [Bath & Body Works], expected_action: ticker_change, anchor_dates: [2021-08-03]}
+  COG: {related_symbols: [CTRA], related_names: [Coterra Energy], expected_action: ticker_change, anchor_dates: [2021-10-04]}
+  WLTW: {related_symbols: [WTW], related_names: [Willis Towers Watson], expected_action: ticker_change, anchor_dates: [2022-01-10]}
+  XLNX: {related_symbols: [AMD], related_names: [Advanced Micro Devices], expected_action: stock_merger}
+  INFO: {related_symbols: [SPGI], related_names: [S&P Global], expected_action: stock_merger}
+  PBCT: {related_symbols: [MTB], related_names: [M&T Bank], expected_action: stock_merger}
+  DISCA:
+    related_symbols: [WBD]
+    related_names: [Warner Bros Discovery]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2022-04-08
+      ratio: 1.0
+      new_symbol: WBD
+      cik: "1437107"
+      accession_number: 0001193125-22-103051
+      filing_date: 2022-04-12
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1437107/000119312522103051/0001193125-22-103051.txt
+      reason: SEC filing states each Discovery Series A common share was reclassified one-for-one into WBD common stock.
+  DISCK:
+    related_symbols: [WBD]
+    related_names: [Warner Bros Discovery]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2022-04-08
+      ratio: 1.0
+      new_symbol: WBD
+      cik: "1437107"
+      accession_number: 0001193125-22-103051
+      filing_date: 2022-04-12
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1437107/000119312522103051/0001193125-22-103051.txt
+      reason: SEC filing states each Discovery Series C common share was reclassified one-for-one into WBD common stock.
+  BLL: {related_symbols: [BALL], related_names: [Ball Corporation], expected_action: ticker_change, anchor_dates: [2022-05-10]}
+  VIAC:
+    related_symbols: [PARA]
+    related_names: [Paramount Global]
+    expected_action: ticker_change
+    anchor_dates: [2022-02-17]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2022-02-17
+      new_symbol: PARA
+      cik: "813828"
+      accession_number: 0000813828-22-000011
+      filing_date: 2022-02-18
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/813828/000081382822000011/0000813828-22-000011.txt
+      reason: SEC filing states that Paramount Global began trading under PARA on February 17, 2022.
+  FB: {related_symbols: [META], related_names: [Meta Platforms], expected_action: ticker_change, anchor_dates: [2022-06-09]}
+  ANTM:
+    related_symbols: [ELV]
+    related_names: [Elevance Health]
+    expected_action: ticker_change
+    anchor_dates: [2022-06-28]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2022-06-28
+      new_symbol: ELV
+      cik: "1156039"
+      accession_number: 0001193125-22-183957
+      filing_date: 2022-06-28
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1156039/000119312522183957/0001193125-22-183957.txt
+      reason: SEC filing confirms the Elevance Health name and ELV ticker effective June 28, 2022.
+  DRE: {related_symbols: [PLD], related_names: [Prologis], expected_action: stock_merger}
+  NLOK: {related_symbols: [GEN], related_names: [Gen Digital], expected_action: ticker_change, anchor_dates: [2022-11-08]}
+  PKI:
+    related_symbols: [RVTY]
+    related_names: [Revvity]
+    expected_action: ticker_change
+    anchor_dates: [2023-05-16]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2023-05-16
+      new_symbol: RVTY
+      cik: "31791"
+      accession_number: 0001157523-23-000815
+      filing_date: 2023-05-11
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/31791/000115752323000815/a53397725ex99_1.htm
+        - https://www.sec.gov/Archives/edgar/data/31791/000003179124000004/pki-20231231.htm
+      reason: The official SEC-filed issuer release and annual report state that PKI began trading as RVTY on May 16, 2023.
+  FISV: {related_symbols: [FI], related_names: [Fiserv], expected_action: ticker_change, anchor_dates: [2023-06-07]}
+  ABC: {related_symbols: [COR], related_names: [Cencora], expected_action: ticker_change, anchor_dates: [2023-08-30]}
+  PEAK: {related_symbols: [DOC], related_names: [Healthpeak Properties], expected_action: ticker_change, anchor_dates: [2024-03-01]}
+  PXD: {related_symbols: [XOM], related_names: [Exxon Mobil], expected_action: stock_merger}
+  FLT: {related_symbols: [CPAY], related_names: [Corpay], expected_action: ticker_change, anchor_dates: [2024-03-25]}
+  WRK: {related_symbols: [SW], related_names: [Smurfit Westrock], expected_action: stock_merger}
+  MRO: {related_symbols: [COP], related_names: [ConocoPhillips], expected_action: stock_merger}
+  DFS: {related_symbols: [COF], related_names: [Capital One], expected_action: stock_merger}
+  CDAY: {related_symbols: [DAY], related_names: [Dayforce], expected_action: ticker_change, anchor_dates: [2024-02-01]}
+  PARA:
+    related_symbols: [PSKY]
+    related_names: [Paramount Skydance]
+    expected_action: stock_merger
+    manual_review: true
+    manual_review_reason: Shareholder election and proration made the $15 cash and one-share alternatives mutually exclusive, not additive.
+  FI:
+    related_symbols: [FISV]
+    related_names: [Fiserv]
+    expected_action: ticker_change
+    anchor_dates: [2025-11-11]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2025-11-11
+      new_symbol: FISV
+      cik: "798354"
+      accession_number: 0001193125-25-254670
+      filing_date: 2025-10-29
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/0001193125-25-254670.txt
+      reason: SEC filing states that Fiserv would trade under FISV beginning November 11, 2025.
+  MMC:
+    related_symbols: [MRSH]
+    related_names: [Marsh]
+    expected_action: ticker_change
+    anchor_dates: [2026-01-14]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2026-01-14
+      new_symbol: MRSH
+      cik: "62709"
+      accession_number: 0000062709-26-000014
+      filing_date: 2026-01-29
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/62709/000006270926000014/0000062709-26-000014.txt
+      reason: SEC filing confirms that Marsh began trading under MRSH on January 14, 2026.
+  BK:
+    related_symbols: [BNY]
+    related_names: [Bank of New York Mellon]
+    expected_action: ticker_change
+    anchor_dates: [2026-05-21]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2026-05-21
+      new_symbol: BNY
+      cik: "1390777"
+      accession_number: 0001193125-26-269610
+      filing_date: 2026-06-12
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1390777/000119312526269610/0001193125-26-269610.txt
+        - https://www.bny.com/corporate/global/en/about-us/newsroom/press-release/bny-announces-planned-change-of-stock-ticker-symbol-to-bny-130465.html
+      reason: BNY's official issuer release states that BK common stock would begin trading under BNY effective May 21, 2026; the subsequent SEC filing confirms BNY as the NYSE symbol.
+  QRTEA:
+    related_symbols: [QVCGA]
+    related_names: [QVC Group]
+    expected_action: ticker_change
+    anchor_dates: [2025-02-24]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2025-02-24
+      new_symbol: QVCGA
+      cik: "1355096"
+      accession_number: 0001104659-25-016368
+      filing_date: 2025-02-21
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1355096/000110465925016368/tm257272d1_8k.htm
+        - https://www.sec.gov/Archives/edgar/data/1355096/000110465925016368/tm257272d1_ex99-1.htm
+      reason: QVC Group's SEC filing states that QRTEA would begin trading as QVCGA at the open on February 24, 2025.
+  DTV: {related_symbols: [T], related_names: [AT&T], expected_action: stock_merger}
+  SNI: {related_symbols: [DISCK], related_names: [Discovery Communications], expected_action: stock_merger}
+  SNDK: {related_symbols: [WDC], related_names: [Western Digital], expected_action: stock_merger}
+  TWX: {related_symbols: [T], related_names: [AT&T], expected_action: stock_merger}
+  SCG: {related_symbols: [D], related_names: [Dominion Energy], expected_action: stock_merger}
+  TSS: {related_symbols: [GPN], related_names: [Global Payments], expected_action: stock_merger}
+  STI: {related_symbols: [TFC], related_names: [Truist Financial], expected_action: stock_merger}
+  ETFC: {related_symbols: [MS], related_names: [Morgan Stanley], expected_action: stock_merger}
+  RTN: {related_symbols: [RTX], related_names: [Raytheon Technologies], expected_action: stock_merger}
+  IPG: {related_symbols: [OMC], related_names: [Omnicom], expected_action: stock_merger}
+  DISH: {related_symbols: [SATS], related_names: [EchoStar], expected_action: stock_merger}
+  GPS:
+    related_symbols: [GAP]
+    related_names: [Gap]
+    expected_action: ticker_change
+    anchor_dates: [2024-08-22]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2024-08-22
+      new_symbol: GAP
+      cik: "39911"
+      accession_number: 0000039911-24-000176
+      filing_date: 2024-08-29
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/39911/000003991124000176/0000039911-24-000176.txt
+        - https://investors.gapinc.com/press-releases/news-details/2024/Gap-Inc.-To-Change-Ticker-Symbol-to-GAP-on-August-22-To-Report-Second-Quarter-Fiscal-2024-Results-on-August-29/default.aspx
+      reason: Gap's official investor release states that GPS would begin trading as GAP on August 22, 2024; the subsequent SEC filing confirms GAP as the NYSE symbol.
+  FBHS: {related_symbols: [FBIN], related_names: [Fortune Brands Innovations], expected_action: ticker_change, anchor_dates: [2023-01-23]}
+  HFC: {related_symbols: [DINO], related_names: [HF Sinclair], expected_action: ticker_change, anchor_dates: [2022-03-15]}
+  ADS:
+    related_symbols: [BFH]
+    related_names: [Bread Financial]
+    expected_action: ticker_change
+    anchor_dates: [2022-04-04]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2022-04-04
+      new_symbol: BFH
+      cik: "1101215"
+      accession_number: 0001101215-22-000051
+      filing_date: 2022-03-23
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1101215/000110121522000051/0001101215-22-000051.txt
+      reason: SEC filing states that ADS would cease and BFH would begin trading effective April 4, 2022.
+  VIP:
+    related_symbols: [VEON]
+    related_names: [VEON]
+    expected_action: ticker_change
+    anchor_dates: [2017-03-30]
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2017-03-30
+      new_symbol: VEON
+      cik: "1468091"
+      accession_number: 0001193125-17-166747
+      filing_date: 2017-05-11
+      form: 6-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1468091/000119312517166747/0001193125-17-166747.txt
+      reason: SEC filing states that VimpelCom changed its name to VEON effective March 30, 2017.
+  CMCSK:
+    related_symbols: [CMCSA]
+    related_names: [Comcast]
+    expected_action: stock_merger
+    anchor_dates: [2015-12-14]
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2015-12-14
+      ratio: 1.0
+      new_symbol: CMCSA
+      cik: "1166691"
+      accession_number: 0000950103-15-009516
+      filing_date: 2015-12-15
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1166691/000095010315009516/0000950103-15-009516.txt
+      reason: SEC filing states that every Class A Special share converted one-for-one into Class A common stock after the December 11 close; the daily action is placed on the first following trading session.
+  YHOO: {related_symbols: [AABA], related_names: [Altaba], expected_action: ticker_change, anchor_dates: [2017-06-19]}
+  DWDP:
+    related_symbols: [DD]
+    related_names: [DuPont de Nemours]
+    expected_action: ticker_change
+    anchor_dates: [2019-06-03]
+    manual_review: true
+    manual_review_reason: The ticker transition followed a spin-off, so a one-for-one ticker action alone would discard distributed value.
+  ESV:
+    related_symbols: [VAL]
+    related_names: [Valaris]
+    expected_action: ticker_change
+    anchor_dates: [2019-07-31]
+    manual_review: true
+    manual_review_reason: EODHD legacy history is supplied by the delisted VALPQ code through 2021-04-27; the separate official 2021-04-30 cancellation carried warrant consideration and remains an economic-outcome review item.
+    verified_event:
+      action_type: ticker_change
+      effective_date: 2019-07-31
+      new_symbol: VAL
+      cik: "314808"
+      accession_number: 0000314808-19-000130
+      filing_date: 2019-07-30
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/314808/000031480819000130/0000314808-19-000130.txt
+      reason: SEC filing states that Ensco Rowan would change its name to Valaris effective July 31, 2019.
+  UTX: {related_symbols: [RTX], related_names: [Raytheon Technologies], expected_action: ticker_change, anchor_dates: [2020-04-03]}
+  WYND: {related_symbols: [WH], related_names: [Wyndham Hotels], expected_action: ticker_change, anchor_dates: [2018-06-01]}
+  LO: {related_symbols: [RAI], related_names: [Reynolds American], expected_action: stock_merger}
+  TEG: {related_symbols: [WEC], related_names: [WEC Energy Group], expected_action: stock_merger}
+  MWV: {related_symbols: [WRK], related_names: [WestRock], expected_action: stock_merger}
+  FDO: {related_symbols: [DLTR], related_names: [Dollar Tree], expected_action: stock_merger}
+  HCBK: {related_symbols: [MTB], related_names: [M&T Bank], expected_action: stock_merger}
+  PCL: {related_symbols: [WY], related_names: [Weyerhaeuser], expected_action: stock_merger}
+  CAM: {related_symbols: [SLB], related_names: [Schlumberger], expected_action: stock_merger}
+  BXLT: {related_symbols: [SHPG], related_names: [Shire], expected_action: stock_merger}
+  STJ: {related_symbols: [ABT], related_names: [Abbott Laboratories], expected_action: stock_merger}
+  LLTC: {related_symbols: [ADI], related_names: [Analog Devices], expected_action: stock_merger}
+  HOT:
+    related_symbols: [MAR]
+    related_names: [Marriott International]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2016-09-23
+      ratio: 0.8
+      cash_amount: 21.0
+      new_symbol: MAR
+      cik: "316206"
+      accession_number: 0001193125-16-718027
+      filing_date: 2016-09-23
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/316206/000119312516718027/d244396d8k.htm
+      reason: SEC-filed completion release states that Starwood holders received $21 cash and 0.8 Marriott shares for each Starwood share at the September 23, 2016 completion.
+  RAI: {related_symbols: [BTI], related_names: [British American Tobacco], expected_action: stock_merger}
+  LVLT: {related_symbols: [CTL], related_names: [CenturyLink], expected_action: stock_merger}
+  BCR: {related_symbols: [BDX], related_names: [Becton Dickinson], expected_action: stock_merger}
+  ANDV: {related_symbols: [MPC], related_names: [Marathon Petroleum], expected_action: stock_merger}
+  COL: {related_symbols: [UTX], related_names: [United Technologies], expected_action: stock_merger}
+  AET: {related_symbols: [CVS], related_names: [CVS Health], expected_action: stock_merger}
+  ESRX: {related_symbols: [CI], related_names: [Cigna], expected_action: stock_merger}
+  SHPG:
+    related_symbols: [TAK]
+    related_names: [Takeda Pharmaceutical]
+    expected_action: stock_merger
+    verified_event:
+      action_type: stock_merger
+      effective_date: 2019-01-08
+      ratio: 5.034
+      cash_amount: 90.99
+      new_symbol: TAK
+      cik: "936402"
+      accession_number: 0001193125-19-004574
+      filing_date: 2019-01-08
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/936402/000119312519004574/0001193125-19-004574.txt
+      reason: SEC completion filing states that each Shire ADS received $90.99 cash and 5.034 Takeda ADSs.
+  NFX: {related_symbols: [ECA], related_names: [Encana], expected_action: stock_merger}
+  LLL: {related_symbols: [LHX], related_names: [L3Harris Technologies], expected_action: stock_merger}
+  APC: {related_symbols: [OXY], related_names: [Occidental Petroleum], expected_action: stock_merger}
+  VIAB: {related_symbols: [VIAC], related_names: [ViacomCBS], expected_action: stock_merger}
+  AVP: {related_symbols: [NTCO], related_names: [Natura &Co], expected_action: stock_merger}
+  WCG: {related_symbols: [CNC], related_names: [Centene], expected_action: stock_merger}
+  CXO: {related_symbols: [COP], related_names: [ConocoPhillips], expected_action: stock_merger}
+  QEP: {related_symbols: [FANG], related_names: [Diamondback Energy], expected_action: stock_merger}
+  FLIR: {related_symbols: [TDY], related_names: [Teledyne Technologies], expected_action: stock_merger}
+  ALXN: {related_symbols: [AZN], related_names: [AstraZeneca], expected_action: stock_merger}
+  MXIM: {related_symbols: [ADI], related_names: [Analog Devices], expected_action: stock_merger}
+  XEC: {related_symbols: [COG, CTRA], preferred_symbols: [COG], related_names: [Cabot Oil & Gas, Coterra Energy], expected_action: stock_merger}
+  SWN: {related_symbols: [CHK, EXE], preferred_symbols: [CHK], related_names: [Chesapeake Energy, Expand Energy], expected_action: stock_merger}
+  ANSS: {related_symbols: [SNPS], related_names: [Synopsys], expected_action: stock_merger}
+  HES: {related_symbols: [CVX], related_names: [Chevron], expected_action: stock_merger}
+  HBI: {related_symbols: [GIL], related_names: [Gildan Activewear], expected_action: stock_merger}
+  AGN:
+    related_symbols: [ACT]
+    related_names: [Actavis]
+    expected_action: stock_merger
+  BRCM:
+    related_symbols: [AVGO]
+    related_names: [Avago Technologies, Broadcom Limited]
+    expected_action: stock_merger
+    manual_review: true
+    manual_review_reason: Shareholder cash-stock elections and proration cannot be represented by one fixed consideration row.
+  GGP:
+    related_symbols: [BPR]
+    related_names: [Brookfield Property REIT]
+    expected_action: stock_merger
+    manual_review: true
+    manual_review_reason: Shareholder cash-stock elections and proration cannot be represented by one fixed consideration row.
+  AABA:
+    expected_action: delisting
+    manual_review: true
+    manual_review_reason: Multi-stage liquidation distributions cannot be represented as a single terminal cash event.
+  NBL: {related_symbols: [CVX], related_names: [Chevron], expected_action: stock_merger}
+  CTRA: {related_symbols: [DVN], related_names: [Devon Energy], expected_action: stock_merger}
+  EMC: {related_symbols: [DVMT], related_names: [Dell Technologies Class V], expected_action: stock_merger}
+  KSU: {related_symbols: [CP], related_names: [Canadian Pacific], expected_action: stock_merger}
+  TWC:
+    related_symbols: [CHTR]
+    related_names: [Charter Communications]
+    expected_action: stock_merger
+    manual_review: true
+    manual_review_reason: Shareholder election and proration created multiple cash-stock consideration combinations.
+  CELG:
+    related_symbols: [BMY]
+    related_names: [Bristol-Myers Squibb]
+    expected_action: stock_merger
+    manual_review: true
+    manual_review_reason: Consideration included a separately tradable contingent value right not represented by the action schema.
+  CMA: {related_symbols: [FITB], related_names: [Fifth Third Bancorp], expected_action: stock_merger}
+  SWY: {expected_action: cash_merger}
+  PETM: {expected_action: cash_merger}
+  CFN: {related_symbols: [BDX], related_names: [Becton Dickinson], expected_action: stock_merger}
+  CTRX: {expected_action: cash_merger}
+  PLL: {expected_action: cash_merger}
+  HSP: {expected_action: cash_merger}
+  SIAL:
+    expected_action: cash_merger
+    verified_event:
+      action_type: cash_merger
+      effective_date: 2015-11-18
+      cash_amount: 140.0
+      cik: "90185"
+      accession_number: 0001354457-15-000214
+      filing_date: 2015-11-18
+      form: 25-NSE
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/90185/000135445715000214/0001354457-15-000214.txt
+        - https://www.sec.gov/Archives/edgar/data/90185/000119312514392852/0001193125-14-392852.txt
+      reason: The official delisting filing establishes the November 18 completion boundary and the target proxy establishes $140 cash for each Sigma-Aldrich share.
+  ALTR:
+    expected_action: cash_merger
+    verified_event:
+      action_type: cash_merger
+      effective_date: 2015-12-28
+      cash_amount: 54.0
+      cik: "50863"
+      accession_number: 0001193125-15-414642
+      filing_date: 2015-12-28
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/50863/000119312515414642/0001193125-15-414642.txt
+        - https://www.sec.gov/Archives/edgar/data/50863/000119312515209231/0001193125-15-209231.txt
+      reason: Intel's SEC completion filing states that the acquisition closed on December 28 and every Altera share converted into $54.00 cash.
+  PCP: {expected_action: cash_merger}
+  GMCR: {expected_action: cash_merger}
+  POM: {expected_action: cash_merger}
+  ADT: {expected_action: cash_merger}
+  ARG: {expected_action: cash_merger}
+  CVC: {expected_action: cash_merger}
+  CPGX: {expected_action: cash_merger}
+  GAS: {expected_action: cash_merger}
+  TE: {expected_action: cash_merger}
+  HAR: {expected_action: cash_merger}
+  JOY: {expected_action: cash_merger}
+  MJN: {expected_action: cash_merger}
+  WFM: {expected_action: cash_merger}
+  SPLS: {expected_action: cash_merger}
+  CSRA: {expected_action: cash_merger}
+  MON: {expected_action: cash_merger}
+  XL: {expected_action: cash_merger}
+  EVHC: {expected_action: cash_merger}
+  CA:
+    expected_action: cash_merger
+    verified_event:
+      action_type: cash_merger
+      effective_date: 2018-11-05
+      cash_amount: 44.5
+      cik: "1730168"
+      accession_number: 0001193125-18-317917
+      filing_date: 2018-11-05
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1730168/000119312518317917/0001193125-18-317917.txt
+        - https://www.sec.gov/Archives/edgar/data/356028/000119312518271770/0001193125-18-271770.txt
+      reason: SEC completion filing and target filing establish the November 5 closing and $44.50 per-share cash consideration.
+  DNB: {expected_action: cash_merger}
+  RHT: {expected_action: cash_merger}
+  LM: {expected_action: cash_merger}
+  TIF: {expected_action: cash_merger}
+  VAR: {expected_action: cash_merger}
+  CERN: {expected_action: cash_merger}
+  CTXS: {expected_action: cash_merger}
+  NLSN: {expected_action: cash_merger}
+  TWTR: {expected_action: cash_merger}
+  COR:
+    expected_action: cash_merger
+    verified_event:
+      action_type: cash_merger
+      effective_date: 2021-12-28
+      cash_amount: 170.0
+      cik: "1053507"
+      accession_number: 0001193125-21-367969
+      filing_date: 2021-12-28
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/1053507/000119312521367969/d256586dex991.htm
+        - https://www.sec.gov/Archives/edgar/data/1053507/000119312521341764/d207949dex99a1a.htm
+      reason: American Tower's SEC-filed completion release states that the CoreSite merger completed on December 28, 2021 and each share converted into $170 cash.
+  ABMD:
+    expected_action: cash_merger
+    manual_review: true
+    manual_review_reason: Consideration included $380 cash plus a contingent value right worth up to $35, which the action schema cannot represent.
+  ARNC: {expected_action: cash_merger}
+  ATVI: {expected_action: cash_merger}
+  SGEN: {expected_action: cash_merger}
+  SPLK: {expected_action: cash_merger}
+  SRCL: {expected_action: cash_merger}
+  CTLT: {expected_action: cash_merger}
+  PDCO: {expected_action: cash_merger}
+  JNPR: {expected_action: cash_merger}
+  JWN:
+    expected_action: cash_merger
+    verified_event:
+      action_type: cash_merger
+      effective_date: 2025-05-20
+      cash_amount: 24.25
+      cik: "72333"
+      accession_number: 0001104659-25-050982
+      filing_date: 2025-05-20
+      form: 8-K
+      source_urls:
+        - https://www.sec.gov/Archives/edgar/data/72333/000110465925050982/0001104659-25-050982.txt
+      reason: SEC completion filing states that each Nordstrom share converted into $24.25 cash on May 20, 2025.
+  WBA: {expected_action: cash_merger}
+  FL: {expected_action: cash_merger}
+  K: {expected_action: cash_merger}
+  DAY: {expected_action: cash_merger}
+  HOLX: {expected_action: cash_merger}
+  SEE: {expected_action: cash_merger}
+  TGNA: {expected_action: cash_merger}

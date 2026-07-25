@@ -1,0 +1,7 @@
+{
+  "dataset": "daily_price_raw",
+  "manifest_path": "datasets/daily_price_raw/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-daily_price_raw/manifest.json",
+  "manifest_sha256": "d22a471ae6f70cc1c1f290601b2056dd0d42ca6c06a3f8dd1d178b2daab0da88",
+  "updated_at": "2026-07-21T04:41:09.633019Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-daily_price_raw"
+}

@@ -1,0 +1,59 @@
+{
+  "completed_session": "2026-07-15",
+  "conflict_count": 0,
+  "created_at": "2026-07-19T08:39:39.343778Z",
+  "dataset": "cross_validation_reports",
+  "files": [
+    {
+      "max_session": "2026-07-19",
+      "min_session": "2026-07-19",
+      "path": "part-00000.parquet",
+      "row_count": 1,
+      "sha256": "8f9028499c825e2bb88e3bdc36533cb777834333f29d0f0430cf9a5d893cb94c",
+      "size_bytes": 20557
+    }
+  ],
+  "metadata": {
+    "event_count": 202,
+    "event_mismatch_count": 0,
+    "inherits_parent": false,
+    "input_hashes": {
+      "candidate_set_sha256": "32cf8a701a37041584b4a8117064c858d122d3fa50b6f76f19f3e05bd4060c64",
+      "lifecycle_evidence_report_sha256": "7760962880440d35d900305061c611041d449494cf17273a5502817892860554",
+      "lifecycle_resolutions_sha256": "c955a3fdc6bec69a99a763f43e4de5d989d2520bec0a6a2833588ae07f158d1a"
+    },
+    "lifecycle_evidence_report_sha256": "7760962880440d35d900305061c611041d449494cf17273a5502817892860554",
+    "nonterminal_event_count": 33,
+    "operation": "validate_us_lifecycle_cross_sources",
+    "overlap_session_count": 245523,
+    "permanent_exception_count": 12,
+    "permanent_exception_mismatch_count": 0,
+    "policy_sha256": "16f6533fb040e2525f3de93f318ba0f8927967ff3db52a8b8c4cd6f07eaae8ca",
+    "price_exception_count": 195,
+    "price_mismatch_count": 0,
+    "price_pass_count": 101,
+    "price_target_count": 296,
+    "price_unresolved_count": 0,
+    "provider": "yahoo_chart",
+    "report_id": "56b28a31c773f6c174802744b9b8d3d89a618f27a6cb64afad30cd88cb178be2",
+    "reviewed_nonterminal_event_count": 33,
+    "status": "passed",
+    "validated_versions": {
+      "adjustment_factors": "release-exact-factors-20260715-da009d5f18a94da6b137a488279a51be-adjustment_factors",
+      "corporate_actions": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-corporate_actions",
+      "daily_price_raw": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-daily_price_raw",
+      "lifecycle_resolutions": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-lifecycle_resolutions",
+      "security_master": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-security_master",
+      "symbol_history": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-symbol_history"
+    }
+  },
+  "official_coverage_end": "",
+  "official_coverage_start": "",
+  "parent_version": "cross-validation-20260715-2474feaa64b3409198e89b6bad287354-reports",
+  "published_by": "jh",
+  "quality": "valid",
+  "source_mode": "",
+  "unresolved_action_count": 0,
+  "version": "cross-validation-20260715-193d764a2d7c450a82e27bf9f8967008-reports",
+  "warnings": []
+}

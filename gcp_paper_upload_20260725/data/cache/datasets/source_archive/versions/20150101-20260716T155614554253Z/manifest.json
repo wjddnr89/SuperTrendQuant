@@ -1,0 +1,29 @@
+{
+  "completed_session": "2015-01-01",
+  "conflict_count": 0,
+  "created_at": "2026-07-16T15:56:14.555851Z",
+  "dataset": "source_archive",
+  "files": [
+    {
+      "max_session": "2015-01-01",
+      "min_session": "2015-01-01",
+      "path": "part-00000.parquet",
+      "row_count": 1,
+      "sha256": "2b98e7633fe576b625bd0ab2d848d08c621eba18f0cd0cc35cbbbe8fe3937065",
+      "size_bytes": 12908
+    }
+  ],
+  "metadata": {
+    "inherits_parent": true,
+    "operation": "index_source_archive"
+  },
+  "official_coverage_end": "",
+  "official_coverage_start": "",
+  "parent_version": "20260630-20260716T155614509150Z",
+  "published_by": "jh",
+  "quality": "valid",
+  "source_mode": "",
+  "unresolved_action_count": 0,
+  "version": "20150101-20260716T155614554253Z",
+  "warnings": []
+}

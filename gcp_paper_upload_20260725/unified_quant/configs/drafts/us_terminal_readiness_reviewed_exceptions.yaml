@@ -1,0 +1,282 @@
+schema: us_terminal_readiness_reviewed_exceptions/v1
+reviewed_terminal_readiness_exceptions:
+  - event_id: 4294b6bfa674fab682ba9c299b4fae27ae54b60081c58140f6846b933a47e1ef
+    security_id: US:EODHD:2d3e3e74-9be9-5696-94c4-97a5f7598f79
+    symbol: WIN
+    issue_code: terminal_action_after_expected_session
+    action_type: delisting
+    last_price_session: "2020-07-10"
+    expected_transition_session: "2020-07-13"
+    engine_session: "2020-09-21"
+    action_date_field: ex_date
+    action_date: "2020-09-21"
+    action_official: true
+    action_cash_amount: 0.0
+    action_ratio: null
+    action_new_security_id: ""
+    action_new_symbol: ""
+    action_source_kind: official_crosscheck
+    action_source: sec_edgar+stored_price_crosscheck
+    action_source_url: "https://www.sec.gov/Archives/edgar/data/1282266/000114036120021072/brhc10015294_8k.htm"
+    action_source_hash: 656d5eebc149b51f53a0bb48bc3de4547f5b53986f97f84e4cdc679fc4bca125
+    action_row_sha256: d757e4736cc75aeb8832696a2702484a1ef4d3291e2746f7ffea72d19d43e0e6
+    resolution_candidate_id: 635836bfa46d9be1037d2f96f2af2dc7ac257d30598a3c3186e089ef9d81c40e
+    resolution_source_url: "https://www.sec.gov/Archives/edgar/data/1282266/000114036120021072/brhc10015294_8k.htm"
+    resolution_source_hash: 656d5eebc149b51f53a0bb48bc3de4547f5b53986f97f84e4cdc679fc4bca125
+    resolution_row_sha256: 97e98f1332a8f9ffba8caf236c498b0e3a00f0af3a63aadf2844c9b728ebd297
+    target_index_ids: [sp500]
+    index_removals:
+      - event_id: 8986348b93af95d969f49e81b2a020047a4f559e33adf057cc7fc7b66013732f
+        index_id: sp500
+        effective_date: "2015-04-07"
+        operation: REMOVE
+        official: false
+        source: community_sp500_history
+        source_kind: community
+        source_url: "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20%28Updated%29.csv"
+        source_hash: 39a9202c9ef69a74c0ff07e2113ad41fb6da7c8c5b6cd9541f0185fb4391e717
+        row_sha256: d7c80972720a1b4bd1ce37253a83225677424a5518ebe8e1fb8a6edd86724fce
+    index_provenance_class: reviewed_non_primary_index_history
+    policy_code: removed_from_target_indices_before_terminal_price/v1
+    required_release_warning: >-
+      WIN's official zero-distribution terminal action is delayed, but the
+      exact release removed WIN from the S&P 500 more than five years before
+      its final price and contains no later ADD, anchor, or price re-entry.
+      The removal uses non-primary community index-history provenance, so
+      release quality is degraded.
+
+  - event_id: 6b6b3440b4c3c0466e5b8d2ee6a8339cd230998a837c7cb573dae75fff565b98
+    security_id: US:EODHD:54d04976-15c6-5ba9-a2cc-10701a4b5c1f
+    symbol: CHK
+    issue_code: terminal_action_after_expected_session
+    action_type: delisting
+    last_price_session: "2020-06-26"
+    expected_transition_session: "2020-06-29"
+    engine_session: "2021-02-09"
+    action_date_field: ex_date
+    action_date: "2021-02-09"
+    action_official: true
+    action_cash_amount: 0.0
+    action_ratio: null
+    action_new_security_id: ""
+    action_new_symbol: ""
+    action_source_kind: official_crosscheck
+    action_source: sec_edgar+stored_price_crosscheck
+    action_source_url: "https://www.sec.gov/Archives/edgar/data/895126/000089512621000033/chk-20210209.htm"
+    action_source_hash: 80f610bb05f197ef740bae2b23c03af96786118ff08dc23a4c78038a577c4842
+    action_row_sha256: 649ea5cfc2996698f9295fb6a018e21ea80af71e4134bf87c5c668a532b9080c
+    resolution_candidate_id: c8d57e386a5416c5c9a51ba7fd50d35462643d0f6a894ab991b98f3ee108f17d
+    resolution_source_url: "https://www.sec.gov/Archives/edgar/data/895126/000089512621000033/chk-20210209.htm"
+    resolution_source_hash: 80f610bb05f197ef740bae2b23c03af96786118ff08dc23a4c78038a577c4842
+    resolution_row_sha256: f3bca4085194faf7f92033eca2d6e8aa720ca06aa34b513aa5ecb74e385592a3
+    target_index_ids: [sp500]
+    index_removals:
+      - event_id: 276e90238b31de7ee65e99f2f9c94b7162a3df92f75fad995bfa13a58b501442
+        index_id: sp500
+        effective_date: "2018-03-19"
+        operation: REMOVE
+        official: false
+        source: community_sp500_history
+        source_kind: community
+        source_url: "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20%28Updated%29.csv"
+        source_hash: 39a9202c9ef69a74c0ff07e2113ad41fb6da7c8c5b6cd9541f0185fb4391e717
+        row_sha256: 0631f08bb97736a9569ecad926a4716d4634b3ae227514141ee67897e3d34143
+    index_provenance_class: reviewed_non_primary_index_history
+    policy_code: removed_from_target_indices_before_terminal_price/v1
+    required_release_warning: >-
+      CHK's official zero-distribution terminal action is delayed, but the
+      exact release removed legacy CHK from the S&P 500 more than two years
+      before its final price and contains no later ADD, anchor, or price
+      re-entry. The removal uses non-primary community index-history
+      provenance, so release quality is degraded.
+
+  - event_id: 1377981293c7eebce5cb6da722da3c4058a29077c96847b258d21df5af601902
+    security_id: US:EODHD:62c84ca3-49c6-5a21-ac5b-14c591519d29
+    symbol: FTR
+    issue_code: terminal_action_after_expected_session
+    action_type: delisting
+    last_price_session: "2020-04-29"
+    expected_transition_session: "2020-04-30"
+    engine_session: "2021-04-30"
+    action_date_field: ex_date
+    action_date: "2021-04-30"
+    action_official: true
+    action_cash_amount: 0.0
+    action_ratio: null
+    action_new_security_id: ""
+    action_new_symbol: ""
+    action_source_kind: official_crosscheck
+    action_source: sec_edgar+stored_price_crosscheck
+    action_source_url: "https://www.sec.gov/Archives/edgar/data/20520/000114036121015200/brhc10023786_8k12g3.htm"
+    action_source_hash: b581e1ff7cb90e9abf699236ca40f6ccc4b7233fbbb587129bd355d5f23f76cc
+    action_row_sha256: 7f0cc0c6a8a4f672b6c256f0e8be4be09fafc856f6b98d3b597db54620a21dd6
+    resolution_candidate_id: 91fcbe955bc16c96dec8005954d342d5a4de6dc46ff7ac1f860d226fd148f930
+    resolution_source_url: "https://www.sec.gov/Archives/edgar/data/20520/000114036121015200/brhc10023786_8k12g3.htm"
+    resolution_source_hash: b581e1ff7cb90e9abf699236ca40f6ccc4b7233fbbb587129bd355d5f23f76cc
+    resolution_row_sha256: 861d6bde4dd84a2b36d4397ec01eea908652c436a92524e54bf74954df3a9df9
+    target_index_ids: [sp500]
+    index_removals:
+      - event_id: abced592a7a42801b82f2c9b307f05c9298b4c6fc1193651d6e1a7b6d40c7715
+        index_id: sp500
+        effective_date: "2017-03-20"
+        operation: REMOVE
+        official: false
+        source: community_sp500_history
+        source_kind: community
+        source_url: "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20%28Updated%29.csv"
+        source_hash: 39a9202c9ef69a74c0ff07e2113ad41fb6da7c8c5b6cd9541f0185fb4391e717
+        row_sha256: 169d0c745a8c90643c2c1cc93b99e1102564b9692e834485b3ff057fb9b12ee4
+    index_provenance_class: reviewed_non_primary_index_history
+    policy_code: removed_from_target_indices_before_terminal_price/v1
+    required_release_warning: >-
+      FTR's official zero-distribution terminal action is delayed, but the
+      exact release removed FTR from the S&P 500 more than three years before
+      its final price and contains no later ADD, anchor, or price re-entry.
+      The removal uses non-primary community index-history provenance, so
+      release quality is degraded.
+
+  - event_id: 7d150e99cfe15587e4e9994dfaebde08942117f970a7d11ce94fd05b84bc85f5
+    security_id: US:EODHD:dbd287da-b35f-5aaa-873c-76f941b4d93b
+    symbol: BBBY
+    issue_code: terminal_action_after_expected_session
+    action_type: delisting
+    last_price_session: "2023-05-02"
+    expected_transition_session: "2023-05-03"
+    engine_session: "2023-09-29"
+    action_date_field: ex_date
+    action_date: "2023-09-29"
+    action_official: true
+    action_cash_amount: 0.0
+    action_ratio: null
+    action_new_security_id: ""
+    action_new_symbol: ""
+    action_source_kind: official_crosscheck
+    action_source: sec_edgar+stored_price_crosscheck
+    action_source_url: "https://www.sec.gov/Archives/edgar/data/886158/000119312523247428/d579010d8k.htm"
+    action_source_hash: 9db142548b931e35aa0a14f335e4b40508f492ebc983cc674a8716e920336551
+    action_row_sha256: d3d1159b851634626cae5f7ad9e15990235a12c13161c9f54cacae3aced09376
+    resolution_candidate_id: 94b5acbcca1e3647247cc9752ffe3c9e246e137a7003343b852e6273c2920c23
+    resolution_source_url: "https://www.sec.gov/Archives/edgar/data/886158/000119312523247428/d579010d8k.htm"
+    resolution_source_hash: 9db142548b931e35aa0a14f335e4b40508f492ebc983cc674a8716e920336551
+    resolution_row_sha256: 27c049be39e1b5ee32e2be8cc3efd9731149f76469cce61cc399176353e80463
+    target_index_ids: [nasdaq100, sp500]
+    index_removals:
+      - event_id: 74ac8771963c4c4f7a946e3afd6be226171e1171adc977318ede95d76eaf02a3
+        index_id: nasdaq100
+        effective_date: "2016-12-19"
+        operation: REMOVE
+        official: false
+        source: bbby_identity_repair
+        source_kind: derived_identity
+        source_url: "https://www.sec.gov/Archives/edgar/data/886158/000119312523115523/d89202d8k.htm"
+        source_hash: 7c920e8e63a7ffacfa1b4896b08d2b93d2429c9c9c56bb2afa92bbb4d00a35b6
+        row_sha256: e6ad42b3db07abe02e2261e19301f1a88eb9fcf879f71aac66bb18912c416386
+      - event_id: e1c383b41ee8132f0ee92a61936f6639939233dbd12a58bf819e58ed8328b2f2
+        index_id: sp500
+        effective_date: "2017-07-26"
+        operation: REMOVE
+        official: false
+        source: community_sp500_history
+        source_kind: community
+        source_url: "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20%28Updated%29.csv"
+        source_hash: 39a9202c9ef69a74c0ff07e2113ad41fb6da7c8c5b6cd9541f0185fb4391e717
+        row_sha256: 5fc42b4fa46a2e3cbbbe4f2793f571deabe354fed6b4698fea1d374480333a1b
+    index_provenance_class: reviewed_non_primary_index_history
+    policy_code: removed_from_target_indices_before_terminal_price/v1
+    required_release_warning: >-
+      BBBY's official zero-distribution terminal action is delayed, but the
+      exact release removed legacy BBBY from both target indices more than
+      five years before its final price and contains no later ADD, anchor, or
+      price re-entry. The removals use non-primary community or
+      identity-derived index-history provenance, so release quality is
+      degraded.
+
+  - event_id: 1849ca428dda73f0322d36334d81ce5a00f0185702e3ea2b7e5e4fea6fdb7704
+    security_id: US:EODHD:f36c4483-5fa7-5866-b266-97130bc35bde
+    symbol: ENDP
+    issue_code: terminal_action_after_expected_session
+    action_type: delisting
+    last_price_session: "2022-10-27"
+    expected_transition_session: "2022-10-28"
+    engine_session: "2024-04-23"
+    action_date_field: ex_date
+    action_date: "2024-04-23"
+    action_official: true
+    action_cash_amount: 0.0
+    action_ratio: null
+    action_new_security_id: ""
+    action_new_symbol: ""
+    action_source_kind: official_crosscheck
+    action_source: sec_edgar+stored_price_crosscheck
+    action_source_url: "https://www.sec.gov/Archives/edgar/data/2008861/000119312524178089/d15705ds1.htm"
+    action_source_hash: 5669e33821e77bf97bd722bf909f649ad10caebb91973f00a2b053515a5c1377
+    action_row_sha256: 0f9fceaf2fef8f42eb5c8dc6122b8460a8dc622316a21a75c521a9f1dfbf20b4
+    resolution_candidate_id: 4f3aa71e1dd7619266eac914379e5a40537699d3957ad6ac21fefc8a56f0ba84
+    resolution_source_url: "https://www.sec.gov/Archives/edgar/data/2008861/000119312524178089/d15705ds1.htm"
+    resolution_source_hash: 5669e33821e77bf97bd722bf909f649ad10caebb91973f00a2b053515a5c1377
+    resolution_row_sha256: 4e913ef1aaa56f5ab4e67cf45b65fce77d9d181d4900f676649f91ac8bb56eaa
+    target_index_ids: [nasdaq100, sp500]
+    index_removals:
+      - event_id: 578f85614508819dba917a8a06bb91f8e5fb0dcc5273895b9cc250773df7e952
+        index_id: nasdaq100
+        effective_date: "2016-07-18"
+        operation: REMOVE
+        official: false
+        source: community_nasdaq100_history
+        source_kind: community
+        source_url: "https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2015.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2016.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2017.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2018.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2019.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2020.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2021.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2022.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2023.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2024.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2025.yaml,https://raw.githubusercontent.com/jmccarrell/n100tickers/main/src/nasdaq_100_ticker_history/n100-ticker-changes-2026.yaml"
+        source_hash: 83465af4e2f80f45ea239068ee41ba2069db990720896380c6ef8df4c1c9cb97
+        row_sha256: 0523885dc92f4ae95dcd9581e4f2e69e589fdd87c8eae1bf6eba6d2ed235b0d1
+      - event_id: 0f8cf68e134784aa4f5ea03139c48dae7da24fc70cca1b6307407f2948252ecd
+        index_id: sp500
+        effective_date: "2017-03-02"
+        operation: REMOVE
+        official: false
+        source: community_sp500_history
+        source_kind: community
+        source_url: "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20%28Updated%29.csv"
+        source_hash: 39a9202c9ef69a74c0ff07e2113ad41fb6da7c8c5b6cd9541f0185fb4391e717
+        row_sha256: c10f4753e1735c42cdd5264b020d6a9b8d4e4cd058c4acdff20624c36dbaec35
+    index_provenance_class: reviewed_non_primary_index_history
+    policy_code: removed_from_target_indices_before_terminal_price/v1
+    required_release_warning: >-
+      ENDP's official zero-distribution terminal action is delayed, but the
+      exact release removed ENDP from both target indices more than five years
+      before its final price and contains no later ADD, anchor, or price
+      re-entry. The removals use non-primary community index-history
+      provenance, so release quality is degraded.
+
+  - event_id: d1eeadf8f4779212ff4b3162af1731bf7bfc804c10756cc4bb8074c307e1f746
+    security_id: US:EODHD:7e3cea59-409f-5cf0-8429-9d4245013622
+    symbol: NTCOY
+    issue_code: terminal_action_after_expected_session
+    action_type: delisting
+    last_price_session: "2024-08-07"
+    expected_transition_session: "2024-08-08"
+    engine_session: "2024-09-04"
+    action_date_field: ex_date
+    action_date: "2024-09-04"
+    action_official: true
+    action_cash_amount: 5.043659
+    action_ratio: null
+    action_new_security_id: ""
+    action_new_symbol: ""
+    action_source_kind: depositary_corporate_action_notice
+    action_source: official_ntcoy_cash_termination
+    action_source_url: "https://www.adrbny.com/content/dam/adr/documents/corporate-actions-dr/files/ad1145447.pdf"
+    action_source_hash: 3be830009ee6942d4ca604aafdc19730a693f13e62b046641a638e9a1ee112c1
+    action_row_sha256: a0eab3a5f2cfbc1e7787ced01c8a94eb92bab6ff0f9b6cfefe31f54ace3facc5
+    resolution_candidate_id: c725a22e1244939304cc2bb5f81afceb011109ff48afe22bcad10aec629d818c
+    resolution_source_url: "https://www.adrbny.com/content/dam/adr/documents/corporate-actions-dr/files/ad1145447.pdf"
+    resolution_source_hash: 3be830009ee6942d4ca604aafdc19730a693f13e62b046641a638e9a1ee112c1
+    resolution_row_sha256: 2c14dcd96bbcea87efa662f1649e4768eeb6decbb3a0253d5de69e6253a99483
+    target_index_ids: []
+    index_removals: []
+    index_provenance_class: no_target_index_membership
+    policy_code: official_delayed_cash_settlement/v1
+    required_release_warning: >-
+      NTCOY's official BNY mandatory ADS exchange pays USD 5.043659 per ADS
+      on 2024-09-04, after the final OTC price on 2024-08-07. The exact
+      depositary notice, positive cash amount, payment date, terminal price,
+      and absence from both target-index histories are code-pinned; cash must
+      not be made available before the official settlement date.

@@ -1,0 +1,7 @@
+{
+  "dataset": "security_master",
+  "manifest_path": "datasets/security_master/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-security_master/manifest.json",
+  "manifest_sha256": "4c960bb89a9b4fb84386571d3a41f254cfeaf9d7c326d17e5cd3957cade6f9e6",
+  "updated_at": "2026-07-21T04:41:11.537782Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-security_master"
+}

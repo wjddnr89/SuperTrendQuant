@@ -1,0 +1,7 @@
+{
+  "dataset": "symbol_history",
+  "manifest_path": "datasets/symbol_history/versions/terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-symbol_history/manifest.json",
+  "manifest_sha256": "3a0acae73895bade62f3934d9a4e0fac008accb53304ff18183113cec3c1212e",
+  "updated_at": "2026-07-21T04:44:47.877505Z",
+  "version": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-symbol_history"
+}

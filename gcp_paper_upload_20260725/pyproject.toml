@@ -1,0 +1,44 @@
+[project]
+name = "super-trend-quant"
+version = "0.1.0"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "numpy",
+    "pandas",
+    "python-dotenv",
+    "pyyaml",
+    "optuna",
+    "requests",
+    "yfinance",
+    "finance-datareader",
+    "pykrx",
+    "lxml",
+    "duckdb>=1.2",
+    "pyarrow>=18",
+    "boto3>=1.35",
+    "exchange-calendars>=4.7",
+    "pypdf>=6.0,<7",
+    "plotly>=6.0",
+    "setuptools<81",
+]
+
+[project.scripts]
+quant-backtest = "supertrend_quant.cli:backtest_main"
+quant-paper = "supertrend_quant.cli:paper_main"
+quant-live = "supertrend_quant.cli:live_main"
+quant-compare = "supertrend_quant.cli:compare_main"
+quant-compare-strategies = "supertrend_quant.cli:compare_strategies_main"
+quant-search = "supertrend_quant.cli:search_main"
+quant-optimize = "supertrend_quant.cli:optimize_main"
+quant-data = "supertrend_quant.cli:data_main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "unified_quant/src"}
+
+[tool.setuptools.packages.find]
+where = ["unified_quant/src"]
+include = ["supertrend_quant*"]

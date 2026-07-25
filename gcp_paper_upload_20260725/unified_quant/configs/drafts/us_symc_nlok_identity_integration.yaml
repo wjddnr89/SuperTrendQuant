@@ -1,0 +1,157 @@
+schema: us_symc_nlok_identity_integration_draft/v1
+publication_ready: false
+reason_not_ready: >-
+  The canonical symbol intervals change the exact Yahoo request epochs and
+  target IDs. Post-repair cache-only/one-shot collection must record and review
+  the two new immutable wrapper hashes before this draft can enter the
+  production policy. Existing broader SYMC/NLOK no-data wrappers are not
+  silently relabeled.
+
+required_application_order:
+  - repair_us_identity_price_tails
+  - repair_us_symc_nlok_identity
+  - repair_us_arnc_hwm_ticker_change
+parent_release_contract:
+  kind: identity_price_tails_descendant
+  actual_release_version: 20260715-20260719T031437502501Z
+  pinned_base_plan_and_apply: fail_closed
+  reason: >-
+    The pinned base lifecycle report is bound to legacy hints SHA
+    2dc55661d72c9f993cd233339ad14858ff44b86d8ceca3d3bb33059fc30369e6.
+    It must never be relabeled as the current hints SHA after the exact UTX
+    permanent-exception evidence was added.
+  current_hints_sha256: 3fd60e760466ffba8b00c6ea191944dc4c00ceb21199f0bb45e96f0d5d969866
+
+identity_repair:
+  old_security_id: US:EODHD:e92a676b-43f3-5d6b-9b7a-5d314fd6135f
+  canonical_security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+  canonical_symbol_intervals:
+    - {symbol: SYMC, effective_from: "2015-01-01", effective_to: "2019-11-01"}
+    - {symbol: NLOK, effective_from: "2019-11-04", effective_to: "2022-11-07"}
+  old_price_rows_retired: 1455
+  canonical_price_rows_preserved: 1977
+  old_price_inventory_sha256: bc3878bbd989b7c2f2d3307a66e93f221e050ac1d14bb507b0354fcdd5160d7d
+  canonical_price_inventory_sha256: 77f154621cf2f40ca3a8d7a8ace36c06c27fd522845a2ff9058f6212bd184d44
+
+reviewed_nonterminal_extraction:
+  event_id: fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd
+  security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+  action_type: ticker_change
+  effective_date: "2019-11-04"
+  new_security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+  new_symbol: NLOK
+  ratio: null
+  cash_amount: null
+  currency: USD
+  source_kind: official_crosscheck
+  source_url: https://www.sec.gov/Archives/edgar/data/849399/000110465919059239/0001104659-19-059239.txt
+  source_hash: 87a584813a438f76e5cee9ae800678771bc2df5ed6f3e50461273c1849026e18
+reviewed_nonterminal_extraction_sha256: 2f2cf8effa9cc40fdac0f51edad9f3857af1892ba232b05f6132f8228749715e
+
+reviewed_same_sid_no_data:
+  basis: code_pinned_reviewed_nonterminal_same_sid_ticker_no_data/v1
+  event_id: fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd
+  source_target_id: 76cfddc97b878414119dfd9db08e356216cffc4ddc2839188451df534e11296f
+  successor_target_id: 9648613a55f30697b2d3bb6893a3526b7d582169fc2dca21b6e2e4c9e481e1b6
+  security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+  old_symbol: SYMC
+  successor_symbol: NLOK
+  old_active_from: "2015-01-01"
+  old_active_to: "2019-11-01"
+  successor_active_from: "2019-11-04"
+  effective_date: "2019-11-04"
+  official_source_hash: 87a584813a438f76e5cee9ae800678771bc2df5ed6f3e50461273c1849026e18
+  reviewed_extraction_sha256: 2f2cf8effa9cc40fdac0f51edad9f3857af1892ba232b05f6132f8228749715e
+  terminal_resolution_required: false
+  terminal_resolution_forbidden: true
+
+reviewed_no_data_successor_chain:
+  basis: code_pinned_official_finite_chain_to_passed_price/v1
+  root_target_id: 76cfddc97b878414119dfd9db08e356216cffc4ddc2839188451df534e11296f
+  raw_price_only: true
+  predecessor_backcast: false
+  nodes:
+    - target_id: 76cfddc97b878414119dfd9db08e356216cffc4ddc2839188451df534e11296f
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      provider_symbol: SYMC
+      event_id: fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd
+      official_evidence_sha256: 87a584813a438f76e5cee9ae800678771bc2df5ed6f3e50461273c1849026e18
+      successor_security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      successor_symbol: NLOK
+      source_sha256: PENDING_POST_REPAIR_EXACT_REQUEST
+      cache_wrapper_sha256: PENDING_POST_REPAIR_EXACT_REQUEST
+    - target_id: 9648613a55f30697b2d3bb6893a3526b7d582169fc2dca21b6e2e4c9e481e1b6
+      security_id: US:EODHD:e9eea478-61d8-5762-9f5b-fbdfd69a02a3
+      provider_symbol: NLOK
+      event_id: d82975bc819ca47d10c7b2e2ca963422629980682933a4ee13b355fe564e6344
+      official_evidence_sha256: a4732aaa030033aebda1d508bed1742e237694dc97fdb1a71f9af02f20d95d83
+      successor_security_id: US:EODHD:cb0b8e57-3e09-542c-adf8-fe2c98d97b55
+      successor_symbol: GEN
+      source_sha256: PENDING_POST_REPAIR_EXACT_REQUEST
+      cache_wrapper_sha256: PENDING_POST_REPAIR_EXACT_REQUEST
+  final:
+    target_id: 088a66b2d0065fea58f5c99be2836df32174d12891ad2bf4e58e309cc97c8fb7
+    security_id: US:EODHD:cb0b8e57-3e09-542c-adf8-fe2c98d97b55
+    provider_symbol: GEN
+    status: passed
+    source_sha256: 48960ed5996f22024a2d14859a2ee5a80f406b70675bcaba668fc76a90af5d8b
+    cache_wrapper_sha256: 891b01bd7c1b3f02401a856b943c1f3af6c142bdefac4289e353ffa7006ef330
+    reviewed_price_evidence_sha256: ""
+
+finalizer_supersession:
+  basis: code_pinned_same_security_nonterminal_supersession/v1
+  legacy_pinned_base_report_sha256: 14845368ca771dbea5bc82e8fed4077152fd2c92b424059961e02239188c45ae
+  legacy_pinned_base_hints_sha256: 2dc55661d72c9f993cd233339ad14858ff44b86d8ceca3d3bb33059fc30369e6
+  exact_simple7_parent_report_sha256: FROM_MANIFEST_CONTENT_ADDRESS
+  exact_simple7_parent_hints_sha256: 3fd60e760466ffba8b00c6ea191944dc4c00ceb21199f0bb45e96f0d5d969866
+  old_candidate_id: 021de8091979121c3d68fc49b4d13682499e6ef3384a6f2f8b670774ec0c0a88
+  old_event_id: 1b19b589542dfaf2e0e07c11188c59beab3db1b9e1aaab1b96570cc54d49a1cc
+  canonical_event_id: fc556f24050c3205150b7934f431b72d6348ab5fbfad3e85bfbb149c7b9781bd
+  old_terminal_resolution_forbidden: true
+  candidate_count_before: 182
+  candidate_count_after: 181
+  stale_report_fails_before_write: true
+  generic_candidate_tolerance: false
+
+lifecycle_transaction_projection:
+  basis: exact_output_release_bound_lifecycle_report/v1
+  manifest_bound_predecessor_report_sha256: f5bc93126819503178cfb26a420173a06b63807bbb4ed9158f46cf6668c99390
+  current_release_source_report_sha256: 6700a767f3065a969cb4fcac9cc82270f73673427126fbd53dedc86fc95dbe09
+  fresh_report_sha256: PLAN_BOUND_TO_EXACT_OUTPUT_RELEASE
+  source_archive_written_in_same_transaction: true
+  lifecycle_manifest_written_in_same_transaction: true
+  candidate_count: 181
+  resolution_count: 181
+  applied_count: 169
+  exception_count: 12
+  open_count: 0
+  candidate_set_sha256: 32cf8a701a37041584b4a8117064c858d122d3fa50b6f76f19f3e05bd4060c64
+  resolution_set_sha256: 150ea3f58b1ccc638955b8411a4b0fd7f0c7efec68876f6991cfbcb2264253c5
+  current_base_plan_gate: fail_closed
+  exact_simple7_descendant_gate: required
+
+actual_no_write_plan_2026_07_19:
+  status: passed
+  parent_release_version: 20260715-20260719T031437502501Z
+  audit_sha256: 175210bdf903990ebf8f11ac40ff2797d3d35bee0e4fab7ea2b3546c33cc7791
+  source_report_sha256: 6700a767f3065a969cb4fcac9cc82270f73673427126fbd53dedc86fc95dbe09
+  plan_materialization: affected_heavy_tables_plus_full_small_tables
+  full_market_price_frames_materialized: false
+  max_resident_set_kb: 548416
+  elapsed_wall_seconds: 6.26
+  expected_output_row_counts:
+    daily_price_raw: 2095793
+    adjustment_factors: 2095793
+  canonical_event_id_preexisting_rows: 0
+  candidate_count: 181
+  resolution_count: 181
+  applied_count: 169
+  exception_count: 12
+  open_count: 0
+  network_accessed: false
+  eodhd_calls: 0
+  r2_accessed: false
+  writes_performed: false
+  note: >-
+    The fresh report hash and output release/version IDs are intentionally
+    plan-generated and therefore are not static code pins.

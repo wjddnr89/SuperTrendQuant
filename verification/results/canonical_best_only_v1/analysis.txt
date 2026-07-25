@@ -1,0 +1,65 @@
+Canonical Best-Only Verification Analysis
+
+Configuration
+- dual_momentum, rs_period=150
+- market_filter=1d
+- asset_filter=ichimoku_cloud+ema_trend
+- sell_confirm=1
+- hurdle=2.0
+- max_positions=1
+- Supertrend=10/3.0
+- min_rotation_profit=0.0%
+- fee=0.10%, slippage=0.05%
+- universe=index_events:nasdaq100
+- period=2015-10-19 through 2026-07-15
+
+Baseline
+- Return: +28,573.38%
+- QQQ: +614.55%
+- CAGR: +69.38%
+- MDD: -40.80%
+- Sharpe: 1.30
+- Calmar: 1.70
+- Win rate: 72.32%
+- Payoff: 1.43
+- Trades: 112
+
+Calendar-Block Validation
+- Positive years: 9/11
+- QQQ outperformance years: 7/11
+- Negative years: 2018 (-4.44%), 2021 (-5.79%)
+- QQQ underperformance years: 2017, 2018, 2021, 2023
+- 2026 is partial through July 15.
+
+Execution Stress
+- 2x costs: +18,820.20%, MDD -41.32%, Sharpe 1.23
+- 5x costs: +7,316.98%, MDD -42.87%, Sharpe 1.06
+- Entry delayed one session: +5,691.10%, MDD -47.03%
+- Exit delayed one session: +11,177.71%, MDD -51.11%
+- Entry and exit delayed: +3,538.83%, MDD -50.15%
+- Both fills 0.5% adverse: +8,460.61%, MDD -42.53%
+- Delay plus adverse fills: +1,326.75%, MDD -59.35%
+- 3x costs plus full stress: +820.20%, MDD -67.68%, Sharpe 0.67
+
+Trade Contribution
+- Removing the top return contribution trade leaves +15,615.19% by return-product replay.
+- Removing the top 3 leaves +9,700.55%.
+- Removing the top 5 leaves +4,934.92%.
+- Removing the top 10 leaves +1,216.77%.
+- The strategy is not dependent on only one trade, but late large-dollar winners materially
+  amplify the final equity because max_positions=1 compounds the whole account.
+
+Method Notes
+- Parameter stability is not tested because neighboring combinations were intentionally excluded.
+- Fixed and expanding walk-forward use the same fixed combo, so their validation-year results
+  are identical; no fold-specific parameter selection occurs.
+- Purged/embargoed CV is recorded as fixed_single_combo. With no parameter fitting, purge and
+  embargo do not change model selection; the useful output is the calendar-block performance.
+- Data quality is marked degraded, but unresolved corporate-action count is zero.
+
+Decision
+- The result is strong enough to proceed to a paper account without further parameter search.
+- It is not strong enough to justify real capital yet: full-stress MDD reaches -67.68%, annual
+  QQQ underperformance occurs in 4 of 11 years, and the degraded data warning needs an audit.
+- Paper trading should keep this configuration frozen and compare live signals, intended orders,
+  actual simulated fills, fees, slippage, and position identity against the canonical backtest.

@@ -1,0 +1,27 @@
+{
+  "completed_session": "2026-07-15",
+  "created_at": "2026-07-19T13:09:46.573451Z",
+  "dataset_versions": {
+    "adjustment_factors": "release-exact-factors-20260715-da009d5f18a94da6b137a488279a51be-adjustment_factors",
+    "corporate_actions": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-corporate_actions",
+    "cross_validation_reports": "cross-validation-20260715-193d764a2d7c450a82e27bf9f8967008-reports",
+    "daily_price_raw": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-daily_price_raw",
+    "index_constituent_anchors": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-index_constituent_anchors",
+    "index_membership_events": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-index_membership_events",
+    "lifecycle_resolutions": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-lifecycle_resolutions",
+    "security_master": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-security_master",
+    "source_archive": "20260715-20260719T124723691186Z",
+    "symbol_history": "terminal-tail-snapshot-metadata-20260715-526c52cc923747138fe232538cf58f1b-symbol_history"
+  },
+  "quality": "degraded",
+  "version": "20260715-20260719T130946573430Z",
+  "warnings": [
+    "ABMD 2022-12-22 merger models only the guaranteed $380/share cash leg; one non-tradeable CVR per share (up to $35 contingent cash) is marked at $0 under the as-of-2026-07-15 lower-bound policy, so returns may be understated; J&J still reported about $0.4bn of aggregate ABMD CVR liability at 2025 year-end, so $0 is not a fair-value estimate.",
+    "FRCB EODHD raw OHLCV required an exact-hash reviewed envelope correction (2024-12-30 low=0.0->0.003; raw_eod_sha256=3c96be232fb5f567e77a94fe315b67aa61e520d1611842620c04680fb5df6ab3); all other fields remain unchanged, so release quality remains degraded.",
+    "CELG/BMYRT official_exit_mark uses only the hash-pinned BMY 2020 10-K first-trade close of USD 2.30 as a retrospective first-session close exit mark for a non-index child, with cash available next session; the 2019-11-21..2020-12-31 280-session trading path is unsupported.",
+    "NTCO/NTCOY: exact NTCOY price/identity/terminal evidence applied; two conflicting NTCOY provider dividend amounts were rejected and the existing NTCO dividend economics were preserved (maximum absolute two-event sensitivity USD 0.01585 per ADS).",
+    "Frozen Quandl WIKI SWY evidence has formal license Unknown; private/internal use only; publication and redistribution are blocked.",
+    "Kaggle Quandl WIKI licenseName=Unknown; private/internal-only; redistribution/public publication blocked.",
+    "UTX is a permanent unsupported_consideration exception, not a passed economic cross-check: the canonical action model omits the exact 1.0 CARR + 0.5 OTIS distributions documented by the pinned SEC filing."
+  ]
+}

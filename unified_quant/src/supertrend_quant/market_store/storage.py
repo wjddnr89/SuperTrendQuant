@@ -249,6 +249,19 @@ class R2PrivacyVerifier:
             raise R2PrivacyVerificationError(
                 "Cloudflare account ID does not match the configured R2 endpoint."
             )
+        if self.config.privacy_recheck_policy == "on_change":
+            if not (attestation_path and attestation_hash):
+                raise R2PrivacyVerificationError(
+                    "R2 privacy_recheck_policy=on_change requires the existing "
+                    "hash-pinned privacy attestation."
+                )
+            result = self._verify_attestation(
+                Path(attestation_path),
+                attestation_hash,
+                endpoint_account=endpoint_account,
+                endpoint_host=endpoint_host,
+            )
+            return {**result, "s3_checks": s3_checks}
         if api_token:
             # The official R2 S3 endpoint is account-scoped, so a separate
             # account-id secret is redundant.  Accept an explicit value only
@@ -550,7 +563,15 @@ class R2PrivacyVerifier:
         max_age = self.config.privacy_attestation_max_age_seconds
         age = (now - checked_at).total_seconds()
         validity = (expires_at - checked_at).total_seconds()
-        if age < -60 or age > max_age or expires_at < now or not 0 < validity <= max_age:
+        invalid_time_window = (
+            age < -60
+            or not 0 < validity <= max_age
+            or (
+                self.config.privacy_recheck_policy == "always"
+                and (age > max_age or expires_at < now)
+            )
+        )
+        if invalid_time_window:
             raise R2PrivacyVerificationError(
                 "R2 privacy attestation is stale, expired, or has excessive validity."
             )
@@ -563,6 +584,7 @@ class R2PrivacyVerifier:
             "checked_at": checked_at.isoformat(),
             "attestation_sha256": actual_hash,
             "attestation_source": method,
+            "privacy_recheck_policy": self.config.privacy_recheck_policy,
         }
 
 
@@ -904,6 +926,30 @@ def publish_repository(
     publisher = DatasetPublisher(store)
     output: list[RepositoryPublishResult] = []
     original_release, _ = repository.current_release()
+
+    def upload_source_archive_lineage(chain) -> None:
+        seen: set[str] = set()
+        for manifest in chain:
+            archive_frame = repository.read_frame(
+                "source_archive",
+                manifest.version,
+            )
+            for object_path in archive_frame.get("object_path", ()):
+                normalized_path = str(object_path)
+                if normalized_path in seen:
+                    continue
+                path = repository.root / normalized_path
+                if not path.is_file():
+                    raise FileNotFoundError(
+                        "Missing source_archive lineage payload: "
+                        + normalized_path
+                    )
+                publisher._put_immutable(
+                    normalized_path,
+                    path.read_bytes(),
+                )
+                seen.add(normalized_path)
+
     for dataset in datasets:
         publish_detail = ""
         local = repository.current_manifest(dataset)
@@ -924,11 +970,7 @@ def publish_repository(
                 )
                 publisher.upload_version(root, manifest)
             if dataset == "source_archive":
-                archive_frame = repository.read_frame(dataset)
-                for object_path in archive_frame.get("object_path", ()):
-                    path = repository.root / str(object_path)
-                    if path.is_file():
-                        publisher._put_immutable(str(object_path), path.read_bytes())
+                upload_source_archive_lineage(chain)
             output.append(
                 RepositoryPublishResult(
                     dataset,
@@ -955,11 +997,7 @@ def publish_repository(
                 )
                 publisher.upload_version(root, manifest)
             if dataset == "source_archive":
-                archive_frame = repository.read_frame(dataset)
-                for object_path in archive_frame.get("object_path", ()):
-                    path = repository.root / str(object_path)
-                    if path.is_file():
-                        publisher._put_immutable(str(object_path), path.read_bytes())
+                upload_source_archive_lineage(chain)
             advanced = publisher.advance_current(
                 local,
                 expected_pointer_etag=remote_etag,
@@ -1032,11 +1070,7 @@ def publish_repository(
                 root = repository.root / repository.version_prefix(dataset, manifest.version)
                 publisher.upload_version(root, manifest)
         if dataset == "source_archive":
-            archive_frame = repository.read_frame(dataset)
-            for object_path in archive_frame.get("object_path", ()):
-                path = repository.root / str(object_path)
-                if path.is_file():
-                    publisher._put_immutable(str(object_path), path.read_bytes())
+            upload_source_archive_lineage(chain)
         advanced = publisher.advance_current(local, expected_pointer_etag=remote_etag)
         output.append(
             RepositoryPublishResult(
@@ -1166,7 +1200,15 @@ def _merge_divergent_dataset(
     local_frame = repository.read_frame(dataset, local.version)
     base_frame = repository.read_frame(dataset, common.version)
     with tempfile.TemporaryDirectory(prefix="stq-remote-merge-", dir=repository.root) as directory:
-        remote_repository = repository.__class__(directory)
+        try:
+            remote_repository = repository.__class__(
+                directory,
+                market=getattr(repository, "market", "US"),
+            )
+        except TypeError:
+            # Preserve compatibility with lightweight repository fakes used by
+            # storage callers outside the canonical implementation.
+            remote_repository = repository.__class__(directory)
         DatasetCache(directory, store).sync(dataset)
         remote_frame = remote_repository.read_frame(dataset, remote.version)
 

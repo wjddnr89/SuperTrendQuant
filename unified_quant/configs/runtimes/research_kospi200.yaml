@@ -1,9 +1,9 @@
-name: research_kr
+name: research_kospi200
 market: KR
 universe:
   source: index_events
   profiles:
-    KR: [kospi200, kosdaq150]
+    KR: [kospi200]
   refresh: daily
   snapshot_dir: state/universes
   filters:
@@ -26,10 +26,10 @@ execution:
   live_confirm_required: true
 
 paper:
-  state_file: state/research_kr_paper.json
-  results_dir: results/research/kr/paper
+  state_file: state/research_kospi200_paper.json
+  results_dir: results/research/kr/kospi200/paper
   loop_interval_seconds: 60
   run_once_per_candle: true
 
 backtest:
-  results_dir: results/research/kr/backtests
+  results_dir: results/research/kr/kospi200/backtests

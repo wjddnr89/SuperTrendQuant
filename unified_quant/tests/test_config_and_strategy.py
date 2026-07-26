@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -130,16 +131,22 @@ class ConfigAndStrategyTest(unittest.TestCase):
         )
 
         self.assertEqual(config.strategy.name, "leader_rotation_default")
-        self.assertEqual(config.market, "AUTO")
+        self.assertEqual(config.market, "US")
         self.assertEqual(config.universe_file, "universe.json")
+        self.assertEqual(config.universe.source, "index_events")
+        self.assertEqual(
+            config.universe.profiles,
+            {"US": ("sp500", "nasdaq100")},
+        )
         self.assertEqual(config.timeframe, "1d")
-        self.assertEqual(config.period, "max")
+        self.assertEqual(config.period, "2y")
         self.assertEqual(config.data_store.provider, "parquet")
         self.assertEqual(config.supertrend.atr_method, "wilder")
         self.assertEqual(config.market_trend_filter.timeframe, "1d")
         self.assertEqual(config.scoring.type, "relative_strength")
         self.assertEqual(config.execution.broker, "toss")
         self.assertEqual(config.execution.live_confirm_required, True)
+        self.assertEqual(config.live.execution_window_minutes, 15)
 
     def test_canonical_nasdaq100_paper_runtime_uses_toss_quotes_only(self):
         config = load_split_config(
@@ -161,8 +168,16 @@ class ConfigAndStrategyTest(unittest.TestCase):
 
     def test_benchmark_is_auto_mapped_by_symbol(self):
         self.assertEqual(benchmark_for_symbol("SOXL", "US", "universe.json"), "QQQ")
-        self.assertEqual(benchmark_for_symbol("005930", "KR", "universe.json"), "^KS11")
-        self.assertEqual(benchmark_for_symbol("010170", "KR", "universe.json"), "^KQ11")
+        with tempfile.TemporaryDirectory() as tmp:
+            universe = Path(tmp) / "universe.json"
+            universe.write_text(
+                json.dumps(
+                    {"KR_UNIVERSE_MAP": {"005930": "KOSPI", "010170": "KOSDAQ"}}
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(benchmark_for_symbol("005930", "KR", universe), "^KS11")
+            self.assertEqual(benchmark_for_symbol("010170", "KR", universe), "^KQ11")
 
     def test_legacy_relative_strength_filter_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

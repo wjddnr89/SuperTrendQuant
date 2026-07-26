@@ -1187,7 +1187,7 @@ prices:
       terminal_event_id: 7d150e99cfe15587e4e9994dfaebde08942117f970a7d11ce94fd05b84bc85f5
       identity_bound_provider_symbol: BBBY_old.US
       extract_sha256: a6a6f651265825ed9ed95a1dfb9889f70586a728aa53eeae8585b8c00e4af52f
-      provenance_sha256: d73bf90641034b56b4ce42d9cef2fd4dff23a6db8c101cc7ed9b49af4c7140c8
+      provenance_sha256: 075ea282234e29a76c7ea5a40699ae1fcebb2d784c7280b3767dfbecdee0c2b9
       raw_price_source_sha256: 84083e814e2fafef9d71866315ef17eae16f26e4f3ced9d799637eef6b362825
       master_source: bbby_identity_repair
       identity_source_sha256: 7c920e8e63a7ffacfa1b4896b08d2b93d2429c9c9c56bb2afa92bbb4d00a35b6
@@ -1195,7 +1195,7 @@ prices:
       overlap_session_count: 650
       overlap_start: "2015-01-02"
       overlap_end: "2018-03-07"
-      triple_supertrend_signal_sha256: 2d964d020e6707aff59cd96ee362b131f99a68ef4ccdf2758f5e369b0f744ec2
+      triple_supertrend_signal_sha256: f8784d94ce11f9de3e915f044aff25de65735b1eade4e2de9e303ec590b67742
       wiki_dividends_missing_from_current: []
       current_dividends_missing_from_wiki:
         - {date: "2017-09-14", amount: 0.15}
@@ -1213,7 +1213,7 @@ prices:
       terminal_event_id: bba9b3139a40f93f1b90790cdbded3fe0db106526ca9890f1c611c67ee267131
       identity_bound_provider_symbol: BBT_old.US
       extract_sha256: a6a6f651265825ed9ed95a1dfb9889f70586a728aa53eeae8585b8c00e4af52f
-      provenance_sha256: d73bf90641034b56b4ce42d9cef2fd4dff23a6db8c101cc7ed9b49af4c7140c8
+      provenance_sha256: 075ea282234e29a76c7ea5a40699ae1fcebb2d784c7280b3767dfbecdee0c2b9
       raw_price_source_sha256: 4e6c9fe8f35b4e333e289791d8d89ac85b27f17f0d227b69d397249fb74d57cd
       master_source: eodhd_exchange_symbols
       identity_source_sha256: 2e43e71c491c2eda9e18ee156aac21149b170f84eb3f84ff107f125c269dfb99
@@ -1221,7 +1221,7 @@ prices:
       overlap_session_count: 813
       overlap_start: "2015-01-02"
       overlap_end: "2018-03-27"
-      triple_supertrend_signal_sha256: d55ecc680990a769157863997388ba4f88b71a297157f5070ae23e1241301853
+      triple_supertrend_signal_sha256: 5b4c4282f0c0a128b260207cf46c77a49b21372dbd5e927aed2731e3ae76e5fc
       wiki_dividends_missing_from_current:
         - {date: "2015-05-13", amount: 0.27}
         - {date: "2015-08-12", amount: 0.27}

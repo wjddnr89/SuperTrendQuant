@@ -228,6 +228,7 @@ def apply_reviewed_remaining_price_exceptions(
     """Reclassify only the exact reviewed mismatch inventory."""
 
     registry = reviewed_remaining_price_exception_inventory()
+    drifted: dict[str, dict[str, str]] = {}
     by_target: dict[str, list[dict[str, Any]]] = {}
     for item in checks:
         by_target.setdefault(_text(item.get("target_id")), []).append(item)
@@ -246,9 +247,13 @@ def apply_reviewed_remaining_price_exceptions(
             raise RuntimeError("Reviewed remaining price target identity/status drifted.")
         projection_sha256 = reviewed_remaining_price_projection_sha256(item)
         if projection_sha256 != spec["projection_sha256"]:
-            raise RuntimeError(
-                "Reviewed remaining price diagnostic drifted: " + spec["symbol"]
-            )
+            drifted[target_id] = {
+                "symbol": spec["symbol"],
+                "expected": spec["projection_sha256"],
+                "actual": projection_sha256,
+                "projection": reviewed_remaining_price_projection(item),
+            }
+            continue
         item.update(
             {
                 "status": "explicit_exception",
@@ -269,6 +274,11 @@ def apply_reviewed_remaining_price_exceptions(
                 "reviewed_remaining_price_exception_limitation": spec["limitation"],
                 "reviewed_remaining_price_exception_original_status": "mismatch",
             }
+        )
+    if drifted:
+        raise RuntimeError(
+            "Reviewed remaining price diagnostics drifted: "
+            + json.dumps(drifted, sort_keys=True, separators=(",", ":"))
         )
     applied = {
         _text(item.get("target_id"))

@@ -43,9 +43,9 @@ WIKI14_LIMITATION = (
     "and it never attests corporate actions or adjustment factors."
 )
 WIKI14_PROVENANCE_SHA256 = (
-    "16691eab9edc01f626d00551ba17e922d3f869d928c13478aa0443fbc329209e"
+    "12e8858b14360cb7bfc595aa1e85d6a132b1c8d688b762920882ac888aacb2aa"
 )
-WIKI14_PROVENANCE_RETRIEVED_AT = "2026-07-19T12:00:00Z"
+WIKI14_PROVENANCE_RETRIEVED_AT = "2026-07-25T05:12:26Z"
 WIKI14_EXTRACT_RETRIEVED_AT = "2026-07-18T03:58:26.808706Z"
 WIKI14_ARCHIVE_EFFECTIVE_DATE = "2026-07-15"
 WIKI14_EXTRACT_INVENTORY_SHA256 = (
@@ -55,7 +55,7 @@ WIKI14_IDENTITY_SCHEMA_INVENTORY_SHA256 = (
     "1c82f703ed1e88790dd1b066614c25389bb4a442c3e0369655fad5583b14880b"
 )
 WIKI14_ARCHIVE_ARTIFACT_INVENTORY_SHA256 = (
-    "134d0d92fa4e31e6c4deb0ab7fa0a57ccf865e0e7d01f712c08d29e87b493ab2"
+    "2ff8a87ddd303debd2d85b6d63a6434403cd9d1275a9060e4ed47897b8222921"
 )
 
 WIKI_COLUMNS = (
@@ -688,8 +688,9 @@ def verify_wiki14_price_only_evidence(
             "source": "reviewed_us_wiki14_price_only_arbitration",
             "content_type": "application/json",
             "retrieved_at": WIKI14_PROVENANCE_RETRIEVED_AT,
+            "effective_date": "2026-07-24",
             "object_path": (
-                f"archives/{WIKI14_ARCHIVE_EFFECTIVE_DATE}/"
+                "archives/2026-07-24/"
                 f"{WIKI14_PROVENANCE_SHA256}.json.gz"
             ),
         },

@@ -56,23 +56,34 @@ uv run quant-live \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
   --runtime unified_quant/configs/runtimes/live_toss.yaml
 
+# Korean live runtime, with the same strategy YAML
+uv run quant-live \
+  --strategy unified_quant/configs/strategies/leader_rotation.yaml \
+  --runtime unified_quant/configs/runtimes/live_toss_kr.yaml
+
 # Inspect the local versioned market-data cache
 uv run quant-data status
 ```
 
 Do not add `--yes` to the live command until the generated order plan has been
-validated. `live_toss.yaml` retains the existing Toss broker, confirmation,
-holdings-file, and 60-second loop settings.
+validated. Both live runtimes retain the Toss broker, confirmation, isolated
+state files, and 60-second loop.
 
-US live signals consume completed daily Parquet sessions; Toss quotes are used
-only for execution sizing and safety guards. KR retains the Yahoo compatibility
-path in V1. Live execution fails closed when history coverage, quotes, cost
-basis, or open-order checks are unavailable. It also blocks strategy
+US and KR live signals consume completed daily Parquet releases; Toss quotes
+are used only for execution sizing and safety guards. Live execution fails
+closed when history coverage, quality, D+1 execution time, quotes, cost basis,
+or open-order checks are unavailable. It also blocks strategy
 execution when the account contains an unknown position outside the configured
 universe. A position recorded as previously managed remains exit-only after an
 index removal or filter rejection; it cannot be bought again.
 Post-sell buys are submitted only after the broker confirms the prerequisite
 position has disappeared from the refreshed account.
+
+KR ingestion additionally requires a KRX Open API `AUTH_KEY` and KRX Data
+Marketplace login credentials for dated KOSPI200/KOSDAQ150 snapshots. A
+licensed complete-snapshot file remains an optional fallback. It fails closed
+without an authenticated constituent source; setup and fallback file columns are documented in
+[docs/kr_market_data.md](docs/kr_market_data.md).
 
 ## Configuration
 
@@ -84,7 +95,8 @@ position has disappeared from the refreshed account.
 - `configs/runtimes/research_nasdaq100.yaml`: point-in-time Nasdaq-100 research defaults.
 - `configs/runtimes/research_kr.yaml`: KR research defaults.
 - `configs/runtimes/paper_toss_nasdaq100_canonical.yaml`: canonical Nasdaq-100 paper account with Toss execution quotes.
-- `configs/runtimes/live_toss.yaml`: live Toss execution profile.
+- `configs/runtimes/live_toss.yaml`: US live Toss execution profile.
+- `configs/runtimes/live_toss_kr.yaml`: KR live Toss execution profile.
 
 The canonical Toss-quote paper runtime never submits broker orders. It keeps
 cash, positions, and fills in `PaperBroker`, while authenticated Toss prices are
@@ -113,11 +125,9 @@ artifacts while skipping HTML generation; `--no-save` skips both.
 
 Strategy YAML owns signal and portfolio behavior. Runtime YAML owns market,
 universe, data period, capital, costs, broker, and output paths. Data YAML owns
-the shared Parquet/Yahoo provider, cache, adjustment, validation, and R2 policy.
-Research uses
-the point-in-time `sp500` event history in the US and the `kospi200` +
-`kosdaq150` compatibility profiles in Korea.
-The live runtime deliberately keeps the existing manual `universe.json` list.
+the shared Parquet provider, cache, adjustment, validation, and R2 policy.
+Research and production live profiles use point-in-time event history in both
+markets; the legacy manual `universe.json` is not a production dependency.
 
 Authoritative US index universes use the nested runtime section below. Available
 profiles are `nasdaq100`, `sp500`, `dow30`, `russell3000`, `kospi200`, and
@@ -156,7 +166,8 @@ Parquet is the source of truth. DuckDB scans its files directly and converts the
 selected rows to pandas once at the engine boundary. Adjusted OHLC drives
 signals; raw OHLC plus the exactly-once corporate-action ledger drives fills and
 valuation. See [market_data.md](docs/market_data.md) for first sync, daily
-validation, index imports, R2 publication, and compaction.
+validation, index imports, R2 publication, and compaction, and
+[kr_market_data.md](docs/kr_market_data.md) for the KR benchmark/backfill flow.
 
 Each strategy YAML also requires a top-level `scoring` section. The supplied
 profiles select `relative_strength` with `lookback_bars: 100`; strategies apply

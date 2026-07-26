@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import gzip
+import hashlib
 import tempfile
 import unittest
 import json
@@ -40,6 +42,56 @@ def _source(row):
 
 
 class ParquetDuckDBIntegrationTest(unittest.TestCase):
+    def test_provider_accepts_bounded_stock_merger_successor_listing_delay(self):
+        provider = ParquetMarketDataProvider("unused")
+        provider._resolved_symbol_history = pd.DataFrame(
+            [
+                {
+                    "security_id": "SEC-NEW",
+                    "symbol": "NEW",
+                    "_start": pd.Timestamp("2019-02-13"),
+                    "_end": pd.NaT,
+                }
+            ]
+        )
+        actions = pd.DataFrame(
+            [
+                {
+                    "security_id": "SEC-OLD",
+                    "symbol": "OLD",
+                    "action_type": "stock_merger",
+                    "effective_date": "2019-01-11",
+                    "ex_date": "2019-01-11",
+                    "new_security_id": "SEC-NEW",
+                    "new_symbol": "NEW",
+                }
+            ]
+        )
+
+        intervals = provider._action_successor_intervals(actions)
+
+        self.assertEqual(
+            intervals,
+            {
+                "NEW": (
+                    (
+                        "SEC-NEW",
+                        pd.Timestamp("2019-01-11"),
+                        None,
+                    ),
+                )
+            },
+        )
+
+        provider._resolved_symbol_history.loc[0, "_start"] = pd.Timestamp(
+            "2019-04-12"
+        )
+        with self.assertRaisesRegex(
+            ValueError,
+            "outside symbol history",
+        ):
+            provider._action_successor_intervals(actions)
+
     def test_terminal_action_after_weekend_remains_in_requested_identity(self):
         actions = pd.DataFrame(
             [
@@ -578,6 +630,70 @@ class ParquetDuckDBIntegrationTest(unittest.TestCase):
             self.assertTrue(missing.is_file())
             self.assertFalse(repeated[0].conflict)
             self.assertIn("lineage reconciled", repeated[0].detail)
+
+    def test_source_archive_publication_uploads_superseded_lineage_paths(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            remote = LocalObjectStore(root / "remote")
+            repository = LocalDatasetRepository(root / "local")
+            payload = b'{"evidence":"same immutable bytes"}\n'
+            source_hash = hashlib.sha256(payload).hexdigest()
+            old_path = (
+                f"archives/KR/2026-07-22/{source_hash}.json.gz"
+            )
+            new_path = (
+                f"archives/KR/2026-07-24/{source_hash}.json.gz"
+            )
+            for object_path in (old_path, new_path):
+                destination = repository.root / object_path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(gzip.compress(payload, mtime=0))
+
+            def archive_row(object_path: str, effective_date: str) -> pd.DataFrame:
+                return pd.DataFrame(
+                    [
+                        {
+                            "archive_id": source_hash,
+                            "dataset": "fixture_evidence",
+                            "object_path": object_path,
+                            "content_type": "application/json",
+                            "effective_date": effective_date,
+                            "source": "fixture_evidence",
+                            "retrieved_at": f"{effective_date}T00:00:00Z",
+                            "source_hash": source_hash,
+                        }
+                    ]
+                )
+
+            repository.write_frame(
+                "source_archive",
+                archive_row(old_path, "2026-07-22"),
+                completed_session="2026-07-22",
+                version="archive-v1",
+            )
+            appended = repository.append_frame(
+                "source_archive",
+                archive_row(new_path, "2026-07-24"),
+                completed_session="2026-07-24",
+                version="archive-v2",
+            )
+            self.assertFalse(appended.conflict)
+            repository.commit_release(
+                "2026-07-24",
+                {"source_archive": "archive-v2"},
+                quality="valid",
+            )
+
+            published = publish_repository(
+                repository,
+                remote,
+                ("source_archive",),
+            )
+
+            self.assertFalse(published[0].conflict)
+            self.assertTrue((root / "remote" / old_path).is_file())
+            self.assertTrue((root / "remote" / new_path).is_file())
+            DatasetCache(root / "reader", remote).sync_release()
 
     def test_divergent_publish_repairs_missing_shared_parent_manifest(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -1792,6 +1908,131 @@ class ParquetDuckDBIntegrationTest(unittest.TestCase):
             self.assertEqual(resolved.schedule[0].symbols, ("AAA", "BBB"))
             self.assertEqual(resolved.schedule[1].symbols, ("BBB", "CCC"))
             self.assertEqual(resolved.schedule[2].symbols, ("BBX", "CCC"))
+
+    def test_kr_staggered_index_inception_does_not_invent_kosdaq_members(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repository = LocalDatasetRepository(directory, market="KR")
+            master = pd.DataFrame(
+                [
+                    _source(
+                        {
+                            "security_id": security_id,
+                            "primary_symbol": symbol,
+                            "name": symbol,
+                            "exchange": exchange,
+                            "asset_type": "STOCK",
+                            "currency": "KRW",
+                            "country": "KR",
+                            "active_from": "2010-01-01",
+                            "active_to": "",
+                        }
+                    )
+                    for security_id, symbol, exchange in (
+                        ("KR:ISIN-A", "000001", "KOSPI"),
+                        ("KR:ISIN-B", "000002", "KOSDAQ"),
+                    )
+                ]
+            )
+            history = pd.DataFrame(
+                [
+                    _source(
+                        {
+                            "security_id": security_id,
+                            "symbol": symbol,
+                            "exchange": exchange,
+                            "effective_from": "2010-01-01",
+                            "effective_to": "",
+                        }
+                    )
+                    for security_id, symbol, exchange in (
+                        ("KR:ISIN-A", "000001", "KOSPI"),
+                        ("KR:ISIN-B", "000002", "KOSDAQ"),
+                    )
+                ]
+            )
+            anchors = pd.DataFrame(
+                [
+                    _source(
+                        {
+                            "index_id": "kospi200",
+                            "anchor_date": "2015-01-02",
+                            "security_id": "KR:ISIN-A",
+                            "official": True,
+                            "source_url": "https://example.test",
+                            "source_kind": "official",
+                        }
+                    ),
+                    _source(
+                        {
+                            "index_id": "kosdaq150",
+                            "anchor_date": "2015-07-13",
+                            "security_id": "KR:ISIN-B",
+                            "official": True,
+                            "source_url": "https://example.test",
+                            "source_kind": "official",
+                        }
+                    ),
+                ]
+            )
+            events = pd.DataFrame(
+                columns=(
+                    "event_id",
+                    "index_id",
+                    "announcement_date",
+                    "effective_date",
+                    "operation",
+                    "security_id",
+                    "official",
+                    "source_url",
+                    "source_kind",
+                    "source",
+                    "retrieved_at",
+                    "source_hash",
+                )
+            )
+            repository.write_frame(
+                "security_master", master, completed_session="2015-07-14"
+            )
+            repository.write_frame(
+                "symbol_history", history, completed_session="2015-07-14"
+            )
+            repository.write_frame(
+                "index_constituent_anchors",
+                anchors,
+                completed_session="2015-07-14",
+            )
+            repository.write_frame(
+                "index_membership_events", events, completed_session="2015-07-14"
+            )
+            config = parse_config(
+                {
+                    "strategy": {"name": "test", "type": "equal", "params": {}},
+                    "scoring": {
+                        "type": "relative_strength",
+                        "params": {"lookback_bars": 1},
+                    },
+                    "market": "KR",
+                    "universe": {
+                        "source": "index_events",
+                        "profiles": {"KR": ["kospi200", "kosdaq150"]},
+                    },
+                    "data_store": {
+                        "local_cache_dir": directory,
+                        "index_source_mode": "official_only",
+                    },
+                }
+            )
+
+            resolved = resolve_universe(
+                config, as_of=pd.Timestamp("2015-07-14").date()
+            )
+
+            self.assertEqual(
+                [entry.effective_date for entry in resolved.schedule],
+                ["2015-01-02", "2015-07-13"],
+            )
+            self.assertEqual(resolved.schedule[0].symbols, ("000001",))
+            self.assertEqual(resolved.schedule[1].symbols, ("000001", "000002"))
 
 
 class DailyPreflightTest(unittest.TestCase):

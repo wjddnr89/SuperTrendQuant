@@ -28,6 +28,10 @@ class MarketData:
     data_quality: str = "valid"
     warnings: tuple[str, ...] = ()
     skipped: tuple[str, ...] = ()
+    # A validated KRX release omits official zero-volume/no-trade observations
+    # from OHLCV bars.  Existing holdings may carry their previous traded
+    # close for valuation only; order execution still requires an exact bar.
+    allow_no_trade_valuation_carry_forward: bool = False
     # Symbols eligible for a strategy-initiated entry.  ``bars`` may also
     # contain action-linked securities (for example a spin-off child) so an
     # existing position can be valued and exited without making that child a

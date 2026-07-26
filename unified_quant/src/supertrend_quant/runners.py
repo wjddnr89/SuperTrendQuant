@@ -185,13 +185,25 @@ def run_backtest_on_data(
     fills: list[dict[str, object]] = []
     portfolio_records: list[dict[str, object]] = []
     position_records: list[dict[str, object]] = []
+    allow_valuation_carry_forward = bool(
+        getattr(
+            market_data,
+            "allow_no_trade_valuation_carry_forward",
+            False,
+        )
+    )
+
+    def valuation_close(frame, timestamp) -> float | None:
+        if allow_valuation_carry_forward:
+            return _valuation_close_on_or_before(frame, timestamp)
+        return _close_on(frame, timestamp)
 
     def record_account(timestamp) -> None:
         if not capture_artifacts:
             return
         positions_value = 0.0
         for symbol, position in ledger.positions.items():
-            mark_price = _close_on(execution_bars.get(symbol), timestamp)
+            mark_price = valuation_close(execution_bars.get(symbol), timestamp)
             if mark_price is None:
                 raise RuntimeError(
                     "Held position has no price for portfolio reporting: "
@@ -537,7 +549,13 @@ def run_backtest_on_data(
         exec_ts = idx[i + 1]
         positions = ledger.positions
         equity_value = (
-            _portfolio_value(ledger.cash, positions, execution_bars, signal_ts)
+            _portfolio_value(
+                ledger.cash,
+                positions,
+                execution_bars,
+                signal_ts,
+                allow_carry_forward=allow_valuation_carry_forward,
+            )
             + ledger.receivable_value
         )
         equity_points.append((signal_ts, equity_value))
@@ -545,7 +563,10 @@ def run_backtest_on_data(
         raw_marks = {
             symbol: mark
             for symbol in ledger.positions
-            if (mark := _close_on(execution_bars.get(symbol), signal_ts)) is not None
+            if (
+                mark := valuation_close(execution_bars.get(symbol), signal_ts)
+            )
+            is not None
         }
         account = mark_position_economics(
             AccountSnapshot(
@@ -788,7 +809,7 @@ def run_backtest_on_data(
     if positions:
         final_ts = idx[-1]
         for symbol, position in list(positions.items()):
-            final_close = _close_on(execution_bars.get(symbol), final_ts)
+            final_close = valuation_close(execution_bars.get(symbol), final_ts)
             if final_close is None:
                 raise RuntimeError(
                     "Held position has no price for final valuation: "
@@ -1546,10 +1567,21 @@ def print_backtest_result(result: BacktestResult) -> None:
         print(f"Skipped     : {', '.join(result.skipped)}")
 
 
-def _portfolio_value(cash: float, positions: dict[str, Position], bars: dict[str, pd.DataFrame], timestamp) -> float:
+def _portfolio_value(
+    cash: float,
+    positions: dict[str, Position],
+    bars: dict[str, pd.DataFrame],
+    timestamp,
+    *,
+    allow_carry_forward: bool = False,
+) -> float:
     value = cash
     for symbol, position in positions.items():
-        close = _close_on(bars.get(symbol), timestamp)
+        close = (
+            _valuation_close_on_or_before(bars.get(symbol), timestamp)
+            if allow_carry_forward
+            else _close_on(bars.get(symbol), timestamp)
+        )
         if close is None:
             raise RuntimeError(
                 "Held position has no price for portfolio valuation: "
@@ -1576,6 +1608,41 @@ def _close_on(df: pd.DataFrame | None, timestamp) -> float | None:
     if isinstance(value, pd.Series):
         value = value.iloc[-1]
     return float(value)
+
+
+def _valuation_close_on_or_before(
+    df: pd.DataFrame | None,
+    timestamp,
+) -> float | None:
+    """Carry the last traded close only for mark-to-market valuation.
+
+    A missing daily bar can be an official suspension/no-trade observation.
+    Orders still require an exact execution bar; only an already-held
+    position's valuation is allowed to use its latest earlier close.
+    """
+
+    exact = _close_on(df, timestamp)
+    if exact is not None and pd.notna(exact):
+        return exact
+    if df is None or df.empty or "Close" not in df:
+        return None
+    index = pd.DatetimeIndex(pd.to_datetime(df.index, errors="coerce"))
+    target = pd.Timestamp(timestamp)
+    if index.tz is not None:
+        target = (
+            target.tz_localize(index.tz)
+            if target.tzinfo is None
+            else target.tz_convert(index.tz)
+        )
+    elif target.tzinfo is not None:
+        target = target.tz_localize(None)
+    available = pd.to_numeric(
+        df.loc[index.notna() & (index <= target), "Close"],
+        errors="coerce",
+    ).dropna()
+    if available.empty:
+        return None
+    return float(available.iloc[-1])
 
 
 def _latest_prices(bars: dict[str, pd.DataFrame]) -> dict[str, float]:

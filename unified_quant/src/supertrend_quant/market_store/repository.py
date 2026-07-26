@@ -41,9 +41,10 @@ class DatasetWriteResult:
 class LocalDatasetRepository:
     """Immutable local Parquet versions with a small CAS current pointer."""
 
-    def __init__(self, root: str | Path):
+    def __init__(self, root: str | Path, *, market: str = "US"):
         self.root = Path(root)
         self.objects = LocalObjectStore(self.root)
+        self.market = str(market).upper()
 
     @staticmethod
     def current_key(dataset: str) -> str:
@@ -74,6 +75,7 @@ class LocalDatasetRepository:
         *,
         quality: str,
         warnings: tuple[str, ...] = (),
+        metadata: dict[str, Any] | None = None,
         expected_etag: str | None = None,
     ) -> DataRelease:
         _, actual_etag = self.current_release()
@@ -84,6 +86,7 @@ class LocalDatasetRepository:
             dataset_versions,
             quality=quality,
             warnings=warnings,
+            metadata=metadata,
         )
         immutable_key = f"releases/{release.version}.json"
         self.objects.put(immutable_key, release.to_bytes(), if_none_match=True)
@@ -177,6 +180,7 @@ class LocalDatasetRepository:
             frame,
             incomplete_action_policy=incomplete_action_policy,
             completed_session=completed_session,
+            market=self.market,
         )
         report.raise_for_errors()
         current, actual_etag = self.current_pointer(dataset)
@@ -287,6 +291,7 @@ class LocalDatasetRepository:
                 logical,
                 incomplete_action_policy=incomplete_action_policy,
                 completed_session=completed_session,
+                market=self.market,
             )
             logical_report.raise_for_errors()
             values["_logical_quality"] = str(logical_report.quality)

@@ -82,7 +82,7 @@ KAGGLE_METADATA_URL = (
     "marketneutral/quandl-wiki-prices-us-equites"
 )
 WIKI_RETRIEVED_AT = "2026-07-18T03:58:26.808706Z"
-REVIEWED_AT = "2026-07-19T04:30:00Z"
+REVIEWED_AT = "2026-07-25T05:01:37Z"
 WIKI_LICENSE_WARNING = (
     "Kaggle Quandl WIKI licenseName=Unknown; private/internal-only; "
     "redistribution/public publication blocked."
@@ -151,7 +151,7 @@ TARGETS = (
             "fecd59e84360bd2173ab0e0d30d190731cfb9f97d1a3ef3dae81292783e0ab1a"
         ),
         signal_sha256=(
-            "2d964d020e6707aff59cd96ee362b131f99a68ef4ccdf2758f5e369b0f744ec2"
+            "f8784d94ce11f9de3e915f044aff25de65735b1eade4e2de9e303ec590b67742"
         ),
         expected_exact={"open": 648, "high": 575, "low": 579, "close": 637},
         expected_max_abs={"open": 0.05, "high": 0.005, "low": 0.005, "close": 0.01},
@@ -187,7 +187,7 @@ TARGETS = (
             "ed5375f9a9e4e5e83db239bc4c5e7d70af86cfd75ed703331d55efabb3c5770c"
         ),
         signal_sha256=(
-            "d55ecc680990a769157863997388ba4f88b71a297157f5070ae23e1241301853"
+            "5b4c4282f0c0a128b260207cf46c77a49b21372dbd5e927aed2731e3ae76e5fc"
         ),
         expected_exact={"open": 756, "high": 805, "low": 805, "close": 811},
         expected_max_abs={"open": 0.32, "high": 0.0005, "low": 0.0005, "close": 0.015},
@@ -1026,18 +1026,18 @@ def _audit_dd_blocked(
         expected_differences = {
             "TripleST1_Trend": 4,
             "TripleST2_Trend": 0,
-            "TripleST3_Trend": 0,
-            "TripleAllUp": 0,
+            "TripleST3_Trend": 2,
+            "TripleAllUp": 2,
             "TripleDownCount": 4,
-            "TripleBuySignal": 0,
+            "TripleBuySignal": 2,
             "TripleSellSignal": 2,
         }
         if (
             differences != expected_differences
             or current_hash
-            != "38c920a8e9efbd9efce4ee4600c30df4316c64f8dfd9f4eb8f96c3000fef63be"
+            != "346220a8afbdb2bc4921452f13dbff78e460b80d80104783a27e3e6a6ec39613"
             or proxy_hash
-            != "d0276d5bbb381e809a67c9174e985ae902581f02b0d2d77714d0fa026f80fc78"
+            != "18e0cb56689c5eca221752ce53f67925b555c332eeea4049f83380547d05d150"
             or maximum_wiki_residual > 1e-10
         ):
             raise ValueError("Legacy DD proxy-only impact fingerprint changed.")
@@ -1232,16 +1232,27 @@ def _append_or_verify_artifacts(
             raise ValueError("Arbitration evidence archive_id is duplicated.")
         existence.append(len(rows) == 1)
         if len(rows) == 1:
+            archived_session = _date(rows.iloc[0].get("effective_date"))
+            if not archived_session:
+                raise ValueError(
+                    "Existing arbitration artifact effective_date is missing."
+                )
             _verify_artifact_row(
                 repository,
                 rows.iloc[0],
                 artifact,
-                completed_session=completed_session,
+                completed_session=archived_session,
             )
-    if any(existence) and not all(existence):
-        raise ValueError("Arbitration evidence is only partially archived.")
     if all(existence):
         return archive.copy(), False
+    if any(existence):
+        missing_datasets = {
+            artifact.dataset
+            for artifact, exists in zip(artifacts, existence, strict=True)
+            if not exists
+        }
+        if missing_datasets != {"reviewed_us_wiki_price_arbitration"}:
+            raise ValueError("Arbitration evidence is only partially archived.")
     additions = pd.DataFrame(
         [
             _artifact_row(
@@ -1249,7 +1260,8 @@ def _append_or_verify_artifacts(
                 completed_session=completed_session,
                 columns=archive.columns,
             )
-            for artifact in artifacts
+            for artifact, exists in zip(artifacts, existence, strict=True)
+            if not exists
         ],
         columns=archive.columns,
     )
@@ -1409,7 +1421,7 @@ def prepare_repair(
             "passed_price_only_security_ids": [audit["security_id"] for audit in audits],
             "price_arbitrations": audits,
             "legacy_dd": dd_audit,
-            "source_archive_rows_added": 2 if changed else 0,
+            "source_archive_rows_added": len(candidate) - len(archive),
             "source_archive_only": True,
             "daily_price_raw_rows_changed": 0,
             "corporate_action_rows_changed": 0,

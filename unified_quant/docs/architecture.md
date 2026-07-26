@@ -94,12 +94,16 @@ Grid candidates and Optuna trials evaluate validation only; full
 overall/train/validation/test reports and benchmarks are created after a winner
 has been selected, so the test segment remains a holdout.
 
-Paper state, processed corporate-action IDs, and candle idempotency metadata are committed atomically. Live
-orders use stable per-candle Toss client order IDs, hide incomplete candles,
-block unmanaged holdings, and treat missing quotes or an unfilled prerequisite
-sell as a hard stop for dependent orders.
+Paper state, processed corporate-action IDs, and candle idempotency metadata are
+committed atomically. Live accepts only the release pinned to the preceding
+exchange session, persists an immutable signal plan before sending, and uses
+stable D-signal Toss client order IDs. An append-only order ledger is reconciled
+with broker open orders and account quantities at startup. Incomplete/degraded
+data, an expired D+1 open window, unmanaged holdings, the kill switch, missing
+quotes, or an unfilled prerequisite sell stop the affected orders.
 
-See [market_data.md](market_data.md) for the daily V1 storage and release design.
+See [market_data.md](market_data.md) and
+[kr_market_data.md](kr_market_data.md) for daily storage and release design.
 
 ## Migration status
 
@@ -120,6 +124,7 @@ tests, and commands must import only `supertrend_quant` from
 
 Configuration file arguments include the `unified_quant/configs/...` prefix.
 The current working directory is checked first, followed by the unified project
-and repository roots. Index profiles write daily snapshots beneath
-`state/universes`; the live runtime keeps the root-level `universe.json`. State
-and results are written beneath the repository root when invoked as shown.
+and repository roots. Compatibility profiles write daily snapshots beneath
+`state/universes`. Production live runtimes replay release-pinned index events
+and keep isolated state beneath `state/live/us` and `state/live/kr`. State and
+results are written beneath the repository root when invoked as shown.

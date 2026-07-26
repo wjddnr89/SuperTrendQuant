@@ -32,7 +32,11 @@ class SharedDataConfigTest(unittest.TestCase):
             ROOT / "configs" / "runtimes" / "research_kr.yaml",
         )
 
-        self.assertEqual(config.data_store.provider, "yahoo")
+        self.assertEqual(config.data_store.provider, "parquet")
+        self.assertEqual(config.data_store.ingest_source, "krx")
+        self.assertEqual(config.data_store.local_cache_dir, "data/cache/markets/KR")
+        self.assertEqual(config.data_store.r2.prefix, "supertrend-quant/markets/KR")
+        self.assertTrue(config.data_store.r2.enabled)
         self.assertFalse(config.data_store.auto_sync)
 
     def test_quant_data_status_needs_only_data_config(self):

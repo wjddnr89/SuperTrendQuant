@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import pandas as pd
+
+from .market_store.markets import exchange_calendar, market_spec
+
 
 @dataclass(frozen=True)
 class MarketSession:
@@ -11,6 +15,16 @@ class MarketSession:
     market: str | None
     is_close_briefing: bool
     timezone: ZoneInfo | None
+
+
+@dataclass(frozen=True)
+class DailyExecutionWindow:
+    market: str
+    execution_session: str
+    signal_session: str
+    opens_at: datetime
+    expires_at: datetime
+    allowed: bool
 
 
 def check_market_schedule(now_kr: datetime | None = None, now_us: datetime | None = None) -> MarketSession:
@@ -24,18 +38,63 @@ def check_market_schedule(now_kr: datetime | None = None, now_us: datetime | Non
     if us_now.tzinfo is None:
         us_now = us_now.replace(tzinfo=us_tz)
 
-    kr_time = kr_now.strftime("%H:%M:%S")
-    us_time = us_now.strftime("%H:%M:%S")
+    kr_bounds = _session_bounds("KR", kr_now)
+    us_bounds = _session_bounds("US", us_now)
 
-    if kr_now.weekday() <= 4 and kr_time[:5] == "15:30":
+    if kr_bounds and kr_bounds[1] <= kr_now < kr_bounds[1] + timedelta(minutes=1):
         return MarketSession("KR_CLOSE", "KR", True, kr_tz)
-    if us_now.weekday() <= 4 and us_time[:5] == "16:00":
+    if us_bounds and us_bounds[1] <= us_now < us_bounds[1] + timedelta(minutes=1):
         return MarketSession("US_CLOSE", "US", True, us_tz)
-    if kr_now.weekday() <= 4 and "09:00:00" <= kr_time < "15:30:00":
+    if kr_bounds and kr_bounds[0] <= kr_now < kr_bounds[1]:
         return MarketSession("KR", "KR", False, kr_tz)
-    if us_now.weekday() <= 4 and "09:30:00" <= us_time < "16:00:00":
+    if us_bounds and us_bounds[0] <= us_now < us_bounds[1]:
         return MarketSession("US", "US", False, us_tz)
     return MarketSession("SLEEP", None, False, None)
+
+
+def daily_execution_window(
+    market: str,
+    now: datetime,
+    *,
+    minutes: int = 15,
+) -> DailyExecutionWindow | None:
+    """Resolve the actual exchange session and its D+1 opening window."""
+
+    normalized_market = str(market).upper()
+    spec = market_spec(normalized_market)
+    timezone = ZoneInfo(spec.timezone)
+    local_now = now.replace(tzinfo=timezone) if now.tzinfo is None else now.astimezone(timezone)
+    bounds = _session_bounds(normalized_market, local_now)
+    if bounds is None:
+        return None
+    opens_at, _ = bounds
+    expires_at = opens_at + timedelta(minutes=max(1, int(minutes)))
+    session = pd.Timestamp(local_now.date())
+    signal_session = exchange_calendar(normalized_market).previous_session(session)
+    return DailyExecutionWindow(
+        market=normalized_market,
+        execution_session=session.date().isoformat(),
+        signal_session=signal_session.date().isoformat(),
+        opens_at=opens_at,
+        expires_at=expires_at,
+        allowed=opens_at <= local_now < expires_at,
+    )
+
+
+def _session_bounds(
+    market: str,
+    now: datetime,
+) -> tuple[datetime, datetime] | None:
+    spec = market_spec(market)
+    timezone = ZoneInfo(spec.timezone)
+    local_now = now.replace(tzinfo=timezone) if now.tzinfo is None else now.astimezone(timezone)
+    session = pd.Timestamp(local_now.date())
+    calendar = exchange_calendar(market)
+    if not calendar.is_session(session):
+        return None
+    opens_at = calendar.session_open(session).to_pydatetime().astimezone(timezone)
+    closes_at = calendar.session_close(session).to_pydatetime().astimezone(timezone)
+    return opens_at, closes_at
 
 
 def current_candle_base(now: datetime, timeframe: str = "30m") -> datetime:

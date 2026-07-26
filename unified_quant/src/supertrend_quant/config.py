@@ -75,12 +75,44 @@ class ExecutionConfig:
 @dataclass(frozen=True)
 class RiskConfig:
     max_position_count: int = 1
+    max_order_notional: float = 0.0
+    max_daily_loss: float = 0.0
+    max_daily_loss_pct: float = 0.03
+
+    def __post_init__(self) -> None:
+        if self.max_position_count < 1:
+            raise ValueError("risk.max_position_count must be positive.")
+        if self.max_order_notional < 0 or self.max_daily_loss < 0:
+            raise ValueError("Live risk notional/loss limits must be non-negative.")
+        if not 0 <= self.max_daily_loss_pct < 1:
+            raise ValueError("risk.max_daily_loss_pct must be in [0, 1).")
 
 
 @dataclass(frozen=True)
 class LiveConfig:
     holdings_file: str = "holding.json"
     loop_interval_seconds: int = 60
+    signal_plan_file: str = "state/live/signal-plan.json"
+    order_ledger_file: str = "state/live/order-ledger.jsonl"
+    risk_state_file: str = "state/live/risk-state.json"
+    kill_switch_file: str = "state/live/KILL_SWITCH"
+    signal_bar_policy: str = "completed_daily"
+    execution_window_minutes: int = 15
+    history_window_bars: int = 300
+    required_data_quality: str = "valid"
+    allowed_degraded_warning_codes: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.loop_interval_seconds < 1:
+            raise ValueError("live.loop_interval_seconds must be positive.")
+        if self.signal_bar_policy != "completed_daily":
+            raise ValueError("live.signal_bar_policy must be completed_daily.")
+        if not 1 <= self.execution_window_minutes <= 60:
+            raise ValueError("live.execution_window_minutes must be between 1 and 60.")
+        if self.history_window_bars < 30:
+            raise ValueError("live.history_window_bars must be at least 30.")
+        if self.required_data_quality not in {"valid", "degraded"}:
+            raise ValueError("live.required_data_quality must be valid or degraded.")
 
 
 @dataclass(frozen=True)
@@ -164,6 +196,7 @@ class R2Config:
     privacy_attestation_path_env: str = "R2_PRIVACY_ATTESTATION_PATH"
     privacy_attestation_sha256_env: str = "R2_PRIVACY_ATTESTATION_SHA256"
     privacy_attestation_max_age_seconds: int = 900
+    privacy_recheck_policy: str = "always"
     jurisdiction: str = "default"
 
 
@@ -269,6 +302,7 @@ def compose_split_config(
     capital_raw = _optional_mapping(runtime_raw, "capital")
     costs_raw = _optional_mapping(runtime_raw, "costs")
     execution_raw = _optional_mapping(runtime_raw, "execution")
+    risk_raw = _optional_mapping(runtime_raw, "risk")
     rotation_raw = _optional_mapping(strategy_raw, "rotation")
     scoring_raw = _required_mapping(strategy_raw, "scoring")
     runtime_universe = runtime_raw.get("universe")
@@ -335,10 +369,38 @@ def compose_split_config(
         },
         "risk": {
             "max_position_count": max_positions,
+            "max_order_notional": risk_raw.get("max_order_notional", 0.0),
+            "max_daily_loss": risk_raw.get("max_daily_loss", 0.0),
+            "max_daily_loss_pct": risk_raw.get("max_daily_loss_pct", 0.03),
         },
         "live": {
             "holdings_file": live_raw.get("holdings_file", "holding.json"),
             "loop_interval_seconds": live_raw.get("loop_interval_seconds", 60),
+            "signal_plan_file": live_raw.get(
+                "signal_plan_file", "state/live/signal-plan.json"
+            ),
+            "order_ledger_file": live_raw.get(
+                "order_ledger_file", "state/live/order-ledger.jsonl"
+            ),
+            "risk_state_file": live_raw.get(
+                "risk_state_file", "state/live/risk-state.json"
+            ),
+            "kill_switch_file": live_raw.get(
+                "kill_switch_file", "state/live/KILL_SWITCH"
+            ),
+            "signal_bar_policy": live_raw.get(
+                "signal_bar_policy", "completed_daily"
+            ),
+            "execution_window_minutes": live_raw.get(
+                "execution_window_minutes", 15
+            ),
+            "history_window_bars": live_raw.get("history_window_bars", 300),
+            "required_data_quality": live_raw.get(
+                "required_data_quality", "valid"
+            ),
+            "allowed_degraded_warning_codes": live_raw.get(
+                "allowed_degraded_warning_codes", ()
+            ),
         },
         "paper": {
             "state_file": paper_raw.get("state_file", "state/paper.json"),
@@ -422,12 +484,43 @@ def parse_config(raw: dict[str, Any]) -> AppConfig:
                 {"order_type", "allocation_pct", "broker", "live_confirm_required"},
             )
         ),
-        risk=RiskConfig(**_known(_optional_mapping(raw, "risk"), {"max_position_count"})),
-        live=LiveConfig(
+        risk=RiskConfig(
             **_known(
-                _optional_mapping(raw, "live"),
-                {"holdings_file", "loop_interval_seconds"},
+                _optional_mapping(raw, "risk"),
+                {
+                    "max_position_count",
+                    "max_order_notional",
+                    "max_daily_loss",
+                    "max_daily_loss_pct",
+                },
             )
+        ),
+        live=LiveConfig(
+            **{
+                **_known(
+                    _optional_mapping(raw, "live"),
+                    {
+                        "holdings_file",
+                        "loop_interval_seconds",
+                        "signal_plan_file",
+                        "order_ledger_file",
+                        "risk_state_file",
+                        "kill_switch_file",
+                        "signal_bar_policy",
+                        "execution_window_minutes",
+                        "history_window_bars",
+                        "required_data_quality",
+                        "allowed_degraded_warning_codes",
+                    },
+                ),
+                "allowed_degraded_warning_codes": tuple(
+                    str(value).strip()
+                    for value in _optional_mapping(raw, "live").get(
+                        "allowed_degraded_warning_codes", ()
+                    )
+                    if str(value).strip()
+                ),
+            }
         ),
         paper=_parse_paper_config(raw),
         backtest=BacktestConfig(**_known(_optional_mapping(raw, "backtest"), {"results_dir"})),
@@ -570,6 +663,11 @@ def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
             privacy_attestation_max_age_seconds=int(
                 r2_raw.get("privacy_attestation_max_age_seconds", 900)
             ),
+            privacy_recheck_policy=str(
+                r2_raw.get("privacy_recheck_policy", "always")
+            )
+            .strip()
+            .lower(),
             jurisdiction=str(r2_raw.get("jurisdiction", "default"))
             .strip()
             .lower(),
@@ -577,8 +675,8 @@ def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
     )
     if config.provider not in {"parquet", "yahoo"}:
         raise ValueError("data_store.provider must be parquet or yahoo.")
-    if config.ingest_source not in {"eodhd", "yahoo"}:
-        raise ValueError("data_store.ingest_source must be eodhd or yahoo.")
+    if config.ingest_source not in {"eodhd", "yahoo", "krx"}:
+        raise ValueError("data_store.ingest_source must be eodhd, yahoo, or krx.")
     if config.price_mode not in {"total_return_adjusted", "split_adjusted", "raw"}:
         raise ValueError(
             "data_store.price_mode must be total_return_adjusted, split_adjusted, or raw."
@@ -597,6 +695,10 @@ def _parse_data_store_config(raw: dict[str, Any]) -> DataStoreConfig:
         raise ValueError(
             "data_store.r2.privacy_attestation_max_age_seconds must be between "
             "60 and 3600."
+        )
+    if config.r2.privacy_recheck_policy not in {"always", "on_change"}:
+        raise ValueError(
+            "data_store.r2.privacy_recheck_policy must be always or on_change."
         )
     r2_env_names = (
         config.r2.access_key_env,
@@ -648,6 +750,7 @@ def _validate_data_store_mapping(raw: dict[str, Any]) -> None:
             "privacy_attestation_path_env",
             "privacy_attestation_sha256_env",
             "privacy_attestation_max_age_seconds",
+            "privacy_recheck_policy",
             "jurisdiction",
         },
         "data_store.r2",
@@ -933,7 +1036,13 @@ def _data_store_mapping_for_market(raw: dict[str, Any], market: str) -> dict[str
         return dict(base)
     if not isinstance(selected, dict):
         raise ValueError(f"data config market_overrides.{market} must be a mapping.")
-    return dict(selected)
+    merged = dict(base)
+    for key, value in selected.items():
+        if key == "r2" and isinstance(value, dict):
+            merged[key] = {**dict(base.get("r2", {}) or {}), **value}
+        else:
+            merged[key] = value
+    return merged
 
 
 def _validate_runtime_schema(raw: dict[str, Any]) -> None:
@@ -949,6 +1058,7 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
             "capital",
             "costs",
             "execution",
+            "risk",
             "live",
             "paper",
             "backtest",
@@ -964,7 +1074,38 @@ def _validate_runtime_schema(raw: dict[str, Any]) -> None:
     _reject_unknown_keys(_optional_mapping(raw, "capital"), {"initial_cash"}, "runtime.capital")
     _reject_unknown_keys(_optional_mapping(raw, "costs"), {"fee_rate", "slippage_rate"}, "runtime.costs")
     _reject_unknown_keys(_optional_mapping(raw, "execution"), {"order_type", "broker", "live_confirm_required"}, "runtime.execution")
-    _reject_unknown_keys(_optional_mapping(raw, "live"), {"holdings_file", "loop_interval_seconds"}, "runtime.live")
+    _reject_unknown_keys(
+        _optional_mapping(raw, "risk"),
+        {
+            "max_order_notional",
+            "max_daily_loss",
+            "max_daily_loss_pct",
+        },
+        "runtime.risk",
+    )
+    live = _optional_mapping(raw, "live")
+    _reject_unknown_keys(
+        live,
+        {
+            "holdings_file",
+            "loop_interval_seconds",
+            "signal_plan_file",
+            "order_ledger_file",
+            "risk_state_file",
+            "kill_switch_file",
+            "signal_bar_policy",
+            "execution_window_minutes",
+            "history_window_bars",
+            "required_data_quality",
+            "allowed_degraded_warning_codes",
+        },
+        "runtime.live",
+    )
+    allowed_warnings = live.get("allowed_degraded_warning_codes", ()) or ()
+    if not isinstance(allowed_warnings, (list, tuple)):
+        raise ValueError(
+            "runtime.live.allowed_degraded_warning_codes must be a list."
+        )
     _reject_unknown_keys(
         _optional_mapping(raw, "paper"),
         {

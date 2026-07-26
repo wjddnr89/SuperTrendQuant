@@ -30,13 +30,19 @@ uv run quant-paper \
 uv run quant-live \
   --strategy unified_quant/configs/strategies/leader_rotation.yaml \
   --runtime unified_quant/configs/runtimes/live_toss.yaml
+
+# Same strategy, Korean PIT universe and isolated KR data release.
+uv run quant-live \
+  --strategy unified_quant/configs/strategies/leader_rotation.yaml \
+  --runtime unified_quant/configs/runtimes/live_toss_kr.yaml
 ```
 
 `quant-paper` and `quant-live` loop unless `--once` is provided. Paper uses a
 persistent JSON account and avoids processing the same candle twice. Live uses
 the Toss broker, synchronizes holdings, rejects incomplete historical coverage
 and duplicate open orders, sends Telegram notifications, and asks for confirmation when
-`execution.live_confirm_required` is true.
+`execution.live_confirm_required` is true. Live plans are durable and orders
+are accepted only in the first 15 minutes of the next exchange session.
 
 ## Split configuration
 
@@ -78,8 +84,9 @@ PYTHONPATH=unified_quant/src .venv/bin/python \
   unified_quant/scripts/publish_and_verify_r2.py --preflight-only
 ```
 
-The same data YAML keeps a `market_overrides.KR` Yahoo compatibility setting
-until the versioned Parquet contracts are implemented for Korea.
+The same data YAML isolates KR under `data/cache/markets/KR` and the
+`supertrend-quant/markets/KR` R2 prefix. KR uses KRX canonical Parquet rather
+than Yahoo compatibility data.
 
 Available index profiles are `nasdaq100`, `sp500`, `dow30`, `kospi200`, and
 `kosdaq150`, plus `russell3000`. US profiles map their ETF benchmark to `QQQ`,
@@ -90,12 +97,13 @@ For `universe.source: index_events`, a stored anchor plus every effective-date
 event reconstructs the exact member set for the requested date. Stable
 `security_id` values survive ticker changes; custom overlays are applied last.
 Compatibility profile membership and optional filters can still be frozen in a
-daily JSON snapshot for KR or legacy runs.
+daily JSON snapshot for legacy runs. Production US/KR research and live
+profiles use stored `index_events`.
 
 ## Market-data contract
 
-V1 stores US completed daily sessions in immutable, Zstandard-compressed
-Parquet versions. DuckDB reads only the requested securities and dates directly
+US and KR store completed daily sessions in isolated, immutable,
+Zstandard-compressed Parquet versions. DuckDB reads only the requested securities and dates directly
 from those files. A release records one mutually consistent version for raw
 prices, actions, factors, identifiers, and any imported index datasets.
 
@@ -104,9 +112,10 @@ prices, actions, factors, identifiers, and any imported index datasets.
 - dividends, splits, mergers, ticker changes, and delistings are applied by an
   exactly-once portfolio ledger;
 - paper/live block the entire order plan when historical coverage is incomplete;
-- US live signal history comes from the same daily release as research and
-  backtest, while Toss quotes remain the execution boundary;
-- KR uses the legacy Yahoo path until the same Parquet contracts are implemented.
+- US and KR live signal history comes from the same daily release as research
+  and backtest, while Toss quotes remain the execution boundary;
+- KR uses KRX ISIN identity, XKRX sessions, licensed PIT constituent snapshots,
+  and authenticated KRX Open API raw OHLCV.
 
 Run `quant-data sync`, `validate`, and `status` before research or execution as
 needed on a personal machine. See [market_data.md](market_data.md) for source,
@@ -176,15 +185,18 @@ uv run quant-compare \
   --backtest-dir results/research/sp500/backtests/<backtest_run_id>
 ```
 
-## Live profile compatibility
+## Daily live profiles
 
-`leader_rotation.yaml` plus `live_toss.yaml` preserves the operational profile:
+`leader_rotation.yaml` is reused without translation by both live runtimes:
 
-- AUTO routing between KR and US market sessions;
+- `live_toss.yaml`: US `sp500 + nasdaq100` PIT events;
+- `live_toss_kr.yaml`: KR `kospi200 + kosdaq150` PIT events;
 - Toss execution with interactive confirmation enabled;
-- `holding.json` synchronization and a 60-second loop;
-- completed daily US Parquet signals and raw Toss execution quotes;
-- Yahoo compatibility data for KR;
+- isolated holdings/signal-plan/order-ledger/risk state and a 60-second loop;
+- confirmed D-session Parquet signals and D+1 open-window Toss quotes;
+- a 15-minute execution window, stable D-signal client order IDs, and startup
+  reconciliation against broker open orders and account quantities;
+- max buy notional, daily-loss entry brake, and file kill switch;
 - SOXL/SOXS multiplier `4.5`;
 - one-position, 90% allocation leader rotation;
 - 1% minimum-profit brake before a rotation sale;

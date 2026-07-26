@@ -76,6 +76,10 @@ class DataStoreConfigTest(unittest.TestCase):
             config.data_store.r2.privacy_attestation_max_age_seconds,
             900,
         )
+        self.assertEqual(
+            config.data_store.r2.privacy_recheck_policy,
+            "always",
+        )
 
     def test_r2_privacy_attestation_window_and_jurisdiction_are_strict(self):
         for r2, message in (
@@ -94,6 +98,14 @@ class DataStoreConfigTest(unittest.TestCase):
                     "jurisdiction": "unknown",
                 },
                 "jurisdiction",
+            ),
+            (
+                {
+                    "enabled": True,
+                    "bucket": "market-data",
+                    "privacy_recheck_policy": "never",
+                },
+                "privacy_recheck_policy",
             ),
         ):
             with self.subTest(r2=r2), self.assertRaisesRegex(ValueError, message):

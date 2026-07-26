@@ -397,6 +397,64 @@ class PrivateInternalOnlySourceArchiveGateTest(unittest.TestCase):
             [publish_script._WIKI_PRIVATE_INTERNAL_ONLY_WARNING],
         )
 
+    def test_hash_pinned_audit_versions_for_one_dataset_are_each_verified(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repository, release, first_spec, _path = (
+                _private_archive_gate_fixture(root)
+            )
+            second_payload = {
+                "schema": first_spec["schema"],
+                "license_policy": copy.deepcopy(first_spec["license_policy"]),
+                "reviewed_at": "2026-07-25T00:00:00Z",
+            }
+            second_raw = json.dumps(
+                second_payload,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+            second_hash = sha256_bytes(second_raw)
+            second_path = f"archives/2026-07-25/{second_hash}.json.gz"
+            payload_path = root / second_path
+            payload_path.parent.mkdir(parents=True, exist_ok=True)
+            payload_path.write_bytes(gzip.compress(second_raw, mtime=0))
+            second_spec = {
+                **first_spec,
+                "source_hash": second_hash,
+                "object_path": second_path,
+            }
+            second_row = {
+                **repository.read_frame.return_value.iloc[0].to_dict(),
+                "archive_id": second_hash,
+                "source_hash": second_hash,
+                "object_path": second_path,
+            }
+            repository.read_frame.return_value = pd.concat(
+                [
+                    repository.read_frame.return_value,
+                    pd.DataFrame([second_row]),
+                ],
+                ignore_index=True,
+            )
+            with patch.object(
+                publish_script,
+                "_PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS",
+                (first_spec, second_spec),
+            ):
+                result = (
+                    publish_script._private_internal_only_source_archive_restrictions(
+                        repository,
+                        release,
+                    )
+                )
+
+        self.assertEqual(len(result["reviewed_provenance"]), 2)
+        self.assertEqual(
+            {row["raw_sha256"] for row in result["reviewed_provenance"]},
+            {first_spec["source_hash"], second_hash},
+        )
+
     def test_changed_exact_license_policy_fails_closed(self):
         changed_policy = copy.deepcopy(
             publish_script._PRIVATE_INTERNAL_ONLY_LICENSE_POLICY
@@ -1076,6 +1134,37 @@ class R2PrivateVisibilityGateTest(unittest.TestCase):
             )
             self.assertEqual(result["attestation_sha256"], sha256_bytes(content))
 
+    def test_on_change_reuses_expired_hash_pinned_attestation(self):
+        checked_at = datetime(2026, 7, 18, 2, 0, tzinfo=timezone.utc)
+        now = checked_at + timedelta(days=30)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "privacy.json"
+            content = json.dumps(
+                self._attestation(checked_at),
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+            path.write_bytes(content)
+            session = SimpleNamespace(get=Mock())
+            verifier = R2PrivacyVerifier(
+                self._config(privacy_recheck_policy="on_change"),
+                _s3_privacy_client(),
+                self.endpoint,
+                environ={
+                    "R2_PRIVACY_ATTESTATION_PATH": str(path),
+                    "R2_PRIVACY_ATTESTATION_SHA256": sha256_bytes(content),
+                    "CLOUDFLARE_API_TOKEN": "unused-token",
+                },
+                http_session=session,
+                now=lambda: now,
+            )
+
+            result = verifier.verify()
+
+            self.assertEqual(result["verification_method"], "hash_pinned_attestation")
+            self.assertEqual(result["privacy_recheck_policy"], "on_change")
+            session.get.assert_not_called()
+
     def test_recent_dashboard_screenshot_attestation_is_valid(self):
         now = datetime(2026, 7, 18, 2, 0, tzinfo=timezone.utc)
         value = {
@@ -1691,6 +1780,112 @@ class PublishAndVerifySafetyTest(unittest.TestCase):
             self.assertRaisesRegex(RuntimeError, "temporary exceptions must be zero"),
         ):
             publish_script._validate_release_lifecycle_coverage(repository, release)
+
+    def test_exact_reviewed_kr_pending_exception_can_publish_degraded(self):
+        candidate = LifecycleCandidate(
+            security_id="KR:KR7016790008",
+            symbol="016790",
+            name="현대사료",
+            exchange="KOSDAQ",
+            last_price_date="2024-02-29",
+            active_to="",
+        )
+        candidate_id = lifecycle_candidate_id(
+            candidate.security_id,
+            candidate.last_price_date,
+            selection_rule="kr_terminal_v1",
+        )
+        expected = publish_script._KR_REVIEWED_PENDING_LIFECYCLE_EXCEPTIONS[
+            candidate_id
+        ]
+        resolution = {
+            "candidate_id": candidate_id,
+            "security_id": expected["security_id"],
+            "symbol": expected["symbol"],
+            "last_price_date": expected["last_price_date"],
+            "resolution": "exception",
+            "event_id": "",
+            "exception_code": expected["exception_code"],
+            "exception_reason": "Pending court decision.",
+            "reviewed_by": expected["reviewed_by"],
+            "reviewed_at": expected["reviewed_at"],
+            "recheck_after": expected["recheck_after"],
+            "successor_security_id": "",
+            "successor_symbol": "",
+            "source_url": expected["source_url"],
+            "source": expected["source"],
+            "retrieved_at": "2026-07-23T00:00:00Z",
+            "source_hash": expected["source_hash"],
+        }
+        resolutions = pd.DataFrame([resolution])
+        actions = pd.DataFrame()
+        report = validate_lifecycle_coverage(
+            pd.DataFrame([candidate.__dict__]),
+            resolutions,
+            actions,
+            completed_session="2026-07-22",
+            selection_rule="kr_terminal_v1",
+        )
+        metadata = {
+            **report.manifest_metadata(),
+            "evidence_report_sha256": "evidence-report-sha256",
+        }
+        frames = {
+            "lifecycle_resolutions": resolutions,
+            "corporate_actions": actions,
+            "source_archive": pd.DataFrame(
+                [{"archive_id": "evidence-report-sha256"}]
+            ),
+        }
+
+        class Repository:
+            market = "KR"
+
+            def read_frame(self, dataset, _version):
+                return frames[dataset].copy()
+
+            def manifest_for_version(self, dataset, _version):
+                self.assertEqual(dataset, "lifecycle_resolutions")
+                return SimpleNamespace(metadata=metadata)
+
+            def assertEqual(self, left, right):
+                if left != right:  # pragma: no cover
+                    raise AssertionError((left, right))
+
+        release = DataRelease(
+            version="kr-release-v1",
+            created_at="2026-07-23T00:00:00Z",
+            completed_session="2026-07-22",
+            dataset_versions={
+                "security_master": "master-v1",
+                "symbol_history": "history-v1",
+                "daily_price_raw": "prices-v1",
+                "index_constituent_anchors": "anchors-v1",
+                "index_membership_events": "events-v1",
+                "corporate_actions": "actions-v1",
+                "lifecycle_resolutions": "resolutions-v1",
+                "source_archive": "archive-v1",
+            },
+            quality="degraded",
+            metadata={
+                "index_price_gap_policy": {
+                    "security_ids": [candidate.security_id]
+                }
+            },
+        )
+
+        with patch.object(
+            publish_script,
+            "_build_release_lifecycle_candidates",
+            return_value=(candidate,),
+        ):
+            result = publish_script._validate_release_lifecycle_coverage(
+                Repository(),
+                release,
+            )
+
+        self.assertEqual(result["temporary_exception_count"], 1)
+        self.assertEqual(result["open_count"], 0)
 
     def test_remote_parent_manifest_must_match_local_raw_bytes(self):
         with tempfile.TemporaryDirectory() as directory:

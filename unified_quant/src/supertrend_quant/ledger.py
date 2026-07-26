@@ -201,6 +201,19 @@ class PortfolioLedger:
         cash_amount = _optional_float(action.get("cash_amount"))
         ratio = _optional_float(action.get("ratio"))
 
+        if action_type == "reference_price_adjustment":
+            # This ratio is a KRX price-series reset, not a shares-after /
+            # shares-before entitlement. Adjustment factors already apply it
+            # to research prices; any actual split, stock dividend, or cash
+            # distribution is represented by its own ledger action. Applying
+            # the reference ratio here would change holdings a second time.
+            return LedgerEvent(
+                event_id,
+                action_type,
+                symbol,
+                "Price-only reference adjustment already reflected in market data.",
+            )
+
         if action_type in {"cash_dividend", "special_dividend"}:
             if cash_amount is None:
                 self.unresolved_event_ids.add(event_id)

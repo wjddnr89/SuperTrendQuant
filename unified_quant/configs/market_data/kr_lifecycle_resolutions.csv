@@ -1,0 +1,2 @@
+security_id,symbol,last_price_date,exception_code,exception_reason,reviewed_by,reviewed_at,recheck_after,source_url
+KR7016790008,016790,2024-02-29,insufficient_official_evidence,"KRX deferred the 2026-06-11 delisting and closing-auction procedure on 2026-06-12 after case 2026카합1399; no final tradable or recovery event existed by the 2026-07-22 release cutoff.",kr_pipeline_official_disclosure_review,2026-07-23,2026-08-22,https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260612900592

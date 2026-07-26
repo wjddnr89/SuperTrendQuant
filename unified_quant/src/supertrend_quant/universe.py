@@ -467,12 +467,16 @@ def _load_index_event_schedule(
     profiles: tuple[str, ...],
     as_of: date,
 ) -> tuple[UniverseScheduleEntry, ...]:
-    if config.market not in {"US", "AUTO"}:
-        raise ValueError("index_events universe currently supports market=US only.")
+    selected_market = "US" if config.market == "AUTO" else config.market
+    if selected_market not in {"US", "KR"}:
+        raise ValueError("index_events universe requires market=US or market=KR.")
     from .market_store.index_membership import IndexEventReplayer
     from .market_store.repository import LocalDatasetRepository
 
-    repository = LocalDatasetRepository(config.data_store.local_cache_dir)
+    repository = LocalDatasetRepository(
+        config.data_store.local_cache_dir,
+        market=selected_market,
+    )
     release, _ = repository.current_release()
 
     class _ReleaseRepositoryView:
@@ -517,10 +521,14 @@ def _load_index_event_schedule(
         reviewed_operational_index_identity_gap_fingerprints,
     )
 
-    reviewed_identity_gaps = frozenset(
-        reviewed_operational_index_identity_gap_fingerprints(
-            _ReleaseRepositoryView()
+    reviewed_identity_gaps = (
+        frozenset(
+            reviewed_operational_index_identity_gap_fingerprints(
+                _ReleaseRepositoryView()
+            )
         )
+        if selected_market == "US"
+        else frozenset()
     )
     replayer = IndexEventReplayer(anchors, events, overlays)
     anchor_dates = pd.to_datetime(
@@ -529,19 +537,29 @@ def _load_index_event_schedule(
     ).dropna()
     if anchor_dates.empty:
         raise ValueError(f"No index anchors found for profiles: {', '.join(profiles)}")
-    # All selected indices must have an available anchor at the schedule start.
-    first_by_profile = [
-        pd.to_datetime(
+    first_by_profile = {
+        profile: pd.to_datetime(
             anchors.loc[anchors["index_id"].astype(str) == profile, "anchor_date"],
             errors="coerce",
         ).min()
         for profile in profiles
-    ]
-    if any(pd.isna(value) for value in first_by_profile):
+    }
+    if any(pd.isna(value) for value in first_by_profile.values()):
         raise ValueError(f"No index anchor found for one of: {', '.join(profiles)}")
-    start = max(first_by_profile).normalize()
+    # Staggered inception is legitimate (KOSDAQ150 begins after KOSPI200).
+    # Start with the first available index and add each later profile exactly
+    # on its own official anchor instead of inventing pre-inception members.
+    start = min(first_by_profile.values()).normalize()
     end = pd.Timestamp(as_of).normalize()
-    change_dates = {start, end}
+    if end < start:
+        raise ValueError(
+            f"No index history is available on {end.date()} for: {', '.join(profiles)}"
+        )
+    change_dates = {
+        start,
+        end,
+        *(value.normalize() for value in first_by_profile.values() if value <= end),
+    }
     relevant_anchors = anchors.loc[
         anchors["index_id"].astype(str).isin(profiles)
     ]
@@ -585,16 +603,21 @@ def _load_index_event_schedule(
     entries: list[UniverseScheduleEntry] = []
     prior_identity_membership: tuple[tuple[str, str], ...] | None = None
     for effective_date in sorted(change_dates):
+        active_profiles = tuple(
+            profile
+            for profile in profiles
+            if first_by_profile[profile].normalize() <= effective_date
+        )
         memberships = [
             replayer.members_on(
                 profile,
                 effective_date,
                 source_mode=config.data_store.index_source_mode,
             )
-            for profile in profiles
+            for profile in active_profiles
         ]
         profile_by_security: dict[str, set[str]] = {}
-        for profile, membership in zip(profiles, memberships):
+        for profile, membership in zip(active_profiles, memberships):
             for security_id in membership.security_ids:
                 profile_by_security.setdefault(security_id, set()).add(profile)
         members = _unique_members(
@@ -606,6 +629,7 @@ def _load_index_event_schedule(
                 security_master,
                 events,
                 reviewed_identity_gaps,
+                market=selected_market,
             )
             for security_id, member_profiles in profile_by_security.items()
         )
@@ -629,6 +653,8 @@ def _index_security_member(
     security_master: pd.DataFrame,
     index_events: pd.DataFrame | None = None,
     reviewed_identity_gap_fingerprints: Iterable[str] = (),
+    *,
+    market: str = "US",
 ) -> UniverseMember:
     history = symbol_history.loc[symbol_history["security_id"].astype(str) == security_id].copy()
     starts = pd.to_datetime(history["effective_from"], errors="coerce")
@@ -664,16 +690,20 @@ def _index_security_member(
     ] if not security_master.empty else pd.DataFrame()
     master_row = master.iloc[-1] if not master.empty else {}
     symbol = str(symbol_row["symbol"])
-    exchange = str(symbol_row.get("exchange") or master_row.get("exchange") or "US")
+    exchange = str(symbol_row.get("exchange") or master_row.get("exchange") or market)
     return UniverseMember(
         symbol=symbol,
-        market="US",
+        market=market,
         exchange=exchange,
         security_id=security_id,
         name=str(master_row.get("name") or ""),
         security_type=str(master_row.get("asset_type") or "STOCK"),
         yfinance_symbol=_default_yfinance_symbol(symbol, exchange),
-        benchmark=_profile_benchmark(profiles, "US"),
+        benchmark=(
+            _benchmark_for_exchange(exchange)
+            if market == "KR"
+            else _profile_benchmark(profiles, "US")
+        ),
         profiles=profiles,
     )
 
@@ -1367,33 +1397,20 @@ def _russell3000_provider(as_of: date) -> Iterable[UniverseMember]:
     )
 
 
-def _kr_index_provider(profile: str, expected_name: str, market: str, as_of: date) -> Iterable[UniverseMember]:
-    try:
-        from pykrx import stock
-    except ModuleNotFoundError as exc:
-        raise RuntimeError("pykrx is required for KRX index universe profiles.") from exc
-    date_text = as_of.strftime("%Y%m%d")
-    index_ticker = next(
-        (
-            ticker
-            for ticker in stock.get_index_ticker_list(date_text, market=market)
-            if re.sub(r"\s+", "", stock.get_index_ticker_name(ticker)).lower()
-            == re.sub(r"\s+", "", expected_name).lower()
-        ),
-        None,
-    )
-    if index_ticker is None:
-        raise RuntimeError(f"KRX index not found: {expected_name}")
-    symbols = stock.get_index_portfolio_deposit_file(index_ticker, date_text)
-    expected_range = (180, 220) if profile == "kospi200" else (130, 170)
-    if not expected_range[0] <= len(symbols) <= expected_range[1]:
-        raise RuntimeError(f"Unexpected {profile} member count: {len(symbols)}")
+def _kr_index_provider(profile: str, market: str, as_of: date) -> Iterable[UniverseMember]:
+    # The anonymous Data Marketplace endpoints used by pykrx now require a
+    # logged-in session. Direct profiles therefore use the same licensed KRX
+    # snapshot input as ingestion. Production research/live configs should use
+    # source=index_events so the exact immutable release is replayed instead.
+    from .market_store.kr_providers import fetch_krx_membership
+
+    symbols, _ = fetch_krx_membership(profile, as_of.isoformat())
     return tuple(
         UniverseMember(
             symbol=str(symbol).zfill(6),
             market="KR",
             exchange=market,
-            name=str(stock.get_market_ticker_name(str(symbol))) or "",
+            name="",
             yfinance_symbol=_default_yfinance_symbol(str(symbol).zfill(6), market),
             profiles=(profile,),
         )
@@ -1403,12 +1420,12 @@ def _kr_index_provider(profile: str, expected_name: str, market: str, as_of: dat
 
 @register_universe_provider("kospi200")
 def _kospi200_provider(as_of: date) -> Iterable[UniverseMember]:
-    return _kr_index_provider("kospi200", "코스피 200", "KOSPI", as_of)
+    return _kr_index_provider("kospi200", "KOSPI", as_of)
 
 
 @register_universe_provider("kosdaq150")
 def _kosdaq150_provider(as_of: date) -> Iterable[UniverseMember]:
-    return _kr_index_provider("kosdaq150", "코스닥 150", "KOSDAQ", as_of)
+    return _kr_index_provider("kosdaq150", "KOSDAQ", as_of)
 
 
 __all__ = [

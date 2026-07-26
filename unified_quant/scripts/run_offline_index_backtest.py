@@ -65,7 +65,8 @@ def main() -> None:
     )
 
     market_data = ParquetMarketDataProvider(
-        config.data_store.local_cache_dir
+        config.data_store.local_cache_dir,
+        market=config.market,
     ).load(
         config,
         symbols,
@@ -87,7 +88,11 @@ def main() -> None:
         universe_snapshot=resolved.snapshot.to_dict(),
         universe_schedule=tuple(entry.to_dict() for entry in schedule),
     )
-    result = run_backtest_on_data(config, market_data)
+    result = run_backtest_on_data(
+        config,
+        market_data,
+        capture_artifacts=True,
+    )
     run_dir = save_backtest_result(
         result,
         config,

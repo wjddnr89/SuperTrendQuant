@@ -85,7 +85,7 @@ WIKI_MEMBER_SHA256 = (
 WIKI_MEMBER_SIZE = 1_797_003_576
 WIKI_MEMBER_CRC32 = 0x946874CE
 WIKI_RETRIEVED_AT = "2026-07-18T03:58:26.808706Z"
-REVIEWED_AT = "2026-07-19T12:00:00Z"
+REVIEWED_AT = "2026-07-25T05:12:26Z"
 REVIEW_CEILING = "2018-03-27"
 ARCHIVE_EFFECTIVE_DATE = "2026-07-15"
 WIKI_LICENSE_WARNING = (
@@ -96,7 +96,7 @@ BBBY_BBT_EXTRACT_SHA256 = (
     "a6a6f651265825ed9ed95a1dfb9889f70586a728aa53eeae8585b8c00e4af52f"
 )
 BBBY_BBT_PROVENANCE_SHA256 = (
-    "d73bf90641034b56b4ce42d9cef2fd4dff23a6db8c101cc7ed9b49af4c7140c8"
+    "075ea282234e29a76c7ea5a40699ae1fcebb2d784c7280b3767dfbecdee0c2b9"
 )
 BBBY_BBT_ARTIFACT_PINS = {
     BBBY_BBT_EXTRACT_SHA256: {
@@ -114,12 +114,12 @@ BBBY_BBT_ARTIFACT_PINS = {
     BBBY_BBT_PROVENANCE_SHA256: {
         "dataset": "reviewed_us_wiki_price_arbitration",
         "object_path": (
-            f"archives/{ARCHIVE_EFFECTIVE_DATE}/{BBBY_BBT_PROVENANCE_SHA256}.json.gz"
+            f"archives/2026-07-24/{BBBY_BBT_PROVENANCE_SHA256}.json.gz"
         ),
         "content_type": "application/json",
-        "effective_date": ARCHIVE_EFFECTIVE_DATE,
+        "effective_date": "2026-07-24",
         "source": "reviewed_us_wiki_price_arbitration",
-        "retrieved_at": "2026-07-19T04:30:00Z",
+        "retrieved_at": "2026-07-25T05:01:37Z",
         "source_hash": BBBY_BBT_PROVENANCE_SHA256,
         "source_url": WIKI_DOWNLOAD_URL,
     },
@@ -259,7 +259,7 @@ TARGETS = (
         all_actions_sha256="9d2df9ec577b29cbeb4ab1f2f230320d6e6bbb941aaf3f1a2b4e111b88b32920",
         action_coverage_sha256="4c54414a08fbb19e523af898636768f7de62ec858467f53b41b044dc2b3ca358",
         factor_rows=334, factor_economics_sha256="17ac6214c8a2de9af07e157e9d056b96bd09b15b0f65a92fe6a7a5a95f067427",
-        signal_sha256="06bf9aef26302433eb9f1360776d6a1b9fd765da2ea68366d16c3c7b1417ad06",
+        signal_sha256="d8168db92061309c62117cfaa966c15ad8af8e419c060960a218dfa065f98f01",
     ),
     _pin(
         symbol="CAM", security_id="US:EODHD:20f4418a-aa9a-5ede-a981-a4bda023f291",
@@ -282,7 +282,7 @@ TARGETS = (
         all_actions_sha256="075678a24f69ccda0539fa89bdae21659d39e77116ec2722de36257ee1e31437",
         action_coverage_sha256="b8efadebf946bba0dde4fb6167e5ca8f8fb05054480f149941e1d375edfd5b37",
         factor_rows=314, factor_economics_sha256="e5bf9f2977c6f11241e32bef012824b6c1ca5862361b04c4b9eb9f369deaebac",
-        signal_sha256="c0325eb62f1a2022ffd36401194642d9ee1f455c77a84abb45c8349df4492d80",
+        signal_sha256="74fb0ea24c530eb5c9f4861940aa694cba617e3623d0f44d4674558264ff4b41",
     ),
     _pin(
         symbol="COL", security_id="US:EODHD:4ddb0638-fe2a-5f9c-97c8-691e9c42d5f3",
@@ -305,7 +305,7 @@ TARGETS = (
         all_actions_sha256="773013f0733bbd7b3bb993d8b1a57066d5dc1eacf6dcccd92da53c5ba761bf01",
         action_coverage_sha256="0ee4540e75c7957c7b1debe909d9de1254988e0e030dd178ecedfa16549afc71",
         factor_rows=983, factor_economics_sha256="153abe931a4fddb5ab38712e6de95f0f59ac5afbea4a89f1c586054c3807dd73",
-        signal_sha256="b81f628a22fda05b9c08b3ab4d3a6a18276cff1163e8e3737b788bc4447d879c",
+        signal_sha256="1e16651d4842ddb65386918e7dd13ded7fe0c24392b119c1a71b426e140a847c",
     ),
     _pin(
         symbol="EMC", security_id="US:EODHD:d0212dec-b333-5d7f-90ce-cd3d4c6cc035",
@@ -328,7 +328,7 @@ TARGETS = (
         all_actions_sha256="c29ea02720482750d31639749071f550195182f9727dad565737dfd07062bf04",
         action_coverage_sha256="5626646ffc2bc81accc5321d66d717352d08a79e5301c406f07b9e3434e1b995",
         factor_rows=423, factor_economics_sha256="3c222c34cec451fa2400653954a4f9db927f6f5f0b786da4731df28bc13cb9d4",
-        signal_sha256="1bc3aa058ea6f45b84024705f819b4dd1cfff217d51e63432b6d9c261a162675",
+        signal_sha256="da348e488bcbd37d9df57d12450d908a3c57cd5aec45486f6f698e97caf4058a",
     ),
     _pin(
         symbol="EVHC", security_id="US:EODHD:b5c1cb33-a560-58df-8a77-978096a5dbbf",
@@ -351,7 +351,7 @@ TARGETS = (
         all_actions_sha256="fa038ec0778126652c9a6cb959ec3950328a7ad94647682b04d22bbd83a7a9ad",
         action_coverage_sha256="847185eace0d7f2c9b8caec9ba9eb824b087873b30ee9b0c81a64bea4ead3d01",
         factor_rows=951, factor_economics_sha256="d7268ef79fabdc944afbd2f470b6642419a9ce50e526672d412c321461e72a47",
-        signal_sha256="19801dac4e0b8f291047f81947ec3abf5dc7c99bf029069ff2bf74fc02e26c94",
+        signal_sha256="ae3dc8a686b3d2f8db4c79ffac2a8c5e1b1f600dd3bee4f25762af04aca3b404",
     ),
     _pin(
         symbol="FB", security_id="US:EODHD:50992e1b-839e-528b-bf5a-8b4216b79779",
@@ -374,7 +374,7 @@ TARGETS = (
         all_actions_sha256="a6119e08cce839c500e5c654b12298f41469ddd72a4656bcb4752e7b061d5544",
         action_coverage_sha256="b8efadebf946bba0dde4fb6167e5ca8f8fb05054480f149941e1d375edfd5b37",
         factor_rows=1884, factor_economics_sha256="ddce3b2917295c5a787b2ffa20192e65236dd9992a16c6b5e892ad3f0fc53b92",
-        signal_sha256="e914cc6ea38588b3faddc4cd9ca809e4357eb2a41f5fea5de74384541d05d16d",
+        signal_sha256="68875e3e14371c8adea1339e45601e9c61817d824f5d83998a9b8718d45300b8",
     ),
     _pin(
         symbol="FOX", security_id="US:EODHD:acd9ed55-bf0c-5b15-b624-1a917bf6078e",
@@ -397,7 +397,7 @@ TARGETS = (
         all_actions_sha256="676c20c77167502492147c309e07b27a1a46d375cebd9e5b99849cbfcb335511",
         action_coverage_sha256="1d2ab250c605559bd06308ea382a417c1bede74568912fb6039f57304f3d0762",
         factor_rows=1059, factor_economics_sha256="449c555b2f8ee788887e0ab72b6a460b1752e1d23ff0361da17f7342bd997667",
-        signal_sha256="23989f244479f1759130ddbf67926278a15b71566d657b8bd2eef9890c2ba457",
+        signal_sha256="2be290c6250a932edcb8004fabb4f45f75c9c62c8f1370481f723bdf544ef976",
     ),
     _pin(
         symbol="FOXA", security_id="US:EODHD:9398e16f-425d-5a51-8720-35fba7433f28",
@@ -420,7 +420,7 @@ TARGETS = (
         all_actions_sha256="540eb5ad255a1ea6b953b94b054f8e3430fe9f2a8ca66e419dab5966cbc306ae",
         action_coverage_sha256="1d2ab250c605559bd06308ea382a417c1bede74568912fb6039f57304f3d0762",
         factor_rows=1059, factor_economics_sha256="449c555b2f8ee788887e0ab72b6a460b1752e1d23ff0361da17f7342bd997667",
-        signal_sha256="6c1395187d7c203862c7e4031c6798667a95fe84b5f2c2c6031913bbf08ef3ae",
+        signal_sha256="0d0df403b5db3dd36e536aadb41541201785fb92870a82fc0c54b6577ac987ff",
     ),
     _pin(
         symbol="INFO", security_id="US:EODHD:67bc140c-d643-57d1-8a4f-e44be550d27c",
@@ -443,7 +443,7 @@ TARGETS = (
         all_actions_sha256="8caba017c53e4c7f9b8c7593f1b108e5289fa79cbeffd68be8999052a913f480",
         action_coverage_sha256="ce354fd31029bc42b8c51152cd8d713779c3e1c0fad0f952f493d237ee4521c6",
         factor_rows=1801, factor_economics_sha256="cfe1fdaf758e5b3bd234da28d71c91a08322ee1e9eea0e89e44fb627d6dcbd70",
-        signal_sha256="97031cec7d1b7624e8a246b8cc12c954167c0e7662d6300afa7253c21a5fdeb0",
+        signal_sha256="4c3d148b5cd941975de925eaff24c3548ad0f3b3c573288dcaf133c938a876fb",
     ),
     _pin(
         symbol="NFX", security_id="US:EODHD:5761939d-b25c-58b8-9f70-674b2b505362",
@@ -466,7 +466,7 @@ TARGETS = (
         all_actions_sha256="58d4b8db6b58fcb37e784dc30aa22b4e7d938ea8d1f028d4517caee3f8549a0a",
         action_coverage_sha256="b8efadebf946bba0dde4fb6167e5ca8f8fb05054480f149941e1d375edfd5b37",
         factor_rows=1036, factor_economics_sha256="d4696d1d68d90199c1b9d511993b3058a83c2f6d5f1979d977f57bbc5f28bb49",
-        signal_sha256="1de6456463fbdcb5796e4b4009d0a87a9ba24f062c91f6cd875cea363c4f72bc",
+        signal_sha256="fab3925879031c3bb6ae29ddeb64a947c6f8bfdcd4eb908ecd4f06bf1ce05174",
     ),
     _pin(
         symbol="SCG", security_id="US:EODHD:a839e937-8380-540e-b610-480496ece1bb",
@@ -489,7 +489,7 @@ TARGETS = (
         all_actions_sha256="cd673cb0ada5ee303f1e5aa79622e8f8bc6268108f2ab97a93729054dc726942",
         action_coverage_sha256="2a4c792fdba32f65753e55d0d697137f702ab7365aebae53bf29ee47074ee410",
         factor_rows=1006, factor_economics_sha256="ee10da91f8f10c9210d88e5caad411765bcfce7f01d002be8661e401d68b582d",
-        signal_sha256="925b34caf2949bd5d5ec03121d36a0ffc39af81bd3a01fd434da71dbede12863",
+        signal_sha256="8a90eae8e6dfecde0e819a83fc65b4713c29cb683fd6144455693a56a59184f8",
     ),
     _pin(
         symbol="SNDK", security_id="US:EODHD:3ae520c3-9c0f-58f2-a47e-9c5b3095f8ec",
@@ -512,7 +512,7 @@ TARGETS = (
         all_actions_sha256="286d8d7b4e942b54410ead81c5fa8b79ed366fee49903c04ef9b2acd00c53e64",
         action_coverage_sha256="78e9a5080fdba57dceb00c027bb1ab671139b1282c99058570b3a44cffb32419",
         factor_rows=342, factor_economics_sha256="a34fb216a0f027bef9a21e0344a3c68a9004e0aa28eaedda4213c4d39ff7b709",
-        signal_sha256="7969dac348d0b81d393f862d1c935b2491934e33399a6be4059322737fcda540",
+        signal_sha256="4b16645f36d01858864ef9793f6117c6040a40d6ec1f7044d04e2b6e58d9404f",
     ),
     _pin(
         symbol="STI", security_id="US:EODHD:3791f942-824e-5b24-b243-2aabd4cfaa56",
@@ -535,7 +535,7 @@ TARGETS = (
         all_actions_sha256="50b2b0dbf7c254c914cb566757edacd5808a4994a87d3de1f2eea376062957ab",
         action_coverage_sha256="becebb09f9393ad8637a28a1ae67bfcdd7f42785887202722667e1d5accbc723",
         factor_rows=1242, factor_economics_sha256="7d91be9c5dfb20d2636eb3d83410386e0565b9ecbbe0097201f324c9fa809c25",
-        signal_sha256="7dec8d17caee5a3494f7d274b5ac2f460bab102223b7811eb3510e0295215d02",
+        signal_sha256="25aeeaf0e480a6fdea5180096400b6caa08c0139c6f6f9cbc693e00de5101433",
     ),
     _pin(
         symbol="TE", security_id="US:EODHD:306e4817-7ce8-5279-a033-93031e72f3f1",
@@ -558,7 +558,7 @@ TARGETS = (
         all_actions_sha256="1a6b4e86951f288c18a77799783b0fb23ae90799d12006b774a8c8470cd82b30",
         action_coverage_sha256="df747c642b0633d29f5b28dcddf90e5b1c9dd3cae90b4e07f0eb1e87a365ca2c",
         factor_rows=377, factor_economics_sha256="48b45c139b6a0058c0faf49e90ac0682a84991efd0909d4e691e8ff015f1c5df",
-        signal_sha256="c7bd3999094ef40c2bf1a729ec64a9a2053a3a6aa9d3ac41b0a22b0b7a6ba2fa",
+        signal_sha256="771581c8e6e294b7f60ce3ea886f4dede1d08c8c62a5f3747eecb2af2c56916c",
     ),
 )
 
@@ -572,13 +572,18 @@ class ArchiveArtifact:
     extension: str
     payload: bytes
     retrieved_at: str
+    effective_date: str = ARCHIVE_EFFECTIVE_DATE
 
     @property
     def source_hash(self) -> str:
         return hashlib.sha256(self.payload).hexdigest()
 
-    def object_path(self, completed_session: str) -> str:
-        return f"archives/{completed_session}/{self.source_hash}.{self.extension}.gz"
+    def object_path(self, effective_date: str | None = None) -> str:
+        archive_date = effective_date or self.effective_date
+        return (
+            f"archives/{archive_date}/"
+            f"{self.source_hash}.{self.extension}.gz"
+        )
 
 
 @dataclass(frozen=True)
@@ -1224,10 +1229,10 @@ def _audit_target(
 
 
 PROVENANCE_SHA256 = (
-    "16691eab9edc01f626d00551ba17e922d3f869d928c13478aa0443fbc329209e"
+    "12e8858b14360cb7bfc595aa1e85d6a132b1c8d688b762920882ac888aacb2aa"
 )
 ARCHIVE_ARTIFACT_INVENTORY_SHA256 = (
-    "134d0d92fa4e31e6c4deb0ab7fa0a57ccf865e0e7d01f712c08d29e87b493ab2"
+    "2ff8a87ddd303debd2d85b6d63a6434403cd9d1275a9060e4ed47897b8222921"
 )
 
 
@@ -1276,6 +1281,7 @@ def _provenance_artifact(
         extension="json",
         payload=payload,
         retrieved_at=REVIEWED_AT,
+        effective_date="2026-07-24",
     )
 
 
@@ -1302,9 +1308,9 @@ def _artifact_row(
     values = {
         "archive_id": artifact.source_hash,
         "dataset": artifact.dataset,
-        "object_path": artifact.object_path(ARCHIVE_EFFECTIVE_DATE),
+        "object_path": artifact.object_path(),
         "content_type": artifact.content_type,
-        "effective_date": ARCHIVE_EFFECTIVE_DATE,
+        "effective_date": artifact.effective_date,
         "source": artifact.source,
         "retrieved_at": artifact.retrieved_at,
         "source_hash": artifact.source_hash,
@@ -1321,9 +1327,9 @@ def _verify_artifact_row(
     expected = {
         "archive_id": artifact.source_hash,
         "dataset": artifact.dataset,
-        "object_path": artifact.object_path(ARCHIVE_EFFECTIVE_DATE),
+        "object_path": artifact.object_path(),
         "content_type": artifact.content_type,
-        "effective_date": ARCHIVE_EFFECTIVE_DATE,
+        "effective_date": artifact.effective_date,
         "source": artifact.source,
         "retrieved_at": artifact.retrieved_at,
         "source_hash": artifact.source_hash,
@@ -1360,17 +1366,26 @@ def _append_or_verify_artifacts(
                 rows.iloc[0],
                 artifact,
             )
-    if any(existence) and not all(existence):
-        raise ValueError("WIKI14 evidence is only partially archived.")
     if all(existence):
         return archive.copy(), False
+    if any(existence):
+        missing_datasets = {
+            artifact.dataset
+            for artifact, exists in zip(artifacts, existence, strict=True)
+            if not exists
+        }
+        if missing_datasets != {
+            "reviewed_us_wiki14_price_only_arbitration"
+        }:
+            raise ValueError("WIKI14 evidence is only partially archived.")
     additions = pd.DataFrame(
         [
             _artifact_row(
                 artifact,
                 columns=archive.columns,
             )
-            for artifact in artifacts
+            for artifact, exists in zip(artifacts, existence, strict=True)
+            if not exists
         ],
         columns=archive.columns,
     )
@@ -1670,7 +1685,7 @@ def prepare_repair(
             "archive_effective_date": ARCHIVE_EFFECTIVE_DATE,
             "provenance_sha256": provenance.source_hash,
             "archive_artifact_inventory_sha256": observed_inventory_sha,
-            "source_archive_rows_added": len(artifacts) if changed else 0,
+            "source_archive_rows_added": len(candidate) - len(frames[DATASET]),
             "wiki_full_rows": sum(target.full_wiki_rows for target in targets),
             "reviewed_overlap_rows": sum(target.overlap_rows for target in targets),
             "triple_supertrend_field_differences": signal_differences,
@@ -1762,7 +1777,7 @@ def _artifact_path(
     artifact: ArchiveArtifact,
 ) -> Path:
     return _safe_path(
-        repository.root, artifact.object_path(ARCHIVE_EFFECTIVE_DATE)
+        repository.root, artifact.object_path()
     )
 
 

@@ -166,10 +166,15 @@ class DataRelease:
     dataset_versions: dict[str, str]
     quality: str = DataQuality.VALID
     warnings: tuple[str, ...] = ()
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_bytes(self) -> bytes:
         payload = asdict(self)
         payload["warnings"] = list(self.warnings)
+        # Preserve byte compatibility with releases created before market
+        # metadata was introduced. New KR releases always populate this field.
+        if not payload["metadata"]:
+            payload.pop("metadata")
         return (json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode()
 
     @classmethod
@@ -182,6 +187,7 @@ class DataRelease:
             dataset_versions={str(key): str(item) for key, item in raw["dataset_versions"].items()},
             quality=str(raw.get("quality", DataQuality.VALID)),
             warnings=tuple(str(item) for item in raw.get("warnings", ())),
+            metadata=dict(raw.get("metadata", {})),
         )
 
     @classmethod
@@ -192,6 +198,7 @@ class DataRelease:
         *,
         quality: str = DataQuality.VALID,
         warnings: tuple[str, ...] = (),
+        metadata: dict[str, Any] | None = None,
     ) -> "DataRelease":
         timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
         return cls(
@@ -201,6 +208,7 @@ class DataRelease:
             dataset_versions=dict(sorted(dataset_versions.items())),
             quality=str(quality),
             warnings=warnings,
+            metadata=dict(metadata or {}),
         )
 
 

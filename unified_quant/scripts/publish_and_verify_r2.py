@@ -56,6 +56,7 @@ from supertrend_quant.market_store.terminal_readiness_exceptions import (
 from supertrend_quant.market_store.validation import (
     index_member_identity_gap_fingerprint,
     validate_dataset,
+    validate_index_price_gap_policy,
     validate_manifest_files,
     validate_repository_snapshot,
 )
@@ -129,6 +130,26 @@ _PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS = (
         "warning": _WIKI_PRIVATE_INTERNAL_ONLY_WARNING,
     },
     {
+        "dataset": "reviewed_us_wiki_price_arbitration",
+        "source": "reviewed_us_wiki_price_arbitration",
+        "source_url": (
+            "https://www.kaggle.com/api/v1/datasets/download/"
+            "marketneutral/quandl-wiki-prices-us-equites/WIKI_PRICES.csv"
+        ),
+        "source_hash": (
+            "075ea282234e29a76c7ea5a40699ae1fcebb2d784c7280b3767dfbecdee0c2b9"
+        ),
+        "object_path": (
+            "archives/2026-07-24/"
+            "075ea282234e29a76c7ea5a40699ae1fcebb2d784c7280b3767dfbecdee0c2b9"
+            ".json.gz"
+        ),
+        "content_type": "application/json",
+        "schema": "us_wiki_price_arbitration/v1",
+        "license_policy": _PRIVATE_INTERNAL_ONLY_LICENSE_POLICY,
+        "warning": _WIKI_PRIVATE_INTERNAL_ONLY_WARNING,
+    },
+    {
         "dataset": "reviewed_us_wiki14_price_only_arbitration",
         "source": "reviewed_us_wiki14_price_only_arbitration",
         "source_url": (
@@ -141,6 +162,26 @@ _PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS = (
         "object_path": (
             "archives/2026-07-15/"
             "16691eab9edc01f626d00551ba17e922d3f869d928c13478aa0443fbc329209e"
+            ".json.gz"
+        ),
+        "content_type": "application/json",
+        "schema": "us_wiki14_price_only_arbitration/v1",
+        "license_policy": _PRIVATE_INTERNAL_ONLY_LICENSE_POLICY,
+        "warning": _WIKI_PRIVATE_INTERNAL_ONLY_WARNING,
+    },
+    {
+        "dataset": "reviewed_us_wiki14_price_only_arbitration",
+        "source": "reviewed_us_wiki14_price_only_arbitration",
+        "source_url": (
+            "https://www.kaggle.com/api/v1/datasets/download/"
+            "marketneutral/quandl-wiki-prices-us-equites/WIKI_PRICES.csv"
+        ),
+        "source_hash": (
+            "12e8858b14360cb7bfc595aa1e85d6a132b1c8d688b762920882ac888aacb2aa"
+        ),
+        "object_path": (
+            "archives/2026-07-24/"
+            "12e8858b14360cb7bfc595aa1e85d6a132b1c8d688b762920882ac888aacb2aa"
             ".json.gz"
         ),
         "content_type": "application/json",
@@ -169,6 +210,26 @@ _PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS = (
         "warning": _SWY_PRIVATE_INTERNAL_ONLY_WARNING,
     },
 )
+
+_KR_REVIEWED_PENDING_LIFECYCLE_EXCEPTIONS = {
+    "695abf4ee9ff7cef6fcf1919791def2e6c4151eb49113fc3d73d8a20216ea453": {
+        "security_id": "KR:KR7016790008",
+        "symbol": "016790",
+        "last_price_date": "2024-02-29",
+        "exception_code": "insufficient_official_evidence",
+        "reviewed_by": "kr_pipeline_official_disclosure_review",
+        "reviewed_at": "2026-07-23",
+        "recheck_after": "2026-08-22",
+        "source_url": (
+            "https://dart.fss.or.kr/dsaf001/main.do?"
+            "rcpNo=20260612900592"
+        ),
+        "source": "kr_lifecycle_review_import",
+        "source_hash": (
+            "c4f3fa086b964d1eca105cc2ede3e41764d7fc330569fbace73606109daf0b29"
+        ),
+    }
+}
 
 
 def _require(condition: bool, message: str) -> None:
@@ -431,21 +492,80 @@ def _validate_release_lifecycle_coverage(
         "lifecycle_resolutions",
         resolution_version,
     )
+    manifest = repository.manifest_for_version(
+        "lifecycle_resolutions",
+        resolution_version,
+    )
     temporary_exceptions = resolutions.loc[
         resolutions["resolution"].astype(str).eq("exception")
         & resolutions["recheck_after"].fillna("").astype(str).str.strip().ne("")
     ]
-    _require(
-        temporary_exceptions.empty,
-        "Lifecycle temporary exceptions must be zero before R2 publication: "
-        f"found {len(temporary_exceptions)}.",
-    )
+    if not temporary_exceptions.empty:
+        _require(
+            getattr(repository, "market", "US") == "KR"
+            and str(release.quality) == str(DataQuality.DEGRADED),
+            "Lifecycle temporary exceptions must be zero before R2 publication "
+            "unless they are exact reviewed KR pending proceedings in a "
+            f"degraded release: found {len(temporary_exceptions)}.",
+        )
+        raw_policy = release.metadata.get("index_price_gap_policy")
+        _require(
+            isinstance(raw_policy, dict),
+            "Reviewed KR pending lifecycle exceptions require the release "
+            "index price-gap policy.",
+        )
+        policy_security_ids = {
+            str(value).strip()
+            for value in raw_policy.get("security_ids", [])
+        }
+        completed = pd.Timestamp(release.completed_session).normalize()
+        observed_candidates: set[str] = set()
+        for row in temporary_exceptions.to_dict("records"):
+            candidate_id = str(row.get("candidate_id") or "").strip()
+            expected = _KR_REVIEWED_PENDING_LIFECYCLE_EXCEPTIONS.get(
+                candidate_id
+            )
+            _require(
+                expected is not None,
+                "Unreviewed KR temporary lifecycle exception: "
+                + candidate_id,
+            )
+            for field, expected_value in expected.items():
+                _require(
+                    str(row.get(field) or "").strip() == expected_value,
+                    "Reviewed KR temporary lifecycle exception mismatch for "
+                    f"{candidate_id}/{field}.",
+                )
+            recheck_after = pd.Timestamp(
+                str(row["recheck_after"])
+            ).normalize()
+            _require(
+                recheck_after > completed
+                and recheck_after <= completed + pd.Timedelta(days=45),
+                "Reviewed KR temporary lifecycle exception is expired or has "
+                "an excessive recheck window: "
+                + candidate_id,
+            )
+            _require(
+                expected["security_id"] in policy_security_ids,
+                "Reviewed KR temporary lifecycle exception lacks exact KRX "
+                "no-trade evidence: "
+                + candidate_id,
+            )
+            observed_candidates.add(candidate_id)
+        _require(
+            len(observed_candidates) == len(temporary_exceptions),
+            "Reviewed KR temporary lifecycle exceptions are duplicated.",
+        )
     actions = repository.read_frame("corporate_actions", action_version)
     report = validate_lifecycle_coverage(
         candidates,
         resolutions,
         actions,
         completed_session=release.completed_session,
+        selection_rule=str(
+            manifest.metadata.get("selection_rule") or "us_terminal_v1"
+        ),
     )
     issue_summary = "; ".join(
         f"{issue.code}[{issue.row_count}]" for issue in report.issues
@@ -456,10 +576,6 @@ def _validate_release_lifecycle_coverage(
         + (f": {issue_summary}" if issue_summary else "."),
     )
 
-    manifest = repository.manifest_for_version(
-        "lifecycle_resolutions",
-        resolution_version,
-    )
     expected_metadata = report.manifest_metadata()
     coverage_metadata_keys = (
         "candidate_set_sha256",
@@ -499,7 +615,7 @@ def _validate_release_lifecycle_coverage(
     )
     return {
         **expected_metadata,
-        "temporary_exception_count": 0,
+        "temporary_exception_count": len(temporary_exceptions),
         "evidence_report_sha256": evidence_report_sha256,
     }
 
@@ -616,14 +732,38 @@ def _private_internal_only_source_archive_restrictions(
     )
 
     reviewed: list[dict[str, Any]] = []
+    reviewed_dataset_names = {
+        str(spec["dataset"]) for spec in _PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS
+    }
+    allowed_reviewed_keys = {
+        (str(spec["dataset"]), str(spec["source_hash"]))
+        for spec in _PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS
+    }
+    observed_reviewed_keys = {
+        (str(row["dataset"]), str(row["source_hash"]))
+        for row in frame.loc[
+            frame["dataset"].astype(str).isin(reviewed_dataset_names)
+        ].to_dict("records")
+    }
+    _require(
+        observed_reviewed_keys.issubset(allowed_reviewed_keys),
+        "Unrecognized private/internal-only reviewed provenance rows: "
+        + ", ".join(
+            f"{dataset}/{source_hash}"
+            for dataset, source_hash in sorted(
+                observed_reviewed_keys - allowed_reviewed_keys
+            )
+        ),
+    )
     for spec in _PRIVATE_INTERNAL_ONLY_PROVENANCE_SPECS:
         matches = frame.loc[
             frame["dataset"].astype(str).eq(spec["dataset"])
+            & frame["source_hash"].astype(str).eq(spec["source_hash"])
         ]
         _require(
             len(matches) <= 1,
             "Private/internal-only reviewed provenance row is duplicated: "
-            + spec["dataset"],
+            + f"{spec['dataset']}/{spec['source_hash']}",
         )
         if matches.empty:
             continue
@@ -711,7 +851,7 @@ def _private_internal_only_source_archive_restrictions(
             }
         )
 
-    reviewed.sort(key=lambda item: item["dataset"])
+    reviewed.sort(key=lambda item: (item["dataset"], item["raw_sha256"]))
     evidence = {
         "restricted": bool(reviewed or warning_hits),
         "source_archive_version": archive_version,
@@ -979,6 +1119,34 @@ def _validate_cross_dataset_snapshot(
     repository: LocalDatasetRepository,
     release: DataRelease,
 ):
+    if getattr(repository, "market", "US") == "KR":
+        policy = release.metadata.get("index_price_gap_policy")
+        _require(
+            isinstance(policy, dict),
+            "KR release lacks its official index price-gap policy.",
+        )
+        cross_version = release.dataset_versions.get(
+            "cross_validation_reports",
+            "",
+        )
+        _require(
+            bool(cross_version),
+            "KR release lacks cross_validation_reports.",
+        )
+        cross_reports = repository.read_frame(
+            "cross_validation_reports",
+            cross_version,
+        )
+        allowed_price_gap_ids = validate_index_price_gap_policy(
+            policy,
+            cross_reports,
+        )
+        report = validate_repository_snapshot(
+            repository,
+            allowed_index_price_gap_ids=allowed_price_gap_ids,
+        )
+        report.raise_for_errors()
+        return report, allowed_price_gap_ids
     reviewed = _terminal_tail_identity_gap_fingerprints(repository, release)
     report = validate_repository_snapshot(
         repository,
@@ -1076,6 +1244,7 @@ def validate_release_snapshot(
             frame,
             incomplete_action_policy="block",
             completed_session=latest.completed_session,
+            market=getattr(repository, "market", "US"),
         )
         report.raise_for_errors()
         validation_warnings.extend(
@@ -1313,6 +1482,155 @@ def _preflight_failure(exc: Exception) -> dict[str, str]:
     }
 
 
+def _validate_kr_private_archive_policy(
+    repository: LocalDatasetRepository,
+    release: DataRelease,
+) -> dict[str, Any]:
+    """Allow only explicitly private-publishable KR evidence payloads."""
+
+    from supertrend_quant.market_store.kr_pipeline import KR_LICENSE_POLICY
+
+    _require(
+        release.metadata.get("market") == "KR"
+        and release.metadata.get("calendar") == "XKRX"
+        and release.metadata.get("timezone") == "Asia/Seoul"
+        and release.metadata.get("currency") == "KRW",
+        "KR release market metadata is missing or inconsistent.",
+    )
+    configured_policy = release.metadata.get("license_policy")
+    _require(
+        configured_policy == KR_LICENSE_POLICY,
+        "KR release license policy is not the code-pinned policy.",
+    )
+    version = release.dataset_versions.get("source_archive")
+    _require(bool(version), "KR release has no source_archive dataset.")
+    archive = repository.read_frame("source_archive", version)
+    _require("license_class" in archive, "KR source_archive has no license_class column.")
+    blocked = archive.loc[
+        ~archive["license_class"].astype(str).eq("allowed_private")
+    ]
+    _require(
+        blocked.empty,
+        "KR source_archive contains local_only or blocked_unknown evidence.",
+    )
+    return {
+        "rows": len(archive),
+        "license_classes": sorted(set(archive["license_class"].astype(str))),
+        "policy_sha256": _json_sha256(KR_LICENSE_POLICY),
+    }
+
+
+def _run_kr_local_preflight(
+    repository: LocalDatasetRepository,
+) -> dict[str, Any]:
+    from supertrend_quant.market_store.kr_pipeline import validate_kr_repository
+
+    gate_names = (
+        "current_release",
+        "kr_private_archive_policy",
+        "kr_release_validation",
+        "release_snapshot",
+        "release_state_fingerprint",
+        "release_state_stability",
+    )
+    gates: dict[str, dict[str, Any]] = {}
+    blockers: list[dict[str, str]] = []
+
+    def run_gate(name: str, operation):
+        try:
+            details = operation()
+        except Exception as exc:
+            failure = _preflight_failure(exc)
+            gates[name] = failure
+            blockers.append({"gate": name, **failure})
+            return None
+        gates[name] = {"status": "passed", "details": details}
+        return details
+
+    release = run_gate("current_release", lambda: _release_from_current(repository))
+    if release is None:
+        for name in gate_names[1:]:
+            gates[name] = {"status": "skipped", "reason": "current_release gate failed"}
+        return {
+            "status": "blocked",
+            "mode": "preflight_only",
+            "market": "KR",
+            "local_only": True,
+            "eodhd_accessed": False,
+            "release": None,
+            "gates": gates,
+            "blockers": blockers,
+            "remaining_remote_gates": [
+                "cloudflare_private_state",
+                "r2_conflict_aware_publication",
+                "cold_cache_redownload_and_hash_verification",
+            ],
+        }
+    gates["current_release"]["details"] = {
+        "version": release.version,
+        "completed_session": release.completed_session,
+        "quality": release.quality,
+        "dataset_count": len(release.dataset_versions),
+    }
+    license_details = run_gate(
+        "kr_private_archive_policy",
+        lambda: _validate_kr_private_archive_policy(repository, release),
+    )
+    kr_validation = run_gate(
+        "kr_release_validation",
+        lambda: validate_kr_repository(repository, release=release),
+    )
+    snapshot = run_gate(
+        "release_snapshot",
+        lambda: validate_release_snapshot(repository, release),
+    )
+    fingerprint = run_gate(
+        "release_state_fingerprint",
+        lambda: _fingerprint_release_state(repository, release),
+    )
+    if None in (license_details, kr_validation, snapshot, fingerprint):
+        gates["release_state_stability"] = {
+            "status": "skipped",
+            "reason": "dependent KR gate failed",
+        }
+    else:
+        def validate_stability() -> dict[str, str]:
+            _require(
+                fingerprint["snapshot_sha256"] == snapshot["snapshot_sha256"]
+                and fingerprint["state_sha256"] == snapshot["state_sha256"],
+                "KR release content or pointers changed during preflight.",
+            )
+            _require(
+                _validate_kr_private_archive_policy(repository, release)
+                == license_details,
+                "KR source archive policy changed during preflight.",
+            )
+            return {
+                "snapshot_sha256": snapshot["snapshot_sha256"],
+                "state_sha256": snapshot["state_sha256"],
+            }
+
+        run_gate("release_state_stability", validate_stability)
+    return {
+        "status": "ready" if not blockers else "blocked",
+        "mode": "preflight_only",
+        "market": "KR",
+        "local_only": True,
+        "eodhd_accessed": False,
+        "release": {
+            "version": release.version,
+            "completed_session": release.completed_session,
+        },
+        "gates": gates,
+        "blockers": blockers,
+        "remaining_remote_gates": [
+            "cloudflare_private_state",
+            "r2_conflict_aware_publication",
+            "cold_cache_redownload_and_hash_verification",
+        ],
+    }
+
+
 def run_local_preflight(
     repository: LocalDatasetRepository,
     *,
@@ -1324,6 +1642,9 @@ def run_local_preflight(
     one offline run.  Remote privacy verification, publication, and cold-cache
     verification are intentionally not attempted here.
     """
+
+    if getattr(repository, "market", "US") == "KR":
+        return _run_kr_local_preflight(repository)
 
     gates: dict[str, dict[str, Any]] = {}
     blockers: list[dict[str, str]] = []
@@ -1486,6 +1807,14 @@ def publish_and_verify(
     ack_private_internal_only_source_archives: bool = False,
 ) -> dict[str, Any]:
     """Execute the complete no-provider publication and cold-read audit."""
+
+    if getattr(repository, "market", "US") == "KR":
+        return _publish_and_verify_kr(
+            repository,
+            store,
+            verify_only=verify_only,
+            keep_verify_cache=keep_verify_cache,
+        )
 
     frozen_release = _release_from_current(repository)
     frozen_private_restrictions = (
@@ -1669,6 +1998,141 @@ def publish_and_verify(
     }
 
 
+def _publish_and_verify_kr(
+    repository: LocalDatasetRepository,
+    store: ObjectStore,
+    *,
+    verify_only: bool,
+    keep_verify_cache: bool,
+) -> dict[str, Any]:
+    """KR publication keeps the US storage/privacy/cold-cache invariants."""
+
+    from supertrend_quant.market_store.kr_pipeline import validate_kr_repository
+
+    frozen_release = _release_from_current(repository)
+    frozen_license = _validate_kr_private_archive_policy(
+        repository, frozen_release
+    )
+    frozen_kr_validation = validate_kr_repository(
+        repository, release=frozen_release
+    )
+    frozen_stats = validate_release_snapshot(repository, frozen_release)
+    frozen_stats["kr_release_validation"] = frozen_kr_validation
+    frozen_stats["kr_private_archive_policy"] = frozen_license
+    frozen_fingerprint = _fingerprint_release_state(repository, frozen_release)
+    _require(
+        frozen_fingerprint["snapshot_sha256"] == frozen_stats["snapshot_sha256"]
+        and frozen_fingerprint["state_sha256"] == frozen_stats["state_sha256"],
+        "KR local release changed after pre-publication validation.",
+    )
+
+    privacy_verification = _verify_remote_private_access(store)
+    publish_results: list[dict[str, Any]] = []
+    if not verify_only:
+        publication_repository = _ArchiveObjectPathPublishRepository(
+            repository.root,
+            market="KR",
+        )
+        supersede_versions = _validated_remote_release_supersede_versions(
+            store, frozen_release
+        )
+        results = publish_repository(
+            publication_repository,
+            store,
+            tuple(frozen_release.dataset_versions),
+            supersede_versions=supersede_versions,
+        )
+        publish_results = [dict(item.__dict__) for item in results]
+        conflicts = [item for item in results if item.conflict]
+        _require(
+            not conflicts,
+            "KR R2 publication conflict: "
+            + "; ".join(
+                f"{item.dataset}: {item.detail or item.version}"
+                for item in conflicts
+            ),
+        )
+
+    final_release = _release_from_current(repository)
+    _require(
+        final_release.to_bytes() == frozen_release.to_bytes(),
+        "KR current release changed during publication.",
+    )
+    final_license = _validate_kr_private_archive_policy(repository, final_release)
+    _require(
+        final_license == frozen_license,
+        "KR source archive policy changed during publication.",
+    )
+    final_kr_validation = validate_kr_repository(
+        repository, release=final_release
+    )
+    final_stats = validate_release_snapshot(repository, final_release)
+    final_stats["kr_release_validation"] = final_kr_validation
+    final_stats["kr_private_archive_policy"] = final_license
+    final_fingerprint = _fingerprint_release_state(repository, final_release)
+    _require(
+        final_fingerprint["snapshot_sha256"] == final_stats["snapshot_sha256"]
+        and final_fingerprint["state_sha256"] == final_stats["state_sha256"],
+        "KR local release changed after final validation.",
+    )
+    remote_stats = validate_remote_release(store, repository, final_release)
+
+    verify_root = Path(tempfile.mkdtemp(prefix="stq-r2-verify-kr-", dir="/tmp"))
+    verify_root_removed = False
+    try:
+        downloaded_release = DatasetCache(verify_root, store).sync_release()
+        _require(
+            downloaded_release.to_bytes() == final_release.to_bytes(),
+            "KR cold-cache release differs from local final release.",
+        )
+        fresh_repository = LocalDatasetRepository(verify_root, market="KR")
+        fresh_license = _validate_kr_private_archive_policy(
+            fresh_repository, downloaded_release
+        )
+        _require(
+            fresh_license == final_license,
+            "KR source archive policy changed in cold-cache download.",
+        )
+        fresh_kr_validation = validate_kr_repository(
+            fresh_repository, release=downloaded_release
+        )
+        fresh_stats = validate_release_snapshot(
+            fresh_repository, downloaded_release
+        )
+        fresh_stats["kr_release_validation"] = fresh_kr_validation
+        fresh_stats["kr_private_archive_policy"] = fresh_license
+        comparison = compare_repository_snapshots(
+            repository,
+            fresh_repository,
+            final_release,
+            final_stats,
+            fresh_stats,
+        )
+    finally:
+        if not keep_verify_cache:
+            shutil.rmtree(verify_root)
+            verify_root_removed = True
+
+    return {
+        "status": "ok",
+        "mode": "verify_only" if verify_only else "publish_and_verify",
+        "market": "KR",
+        "eodhd_accessed": False,
+        "r2_privacy": privacy_verification,
+        "frozen_release": frozen_stats,
+        "publish_results": publish_results,
+        "final_release": final_stats,
+        "remote": remote_stats,
+        "cold_cache": {
+            "path": str(verify_root),
+            "kept": keep_verify_cache,
+            "removed": verify_root_removed,
+            "validation": fresh_stats,
+        },
+        "comparison": comparison,
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
@@ -1681,6 +2145,12 @@ def _parser() -> argparse.ArgumentParser:
         "--data-config",
         default=str(DEFAULT_DATA_CONFIG_PATH),
         help="Market-data configuration containing local cache and R2 settings.",
+    )
+    parser.add_argument(
+        "--market",
+        choices=["US", "KR"],
+        default="US",
+        help="Select the isolated local cache and R2 prefix for one market.",
     )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
@@ -1725,9 +2195,14 @@ def _parser() -> argparse.ArgumentParser:
 def main() -> None:
     load_env()
     args = _parser().parse_args()
-    config = load_data_store_config(args.data_config)
+    market = getattr(args, "market", "US")
+    config = load_data_store_config(args.data_config, market=market)
     if getattr(args, "preflight_only", False):
-        repository = LocalDatasetRepository(config.local_cache_dir)
+        repository = (
+            LocalDatasetRepository(config.local_cache_dir)
+            if market == "US"
+            else LocalDatasetRepository(config.local_cache_dir, market=market)
+        )
         summary = run_local_preflight(
             repository,
             ack_private_internal_only_source_archives=(
@@ -1765,6 +2240,7 @@ def main() -> None:
         summary["r2"] = {
             "bucket": config.r2.bucket,
             "prefix": config.r2.prefix,
+            "market": market,
         }
         print(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True))
         if summary["status"] != "ready":
@@ -1781,7 +2257,11 @@ def main() -> None:
             "r2_privacy": store.verify_private_access(force=True),
         }
     else:
-        repository = LocalDatasetRepository(config.local_cache_dir)
+        repository = (
+            LocalDatasetRepository(config.local_cache_dir)
+            if market == "US"
+            else LocalDatasetRepository(config.local_cache_dir, market=market)
+        )
         summary = publish_and_verify(
             repository,
             store,
@@ -1798,6 +2278,7 @@ def main() -> None:
     summary["r2"] = {
         "bucket": config.r2.bucket,
         "prefix": config.r2.prefix,
+        "market": market,
     }
     print(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True))
 

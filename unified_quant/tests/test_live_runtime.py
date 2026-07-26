@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import json
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -144,8 +145,16 @@ class LiveRuntimeTest(unittest.TestCase):
         self.assertEqual([order.symbol for order in guarded.orders], ["SOXL", "AMD"])
 
     def test_kr_benchmark_mapping_and_freshness(self):
-        self.assertEqual(benchmark_for_symbol("005930", "KR", "universe.json"), "^KS11")
-        self.assertEqual(benchmark_for_symbol("010170", "KR", "universe.json"), "^KQ11")
+        with tempfile.TemporaryDirectory() as tmp:
+            universe = Path(tmp) / "universe.json"
+            universe.write_text(
+                json.dumps(
+                    {"KR_UNIVERSE_MAP": {"005930": "KOSPI", "010170": "KOSDAQ"}}
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(benchmark_for_symbol("005930", "KR", universe), "^KS11")
+            self.assertEqual(benchmark_for_symbol("010170", "KR", universe), "^KQ11")
 
         tz = ZoneInfo("Asia/Seoul")
         current_base = pd.Timestamp("2026-07-08 10:00:00", tz=tz)
@@ -190,6 +199,7 @@ class LiveRuntimeTest(unittest.TestCase):
             **{
                 **config.__dict__,
                 "market": "US",
+                "symbols": ("SOXL", "AMD"),
                 "scoring": config.scoring.__class__(
                     type="relative_strength",
                     params={"lookback_bars": 130},
@@ -281,6 +291,7 @@ class LiveRuntimeTest(unittest.TestCase):
             **{
                 **config.__dict__,
                 "market": "US",
+                "symbols": ("SOXL",),
                 "execution": config.execution.__class__(
                     order_type="market",
                     allocation_pct=0.9,

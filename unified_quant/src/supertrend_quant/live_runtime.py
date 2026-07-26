@@ -1,21 +1,35 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from dataclasses import replace
-from datetime import datetime
+from datetime import datetime, timedelta
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-from .brokers import TossBroker
-from .config import AppConfig
+from .brokers import BrokerOrderResult, TossBroker
+from .config import AppConfig, load_data_store_config
 from .data_cache import YahooStateCache
 from .holdings import HoldingsStore
-from .market_store.provider import ensure_configured_data_ready, load_configured_market_data
+from .live_state import (
+    DailyRiskStateStore,
+    LiveOrderLedger,
+    SignalPlanStore,
+    build_signal_plan,
+    order_from_dict,
+    strategy_config_hash,
+)
+from .market_store.provider import (
+    configured_release_identity_issue,
+    ensure_configured_data_ready,
+    load_configured_market_data,
+)
 from .market_store.realtime import QuoteProvider, TossRealtimeQuoteProvider
 from .notifications import TelegramNotifier
 from .portfolio import AccountSnapshot, OrderIntent, OrderPlan, estimate_quantity
-from .runtime import check_market_schedule, last_completed_bar_end
+from .runtime import check_market_schedule, daily_execution_window, last_completed_bar_end
 from .strategies import build_order_plan
 from .universe import resolve_universe
 
@@ -37,6 +51,9 @@ class HybridLiveRuntime:
         holdings: HoldingsStore | None = None,
         data_cache: YahooStateCache | None = None,
         quote_provider: QuoteProvider | None = None,
+        signal_plan_store: SignalPlanStore | None = None,
+        order_ledger: LiveOrderLedger | None = None,
+        risk_state_store: DailyRiskStateStore | None = None,
     ):
         self.config = config
         self.broker = broker or TossBroker()
@@ -50,9 +67,42 @@ class HybridLiveRuntime:
         )
         self.last_briefing_date: dict[str, str | None] = {"KR": None, "US": None}
         self.last_candle_base_time: dict[str, datetime | None] = {"KR": None, "US": None}
+        isolated_state_root = self.holdings.path.parent if holdings is not None else None
 
-    def run_once(self, ignore_schedule: bool = False, assume_yes: bool = False) -> tuple[OrderPlan, list[str]]:
-        session = check_market_schedule()
+        def state_path(configured: str) -> Path:
+            path = Path(configured)
+            return (
+                isolated_state_root / path.name
+                if isolated_state_root is not None
+                else path
+            )
+
+        self.signal_plan_store = signal_plan_store or SignalPlanStore(
+            state_path(config.live.signal_plan_file)
+        )
+        self.order_ledger = order_ledger or LiveOrderLedger(
+            state_path(config.live.order_ledger_file)
+        )
+        self.risk_state_store = risk_state_store or DailyRiskStateStore(
+            state_path(config.live.risk_state_file)
+        )
+        self.kill_switch_path = state_path(config.live.kill_switch_file)
+
+    def run_once(
+        self,
+        ignore_schedule: bool = False,
+        assume_yes: bool = False,
+        *,
+        now: datetime | None = None,
+    ) -> tuple[OrderPlan, list[str]]:
+        session = (
+            check_market_schedule(
+                now_kr=now.astimezone(ZoneInfo("Asia/Seoul")),
+                now_us=now.astimezone(ZoneInfo("America/New_York")),
+            )
+            if now is not None and now.tzinfo is not None
+            else check_market_schedule()
+        )
         if ignore_schedule:
             market = "US" if self.config.market == "AUTO" else self.config.market
             session_market = market if market in {"KR", "US"} else "US"
@@ -68,9 +118,80 @@ class HybridLiveRuntime:
             session_timezone = session.timezone
 
         config = replace(self.config, market=session_market)
+        if self.config.market == "AUTO" and self.data_cache is None:
+            config = replace(
+                config,
+                data_store=load_data_store_config(market=session_market),
+            )
+        if config.timeframe != "1d" or config.live.signal_bar_policy != "completed_daily":
+            return (
+                OrderPlan(
+                    config.strategy.name,
+                    "live",
+                    (),
+                    ("Live trading requires confirmed completed_daily 1d bars.",),
+                ),
+                ["Live orders blocked by signal-bar policy."],
+            )
+        market_now = (
+            now.astimezone(session_timezone)
+            if now is not None and now.tzinfo is not None
+            else datetime.now(session_timezone)
+            if session_timezone is not None
+            else datetime.now()
+        )
+        execution_window = daily_execution_window(
+            session_market,
+            market_now,
+            minutes=config.live.execution_window_minutes,
+        )
+        if (
+            not ignore_schedule
+            and not is_close_briefing
+            and (execution_window is None or not execution_window.allowed)
+        ):
+            return (
+                OrderPlan(
+                    config.strategy.name,
+                    "live",
+                    (),
+                    (
+                        "Daily orders are allowed only during the first "
+                        f"{config.live.execution_window_minutes} minutes after the exchange open.",
+                    ),
+                ),
+                ["Live orders blocked outside the D+1 execution window."],
+            )
+        if not is_close_briefing and self.kill_switch_path.exists():
+            return (
+                OrderPlan(
+                    config.strategy.name,
+                    "live",
+                    (),
+                    (f"Kill switch is active: {self.kill_switch_path}",),
+                ),
+                ["Live orders blocked by kill switch."],
+            )
         if self.data_cache is None:
             ensure_configured_data_ready(config)
+            release_issue = configured_release_identity_issue(config)
+            if release_issue is not None:
+                return (
+                    OrderPlan(
+                        config.strategy.name,
+                        "live",
+                        (),
+                        (release_issue,),
+                    ),
+                    ["Live orders blocked by local/R2 release mismatch."],
+                )
         account = self.broker.get_account(session_market)
+        try:
+            open_orders = self.broker.list_open_orders()
+        except Exception:
+            open_orders = None
+        if open_orders is not None:
+            self._reconcile_order_ledger(account, open_orders)
         previous_members = self.holdings.member_map(session_market)
         resolved_universe = resolve_universe(
             config,
@@ -96,6 +217,12 @@ class HybridLiveRuntime:
         )
 
         if is_close_briefing:
+            close_session = market_now.date().isoformat()
+            self.risk_state_store.update_and_check(
+                session=close_session,
+                account=account,
+                risk=config.risk,
+            )
             self._send_close_briefing(session_market, account, synced_holdings)
             return OrderPlan(config.strategy.name, "live", (), ("Close briefing sent.",)), []
 
@@ -104,8 +231,17 @@ class HybridLiveRuntime:
             plan = OrderPlan(config.strategy.name, "live", (), (account_issue,))
             return plan, ["Live strategy execution blocked by account safety check."]
         managed_account = self._managed_account(account, managed_symbols)
+        execution_session = (
+            execution_window.execution_session
+            if execution_window is not None
+            else market_now.date().isoformat()
+        )
+        daily_loss_issue, _ = self.risk_state_store.update_and_check(
+            session=execution_session,
+            account=account,
+            risk=config.risk,
+        )
 
-        market_now = datetime.now(session_timezone) if session_timezone is not None else datetime.now()
         data_notes: tuple[str, ...] = ()
         if self.data_cache is None:
             market_data = load_configured_market_data(
@@ -118,9 +254,24 @@ class HybridLiveRuntime:
             filter_benchmark = market_data.filter_benchmark
             stale_symbols = list(market_data.skipped)
             current_base = pd.Timestamp(market_data.completed_session).to_pydatetime()
-            gap = _daily_data_gap(symbols, market_data)
+            expected_signal_session = (
+                execution_window.signal_session
+                if execution_window is not None and not ignore_schedule
+                else None
+            )
+            gap = _daily_data_gap(
+                symbols,
+                market_data,
+                expected_signal_session=expected_signal_session,
+                required_quality=config.live.required_data_quality,
+                allowed_degraded_warning_codes=(
+                    config.live.allowed_degraded_warning_codes
+                ),
+            )
             if gap:
                 return OrderPlan(config.strategy.name, "live", (), (gap,)), ["Live orders blocked by historical data gap."]
+            signal_session = str(market_data.completed_session)
+            data_version = str(market_data.data_version)
             data_notes = tuple(market_data.warnings) + (
                 f"Data version: {market_data.data_version}",
             )
@@ -160,30 +311,149 @@ class HybridLiveRuntime:
                 session_timezone,
                 current_filter_base,
             )
+            signal_session = current_base.date().isoformat()
+            data_version = f"legacy-cache:{signal_session}"
+        bars = _tail_frames(bars, config.live.history_window_bars)
+        benchmark = _tail_benchmark(benchmark, config.live.history_window_bars)
+        filter_benchmark = _tail_benchmark(
+            filter_benchmark,
+            config.live.history_window_bars,
+        )
         if not bars:
             return OrderPlan(config.strategy.name, "live", (), ("No fresh market data.",)), []
         notes = data_notes + tuple([f"Skipped stale symbols: {', '.join(stale_symbols)}"] if stale_symbols else [])
         if not resolved_universe.entries_allowed:
             notes += (f"Universe refresh failed; new entries blocked: {resolved_universe.refresh_error}",)
 
-        plan = build_order_plan(
-            config,
-            bars,
-            managed_account,
-            mode="live",
-            benchmark=benchmark,
-            filter_benchmark=filter_benchmark,
+        strategy_hash = strategy_config_hash(config)
+        existing_plan = self.signal_plan_store.load()
+        reuse_existing = bool(
+            existing_plan
+            and existing_plan.get("market") == session_market
+            and existing_plan.get("execution_session") == execution_session
         )
-        if notes:
-            plan = OrderPlan(plan.strategy_name, plan.mode, plan.orders, plan.notes + notes)
-        if not resolved_universe.entries_allowed:
+        if reuse_existing:
+            mismatched = [
+                label
+                for label, expected, actual in (
+                    ("signal_session", signal_session, existing_plan.get("signal_session")),
+                    ("data_version", data_version, existing_plan.get("data_version")),
+                    ("strategy_hash", strategy_hash, existing_plan.get("strategy_hash")),
+                )
+                if str(expected) != str(actual)
+            ]
+            if mismatched:
+                issue = (
+                    "Durable plan mismatch for this execution session: "
+                    + ", ".join(mismatched)
+                )
+                return OrderPlan(config.strategy.name, "live", (), (issue,)), [
+                    "Live orders blocked by durable-plan mismatch."
+                ]
+            plan = OrderPlan(
+                config.strategy.name,
+                "live",
+                tuple(order_from_dict(value) for value in existing_plan.get("orders", ())),
+                notes + ("Reusing the durable signal plan for this session.",),
+            )
+            if daily_loss_issue:
+                plan = OrderPlan(
+                    plan.strategy_name,
+                    plan.mode,
+                    tuple(
+                        order
+                        for order in plan.orders
+                        if order.side.lower() == "sell"
+                    ),
+                    plan.notes
+                    + (daily_loss_issue + "; new entries are disabled.",),
+                )
+            plan = self._apply_live_guards(
+                config,
+                plan,
+                managed_account,
+                managed_symbols,
+            )
+        else:
+            plan = build_order_plan(
+                config,
+                bars,
+                managed_account,
+                mode="live",
+                benchmark=benchmark,
+                filter_benchmark=filter_benchmark,
+            )
+            if notes:
+                plan = OrderPlan(
+                    plan.strategy_name,
+                    plan.mode,
+                    plan.orders,
+                    plan.notes + notes,
+                )
+            if not resolved_universe.entries_allowed:
+                plan = OrderPlan(
+                    plan.strategy_name,
+                    plan.mode,
+                    tuple(
+                        order
+                        for order in plan.orders
+                        if order.side.lower() != "buy"
+                    ),
+                    plan.notes,
+                )
+            if daily_loss_issue:
+                plan = OrderPlan(
+                    plan.strategy_name,
+                    plan.mode,
+                    tuple(
+                        order
+                        for order in plan.orders
+                        if order.side.lower() == "sell"
+                    ),
+                    plan.notes
+                    + (daily_loss_issue + "; new entries are disabled.",),
+                )
+            plan = self._apply_live_guards(
+                config,
+                plan,
+                managed_account,
+                managed_symbols,
+            )
             plan = OrderPlan(
                 plan.strategy_name,
                 plan.mode,
-                tuple(order for order in plan.orders if order.side.lower() != "buy"),
+                tuple(
+                    order
+                    if order.client_order_id
+                    else replace(
+                        order,
+                        client_order_id=self._client_order_id(
+                            signal_session,
+                            order,
+                            session_market,
+                        ),
+                    )
+                    for order in plan.orders
+                ),
                 plan.notes,
             )
-        plan = self._apply_live_guards(config, plan, managed_account, managed_symbols)
+            expires_at = (
+                execution_window.expires_at.isoformat()
+                if execution_window is not None
+                else (market_now + timedelta(minutes=config.live.execution_window_minutes)).isoformat()
+            )
+            durable_plan = build_signal_plan(
+                config=config,
+                market=session_market,
+                signal_session=signal_session,
+                execution_session=execution_session,
+                expires_at=expires_at,
+                data_version=data_version,
+                orders=plan.orders,
+                account=managed_account,
+            )
+            self.signal_plan_store.ensure(durable_plan)
+
         if not plan.orders:
             return plan, ["No live orders."]
 
@@ -197,8 +467,32 @@ class HybridLiveRuntime:
         required_sell_symbols = {
             order.symbol for order in plan.orders if order.side.lower() == "sell"
         }
-        accepted_sell_symbols: set[str] = set()
+        latest_ledger = self.order_ledger.latest_by_client_id()
+        accepted_statuses = {
+            "accepted",
+            "open",
+            "partially_filled",
+            "filled",
+            "inferred_filled",
+        }
+        accepted_sell_symbols: set[str] = {
+            order.symbol
+            for order in plan.orders
+            if order.side.lower() == "sell"
+            and order.client_order_id
+            and str(
+                latest_ledger.get(order.client_order_id, {}).get("status") or ""
+            ).lower()
+            in accepted_statuses
+        }
         for order in plan.orders:
+            if order.client_order_id and self.order_ledger.already_submitted(
+                order.client_order_id
+            ):
+                results.append(
+                    f"SKIPPED {order.side.upper()} {order.symbol}: already recorded in order ledger"
+                )
+                continue
             if order.side.lower() == "buy":
                 refreshed_account = self.broker.get_account(session_market)
                 is_dependent_buy = bool(order.required_sell_symbols) or (
@@ -252,8 +546,11 @@ class HybridLiveRuntime:
                     if order.quantity is not None
                     else 0
                 )
+                qty = self._limit_buy_notional(config, qty, current_price)
                 if qty <= 0:
-                    results.append(f"SKIPPED BUY {order.symbol}: insufficient refreshed cash")
+                    results.append(
+                        f"SKIPPED BUY {order.symbol}: cash or max-order-notional limit"
+                    )
                     continue
                 order = OrderIntent(
                     symbol=order.symbol,
@@ -267,11 +564,43 @@ class HybridLiveRuntime:
                     required_sell_symbols=order.required_sell_symbols,
                 )
             if order.client_order_id is None:
-                order = replace(
-                    order,
-                    client_order_id=self._client_order_id(current_base, order),
+                raise RuntimeError("Durable live order has no client_order_id.")
+            ledger_base = {
+                "market": session_market,
+                "signal_session": signal_session,
+                "execution_session": execution_session,
+                "data_version": data_version,
+                "strategy_hash": strategy_hash,
+                "client_order_id": order.client_order_id,
+                "symbol": order.symbol,
+                "side": order.side.lower(),
+                "quantity": order.quantity,
+            }
+            self.order_ledger.append({**ledger_base, "status": "submitting"})
+            try:
+                broker_result = self._place_order(order)
+            except Exception as exc:
+                self.order_ledger.append(
+                    {
+                        **ledger_base,
+                        "status": "unknown",
+                        "detail": f"{type(exc).__name__}: {exc}",
+                    }
                 )
-            ok = self.broker.place_order(order)
+                results.append(
+                    f"UNKNOWN {order.side.upper()} {order.symbol}: broker request raised"
+                )
+                continue
+            ok = broker_result.accepted
+            self.order_ledger.append(
+                {
+                    **ledger_base,
+                    "status": "accepted" if ok else "rejected",
+                    "broker_order_id": broker_result.broker_order_id,
+                    "broker_status": broker_result.status,
+                    "detail": broker_result.detail,
+                }
+            )
             status = "SENT" if ok else "FAILED"
             results.append(
                 f"{status} {order.side.upper()} {order.symbol} {_quantity_label(order)}"
@@ -334,6 +663,22 @@ class HybridLiveRuntime:
             if order.symbol in open_symbols:
                 notes.append(f"Skipped {order.symbol}: an open order already exists.")
                 continue
+            if side == "sell":
+                position = account.positions.get(order.symbol)
+                if position is None or position.quantity <= 0:
+                    notes.append(
+                        f"Skipped sell {order.symbol}: no managed position remains."
+                    )
+                    continue
+                if order.quantity is None or order.quantity <= 0:
+                    notes.append(
+                        f"Skipped sell {order.symbol}: unresolved sell quantity."
+                    )
+                    continue
+                order = replace(
+                    order,
+                    quantity=min(float(order.quantity), float(position.quantity)),
+                )
             if side == "sell" and order.reason == "Leader rotation":
                 economics = account.position_economics.get(order.symbol)
                 profit_pct = economics.net_return_pct if economics is not None else None
@@ -361,8 +706,11 @@ class HybridLiveRuntime:
                     slippage_rate=config.costs.slippage_rate,
                 )
                 qty = min(order.quantity, maximum_qty)
+                qty = self._limit_buy_notional(config, qty, current_price)
                 if qty <= 0:
-                    notes.append(f"Skipped buy {order.symbol}: insufficient cash.")
+                    notes.append(
+                        f"Skipped buy {order.symbol}: cash or max-order-notional limit."
+                    )
                     continue
                 order = OrderIntent(
                     symbol=order.symbol,
@@ -439,6 +787,163 @@ class HybridLiveRuntime:
             },
         )
 
+    def _limit_buy_notional(
+        self,
+        config: AppConfig,
+        quantity: float,
+        price: float,
+    ) -> int:
+        try:
+            resolved = max(0, int(quantity))
+            quote = float(price)
+        except (TypeError, ValueError):
+            return 0
+        limit = float(config.risk.max_order_notional)
+        if limit <= 0 or quote <= 0:
+            return resolved
+        unit_cost = (
+            quote
+            * (1.0 + config.costs.slippage_rate)
+            * (1.0 + config.costs.fee_rate)
+        )
+        return min(resolved, int(limit // unit_cost))
+
+    def _place_order(self, order: OrderIntent) -> BrokerOrderResult:
+        detailed = getattr(self.broker, "place_order_detailed", None)
+        if callable(detailed):
+            result = detailed(order)
+            if isinstance(result, BrokerOrderResult):
+                return result
+            if isinstance(result, bool):
+                return BrokerOrderResult(
+                    accepted=result,
+                    status="accepted" if result else "rejected",
+                )
+            raise TypeError("place_order_detailed returned an unsupported result.")
+        accepted = bool(self.broker.place_order(order))
+        return BrokerOrderResult(
+            accepted=accepted,
+            status="accepted" if accepted else "rejected",
+        )
+
+    def _reconcile_order_ledger(
+        self,
+        account: AccountSnapshot,
+        open_orders: list[dict],
+    ) -> None:
+        plan = self.signal_plan_store.load()
+        if not plan:
+            return
+        latest = self.order_ledger.latest_by_client_id()
+        open_by_client: dict[str, dict] = {}
+        open_by_broker: dict[str, dict] = {}
+        for raw in open_orders:
+            if not isinstance(raw, dict):
+                continue
+            client_id = str(
+                raw.get("clientOrderId")
+                or raw.get("client_order_id")
+                or raw.get("clientId")
+                or ""
+            )
+            broker_id = str(raw.get("orderId") or raw.get("id") or "")
+            if client_id:
+                open_by_client[client_id] = raw
+            if broker_id:
+                open_by_broker[broker_id] = raw
+
+        starting = {
+            str(symbol): float(quantity)
+            for symbol, quantity in (plan.get("starting_positions") or {}).items()
+        }
+        current = {
+            symbol: float(position.quantity)
+            for symbol, position in account.positions.items()
+        }
+        reconcilable = {
+            "submitting",
+            "accepted",
+            "open",
+            "partially_filled",
+            "unknown",
+        }
+        for raw_order in plan.get("orders", ()):
+            order = order_from_dict(raw_order)
+            client_id = str(order.client_order_id or "")
+            if not client_id:
+                continue
+            prior = latest.get(client_id)
+            if not prior or str(prior.get("status") or "").lower() not in reconcilable:
+                continue
+            broker_id = str(prior.get("broker_order_id") or "")
+            open_order = open_by_client.get(client_id) or open_by_broker.get(broker_id)
+            status = ""
+            reconciled_broker_id = broker_id
+            filled_quantity = 0.0
+            if open_order is not None:
+                reconciled_broker_id = str(
+                    open_order.get("orderId")
+                    or open_order.get("id")
+                    or broker_id
+                )
+                filled_quantity = _broker_filled_quantity(open_order)
+                status = _broker_ledger_status(open_order)
+                if status not in {"open", "partially_filled"}:
+                    status = "partially_filled" if filled_quantity > 0 else "open"
+            else:
+                order_detail = None
+                get_order = getattr(self.broker, "get_order", None)
+                if broker_id and callable(get_order):
+                    try:
+                        order_detail = get_order(broker_id)
+                    except Exception:
+                        order_detail = None
+                if isinstance(order_detail, dict):
+                    status = _broker_ledger_status(order_detail)
+                    filled_quantity = _broker_filled_quantity(order_detail)
+                if not status:
+                    before = starting.get(order.symbol, 0.0)
+                    after = current.get(order.symbol, 0.0)
+                    observed_fill = (
+                        max(0.0, after - before)
+                        if order.side.lower() == "buy"
+                        else max(0.0, before - after)
+                    )
+                    planned = float(order.quantity or 0.0)
+                    if observed_fill > 0:
+                        filled_quantity = observed_fill
+                        status = (
+                            "inferred_filled"
+                            if planned <= 0 or observed_fill + 1e-9 >= planned
+                            else "partially_filled"
+                        )
+                    else:
+                        status = "unknown"
+            prior_status = str(prior.get("status") or "").lower()
+            if (
+                status == prior_status
+                and reconciled_broker_id == broker_id
+                and float(prior.get("filled_quantity") or 0) == filled_quantity
+            ):
+                continue
+            self.order_ledger.append(
+                {
+                    "market": plan.get("market"),
+                    "signal_session": plan.get("signal_session"),
+                    "execution_session": plan.get("execution_session"),
+                    "data_version": plan.get("data_version"),
+                    "strategy_hash": plan.get("strategy_hash"),
+                    "client_order_id": client_id,
+                    "symbol": order.symbol,
+                    "side": order.side.lower(),
+                    "quantity": order.quantity,
+                    "status": status,
+                    "broker_order_id": reconciled_broker_id,
+                    "filled_quantity": filled_quantity,
+                    "reconciliation": "broker_open_orders_and_account",
+                }
+            )
+
     def _safe_prices(self, symbols: list[str]) -> dict[str, float]:
         try:
             return {
@@ -449,10 +954,17 @@ class HybridLiveRuntime:
             print(f"Realtime price lookup failed: {exc}")
             return {}
 
-    def _client_order_id(self, candle_base: datetime, order: OrderIntent) -> str:
-        """Stable per-candle idempotency key accepted by the Toss API."""
+    def _client_order_id(
+        self,
+        signal_session: str,
+        order: OrderIntent,
+        market: str,
+    ) -> str:
+        """Stable D-signal idempotency key accepted by the Toss API."""
         side = "b" if order.side.lower() == "buy" else "s"
-        value = f"stq-{candle_base:%Y%m%d%H%M}-{side}-{order.symbol}"
+        session = str(signal_session).replace("-", "")[:8]
+        safe_symbol = re.sub(r"[^a-zA-Z0-9_-]", "_", str(order.symbol))
+        value = f"stq-{market.lower()}-{session}-{side}-{safe_symbol}"
         return value[:36]
 
     def _send_close_briefing(self, market: str, account: AccountSnapshot, holdings: dict[str, dict]) -> None:
@@ -479,13 +991,42 @@ class HybridLiveRuntime:
         return f"🚨 *[매도 주문 전송]*\n• 종목: {order.symbol} | 수량: {_quantity_label(order)}주 | 사유: {order.reason}"
 
 
-def _daily_data_gap(symbols: list[str], market_data) -> str | None:
+def _daily_data_gap(
+    symbols: list[str],
+    market_data,
+    *,
+    expected_signal_session: str | None = None,
+    required_quality: str = "valid",
+    allowed_degraded_warning_codes: tuple[str, ...] = (),
+) -> str | None:
     missing = sorted(set(symbols) - set(market_data.bars))
     if missing:
         return f"Historical data gap; all strategy orders blocked: {', '.join(missing)}"
-    if market_data.data_quality == "blocked":
+    quality = str(market_data.data_quality).lower()
+    if quality == "blocked":
         return "Historical data quality is blocked; all strategy orders blocked."
+    if quality == "degraded" and required_quality == "valid":
+        allowed = {
+            str(value).strip().lower()
+            for value in allowed_degraded_warning_codes
+            if str(value).strip()
+        }
+        warning_codes = {_warning_code(value) for value in market_data.warnings}
+        if not warning_codes or not warning_codes.issubset(allowed):
+            blocked = ", ".join(sorted(warning_codes - allowed)) or "unclassified"
+            return (
+                "Historical data is degraded with non-allowlisted warnings: "
+                + blocked
+            )
     completed = pd.Timestamp(market_data.completed_session).date()
+    if (
+        expected_signal_session is not None
+        and completed.isoformat() != str(expected_signal_session)
+    ):
+        return (
+            "Historical data release is not pinned to the required D signal "
+            f"session: got {completed}, expected {expected_signal_session}"
+        )
     stale = sorted(
         symbol
         for symbol, frame in market_data.bars.items()
@@ -494,3 +1035,63 @@ def _daily_data_gap(symbols: list[str], market_data) -> str | None:
     if stale:
         return f"Historical data is incomplete through {completed}; all orders blocked: {', '.join(stale)}"
     return None
+
+
+def _warning_code(value: str) -> str:
+    text = str(value).strip().lower()
+    if text.startswith("[") and "]" in text:
+        return text[1 : text.index("]")].strip()
+    return text.split(":", 1)[0].strip().replace(" ", "_")
+
+
+def _broker_filled_quantity(order: dict) -> float:
+    execution = order.get("execution", {})
+    if not isinstance(execution, dict):
+        execution = {}
+    value = (
+        execution.get("filledQuantity")
+        or execution.get("filled_quantity")
+        or order.get("filledQuantity")
+        or order.get("filled_quantity")
+        or 0
+    )
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _broker_ledger_status(order: dict) -> str:
+    value = str(order.get("status") or "").strip().upper()
+    return {
+        "PENDING": "open",
+        "OPEN": "open",
+        "PENDING_CANCEL": "open",
+        "PENDING_REPLACE": "open",
+        "PARTIAL_FILLED": "partially_filled",
+        "FILLED": "filled",
+        "CANCELED": "canceled",
+        "REJECTED": "rejected",
+        "REPLACED": "replaced",
+        "CANCEL_REJECTED": "cancel_rejected",
+        "REPLACE_REJECTED": "replace_rejected",
+    }.get(value, "")
+
+
+def _tail_frames(
+    values: dict[str, pd.DataFrame],
+    count: int,
+) -> dict[str, pd.DataFrame]:
+    return {
+        symbol: frame.sort_index().tail(count).copy()
+        for symbol, frame in values.items()
+        if frame is not None and not frame.empty
+    }
+
+
+def _tail_benchmark(values, count: int):
+    if isinstance(values, pd.DataFrame):
+        return values.sort_index().tail(count).copy()
+    if isinstance(values, dict):
+        return _tail_frames(values, count)
+    return values

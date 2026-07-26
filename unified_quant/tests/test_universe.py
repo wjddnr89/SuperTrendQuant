@@ -190,7 +190,11 @@ class UniverseConfigTest(unittest.TestCase):
             {"US": 10_000_000.0, "KR": 1_000_000_000.0},
         )
         self.assertEqual(us.universe.filters.min_history_daily_bars, 120)
-        self.assertEqual(live.universe.source, "file")
+        self.assertEqual(live.universe.source, "index_events")
+        self.assertEqual(
+            live.universe.profiles,
+            {"US": ("sp500", "nasdaq100")},
+        )
         self.assertFalse(live.universe.filters.enabled)
 
     def test_split_export_uses_nested_universe_and_roundtrips(self):

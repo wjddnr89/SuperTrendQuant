@@ -61,6 +61,7 @@ class TossBrokerContractAcceptanceTest(unittest.TestCase):
         self.assertEqual(account.positions["AAPL"].quantity, 2.5)
         self.assertEqual(account.positions["AAPL"].avg_price, 100.25)
         self.assertEqual(account.total_asset_value, 3753.0)
+        self.assertIsNotNone(account.position_economics["AAPL"].net_return_pct)
         self.assertTrue(get.call_args_list[0].args[0].endswith("/api/v1/buying-power"))
         self.assertEqual(get.call_args_list[0].kwargs["params"], {"currency": "USD"})
         self.assertTrue(get.call_args_list[1].args[0].endswith("/api/v1/holdings"))
@@ -94,6 +95,43 @@ class TossBrokerContractAcceptanceTest(unittest.TestCase):
         order_call = get.call_args_list[1]
         self.assertTrue(order_call.args[0].endswith("/api/v1/orders"))
         self.assertEqual(order_call.kwargs["params"], {"status": "OPEN"})
+
+    @patch("supertrend_quant.brokers.requests.get")
+    def test_prices_are_split_at_the_official_two_hundred_symbol_limit(self, get):
+        get.side_effect = [
+            response({"result": [{"symbol": "S000", "lastPrice": "1"}]}),
+            response({"result": [{"symbol": "S200", "lastPrice": "2"}]}),
+        ]
+
+        prices = self.broker.get_prices([f"S{index:03d}" for index in range(201)])
+
+        self.assertEqual(prices, {"S000": 1.0, "S200": 2.0})
+        self.assertEqual(get.call_count, 2)
+        self.assertEqual(
+            len(get.call_args_list[0].kwargs["params"]["symbols"].split(",")),
+            200,
+        )
+        self.assertEqual(
+            len(get.call_args_list[1].kwargs["params"]["symbols"].split(",")),
+            1,
+        )
+
+    @patch("supertrend_quant.brokers.requests.get")
+    def test_order_detail_exposes_nested_execution_for_reconciliation(self, get):
+        get.return_value = response(
+            {
+                "result": {
+                    "orderId": "order-1",
+                    "status": "FILLED",
+                    "execution": {"filledQuantity": "3"},
+                }
+            }
+        )
+
+        detail = self.broker.get_order("order-1")
+
+        self.assertEqual(detail["status"], "FILLED")
+        self.assertTrue(get.call_args.args[0].endswith("/api/v1/orders/order-1"))
 
     @patch("supertrend_quant.brokers.requests.post")
     def test_cancel_uses_post_cancel_endpoint(self, post):
@@ -129,6 +167,29 @@ class TossBrokerContractAcceptanceTest(unittest.TestCase):
                 "price": "185.75",
             },
         )
+
+    @patch("supertrend_quant.brokers.requests.post")
+    def test_oauth_uses_required_form_fields_instead_of_basic_auth(self, post):
+        broker = TossBroker()
+        broker.client_id = "client-id"
+        broker.client_secret = "client-secret"
+        broker.token = None
+        post.return_value = response(
+            {"access_token": "token", "expires_in": 3600}
+        )
+
+        token = broker._token()
+
+        self.assertEqual(token, "token")
+        self.assertEqual(
+            post.call_args.kwargs["data"],
+            {
+                "grant_type": "client_credentials",
+                "client_id": "client-id",
+                "client_secret": "client-secret",
+            },
+        )
+        self.assertNotIn("auth", post.call_args.kwargs)
 
 
 if __name__ == "__main__":

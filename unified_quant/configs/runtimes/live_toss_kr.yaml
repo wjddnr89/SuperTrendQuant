@@ -1,9 +1,9 @@
-name: live_toss
-market: US
+name: live_toss_kr
+market: KR
 universe:
   source: index_events
   profiles:
-    US: [sp500, nasdaq100]
+    KR: [kospi200, kosdaq150]
   refresh: daily
   snapshot_dir: state/universes
   filters:
@@ -14,7 +14,7 @@ data:
   period: 2y
 
 capital:
-  initial_cash: 10000
+  initial_cash: 10000000
 
 costs:
   fee_rate: 0.00225
@@ -26,17 +26,17 @@ execution:
   live_confirm_required: true
 
 risk:
-  max_order_notional: 10000
+  max_order_notional: 10000000
   max_daily_loss: 0
   max_daily_loss_pct: 0.03
 
 live:
-  holdings_file: state/live/us/holdings.json
+  holdings_file: state/live/kr/holdings.json
   loop_interval_seconds: 60
-  signal_plan_file: state/live/us/signal-plan.json
-  order_ledger_file: state/live/us/order-ledger.jsonl
-  risk_state_file: state/live/us/risk-state.json
-  kill_switch_file: state/live/us/KILL_SWITCH
+  signal_plan_file: state/live/kr/signal-plan.json
+  order_ledger_file: state/live/kr/order-ledger.jsonl
+  risk_state_file: state/live/kr/risk-state.json
+  kill_switch_file: state/live/kr/KILL_SWITCH
   signal_bar_policy: completed_daily
   execution_window_minutes: 15
   history_window_bars: 300

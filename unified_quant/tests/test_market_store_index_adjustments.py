@@ -12,7 +12,10 @@ from supertrend_quant.market_store.adjustments import (
 from supertrend_quant.market_store.index_membership import IndexEventReplayer
 from supertrend_quant.market_store.index_ingest import IndexDataImporter
 from supertrend_quant.market_store.repository import LocalDatasetRepository
-from supertrend_quant.market_store.validation import validate_dataset
+from supertrend_quant.market_store.validation import (
+    validate_dataset,
+    validate_repository_snapshot,
+)
 
 
 class IndexEventReplayTest(unittest.TestCase):
@@ -221,6 +224,166 @@ class AdjustmentFactorTest(unittest.TestCase):
         self.assertEqual(first["volume"], 20.0)
         self.assertTrue(validate_dataset("adjustment_factors", factors).valid)
 
+    def test_reference_price_adjustment_overrides_same_date_share_ratio(self):
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "stock-dividend-share-ratio",
+                    "security_id": "A",
+                    "action_type": "stock_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": 1.05,
+                    "cash_amount": None,
+                },
+                {
+                    "event_id": "krx-reference-price-ratio",
+                    "security_id": "A",
+                    "action_type": "reference_price_adjustment",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": 100.0 / 96.0,
+                    "cash_amount": None,
+                },
+            ]
+        )
+
+        factors = build_adjustment_factors(
+            self.prices,
+            actions,
+            source_version="v1",
+        )
+
+        self.assertAlmostEqual(
+            factors.iloc[0]["split_factor"],
+            0.96,
+        )
+        self.assertAlmostEqual(
+            factors.iloc[0]["total_return_factor"],
+            0.96,
+        )
+
+    def test_snapshot_validates_reference_price_override_as_one_transition(self):
+        cases = (
+            (
+                "same-date-adjustment",
+                self.prices,
+                "2020-01-02",
+                1.05,
+                "2020-01-02",
+                100.0 / 96.0,
+            ),
+            (
+                "restatement-after-halt",
+                pd.concat(
+                    [
+                        self.prices.iloc[[0]],
+                        self.prices.iloc[[2]].assign(session="2020-01-10"),
+                    ],
+                    ignore_index=True,
+                ),
+                "2020-01-06",
+                10.0,
+                "2020-01-10",
+                1.0,
+            ),
+        )
+        for (
+            label,
+            prices,
+            provider_date,
+            provider_ratio,
+            reference_date,
+            reference_ratio,
+        ) in cases:
+            with self.subTest(label=label):
+                actions = pd.DataFrame(
+                    [
+                        {
+                            "event_id": f"{label}-provider-split",
+                            "security_id": "A",
+                            "action_type": "split",
+                            "effective_date": provider_date,
+                            "ex_date": provider_date,
+                            "ratio": provider_ratio,
+                            "cash_amount": None,
+                        },
+                        {
+                            "event_id": f"{label}-krx-reference",
+                            "security_id": "A",
+                            "action_type": "reference_price_adjustment",
+                            "effective_date": reference_date,
+                            "ex_date": reference_date,
+                            "ratio": reference_ratio,
+                            "cash_amount": None,
+                        },
+                    ]
+                )
+                factors = build_adjustment_factors(
+                    prices,
+                    actions,
+                    source_version="v1",
+                )
+
+                class Snapshot:
+                    frames = {
+                        "daily_price_raw": prices,
+                        "corporate_actions": actions,
+                        "adjustment_factors": factors,
+                    }
+
+                    def current_manifest(self, dataset):
+                        return object() if dataset in self.frames else None
+
+                    def read_frame(self, dataset):
+                        return self.frames[dataset]
+
+                report = validate_repository_snapshot(Snapshot())
+
+                self.assertNotIn(
+                    "action_factor_mismatch",
+                    {issue.code for issue in report.issues},
+                )
+
+    def test_opendart_dividend_overrides_same_date_provider_amount(self):
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "provider-dividend",
+                    "security_id": "A",
+                    "action_type": "cash_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": None,
+                    "cash_amount": 9.0,
+                    "official": False,
+                    "source": "provider",
+                },
+                {
+                    "event_id": "official-dividend",
+                    "security_id": "A",
+                    "action_type": "cash_dividend",
+                    "effective_date": "2020-01-02",
+                    "ex_date": "2020-01-02",
+                    "ratio": None,
+                    "cash_amount": 10.0,
+                    "official": True,
+                    "source": "opendart_cash_dividend_decision",
+                },
+            ]
+        )
+
+        factors = build_adjustment_factors(
+            self.prices,
+            actions,
+            source_version="v1",
+        )
+
+        self.assertAlmostEqual(
+            factors.iloc[0]["total_return_factor"],
+            0.9,
+        )
+
     def test_total_return_factor_includes_dividend_and_tax_setting(self):
         actions = pd.DataFrame(
             [
@@ -325,6 +488,93 @@ class AdjustmentFactorTest(unittest.TestCase):
         self.assertAlmostEqual(factors.iloc[0]["total_return_factor"], 0.46)
         self.assertAlmostEqual(factors.iloc[1]["total_return_factor"], 0.92)
         self.assertAlmostEqual(factors.iloc[2]["total_return_factor"], 1.0)
+
+    def test_action_during_trading_halt_applies_at_first_later_price(self):
+        prices = pd.concat(
+            [
+                self.prices.iloc[[0]],
+                self.prices.iloc[[2]].assign(session="2020-01-10"),
+            ],
+            ignore_index=True,
+        )
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "halt-split",
+                    "security_id": "A",
+                    "action_type": "split",
+                    "effective_date": "2020-01-06",
+                    "ex_date": "2020-01-06",
+                    "ratio": 2.0,
+                    "cash_amount": None,
+                }
+            ]
+        )
+
+        factors = build_adjustment_factors(
+            prices,
+            actions,
+            source_version="v1",
+        )
+
+        self.assertEqual(list(factors["split_factor"]), [0.5, 1.0])
+        self.assertEqual(list(factors["total_return_factor"]), [0.5, 1.0])
+
+    def test_snapshot_groups_actions_at_same_post_halt_price_transition(self):
+        prices = pd.concat(
+            [
+                self.prices.iloc[[0]],
+                self.prices.iloc[[2]].assign(session="2020-01-10"),
+            ],
+            ignore_index=True,
+        )
+        actions = pd.DataFrame(
+            [
+                {
+                    "event_id": "halt-split",
+                    "security_id": "A",
+                    "action_type": "split",
+                    "effective_date": "2020-01-06",
+                    "ex_date": "2020-01-06",
+                    "ratio": 2.0,
+                    "cash_amount": None,
+                },
+                {
+                    "event_id": "resume-reduction",
+                    "security_id": "A",
+                    "action_type": "capital_reduction",
+                    "effective_date": "2020-01-10",
+                    "ex_date": "2020-01-10",
+                    "ratio": 0.25,
+                    "cash_amount": None,
+                },
+            ]
+        )
+        factors = build_adjustment_factors(
+            prices,
+            actions,
+            source_version="v1",
+        )
+
+        class Snapshot:
+            frames = {
+                "daily_price_raw": prices,
+                "corporate_actions": actions,
+                "adjustment_factors": factors,
+            }
+
+            def current_manifest(self, dataset):
+                return object() if dataset in self.frames else None
+
+            def read_frame(self, dataset):
+                return self.frames[dataset]
+
+        report = validate_repository_snapshot(Snapshot())
+
+        self.assertNotIn(
+            "action_factor_mismatch",
+            {issue.code for issue in report.issues},
+        )
 
     def test_special_dividends_use_cash_distribution_factor_and_tax(self):
         prices = self.prices.assign(close=[20.0, 19.0, 18.0])

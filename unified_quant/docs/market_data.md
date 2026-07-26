@@ -1,15 +1,27 @@
 # Versioned Market Data
 
-## V1 scope
+## Daily scope
 
-V1 stores US daily data. Backtest, research, paper, and live signal generation
-all use completed `1d` sessions. Intraday history is an interface-only V2 seam;
+The store has isolated US and KR daily namespaces. Backtest, research, paper,
+and live signal generation all use completed `1d` sessions. Intraday history
+is an interface-only seam;
 the current in-memory candle overlay has no disk or R2 persistence method.
 
 The system reconstructs point-in-time **constituent membership** for `sp500`,
 `nasdaq100`, and `russell3000`. It does not reproduce an index vendor's divisor,
 float adjustment, weighting, or official index level. Strategy benchmarks are
 the total-return-adjusted ETF series `SPY`, `QQQ`, and `IWV` respectively.
+
+KR reconstructs `kospi200` and `kosdaq150` from authenticated, dated KRX Data
+Marketplace snapshots, with a licensed local complete-snapshot table retained
+as an optional fallback. It uses KRX ISIN as the stable security identity and
+stores authenticated KRX Open API or Data Marketplace raw OHLCV as the
+canonical series. KRX six-character short codes may be numeric or alphanumeric.
+EODHD/Naver/Yahoo/KIS are only independently scored comparison sources. The KRX
+Open API key plus either KRX web credentials or the fallback PIT file are
+mandatory; KIS and OpenDART are explicitly marked skipped when their optional
+credentials are absent. See
+[kr_market_data.md](kr_market_data.md).
 
 ## Data flow
 
@@ -83,7 +95,8 @@ uv run quant-data validate
 ```
 
 Before a run, preflight calculates the latest completed XNYS session and waits
-90 minutes after its close. It attempts automatic R2 synchronization at most
+90 minutes after its close. KR uses the same rule with the XKRX calendar. It
+attempts automatic R2 synchronization at most
 once for that expected session. `quant-data sync --force` is the explicit retry.
 For a personal machine, run sync once after the US close or immediately before
 backtest/research/paper/live. There is no server daemon requirement.
@@ -198,14 +211,17 @@ PYTHONPATH=unified_quant/src .venv/bin/python \
   --ack-private-internal-only-source-archives
 ```
 
-The second command verifies Cloudflare's private bucket state before its first
-write, publishes with conflict-aware conditional writes, then redownloads the
-release into a cold cache and verifies hashes and local gates again.
+The second command validates the configured private-state proof before its
+first write, publishes with conflict-aware conditional writes, then redownloads
+the release into a cold cache and verifies hashes and local gates again. With
+`privacy_recheck_policy: on_change`, the exact bucket-bound, hash-pinned proof
+is reused until the operator reports a visibility change; changing the bucket
+to public requires replacing the proof or restoring `always`.
 
 ## Validation and compaction
 
 Hard gates include required schemas, provenance, primary-key uniqueness,
-positive/consistent OHLC, non-negative volume, XNYS trading dates, the expected
+positive/consistent OHLC, non-negative volume, XNYS/XKRX trading dates, the expected
 completed session, positive factors, raw-price/factor key coverage, known
 security IDs, and possible index-event transitions. A changed overlapping price
 row is quarantined instead of replacing the current version. Incomplete

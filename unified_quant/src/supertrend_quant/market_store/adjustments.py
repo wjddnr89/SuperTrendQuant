@@ -9,7 +9,12 @@ import numpy as np
 import pandas as pd
 
 
-RATIO_ACTIONS = {"split", "capital_reduction", "stock_dividend"}
+RATIO_ACTIONS = {
+    "split",
+    "capital_reduction",
+    "stock_dividend",
+    "reference_price_adjustment",
+}
 CASH_DISTRIBUTION_ACTIONS = {"cash_dividend", "special_dividend"}
 SPINOFF_PRICE_ADJUSTMENT_CONTRACT = "spinoff_distributed_value/v1"
 
@@ -55,24 +60,78 @@ def build_adjustment_factors(
         total_multiplier = 1.0
         split_factors = np.ones(len(frame), dtype=float)
         total_return_factors = np.ones(len(frame), dtype=float)
-        session_positions = {
-            session: position for position, session in enumerate(frame["session"])
-        }
+        price_sessions = frame["session"].to_numpy(dtype="datetime64[ns]")
+        relevant = relevant.loc[relevant["_date"].notna()].copy()
+        relevant["_position"] = pd.Series(index=relevant.index, dtype="int64")
+        if not relevant.empty:
+            # Corporate actions can become effective while a security is
+            # suspended.  In that case there is deliberately no raw price row
+            # on the action date.  Apply the action at the first subsequent
+            # tradable price row instead of silently dropping it.
+            relevant["_position"] = np.searchsorted(
+                price_sessions,
+                relevant["_date"].to_numpy(dtype="datetime64[ns]"),
+                side="left",
+            )
+            relevant = relevant.loc[relevant["_position"].lt(len(frame))]
+            relevant = relevant.sort_values(
+                ["_position", "_date", "event_id"],
+                ascending=[False, False, False],
+                kind="stable",
+            )
         closes = pd.to_numeric(frame["close"], errors="coerce").tolist()
         upper_bound = len(frame)
-        for action_date, future_actions in relevant.groupby("_date", sort=False):
-            if pd.isna(action_date) or action_date not in session_positions:
-                continue
-            position = session_positions[action_date]
+        for raw_position, future_actions in relevant.groupby(
+            "_position",
+            sort=False,
+        ):
+            position = int(raw_position)
 
             # The action-date row is unadjusted for actions on that row. All rows
             # back to the next earlier action share the current future multiplier.
             split_factors[position:upper_bound] = split_multiplier
             total_return_factors[position:upper_bound] = total_multiplier
             previous_close = closes[position - 1] if position else None
+            has_reference_price_override = bool(
+                future_actions["action_type"]
+                .astype(str)
+                .eq("reference_price_adjustment")
+                .any()
+            )
+            has_official_dividend_override = bool(
+                (
+                    future_actions["action_type"]
+                    .astype(str)
+                    .isin(CASH_DISTRIBUTION_ACTIONS)
+                    & future_actions.get(
+                        "official",
+                        pd.Series(False, index=future_actions.index),
+                    )
+                    .fillna(False)
+                    .astype(str)
+                    .str.lower()
+                    .isin({"1", "true", "yes"})
+                    & future_actions.get(
+                        "source",
+                        pd.Series("", index=future_actions.index),
+                    )
+                    .astype(str)
+                    .eq("opendart_cash_dividend_decision")
+                ).any()
+            )
             for action in future_actions.itertuples(index=False):
                 action_type = str(action.action_type)
                 if action_type in RATIO_ACTIONS and pd.notna(action.ratio):
+                    # A KRX reference-price reset is the authoritative price
+                    # adjustment. Share ratios (for example a 5% stock
+                    # dividend) remain in the ledger for quantity accounting,
+                    # but their theoretical price effect can differ because of
+                    # KRX eligibility and tick-rounding rules. Never apply both.
+                    if (
+                        has_reference_price_override
+                        and action_type != "reference_price_adjustment"
+                    ):
+                        continue
                     ratio = float(action.ratio)
                     if ratio <= 0:
                         raise ValueError(f"Corporate-action ratio must be positive: {action.event_id}")
@@ -80,6 +139,12 @@ def build_adjustment_factors(
                     split_multiplier *= price_multiplier
                     total_multiplier *= price_multiplier
                 elif action_type in CASH_DISTRIBUTION_ACTIONS and pd.notna(action.cash_amount):
+                    if (
+                        has_official_dividend_override
+                        and str(getattr(action, "source", ""))
+                        != "opendart_cash_dividend_decision"
+                    ):
+                        continue
                     net_cash = float(action.cash_amount) * (1.0 - dividend_tax_rate)
                     if previous_close is not None and previous_close > 0:
                         dividend_factor = (previous_close - net_cash) / previous_close

@@ -11,11 +11,14 @@ import numpy as np
 import pandas as pd
 
 from .manifest import DatasetManifest, sha256_file
+from .markets import market_spec
 from .models import CorporateActionType, DataQuality
 from .schemas import DatasetSpec, dataset_spec
 
 
 INDEX_MEMBER_PRICE_EDGE_GRACE_DAYS = 14
+STOCK_MERGER_SUCCESSOR_LISTING_GRACE_DAYS = 90
+INDEX_PRICE_GAP_POLICY_SCHEMA = "official_no_trade_observations/v1"
 
 
 @dataclass(frozen=True)
@@ -84,12 +87,143 @@ def index_member_identity_gap_fingerprint(
     return hashlib.sha256(encoded).hexdigest()
 
 
+def index_price_gap_policy_sha256(policy: dict) -> str:
+    """Hash one policy without trusting its embedded digest."""
+
+    payload = dict(policy)
+    payload.pop("policy_sha256", None)
+    encoded = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def validate_index_price_gap_policy(
+    policy: dict,
+    cross_reports: pd.DataFrame,
+) -> tuple[str, ...]:
+    """Validate a release-bound official no-trade exception inventory."""
+
+    if not isinstance(policy, dict):
+        raise ValueError("Index price-gap policy must be a JSON object.")
+    if policy.get("schema") != INDEX_PRICE_GAP_POLICY_SCHEMA:
+        raise ValueError("Index price-gap policy schema is unsupported.")
+    expected_hash = index_price_gap_policy_sha256(policy)
+    if str(policy.get("policy_sha256") or "").strip().lower() != expected_hash:
+        raise ValueError("Index price-gap policy SHA-256 mismatch.")
+    source_url = str(policy.get("source_url") or "").strip()
+    if not source_url.lower().startswith("https://"):
+        raise ValueError("Index price-gap policy requires an HTTPS source_url.")
+
+    raw_ids = policy.get("security_ids")
+    gaps = policy.get("gaps")
+    if not isinstance(raw_ids, list) or not isinstance(gaps, list):
+        raise ValueError(
+            "Index price-gap policy requires security_ids and gaps lists."
+        )
+    security_ids = tuple(str(value).strip() for value in raw_ids)
+    if (
+        any(not value for value in security_ids)
+        or tuple(sorted(set(security_ids))) != security_ids
+    ):
+        raise ValueError(
+            "Index price-gap policy security_ids must be sorted and unique."
+        )
+    gap_ids: set[str] = set()
+    observation_count = 0
+    required_gap_fields = {
+        "code",
+        "index_id",
+        "security_id",
+        "membership_start",
+        "membership_end",
+        "missing_from",
+        "missing_through",
+        "observation_count",
+        "status_counts",
+        "evidence_sha256",
+    }
+    for gap in gaps:
+        if not isinstance(gap, dict) or required_gap_fields - set(gap):
+            raise ValueError("Index price-gap policy contains an incomplete gap.")
+        security_id = str(gap.get("security_id") or "").strip()
+        gap_ids.add(security_id)
+        count = int(gap.get("observation_count") or 0)
+        if count <= 0:
+            raise ValueError(
+                "Index price-gap evidence must contain official observations."
+            )
+        observation_count += count
+        status_counts = gap.get("status_counts")
+        if (
+            not isinstance(status_counts, dict)
+            or not status_counts
+            or sum(int(value) for value in status_counts.values()) != count
+        ):
+            raise ValueError("Index price-gap status counts are inconsistent.")
+        evidence_hash = str(gap.get("evidence_sha256") or "").strip().lower()
+        if (
+            len(evidence_hash) != 64
+            or any(character not in "0123456789abcdef" for character in evidence_hash)
+        ):
+            raise ValueError("Index price-gap evidence SHA-256 is invalid.")
+    if tuple(sorted(gap_ids)) != security_ids:
+        raise ValueError(
+            "Index price-gap security_ids do not match the gap inventory."
+        )
+    if int(policy.get("gap_count") or 0) != len(gaps):
+        raise ValueError("Index price-gap policy gap_count is inconsistent.")
+    if int(policy.get("observation_count") or 0) != observation_count:
+        raise ValueError(
+            "Index price-gap policy observation_count is inconsistent."
+        )
+
+    required_columns = {
+        "index_price_gap_policy_json",
+        "index_price_gap_policy_sha256",
+        "status",
+    }
+    if cross_reports.empty or required_columns - set(cross_reports):
+        raise ValueError(
+            "Cross-validation report lacks the index price-gap policy."
+        )
+    matches = cross_reports.loc[
+        cross_reports["status"].astype(str).str.lower().eq("passed")
+        & cross_reports["index_price_gap_policy_sha256"]
+        .astype(str)
+        .str.lower()
+        .eq(expected_hash)
+    ]
+    if matches.empty:
+        raise ValueError(
+            "Cross-validation report does not bind the index price-gap policy."
+        )
+    bound = False
+    for raw in matches["index_price_gap_policy_json"]:
+        try:
+            parsed = json.loads(str(raw))
+        except (TypeError, ValueError):
+            continue
+        if parsed == policy:
+            bound = True
+            break
+    if not bound:
+        raise ValueError(
+            "Cross-validation report price-gap policy JSON does not match."
+        )
+    return security_ids
+
+
 def validate_dataset(
     name: str,
     frame: pd.DataFrame,
     *,
     incomplete_action_policy: str = "warn",
     completed_session: str | None = None,
+    market: str = "US",
 ) -> ValidationReport:
     spec = dataset_spec(name)
     issues: list[ValidationIssue] = []
@@ -105,7 +239,7 @@ def validate_dataset(
     _validate_source_metadata(frame, issues)
     if name == "daily_price_raw":
         _validate_prices(frame, issues)
-        _validate_price_sessions(frame, issues, completed_session)
+        _validate_price_sessions(frame, issues, completed_session, market=market)
     elif name == "symbol_history":
         _validate_symbol_history(frame, issues)
     elif name == "corporate_actions":
@@ -265,7 +399,11 @@ def _validate_dates(
     for column in spec.date_columns:
         values = frame[column]
         nonempty = values.notna() & values.astype(str).ne("")
-        invalid = nonempty & pd.to_datetime(values, errors="coerce").isna()
+        invalid = nonempty & pd.to_datetime(
+            values,
+            errors="coerce",
+            format="mixed",
+        ).isna()
         if invalid.any():
             issues.append(
                 ValidationIssue(
@@ -328,6 +466,8 @@ def _validate_price_sessions(
     frame: pd.DataFrame,
     issues: list[ValidationIssue],
     completed_session: str | None,
+    *,
+    market: str,
 ) -> None:
     sessions = pd.to_datetime(frame["session"], errors="coerce").dropna().dt.normalize()
     if sessions.empty:
@@ -337,13 +477,14 @@ def _validate_price_sessions(
     except ModuleNotFoundError:
         xcals = None
     if xcals is not None:
-        calendar = xcals.get_calendar("XNYS")
+        spec = market_spec(market)
+        calendar = xcals.get_calendar(spec.calendar)
         invalid = [value for value in sessions.drop_duplicates() if not calendar.is_session(value)]
         if invalid:
             issues.append(
                 ValidationIssue(
                     "non_trading_session",
-                    "US daily prices contain non-XNYS sessions.",
+                    f"{spec.market} daily prices contain non-{spec.calendar} sessions.",
                     row_count=int(sessions.isin(invalid).sum()),
                 )
             )
@@ -419,7 +560,14 @@ def _validate_actions(
         {"cash_dividend", "special_dividend", "cash_merger"}
     ) & ~cash_present
     ratio_missing = action_type.isin(
-        {"split", "capital_reduction", "stock_dividend", "spinoff", "stock_merger"}
+        {
+            "split",
+            "capital_reduction",
+            "stock_dividend",
+            "reference_price_adjustment",
+            "spinoff",
+            "stock_merger",
+        }
     ) & ~ratio_present
     lifecycle = action_type.isin(
         {"cash_merger", "stock_merger", "ticker_change", "delisting"}
@@ -686,6 +834,7 @@ def _lifecycle_successor_issues(
         successor_id = successor_ids.loc[index]
         raw_symbol = row.get("new_symbol")
         new_symbol = "" if pd.isna(raw_symbol) else str(raw_symbol).strip().upper()
+        action_type = str(row.get("action_type") or "").strip()
         effective = pd.to_datetime(row.get("effective_date"), errors="coerce")
         if (
             not successor_id
@@ -704,6 +853,21 @@ def _lifecycle_successor_issues(
             & working["_start"].le(effective)
             & (working["_end"].isna() | working["_end"].ge(effective))
         ]
+        if matches.empty and action_type == "stock_merger":
+            # A newly formed merger successor can legally exist before its
+            # shares begin trading.  Keep the economic conversion date on the
+            # action and accept only the same stable identity/symbol when its
+            # listing starts within a bounded window.
+            listing_deadline = effective + pd.Timedelta(
+                days=STOCK_MERGER_SUCCESSOR_LISTING_GRACE_DAYS
+            )
+            matches = working.loc[
+                working["_security_id"].eq(successor_id)
+                & working["_symbol"].eq(new_symbol)
+                & working["_start"].notna()
+                & working["_start"].gt(effective)
+                & working["_start"].le(listing_deadline)
+            ]
         if matches.empty:
             mismatches += 1
     if mismatches:
@@ -751,30 +915,88 @@ def _factor_action_issues(
         return []
     issues: list[ValidationIssue] = []
     split_actions = actions.loc[
-        actions["action_type"].astype(str).isin({"split", "capital_reduction", "stock_dividend"})
+        actions["action_type"].astype(str).isin(
+            {
+                "split",
+                "capital_reduction",
+                "stock_dividend",
+                "reference_price_adjustment",
+            }
+        )
         & actions["ratio"].notna()
     ]
     inconsistent = 0
-    for action in split_actions.itertuples(index=False):
+    for security_id, security_actions in split_actions.groupby(
+        split_actions["security_id"].astype(str),
+        sort=False,
+    ):
         security_factors = factors.loc[
-            factors["security_id"].astype(str) == str(action.security_id)
+            factors["security_id"].astype(str) == str(security_id)
         ].copy()
-        security_factors["_session"] = pd.to_datetime(security_factors["session"]).dt.normalize()
-        raw_ex_date = action.ex_date
-        raw_effective = (
-            raw_ex_date
-            if pd.notna(raw_ex_date) and str(raw_ex_date).strip()
-            else action.effective_date
-        )
-        effective = pd.Timestamp(raw_effective).normalize()
-        before = security_factors.loc[security_factors["_session"] < effective].sort_values("_session")
-        on_or_after = security_factors.loc[security_factors["_session"] >= effective].sort_values("_session")
-        if before.empty or on_or_after.empty:
+        if security_factors.empty:
             continue
-        observed = float(before.iloc[-1]["split_factor"]) / float(on_or_after.iloc[0]["split_factor"])
-        expected = 1.0 / float(action.ratio)
-        if abs(observed - expected) > 1e-8:
-            inconsistent += 1
+        security_factors["_session"] = pd.to_datetime(security_factors["session"]).dt.normalize()
+        security_factors = security_factors.sort_values("_session").drop_duplicates(
+            "_session",
+            keep="last",
+        )
+        prepared_actions = security_actions.copy()
+        ex_dates = prepared_actions["ex_date"]
+        has_ex_date = ex_dates.notna() & ex_dates.astype(str).str.strip().ne("")
+        prepared_actions["_date"] = pd.to_datetime(
+            ex_dates.where(has_ex_date, prepared_actions["effective_date"]),
+            errors="coerce",
+        ).dt.normalize()
+        prepared_actions = prepared_actions.loc[
+            prepared_actions["_date"].notna()
+        ].copy()
+        if prepared_actions.empty:
+            continue
+        sessions = security_factors["_session"].to_numpy(dtype="datetime64[ns]")
+        prepared_actions["_position"] = np.searchsorted(
+            sessions,
+            prepared_actions["_date"].to_numpy(dtype="datetime64[ns]"),
+            side="left",
+        )
+        prepared_actions = prepared_actions.loc[
+            prepared_actions["_position"].gt(0)
+            & prepared_actions["_position"].lt(len(security_factors))
+        ]
+        for raw_position, transition_actions in prepared_actions.groupby(
+            "_position",
+            sort=False,
+        ):
+            position = int(raw_position)
+            observed = (
+                float(security_factors.iloc[position - 1]["split_factor"])
+                / float(security_factors.iloc[position]["split_factor"])
+            )
+            reference_actions = transition_actions.loc[
+                transition_actions["action_type"]
+                .astype(str)
+                .eq("reference_price_adjustment")
+            ]
+            # Match build_adjustment_factors exactly: an official KRX
+            # reference-price reset is the authoritative price adjustment for
+            # the whole price transition. Provider split/share-ratio rows can
+            # map to that same transition after a trading halt, but remain
+            # audit evidence and must not be applied a second time.
+            economic_actions = (
+                reference_actions
+                if not reference_actions.empty
+                else transition_actions
+            )
+            expected = float(
+                np.prod(
+                    1.0
+                    / pd.to_numeric(
+                        economic_actions["ratio"],
+                        errors="coerce",
+                    ).to_numpy(dtype=float)
+                )
+            )
+            if abs(observed - expected) > 1e-8:
+                inconsistent += 1
     if inconsistent:
         issues.append(
             ValidationIssue(
@@ -838,6 +1060,7 @@ def _index_member_coverage_issues(
     *,
     allowed_price_gap_ids: Iterable[str] = (),
     allowed_identity_gap_fingerprints: Iterable[str] = (),
+    price_gap_records: list[dict[str, str]] | None = None,
 ) -> list[ValidationIssue]:
     """Reject index identities whose active dates and price history disagree.
 
@@ -1060,6 +1283,20 @@ def _index_member_coverage_issues(
             sessions = price_sessions.get(security_id)
             if sessions is None or len(sessions) == 0:
                 no_price_overlap.add(key)
+                if price_gap_records is not None:
+                    price_gap_records.append(
+                        {
+                            "code": "index_member_no_price_overlap",
+                            "index_id": index_id,
+                            "security_id": security_id,
+                            "membership_start": start.date().isoformat(),
+                            "membership_end": end.date().isoformat(),
+                            "first_price": "",
+                            "last_price": "",
+                            "missing_from": start.date().isoformat(),
+                            "missing_through": end.date().isoformat(),
+                        }
+                    )
                 continue
             first_position = int(
                 np.searchsorted(sessions, np.datetime64(start), side="left")
@@ -1069,13 +1306,59 @@ def _index_member_coverage_issues(
             )
             if first_position >= after_position:
                 no_price_overlap.add(key)
+                if price_gap_records is not None:
+                    price_gap_records.append(
+                        {
+                            "code": "index_member_no_price_overlap",
+                            "index_id": index_id,
+                            "security_id": security_id,
+                            "membership_start": start.date().isoformat(),
+                            "membership_end": end.date().isoformat(),
+                            "first_price": "",
+                            "last_price": "",
+                            "missing_from": start.date().isoformat(),
+                            "missing_through": end.date().isoformat(),
+                        }
+                    )
                 continue
             first_price = pd.Timestamp(sessions[first_position])
             last_price = pd.Timestamp(sessions[after_position - 1])
             if first_price > start + grace:
                 late_price_start.add(key)
+                if price_gap_records is not None:
+                    price_gap_records.append(
+                        {
+                            "code": "index_member_price_starts_late",
+                            "index_id": index_id,
+                            "security_id": security_id,
+                            "membership_start": start.date().isoformat(),
+                            "membership_end": end.date().isoformat(),
+                            "first_price": first_price.date().isoformat(),
+                            "last_price": last_price.date().isoformat(),
+                            "missing_from": start.date().isoformat(),
+                            "missing_through": (
+                                first_price - pd.Timedelta(days=1)
+                            ).date().isoformat(),
+                        }
+                    )
             if last_price < end - grace:
                 early_price_end.add(key)
+                if price_gap_records is not None:
+                    price_gap_records.append(
+                        {
+                            "code": "index_member_price_ends_early",
+                            "index_id": index_id,
+                            "security_id": security_id,
+                            "membership_start": start.date().isoformat(),
+                            "membership_end": end.date().isoformat(),
+                            "first_price": first_price.date().isoformat(),
+                            "last_price": last_price.date().isoformat(),
+                            "missing_from": (
+                                last_price + pd.Timedelta(days=1)
+                            ).date().isoformat(),
+                            "missing_through": end.date().isoformat(),
+                        }
+                    )
 
     issues: list[ValidationIssue] = []
     unexpected_identity_gaps = {
@@ -1117,3 +1400,28 @@ def _index_member_coverage_issues(
             )
         )
     return issues
+
+
+def index_member_price_gap_records(
+    anchors: pd.DataFrame,
+    events: pd.DataFrame,
+    prices: pd.DataFrame,
+) -> tuple[dict[str, str], ...]:
+    """Return the exact index/price edge gaps used by snapshot validation."""
+
+    records: list[dict[str, str]] = []
+    _index_member_coverage_issues(
+        anchors,
+        events,
+        pd.DataFrame(),
+        prices,
+        price_gap_records=records,
+    )
+    unique = {
+        tuple(sorted(record.items())): record
+        for record in records
+    }
+    return tuple(
+        unique[key]
+        for key in sorted(unique)
+    )

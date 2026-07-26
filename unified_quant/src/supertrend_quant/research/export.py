@@ -122,9 +122,25 @@ def config_to_split_dicts(
             "broker": config.execution.broker,
             "live_confirm_required": config.execution.live_confirm_required,
         },
+        "risk": {
+            "max_order_notional": config.risk.max_order_notional,
+            "max_daily_loss": config.risk.max_daily_loss,
+            "max_daily_loss_pct": config.risk.max_daily_loss_pct,
+        },
         "live": {
             "holdings_file": config.live.holdings_file,
             "loop_interval_seconds": config.live.loop_interval_seconds,
+            "signal_plan_file": config.live.signal_plan_file,
+            "order_ledger_file": config.live.order_ledger_file,
+            "risk_state_file": config.live.risk_state_file,
+            "kill_switch_file": config.live.kill_switch_file,
+            "signal_bar_policy": config.live.signal_bar_policy,
+            "execution_window_minutes": config.live.execution_window_minutes,
+            "history_window_bars": config.live.history_window_bars,
+            "required_data_quality": config.live.required_data_quality,
+            "allowed_degraded_warning_codes": list(
+                config.live.allowed_degraded_warning_codes
+            ),
         },
         "paper": {
             "state_file": config.paper.state_file,

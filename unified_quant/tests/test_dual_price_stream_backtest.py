@@ -13,6 +13,7 @@ from supertrend_quant.config import parse_config
 from supertrend_quant.data import MarketData
 from supertrend_quant.portfolio import AccountSnapshot, OrderIntent, OrderPlan, Position
 from supertrend_quant.runners import (
+    _portfolio_value,
     _reactivate_retired_symbol,
     _scheduled_corporate_actions,
     run_backtest_on_data,
@@ -162,6 +163,36 @@ class _SpinLifecycleStrategy:
 
 
 class DualPriceStreamBacktestTest(unittest.TestCase):
+    def test_suspended_position_valuation_carries_last_traded_close(self):
+        bars = {
+            "AAA": pd.DataFrame(
+                {"Close": [100.0, 110.0]},
+                index=pd.to_datetime(["2026-01-02", "2026-01-06"]),
+            )
+        }
+        positions = {"AAA": Position("AAA", 2.0, 90.0)}
+
+        self.assertEqual(
+            _portfolio_value(
+                50.0,
+                positions,
+                bars,
+                pd.Timestamp("2026-01-05"),
+                allow_carry_forward=True,
+            ),
+            250.0,
+        )
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "Held position has no price",
+        ):
+            _portfolio_value(
+                50.0,
+                positions,
+                bars,
+                pd.Timestamp("2026-01-01"),
+            )
+
     @staticmethod
     def _operational_fixture():
         index = pd.date_range("2026-01-01", periods=2, freq="D")

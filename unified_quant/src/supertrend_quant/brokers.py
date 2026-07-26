@@ -4,6 +4,7 @@ import json
 import math
 import os
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 import requests
@@ -18,6 +19,14 @@ from .portfolio import (
     PositionEconomics,
     estimate_quantity,
 )
+
+
+@dataclass(frozen=True)
+class BrokerOrderResult:
+    accepted: bool
+    broker_order_id: str = ""
+    status: str = ""
+    detail: str = ""
 
 
 class PaperBroker:
@@ -331,12 +340,18 @@ class TossBroker:
         holdings_res = requests.get(f"{self.base_url}/api/v1/holdings", headers=headers, timeout=10)
         holdings_res.raise_for_status()
         positions: dict[str, Position] = {}
+        position_economics: dict[str, PositionEconomics] = {}
         total_position_value = 0.0
         for item in holdings_res.json().get("result", {}).get("items", []):
             currency = item.get("currency", "KRW")
-            if market == "KR" and currency != "KRW":
+            market_country = str(item.get("marketCountry") or "").upper()
+            if market == "KR" and (market_country and market_country != "KR"):
                 continue
-            if market == "US" and currency == "KRW":
+            if market == "US" and (market_country and market_country != "US"):
+                continue
+            if not market_country and market == "KR" and currency != "KRW":
+                continue
+            if not market_country and market == "US" and currency == "KRW":
                 continue
             symbol = item.get("symbol")
             qty = float(item.get("quantity", 0) or 0)
@@ -349,28 +364,74 @@ class TossBroker:
                 )
                 market_value = item.get("marketValue", {})
                 if isinstance(market_value, dict):
-                    total_position_value += float(market_value.get("amount", qty * avg_price) or 0)
+                    marked_value = float(
+                        market_value.get("amount", qty * avg_price) or 0
+                    )
+                    after_cost = market_value.get("amountAfterCost")
                 else:
-                    total_position_value += qty * float(item.get("lastPrice", avg_price) or avg_price)
-        return AccountSnapshot(cash=cash, positions=positions, total_asset_value=cash + total_position_value)
+                    marked_value = qty * float(
+                        item.get("lastPrice", avg_price) or avg_price
+                    )
+                    after_cost = None
+                total_position_value += marked_value
+                profit_loss = item.get("profitLoss", {})
+                raw_return = (
+                    profit_loss.get("rateAfterCost", profit_loss.get("rate"))
+                    if isinstance(profit_loss, dict)
+                    else None
+                )
+                try:
+                    net_return = (
+                        float(raw_return)
+                        if raw_return is not None
+                        else marked_value / (qty * avg_price) - 1.0
+                        if qty > 0 and avg_price > 0
+                        else None
+                    )
+                except (TypeError, ValueError, ZeroDivisionError):
+                    net_return = None
+                try:
+                    estimated_exit = (
+                        float(after_cost) if after_cost is not None else marked_value
+                    )
+                except (TypeError, ValueError):
+                    estimated_exit = marked_value
+                position_economics[symbol] = PositionEconomics(
+                    entry_cost=qty * avg_price,
+                    raw_mark=float(item.get("lastPrice") or avg_price),
+                    estimated_exit_proceeds=estimated_exit,
+                    net_return_pct=net_return,
+                )
+        return AccountSnapshot(
+            cash=cash,
+            positions=positions,
+            total_asset_value=cash + total_position_value,
+            position_economics=position_economics,
+        )
 
     def get_prices(self, symbols: list[str]) -> dict[str, float]:
         if not symbols:
             return {}
         token = self._token()
-        res = requests.get(
-            f"{self.base_url}/api/v1/prices",
-            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-            params={"symbols": ",".join(symbols)},
-            timeout=10,
-        )
-        res.raise_for_status()
         prices = {}
-        for item in res.json().get("result", []):
-            symbol = item.get("symbol")
-            last_price = item.get("lastPrice")
-            if symbol and last_price:
-                prices[symbol] = float(last_price)
+        unique = tuple(dict.fromkeys(str(symbol) for symbol in symbols if str(symbol)))
+        for start in range(0, len(unique), 200):
+            batch = unique[start : start + 200]
+            res = requests.get(
+                f"{self.base_url}/api/v1/prices",
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+                params={"symbols": ",".join(batch)},
+                timeout=10,
+            )
+            res.raise_for_status()
+            for item in res.json().get("result", []):
+                symbol = item.get("symbol")
+                last_price = item.get("lastPrice")
+                if symbol and last_price:
+                    prices[symbol] = float(last_price)
         return prices
 
     def list_open_orders(self) -> list[dict]:
@@ -385,6 +446,19 @@ class TossBroker:
         result = res.json().get("result", {})
         return result.get("orders", result.get("items", []))
 
+    def get_order(self, order_id: str) -> dict:
+        token = self._token()
+        res = requests.get(
+            f"{self.base_url}/api/v1/orders/{order_id}",
+            headers=self._headers(token),
+            timeout=10,
+        )
+        res.raise_for_status()
+        result = res.json().get("result", {})
+        if not isinstance(result, dict):
+            raise RuntimeError("Toss order detail response is not an object.")
+        return result
+
     def cancel_order(self, order_id: str) -> bool:
         token = self._token()
         res = requests.post(
@@ -396,6 +470,9 @@ class TossBroker:
         return res.status_code in {200, 204}
 
     def place_order(self, order: OrderIntent) -> bool:
+        return self.place_order_detailed(order).accepted
+
+    def place_order_detailed(self, order: OrderIntent) -> BrokerOrderResult:
         if order.quantity is None or order.quantity <= 0:
             raise ValueError("Live orders require a resolved positive quantity.")
         token = self._token()
@@ -415,7 +492,43 @@ class TossBroker:
             json=payload,
             timeout=10,
         )
-        return res.status_code in {200, 201}
+        accepted = res.status_code in {200, 201}
+        try:
+            response_payload = res.json()
+        except ValueError:
+            response_payload = {}
+        result = (
+            response_payload.get("result", {})
+            if isinstance(response_payload, dict)
+            else {}
+        )
+        if not isinstance(result, dict):
+            result = {}
+        broker_order_id = str(
+            result.get("orderId")
+            or result.get("id")
+            or response_payload.get("orderId", "")
+            if isinstance(response_payload, dict)
+            else ""
+        )
+        status = str(result.get("status") or ("accepted" if accepted else "rejected"))
+        error = (
+            response_payload.get("error", {})
+            if isinstance(response_payload, dict)
+            else {}
+        )
+        if not isinstance(error, dict):
+            error = {}
+        detail = "" if accepted else ": ".join(
+            value
+            for value in (
+                f"HTTP {res.status_code}",
+                str(error.get("code") or ""),
+                str(error.get("message") or ""),
+            )
+            if value
+        )
+        return BrokerOrderResult(accepted, broker_order_id, status, detail)
 
     def _token(self) -> str:
         if not self.client_id or not self.client_secret:
@@ -425,8 +538,11 @@ class TossBroker:
         res = requests.post(
             f"{self.base_url}/oauth2/token",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
-            data={"grant_type": "client_credentials"},
-            auth=(self.client_id, self.client_secret),
+            data={
+                "grant_type": "client_credentials",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+            },
             timeout=10,
         )
         res.raise_for_status()

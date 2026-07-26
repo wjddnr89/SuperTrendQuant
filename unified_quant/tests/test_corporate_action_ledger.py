@@ -326,6 +326,32 @@ class CorporateActionLedgerTest(unittest.TestCase):
         self.assertAlmostEqual(ledger.positions["AAA"].avg_price, 100.0 / 5.5)
         self.assertEqual(ledger.cash, 10.0)
 
+    def test_reference_price_adjustment_is_a_processed_price_only_noop(self):
+        ledger = PortfolioLedger(
+            cash=100.0,
+            positions={"AAA": Position("AAA", 10.0, 20.0)},
+        )
+        action = {
+            "event_id": "krx-reference-reset",
+            "action_type": "reference_price_adjustment",
+            "symbol": "AAA",
+            "effective_date": "2026-01-02",
+            "ratio": 100.0 / 96.0,
+        }
+
+        events = ledger.apply_actions([action], through="2026-01-02")
+
+        self.assertEqual(len(events), 1)
+        self.assertIn("price-only", events[0].message.lower())
+        self.assertEqual(ledger.cash, 100.0)
+        self.assertEqual(ledger.positions["AAA"], Position("AAA", 10.0, 20.0))
+        self.assertIn("krx-reference-reset", ledger.processed_event_ids)
+        self.assertNotIn("krx-reference-reset", ledger.unresolved_event_ids)
+        self.assertEqual(
+            ledger.apply_actions([action], through="2026-01-03"),
+            (),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

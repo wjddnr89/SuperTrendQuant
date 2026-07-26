@@ -406,6 +406,51 @@ class LifecycleSnapshotValidationTest(unittest.TestCase):
             {issue.code for issue in out_of_range.issues},
         )
 
+    def test_stock_merger_allows_bounded_successor_listing_delay(self):
+        action = _action(
+            "stock",
+            "stock_merger",
+            ratio=0.5,
+            new_security_id="TARGET",
+            new_symbol="NEW",
+        )
+        delayed_listing = _history(
+            "TARGET",
+            "NEW",
+            effective_from="2024-04-01",
+        )
+
+        report = validate_repository_snapshot(
+            self._repository(action, delayed_listing)
+        )
+
+        self.assertNotIn(
+            "action_successor_symbol_mismatch",
+            {issue.code for issue in report.issues},
+        )
+
+    def test_ticker_change_rejects_successor_listing_delay(self):
+        action = _action(
+            "ticker",
+            "ticker_change",
+            new_security_id="TARGET",
+            new_symbol="NEW",
+        )
+        delayed_listing = _history(
+            "TARGET",
+            "NEW",
+            effective_from="2024-04-01",
+        )
+
+        report = validate_repository_snapshot(
+            self._repository(action, delayed_listing)
+        )
+
+        self.assertIn(
+            "action_successor_symbol_mismatch",
+            {issue.code for issue in report.issues},
+        )
+
     def test_snapshot_reports_missing_successor_id(self):
         action = _action("ticker", "ticker_change", new_symbol="NEW")
         report = validate_repository_snapshot(self._repository(action))

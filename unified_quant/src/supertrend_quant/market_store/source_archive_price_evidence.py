@@ -42,12 +42,12 @@ WIKI_EXTRACT_SHA256 = (
     "a6a6f651265825ed9ed95a1dfb9889f70586a728aa53eeae8585b8c00e4af52f"
 )
 WIKI_PROVENANCE_SHA256 = (
-    "d73bf90641034b56b4ce42d9cef2fd4dff23a6db8c101cc7ed9b49af4c7140c8"
+    "075ea282234e29a76c7ea5a40699ae1fcebb2d784c7280b3767dfbecdee0c2b9"
 )
 WIKI_EXTRACT_SIZE = 186_580
 WIKI_EXTRACT_LINE_COUNT = 1_464
 WIKI_EXTRACT_RETRIEVED_AT = "2026-07-18T03:58:26.808706Z"
-WIKI_PROVENANCE_RETRIEVED_AT = "2026-07-19T04:30:00Z"
+WIKI_PROVENANCE_RETRIEVED_AT = "2026-07-25T05:01:37Z"
 BBBY_SECURITY_ID = "US:EODHD:dbd287da-b35f-5aaa-873c-76f941b4d93b"
 BBT_SECURITY_ID = "US:EODHD:aadcce22-62c7-522f-bbeb-861933af1d99"
 LEGACY_DD_SECURITY_ID = "US:SEC:7992d65b-3a26-5cae-b96d-bd01f695d1c1"
@@ -117,7 +117,7 @@ TRUSTED_REVIEWED_SOURCE_ARCHIVE_PRICE_ONLY_TARGET_IDS = frozenset(
 # Filled from the strict normalized policy inventory below.  The YAML alone is
 # never sufficient authority for adding another ticker or changing a pin.
 TRUSTED_REVIEWED_SOURCE_ARCHIVE_PRICE_ONLY_SHA256 = (
-    "fc172be411a43504ac64d9016931e73f6d64813709c36387908cd4c4feebe665"
+    "83a3546bb7a6b0e256fc44b4253030ba9f36f20fd2811ef5c883fdbf1c8320e9"
 )
 
 
@@ -744,8 +744,9 @@ def verify_source_archive_price_only_evidence(
             "source": "reviewed_us_wiki_price_arbitration",
             "content_type": "application/json",
             "retrieved_at": WIKI_PROVENANCE_RETRIEVED_AT,
+            "effective_date": "2026-07-24",
             "object_path": (
-                "archives/2026-07-15/" + WIKI_PROVENANCE_SHA256 + ".json.gz"
+                "archives/2026-07-24/" + WIKI_PROVENANCE_SHA256 + ".json.gz"
             ),
         },
     )

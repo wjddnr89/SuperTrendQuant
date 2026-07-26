@@ -333,7 +333,23 @@ def data_main() -> None:
     )
     parser.add_argument(
         "command",
-        choices=["sync", "bootstrap-us", "validate", "status", "compact", "conflicts", "import-index"],
+        choices=[
+            "sync",
+            "bootstrap-us",
+            "benchmark-kr",
+            "bootstrap-kr",
+            "validate",
+            "status",
+            "compact",
+            "conflicts",
+            "import-index",
+        ],
+    )
+    parser.add_argument(
+        "--market",
+        choices=["US", "KR"],
+        default="US",
+        help="Market namespace for sync, validate, status, compact, and R2 paths.",
     )
     parser.add_argument(
         "--dataset",
@@ -355,7 +371,59 @@ def data_main() -> None:
             "unified_quant/scripts/publish_and_verify_r2.py."
         ),
     )
-    parser.add_argument("--backfill-start", default="2015-01-01", help="Initial provider backfill start date.")
+    parser.add_argument(
+        "--backfill-start",
+        "--start",
+        dest="backfill_start",
+        default="2015-01-01",
+        help="Initial provider backfill start date.",
+    )
+    parser.add_argument(
+        "--end-session",
+        default=None,
+        help="Optional completed-session boundary for KR benchmark/bootstrap.",
+    )
+    parser.add_argument(
+        "--sessions",
+        type=int,
+        default=252,
+        help=(
+            "Legacy rolling-window size for benchmark-kr when no --start is "
+            "supplied programmatically; CLI verification uses --start "
+            "(default 2015-01-01) for full-history coverage."
+        ),
+    )
+    parser.add_argument(
+        "--providers",
+        default="krx,eodhd,naver,yahoo,kis",
+        help="Comma-separated benchmark-kr providers.",
+    )
+    parser.add_argument(
+        "--symbols-limit",
+        type=int,
+        default=None,
+        help="Optional deterministic symbol limit for a KR smoke benchmark.",
+    )
+    parser.add_argument(
+        "--request-delay-seconds",
+        type=float,
+        default=0.2,
+        help="Delay between KRX requests; checkpoints make interrupted runs resumable.",
+    )
+    parser.add_argument(
+        "--krx-workers",
+        type=int,
+        default=4,
+        help="Concurrent KRX history requests (default: 4); every response is checkpointed.",
+    )
+    parser.add_argument(
+        "--refresh-providers",
+        action="store_true",
+        help=(
+            "Re-query secondary KR benchmark providers instead of resuming their "
+            "hash-verified checkpoint results."
+        ),
+    )
     parser.add_argument(
         "--skip-security-refresh",
         action="store_true",
@@ -378,8 +446,9 @@ def data_main() -> None:
     parser.add_argument("--official", action="store_true", help="Mark imported index records as official.")
     args = parser.parse_args()
     load_env()
-    data_store = load_data_store_config(args.data_config)
-    if args.command in {"sync", "bootstrap-us"} and (
+    selected_market = "KR" if args.command in {"benchmark-kr", "bootstrap-kr"} else args.market
+    data_store = load_data_store_config(args.data_config, market=selected_market)
+    if args.command in {"sync", "bootstrap-us", "bootstrap-kr"} and (
         args.publish or data_store.publish_enabled
     ):
         trigger = (
@@ -394,10 +463,12 @@ def data_main() -> None:
             "privacy-checked publish and cold-cache verification."
         )
     cache_root = Path(data_store.local_cache_dir)
-    repository = LocalDatasetRepository(cache_root)
+    repository = LocalDatasetRepository(cache_root, market=selected_market)
     selected = tuple(args.dataset or DATASET_SPECS)
 
     if args.command == "bootstrap-us":
+        if selected_market != "US":
+            parser.error("bootstrap-us requires --market US.")
         from .market_store.preflight import expected_completed_us_session
         from .market_store.us_bootstrap import bootstrap_us_market_data
 
@@ -423,6 +494,51 @@ def data_main() -> None:
                 ensure_ascii=False,
             )
         )
+        return
+
+    if args.command == "benchmark-kr":
+        from .market_store.kr_pipeline import benchmark_kr_providers
+        from .market_store.kr_providers import KrOfficialDataUnavailable
+
+        providers = tuple(
+            value.strip().lower()
+            for value in args.providers.split(",")
+            if value.strip()
+        )
+        try:
+            outcome = benchmark_kr_providers(
+                cache_root,
+                session_count=args.sessions,
+                start_session=args.backfill_start,
+                end_session=args.end_session,
+                providers=providers,
+                symbol_limit=args.symbols_limit,
+                sleep_seconds=args.request_delay_seconds,
+                krx_workers=args.krx_workers,
+                reuse_provider_cache=not args.refresh_providers,
+            )
+        except KrOfficialDataUnavailable as exc:
+            parser.error(str(exc))
+        print(json.dumps(outcome.__dict__, indent=2, ensure_ascii=False))
+        if outcome.status not in {"ready", "window_ready", "smoke_ready"}:
+            raise SystemExit(1)
+        return
+
+    if args.command == "bootstrap-kr":
+        from .market_store.kr_pipeline import bootstrap_kr_market_data
+        from .market_store.kr_providers import KrOfficialDataUnavailable
+
+        try:
+            result = bootstrap_kr_market_data(
+                repository,
+                start_date=args.backfill_start,
+                end_date=args.end_session,
+                sleep_seconds=args.request_delay_seconds,
+                krx_workers=args.krx_workers,
+            )
+        except KrOfficialDataUnavailable as exc:
+            parser.error(str(exc))
+        print(json.dumps(result.__dict__, indent=2, ensure_ascii=False))
         return
 
     if args.command == "status":
@@ -523,10 +639,9 @@ def data_main() -> None:
                     }
                 )
         if not args.remote_only:
-            from .market_store.ingest import configured_daily_synchronizer
-            from .market_store.preflight import expected_completed_us_session
+            from .market_store.markets import expected_completed_session
 
-            expected = expected_completed_us_session()
+            expected = expected_completed_session(selected_market)
             current = repository.current_manifest("daily_price_raw")
             if not args.force and current is not None and current.completed_session >= expected:
                 outcomes["source_sync"] = {
@@ -534,22 +649,38 @@ def data_main() -> None:
                     "status": "already_current",
                 }
             else:
-                synced = configured_daily_synchronizer(repository, data_store.ingest_source).sync(
-                    expected,
-                    backfill_start=args.backfill_start,
-                    refresh_security_master=not args.skip_security_refresh,
-                    preserve_existing_price_revisions=(
-                        args.preserve_existing_price_revisions
-                    ),
-                )
+                if selected_market == "KR":
+                    from .market_store.kr_pipeline import sync_kr_market_data
+                    from .market_store.kr_providers import KrOfficialDataUnavailable
+
+                    try:
+                        synced = sync_kr_market_data(
+                            repository,
+                            expected_session=expected,
+                            sleep_seconds=args.request_delay_seconds,
+                            krx_workers=args.krx_workers,
+                        )
+                    except KrOfficialDataUnavailable as exc:
+                        parser.error(str(exc))
+                else:
+                    from .market_store.ingest import configured_daily_synchronizer
+
+                    synced = configured_daily_synchronizer(repository, data_store.ingest_source).sync(
+                        expected,
+                        backfill_start=args.backfill_start,
+                        refresh_security_master=not args.skip_security_refresh,
+                        preserve_existing_price_revisions=(
+                            args.preserve_existing_price_revisions
+                        ),
+                    )
                 outcomes["source_sync"] = {
                     "completed_session": synced.completed_session,
                     "release_version": synced.release_version,
-                    "versions": synced.versions,
+                    "versions": getattr(synced, "versions", {}),
                     "row_counts": synced.row_counts,
-                    "missing_symbols": list(synced.missing_symbols),
+                    "missing_symbols": list(getattr(synced, "missing_symbols", ())),
                     "warnings": list(synced.warnings),
-                    "conflicts": list(synced.conflicts),
+                    "conflicts": list(getattr(synced, "conflicts", ())),
                 }
         print(json.dumps(outcomes, indent=2, ensure_ascii=False))
         return
@@ -594,20 +725,44 @@ def data_main() -> None:
             repository.read_frame(dataset, manifest.version),
             incomplete_action_policy=data_store.incomplete_action_policy,
             completed_session=manifest.completed_session,
+            market=selected_market,
         )
         issues = [issue.__dict__ for issue in (*file_report.issues, *frame_report.issues)]
         valid = file_report.valid and frame_report.valid
         failed = failed or not valid
         outcomes.append({"dataset": dataset, "valid": valid, "issues": issues})
-    cross_report = validate_operational_repository_snapshot(repository)
-    outcomes.append(
-        {
-            "dataset": cross_report.dataset,
-            "valid": cross_report.valid,
-            "issues": [issue.__dict__ for issue in cross_report.issues],
-        }
-    )
-    failed = failed or not cross_report.valid
+    if selected_market == "KR":
+        from .market_store.kr_pipeline import validate_kr_repository
+
+        try:
+            details = validate_kr_repository(repository)
+        except Exception as exc:
+            outcomes.append(
+                {
+                    "dataset": "kr_repository_snapshot",
+                    "valid": False,
+                    "error": str(exc),
+                }
+            )
+            failed = True
+        else:
+            outcomes.append(
+                {
+                    "dataset": "kr_repository_snapshot",
+                    "valid": True,
+                    "details": details,
+                }
+            )
+    else:
+        cross_report = validate_operational_repository_snapshot(repository)
+        outcomes.append(
+            {
+                "dataset": cross_report.dataset,
+                "valid": cross_report.valid,
+                "issues": [issue.__dict__ for issue in cross_report.issues],
+            }
+        )
+        failed = failed or not cross_report.valid
     print(json.dumps(outcomes, indent=2, ensure_ascii=False))
     if failed:
         raise SystemExit(1)

@@ -12,12 +12,15 @@ from ..data import MarketData
 from .adjustments import apply_adjustment_factors
 from .models import DataQuality
 from .repository import LocalDatasetRepository
+from .validation import STOCK_MERGER_SUCCESSOR_LISTING_GRACE_DAYS
 
 
 INDEX_BENCHMARK_ETFS = {
     "sp500": "SPY",
     "nasdaq100": "QQQ",
     "russell3000": "IWV",
+    "kospi200": "069500",
+    "kosdaq150": "229200",
 }
 
 # These actions can create a position whose security was never an index member
@@ -49,9 +52,16 @@ OLD_SYMBOL_ACTION_MAX_CALENDAR_GAP = pd.Timedelta(days=10)
 class ParquetMarketDataProvider:
     """Query immutable Parquet versions with DuckDB and convert once to pandas."""
 
-    def __init__(self, root: str | Path, *, capture_query_plans: bool = False):
+    def __init__(
+        self,
+        root: str | Path,
+        *,
+        market: str = "US",
+        capture_query_plans: bool = False,
+    ):
         self.root = Path(root)
-        self.repository = LocalDatasetRepository(self.root)
+        self.market = str(market).upper()
+        self.repository = LocalDatasetRepository(self.root, market=self.market)
         self._release_versions: dict[str, str] = {}
         self._has_release = False
         self.capture_query_plans = capture_query_plans
@@ -73,8 +83,9 @@ class ParquetMarketDataProvider:
         self._has_release = release is not None
         self._release_versions = dict(release.dataset_versions) if release is not None else {}
         requested = tuple(dict.fromkeys(str(symbol).strip() for symbol in symbols if str(symbol).strip()))
-        benchmark_symbol = _benchmark_symbol(config)
-        all_symbols = tuple(dict.fromkeys((*requested, benchmark_symbol)))
+        benchmark_symbols = _benchmark_symbols(config)
+        benchmark_symbol = benchmark_symbols[0]
+        all_symbols = tuple(dict.fromkeys((*requested, *benchmark_symbols)))
         symbol_map = self._resolve_security_ids(all_symbols)
         requested_intervals = _requested_identity_intervals(
             requested,
@@ -92,12 +103,22 @@ class ParquetMarketDataProvider:
                 for interval in intervals
             )
         )
-        benchmark_security_ids = symbol_map.get(benchmark_symbol, ())
-        if len(benchmark_security_ids) > 1:
-            raise ValueError(
-                "Benchmark ticker resolves to multiple issuer identities: "
-                f"{benchmark_symbol} -> {', '.join(benchmark_security_ids)}"
+        benchmark_ids_by_symbol = {
+            symbol: symbol_map.get(symbol, ()) for symbol in benchmark_symbols
+        }
+        for symbol, values in benchmark_ids_by_symbol.items():
+            if len(values) > 1:
+                raise ValueError(
+                    "Benchmark ticker resolves to multiple issuer identities: "
+                    f"{symbol} -> {', '.join(values)}"
+                )
+        benchmark_security_ids = tuple(
+            dict.fromkeys(
+                security_id
+                for values in benchmark_ids_by_symbol.values()
+                for security_id in values
             )
+        )
         # The initial lookup is symbol-scoped, so a current ticker such as
         # FBIN does not reveal its immediately preceding FBHS interval.  Load
         # the complete identities before assigning actions to the symbol that
@@ -285,12 +306,33 @@ class ParquetMarketDataProvider:
             )
 
         benchmark: dict[str, pd.DataFrame] | None = None
-        if benchmark_symbol in symbol_map:
-            benchmark_frame = _frame_for_securities(adjusted, symbol_map[benchmark_symbol])
-            if not benchmark_frame.empty:
-                benchmark = {symbol: benchmark_frame.copy() for symbol in loaded_symbols}
-        else:
-            warnings.append(f"Benchmark ETF is missing from symbol history: {benchmark_symbol}")
+        benchmark_frames = {
+            symbol: _frame_for_securities(adjusted, security_ids)
+            for symbol, security_ids in benchmark_ids_by_symbol.items()
+            if security_ids
+        }
+        benchmark_frames = {
+            symbol: frame for symbol, frame in benchmark_frames.items() if not frame.empty
+        }
+        if benchmark_frames:
+            benchmark = {}
+            for symbol in loaded_symbols:
+                selected_benchmark = _benchmark_for_loaded_symbol(
+                    config,
+                    symbol,
+                    benchmark_symbols,
+                    self._resolved_symbol_history,
+                )
+                frame = benchmark_frames.get(selected_benchmark)
+                if frame is None:
+                    frame = next(iter(benchmark_frames.values()))
+                benchmark[symbol] = frame.copy()
+        missing_benchmarks = sorted(set(benchmark_symbols) - set(benchmark_frames))
+        if missing_benchmarks:
+            warnings.append(
+                "Benchmark ETF is missing from symbol history: "
+                + ", ".join(missing_benchmarks)
+            )
             quality = DataQuality.DEGRADED
 
         versions: dict[str, str] = {}
@@ -366,6 +408,11 @@ class ParquetMarketDataProvider:
                     f"Selected universe is incomplete through {completed_session}: "
                     + ", ".join(stale)
                 )
+        version_parts = (
+            [f"release={release.version}"] if release is not None else []
+        ) + [
+            f"{name}={version}" for name, version in sorted(versions.items())
+        ]
         return MarketData(
             bars=signal_bars,
             execution_bars=execution_bars,
@@ -373,11 +420,20 @@ class ParquetMarketDataProvider:
             filter_benchmark=benchmark,
             benchmark_symbol=benchmark_symbol,
             corporate_actions=tuple(actions.to_dict("records")) if not actions.empty else (),
-            data_version=";".join(f"{name}={version}" for name, version in sorted(versions.items())),
+            data_version=";".join(version_parts),
             completed_session=completed_session,
             data_quality=str(quality),
             warnings=tuple(dict.fromkeys(warnings)),
             skipped=missing_symbols,
+            allow_no_trade_valuation_carry_forward=bool(
+                self.market == "KR"
+                and release is not None
+                and str(release.metadata.get("primary_provider") or "").lower()
+                == "krx"
+                and price_manifest is not None
+                and str(price_manifest.metadata.get("operation") or "")
+                == "kr_market_pipeline"
+            ),
             entry_symbols=requested,
         )
 
@@ -386,7 +442,7 @@ class ParquetMarketDataProvider:
             "symbol_history",
             where_column="symbol",
             values=symbols,
-            columns=("security_id", "symbol", "effective_from", "effective_to"),
+            columns=("security_id", "symbol", "exchange", "effective_from", "effective_to"),
         )
         if history.empty:
             return {}
@@ -415,7 +471,7 @@ class ParquetMarketDataProvider:
             "symbol_history",
             where_column="security_id",
             values=security_ids,
-            columns=("security_id", "symbol", "effective_from", "effective_to"),
+            columns=("security_id", "symbol", "exchange", "effective_from", "effective_to"),
         )
         if history.empty:
             raise ValueError(
@@ -667,10 +723,8 @@ class ParquetMarketDataProvider:
             str, list[tuple[str, pd.Timestamp | None, pd.Timestamp | None]]
         ] = {}
         for position, row in enumerate(actions.itertuples(index=False)):
-            if (
-                str(getattr(row, "action_type", "")).lower()
-                not in POSITION_CREATING_ACTIONS
-            ):
+            action_type = str(getattr(row, "action_type", "")).lower()
+            if action_type not in POSITION_CREATING_ACTIONS:
                 continue
             symbol = str(getattr(row, "new_symbol", "") or "").strip()
             security_id = str(
@@ -694,6 +748,17 @@ class ParquetMarketDataProvider:
                 & (history["_start"].isna() | history["_start"].le(start))
                 & (history["_end"].isna() | history["_end"].ge(start))
             ]
+            if matches.empty and action_type == "stock_merger":
+                listing_deadline = start + pd.Timedelta(
+                    days=STOCK_MERGER_SUCCESSOR_LISTING_GRACE_DAYS
+                )
+                matches = history.loc[
+                    history["security_id"].astype(str).eq(security_id)
+                    & history["symbol"].astype(str).eq(symbol)
+                    & history["_start"].notna()
+                    & history["_start"].gt(start)
+                    & history["_start"].le(listing_deadline)
+                ]
             if matches.empty:
                 raise ValueError(
                     "Corporate-action successor date is outside symbol history: "
@@ -1013,12 +1078,40 @@ class ParquetMarketDataProvider:
         )
 
 
+def _benchmark_symbols(config: AppConfig) -> tuple[str, ...]:
+    market = "US" if config.market == "AUTO" else config.market
+    profiles = config.universe.profiles.get(market, ())
+    values = tuple(
+        dict.fromkeys(
+            INDEX_BENCHMARK_ETFS[profile]
+            for profile in profiles
+            if profile in INDEX_BENCHMARK_ETFS
+        )
+    )
+    if values:
+        return values
+    return ("069500",) if market == "KR" else ("QQQ",)
+
+
 def _benchmark_symbol(config: AppConfig) -> str:
-    profiles = config.universe.profiles.get("US", ())
-    for profile in profiles:
-        if profile in INDEX_BENCHMARK_ETFS:
-            return INDEX_BENCHMARK_ETFS[profile]
-    return "QQQ"
+    return _benchmark_symbols(config)[0]
+
+
+def _benchmark_for_loaded_symbol(
+    config: AppConfig,
+    symbol: str,
+    benchmark_symbols: tuple[str, ...],
+    symbol_history: pd.DataFrame,
+) -> str:
+    if config.market != "KR" or len(benchmark_symbols) == 1:
+        return benchmark_symbols[0]
+    if not symbol_history.empty and {"symbol", "exchange"}.issubset(symbol_history.columns):
+        matches = symbol_history.loc[
+            symbol_history["symbol"].astype(str).eq(str(symbol))
+        ]
+        if not matches.empty and matches["exchange"].astype(str).str.upper().eq("KOSDAQ").any():
+            return INDEX_BENCHMARK_ETFS["kosdaq150"]
+    return INDEX_BENCHMARK_ETFS["kospi200"]
 
 
 def _filter_period(frame: pd.DataFrame, period: str) -> pd.DataFrame:
@@ -1368,9 +1461,12 @@ def ensure_configured_data_ready(
     force_sync: bool = False,
 ) -> None:
     """Require a local Parquet dataset without enforcing session freshness."""
-    if config.data_store.provider == "yahoo" or config.market == "KR":
+    if config.data_store.provider == "yahoo":
         return
-    repository = LocalDatasetRepository(config.data_store.local_cache_dir)
+    repository = LocalDatasetRepository(
+        config.data_store.local_cache_dir,
+        market=config.market,
+    )
     release, _ = repository.current_release()
     price_manifest = repository.current_manifest("daily_price_raw")
     if release is None and price_manifest is None:
@@ -1383,6 +1479,45 @@ def ensure_configured_data_ready(
     _ = force_sync
 
 
+def configured_release_identity_issue(config: AppConfig) -> str | None:
+    """Return a fail-closed live issue when local and R2 current differ."""
+
+    if config.data_store.provider == "yahoo" or not config.data_store.r2.enabled:
+        return None
+    repository = LocalDatasetRepository(
+        config.data_store.local_cache_dir,
+        market=config.market,
+    )
+    local, _ = repository.current_release()
+    if local is None:
+        return "Local coherent release is missing."
+    try:
+        from .storage import ObjectNotFound, R2ObjectStore
+
+        remote_value = R2ObjectStore(config.data_store.r2).get(
+            "releases/current.json"
+        )
+    except ObjectNotFound:
+        return "Remote R2 current release is missing."
+    except Exception as exc:
+        return (
+            "Remote R2 release identity could not be verified: "
+            f"{type(exc).__name__}"
+        )
+    if remote_value.data != local.to_bytes():
+        try:
+            from .manifest import DataRelease
+
+            remote_version = DataRelease.from_bytes(remote_value.data).version
+        except Exception:
+            remote_version = "invalid"
+        return (
+            "Local and remote R2 release identities differ: "
+            f"local={local.version}, remote={remote_version}"
+        )
+    return None
+
+
 def load_configured_market_data(
     config: AppConfig,
     symbols: list[str],
@@ -1392,14 +1527,17 @@ def load_configured_market_data(
     allow_stale: bool = False,
 ) -> MarketData:
     """Load the configured source without enforcing daily-session freshness."""
-    if config.data_store.provider == "yahoo" or config.market == "KR":
+    if config.data_store.provider == "yahoo":
         from ..data import download_market_data
 
         return download_market_data(config, symbols, resolved_universe=resolved_universe)
     if not allow_stale:
         ensure_configured_data_ready(config, force_sync=force_sync)
     schedule = resolved_universe.schedule_as_dicts() if resolved_universe is not None else ()
-    market_data = ParquetMarketDataProvider(config.data_store.local_cache_dir).load(
+    market_data = ParquetMarketDataProvider(
+        config.data_store.local_cache_dir,
+        market=config.market,
+    ).load(
         config,
         symbols,
         universe_schedule=schedule,

@@ -9,6 +9,7 @@ from typing import Callable
 import pandas as pd
 
 from .manifest import write_atomic
+from .markets import expected_completed_session
 
 
 @dataclass(frozen=True)
@@ -25,31 +26,29 @@ def expected_completed_us_session(
     *,
     publication_delay: timedelta = timedelta(minutes=90),
 ) -> str:
-    now = now or datetime.now(UTC)
-    if now.tzinfo is None:
-        now = now.replace(tzinfo=UTC)
-    now_utc = now.astimezone(UTC)
-    try:
-        import exchange_calendars as xcals
-    except ModuleNotFoundError as exc:
-        raise RuntimeError("exchange-calendars is required for daily-session preflight.") from exc
-    calendar = xcals.get_calendar("XNYS")
-    today = pd.Timestamp(now_utc.date())
-    sessions = calendar.sessions_in_range(today - pd.Timedelta(days=14), today)
-    if len(sessions) == 0:
-        raise RuntimeError("Could not resolve a recent XNYS session.")
-    last = sessions[-1]
-    close = calendar.session_close(last).to_pydatetime()
-    if now_utc >= close + publication_delay:
-        return last.date().isoformat()
-    if len(sessions) < 2:
-        raise RuntimeError("Could not resolve the preceding XNYS session.")
-    return sessions[-2].date().isoformat()
+    return expected_completed_session(
+        "US",
+        now,
+        publication_delay=publication_delay,
+    )
+
+
+def expected_completed_kr_session(
+    now: datetime | None = None,
+    *,
+    publication_delay: timedelta = timedelta(minutes=90),
+) -> str:
+    return expected_completed_session(
+        "KR",
+        now,
+        publication_delay=publication_delay,
+    )
 
 
 class DailyPreflight:
-    def __init__(self, state_path: str | Path):
+    def __init__(self, state_path: str | Path, *, market: str = "US"):
         self.state_path = Path(state_path)
+        self.market = str(market).upper()
 
     def run(
         self,
@@ -60,7 +59,7 @@ class DailyPreflight:
         force: bool = False,
         now: datetime | None = None,
     ) -> PreflightResult:
-        expected = expected_completed_us_session(now)
+        expected = expected_completed_session(self.market, now)
         if completed_session and completed_session >= expected:
             state = self._read_state()
             if state.get("last_validated_session") != completed_session:

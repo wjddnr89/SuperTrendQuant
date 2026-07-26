@@ -17,6 +17,7 @@ class CorporateActionType(StrEnum):
     SPLIT = "split"
     CAPITAL_REDUCTION = "capital_reduction"
     STOCK_DIVIDEND = "stock_dividend"
+    REFERENCE_PRICE_ADJUSTMENT = "reference_price_adjustment"
     SPINOFF = "spinoff"
     CASH_MERGER = "cash_merger"
     STOCK_MERGER = "stock_merger"

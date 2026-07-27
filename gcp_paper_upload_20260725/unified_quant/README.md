@@ -43,7 +43,7 @@ uv run quant-optimize \
   --strategy unified_quant/configs/strategies/triple_filters.yaml \
   --runtime unified_quant/configs/runtimes/research_kr.yaml \
   --n-trials 100 \
-  --save-best-dir results/research/kr/best
+  --save-best-dir results/research/kospi200_kosdaq150/best
 
 # One paper cycle
 uv run quant-paper \
@@ -92,16 +92,17 @@ used only for paper sizing and simulated fills:
 
 ```bash
 uv run quant-paper \
-  --strategy unified_quant/configs/strategies/leader_rotation_dual_momentum_nasdaq100.yaml \
+  --strategy unified_quant/configs/strategies/leader_rotation_dual_momentum.yaml \
   --runtime unified_quant/configs/runtimes/paper_toss_nasdaq100_canonical.yaml
 ```
 
 `quant-compare-strategies` recursively discovers every YAML beneath
 `configs/strategies`, aligns all candidates to the same post-warmup date range,
 and selects one winner by Calmar ratio (default) or an equal-weight composite
-percentile score. Results are saved beneath `results/research/comparisons` with
-one portable comparison report plus the table, summary, and each strategy's
-core `summary.json`/`equity.csv` artifacts.
+percentile score. Results are saved beneath the selected runtime universe at
+`results/research/<universe>/comparisons` with one portable comparison report
+plus the table, summary, and each strategy's core `summary.json`/`equity.csv`
+artifacts.
 
 Normal backtests automatically create a self-contained Korean `report.html`
 alongside the compatible `summary.json`, `equity.csv`, and universe snapshot.

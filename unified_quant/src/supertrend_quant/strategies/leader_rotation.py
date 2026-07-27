@@ -177,7 +177,25 @@ class LeaderRotationStrategy:
             else:
                 held_row = held_df.iloc[-1]
                 sell_reason = None
-                if configured_exit_down_confirmed(config, held_df):
+                stop_loss = enabled_component(config, "exits", "fixed_stop_loss")
+                economics = account.position_economics.get(symbol)
+                net_return_pct = (
+                    _finite_float(economics.net_return_pct)
+                    if economics is not None
+                    else None
+                )
+                stop_loss_pct = (
+                    float(stop_loss.params["loss_pct"])
+                    if stop_loss is not None
+                    else None
+                )
+                if (
+                    stop_loss_pct is not None
+                    and net_return_pct is not None
+                    and net_return_pct <= -stop_loss_pct
+                ):
+                    sell_reason = "Fixed stop loss"
+                elif configured_exit_down_confirmed(config, held_df):
                     sell_reason = (
                         "Triple Supertrend down"
                         if enabled_component(config, "exits", "triple_supertrend_flip") is not None
@@ -194,15 +212,12 @@ class LeaderRotationStrategy:
                     current_score = _finite_float(held_row.get("Score"))
                     hurdle = replacement["atr_pct"] * config.leader_rotation.hurdle_atr_mult
                     if current_score is not None and replacement["score"] - current_score > hurdle:
-                        economics = account.position_economics.get(symbol)
-                        profit_pct = (
-                            _finite_float(economics.net_return_pct)
-                            if economics is not None
-                            else None
+                        minimum_profit = (
+                            config.leader_rotation.min_rotation_profit_pct
                         )
-                        if (
-                            profit_pct is not None
-                            and profit_pct >= config.leader_rotation.min_rotation_profit_pct
+                        if minimum_profit is None or (
+                            net_return_pct is not None
+                            and net_return_pct >= minimum_profit
                         ):
                             sell_reason = "Leader rotation"
                 if sell_reason:

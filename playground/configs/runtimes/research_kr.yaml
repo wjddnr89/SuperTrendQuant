@@ -41,9 +41,9 @@ execution:
 
 paper:
   state_file: state/research_kr_paper.json
-  results_dir: results/research/kr/paper
+  results_dir: results/research/kospi200_kosdaq150/paper
   loop_interval_seconds: 60
   run_once_per_candle: true
 
 backtest:
-  results_dir: results/research/kr/backtests
+  results_dir: results/research/kospi200_kosdaq150/backtests

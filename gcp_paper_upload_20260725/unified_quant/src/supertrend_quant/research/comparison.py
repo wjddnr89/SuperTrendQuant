@@ -242,11 +242,14 @@ def format_comparison_table(result: StrategyComparisonResult) -> str:
 
 def save_comparison_result(
     result: StrategyComparisonResult,
-    root_dir: str | Path = "results/research/comparisons",
+    root_dir: str | Path | None = None,
     run_id: str | None = None,
     *,
     generate_report: bool = True,
 ) -> Path:
+    if root_dir is None:
+        runtime_results_dir = Path(result.rows[0].config.backtest.results_dir)
+        root_dir = runtime_results_dir.parent / "comparisons"
     resolved_run_id = run_id or make_run_id("all_strategies", "comparison")
     run_dir = Path(root_dir) / resolved_run_id
     run_dir.mkdir(parents=True, exist_ok=True)

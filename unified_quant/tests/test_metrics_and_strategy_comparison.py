@@ -4,6 +4,7 @@ import math
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -220,6 +221,33 @@ class StrategyComparisonTest(unittest.TestCase):
             summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["winner"]["strategy_name"], "only")
             self.assertEqual(summary["rank_by"], "composite")
+
+            universe_root = Path(tmp) / "kospi200"
+            universe_result = replace(
+                result,
+                rows=tuple(
+                    replace(
+                        row,
+                        config=replace(
+                            row.config,
+                            backtest=replace(
+                                row.config.backtest,
+                                results_dir=str(universe_root / "backtests"),
+                            ),
+                        ),
+                    )
+                    for row in result.rows
+                ),
+            )
+            default_run_dir = comparison.save_comparison_result(
+                universe_result,
+                run_id="universe-comparison-test",
+                generate_report=False,
+            )
+            self.assertEqual(
+                default_run_dir,
+                universe_root / "comparisons" / "universe-comparison-test",
+            )
 
             output = io.StringIO()
             with patch("sys.argv", ["quant-compare-strategies", "--no-save"]), patch.object(

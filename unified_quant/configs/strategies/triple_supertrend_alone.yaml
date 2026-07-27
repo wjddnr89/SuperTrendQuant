@@ -2,7 +2,7 @@ name: triple_supertrend_alone
 type: triple_filters
 
 portfolio:
-  max_positions: 10
+  max_positions: 5
   allocation_pct: 1.0
 
 scoring:
@@ -27,5 +27,5 @@ signals:
 
   exits:
     - type: triple_supertrend_flip
-      down_count: 2
-      confirm_bars: 3
+      down_count: 3
+      confirm_bars: 2

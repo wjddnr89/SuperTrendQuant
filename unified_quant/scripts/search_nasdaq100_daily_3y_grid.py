@@ -336,7 +336,8 @@ def build_fast_leader_plan(
                     if held.avg_price > 0
                     else 0.0
                 )
-                if profit_pct >= config.leader_rotation.min_rotation_profit_pct:
+                minimum_profit = config.leader_rotation.min_rotation_profit_pct
+                if minimum_profit is None or profit_pct >= minimum_profit:
                     sell_reason = "Leader rotation"
         if sell_reason:
             orders.append(sell_all(held, sell_reason))

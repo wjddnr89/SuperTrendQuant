@@ -1,0 +1,49 @@
+name: leader_rotation_dual_momentum_stop_none
+type: leader_rotation
+
+portfolio:
+  max_positions: 1
+  allocation_pct: 1.0
+
+scoring:
+  type: dual_momentum
+  params:
+    lookback_bars: 150
+
+signals:
+  entries:
+    - type: supertrend
+      enabled: true
+      period: 10
+      multiplier: 3.0
+      atr_method: wilder
+      symbol_multipliers: {}
+
+  filters:
+    - type: benchmark_trend
+      enabled: true
+      timeframe: 1d
+
+    - type: ichimoku_cloud
+      enabled: true
+      tenkan: 9
+      kijun: 26
+      span_b: 52
+      shift: 26
+
+    - type: ema_trend
+      enabled: true
+      period: 200
+
+  exits:
+    - type: supertrend_flip
+      enabled: true
+      confirm_bars: 1
+
+    - type: fixed_stop_loss
+      enabled: false
+
+rotation:
+  hurdle:
+    multiplier: 2.0
+  allow_late_chase: true

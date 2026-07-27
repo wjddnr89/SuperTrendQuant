@@ -680,16 +680,22 @@ class HybridLiveRuntime:
                     quantity=min(float(order.quantity), float(position.quantity)),
                 )
             if side == "sell" and order.reason == "Leader rotation":
-                economics = account.position_economics.get(order.symbol)
-                profit_pct = economics.net_return_pct if economics is not None else None
-                if profit_pct is None:
-                    notes.append(
-                        f"Skipped rotation sell {order.symbol}: economic ledger unavailable."
+                minimum_profit = config.leader_rotation.min_rotation_profit_pct
+                if minimum_profit is not None:
+                    economics = account.position_economics.get(order.symbol)
+                    profit_pct = (
+                        economics.net_return_pct if economics is not None else None
                     )
-                    continue
-                if profit_pct < config.leader_rotation.min_rotation_profit_pct:
-                    notes.append(f"Skipped rotation sell {order.symbol}: minimum profit not met.")
-                    continue
+                    if profit_pct is None:
+                        notes.append(
+                            f"Skipped rotation sell {order.symbol}: economic ledger unavailable."
+                        )
+                        continue
+                    if profit_pct < minimum_profit:
+                        notes.append(
+                            f"Skipped rotation sell {order.symbol}: minimum profit not met."
+                        )
+                        continue
             if side == "buy":
                 if order.quantity is None:
                     notes.append(f"Skipped buy {order.symbol}: unresolved cash allocation.")

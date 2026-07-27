@@ -202,7 +202,14 @@ def compare_strategies_main() -> None:
         help="Shared runtime YAML applied to every strategy.",
     )
     parser.add_argument("--rank-by", choices=["calmar", "composite"], default="calmar")
-    parser.add_argument("--results-dir", default="results/research/comparisons")
+    parser.add_argument(
+        "--results-dir",
+        default=None,
+        help=(
+            "Comparison output root. Defaults to the runtime universe directory's "
+            "comparisons sibling."
+        ),
+    )
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--no-save", action="store_true")
     args = parser.parse_args()

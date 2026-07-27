@@ -67,7 +67,7 @@ class PaperRuntimeResultsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             config = load_split_config(
-                "configs/strategies/leader_rotation_dual_momentum_nasdaq100.yaml",
+                "configs/strategies/leader_rotation_dual_momentum.yaml",
                 "configs/runtimes/paper_toss_nasdaq100_canonical.yaml",
             )
             config = config.__class__(

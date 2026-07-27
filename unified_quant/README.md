@@ -43,7 +43,7 @@ uv run quant-optimize \
   --strategy unified_quant/configs/strategies/triple_filters.yaml \
   --runtime unified_quant/configs/runtimes/research_kr.yaml \
   --n-trials 100 \
-  --save-best-dir results/research/kr/best
+  --save-best-dir results/research/kospi200_kosdaq150/best
 
 # One paper cycle
 uv run quant-paper \
@@ -93,7 +93,9 @@ without an authenticated constituent source; setup and fallback file columns are
 - `configs/data.yaml`: shared Parquet, validation, local-cache, and optional R2 settings.
 - `configs/runtimes/research_sp500.yaml`: point-in-time S&P 500 research, backtest, and paper defaults.
 - `configs/runtimes/research_nasdaq100.yaml`: point-in-time Nasdaq-100 research defaults.
-- `configs/runtimes/research_kr.yaml`: KR research defaults.
+- `configs/runtimes/research_kospi200.yaml`: point-in-time KOSPI 200 research defaults.
+- `configs/runtimes/research_kosdaq150.yaml`: point-in-time KOSDAQ 150 research defaults.
+- `configs/runtimes/research_kr.yaml`: combined KOSPI 200 + KOSDAQ 150 research defaults.
 - `configs/runtimes/paper_toss_nasdaq100_canonical.yaml`: canonical Nasdaq-100 paper account with Toss execution quotes.
 - `configs/runtimes/live_toss.yaml`: US live Toss execution profile.
 - `configs/runtimes/live_toss_kr.yaml`: KR live Toss execution profile.
@@ -104,16 +106,17 @@ used only for paper sizing and simulated fills:
 
 ```bash
 uv run quant-paper \
-  --strategy unified_quant/configs/strategies/leader_rotation_dual_momentum_nasdaq100.yaml \
+  --strategy unified_quant/configs/strategies/leader_rotation_dual_momentum.yaml \
   --runtime unified_quant/configs/runtimes/paper_toss_nasdaq100_canonical.yaml
 ```
 
 `quant-compare-strategies` recursively discovers every YAML beneath
 `configs/strategies`, aligns all candidates to the same post-warmup date range,
 and selects one winner by Calmar ratio (default) or an equal-weight composite
-percentile score. Results are saved beneath `results/research/comparisons` with
-one portable comparison report plus the table, summary, and each strategy's
-core `summary.json`/`equity.csv` artifacts.
+percentile score. Results are saved beneath the selected runtime universe at
+`results/research/<universe>/comparisons` with one portable comparison report
+plus the table, summary, and each strategy's core `summary.json`/`equity.csv`
+artifacts.
 
 Normal backtests automatically create a self-contained Korean `report.html`
 alongside the compatible `summary.json`, `equity.csv`, and universe snapshot.

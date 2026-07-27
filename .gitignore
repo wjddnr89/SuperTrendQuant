@@ -6,3 +6,4 @@ __pycache__/
 data/cache/
 state/preflight.json
 state/live/
+results/

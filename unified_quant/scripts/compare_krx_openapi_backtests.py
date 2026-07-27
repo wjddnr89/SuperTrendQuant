@@ -645,7 +645,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--output-root",
-        default="results/research/kr/krx_openapi_comparison",
+        default="results/data_quality/kr/krx_openapi",
     )
     parser.add_argument("--session-count", type=int, default=252)
     parser.add_argument(

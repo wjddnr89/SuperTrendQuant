@@ -42,7 +42,7 @@ uv run quant-optimize \
   --strategy unified_quant/configs/strategies/triple_filters.yaml \
   --runtime unified_quant/configs/runtimes/research_kr.yaml \
   --n-trials 100 \
-  --save-best-dir results/research/kr/best
+  --save-best-dir results/research/kospi200_kosdaq150/best
 
 # One paper cycle
 uv run quant-paper \
@@ -81,8 +81,9 @@ position has disappeared from the refreshed account.
 `quant-compare-strategies` recursively discovers every YAML beneath
 `configs/strategies`, aligns all candidates to the same post-warmup date range,
 and selects one winner by Calmar ratio (default) or an equal-weight composite
-percentile score. Results are saved beneath `results/research/comparisons` with
-the comparison table, summary, and each strategy's normal backtest artifacts.
+percentile score. Results are saved beneath the selected runtime universe at
+`results/research/<universe>/comparisons` with the comparison table, summary,
+and each strategy's normal backtest artifacts.
 
 Strategy YAML owns signal and portfolio behavior. Runtime YAML owns market,
 universe, data period, capital, costs, broker, and output paths. Research uses

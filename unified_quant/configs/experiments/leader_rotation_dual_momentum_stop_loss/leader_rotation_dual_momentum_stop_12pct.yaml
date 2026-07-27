@@ -1,4 +1,4 @@
-name: leader_rotation_dual_momentum_nasdaq100
+name: leader_rotation_dual_momentum_stop_12pct
 type: leader_rotation
 
 portfolio:
@@ -20,7 +20,6 @@ signals:
       symbol_multipliers: {}
 
   filters:
-    # The Nasdaq-100 index_events runtime resolves this benchmark to QQQ.
     - type: benchmark_trend
       enabled: true
       timeframe: 1d
@@ -38,12 +37,14 @@ signals:
 
   exits:
     - type: supertrend_flip
+      enabled: true
       confirm_bars: 1
+
+    - type: fixed_stop_loss
+      enabled: true
+      loss_pct: 0.12
 
 rotation:
   hurdle:
     multiplier: 2.0
-  # Preserve the playground research behavior: eligible leaders may be
-  # entered even when their Supertrend was already up before the current bar.
   allow_late_chase: true
-  min_rotation_profit_pct: 0.0

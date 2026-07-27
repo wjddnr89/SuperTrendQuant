@@ -45,7 +45,7 @@ class LeaderRotationConfig:
     max_slots: int = 1
     hurdle_atr_mult: float = 1.25
     allow_late_chase: bool = True
-    min_rotation_profit_pct: float = 0.01
+    min_rotation_profit_pct: float | None = 0.01
 
 
 @dataclass(frozen=True)
@@ -356,7 +356,7 @@ def compose_split_config(
             "max_slots": max_positions,
             "hurdle_atr_mult": hurdle_raw.get("multiplier", 1.25),
             "allow_late_chase": rotation_raw.get("allow_late_chase", True),
-            "min_rotation_profit_pct": rotation_raw.get("min_rotation_profit_pct", 0.01),
+            "min_rotation_profit_pct": rotation_raw.get("min_rotation_profit_pct"),
         },
         "exit": {
             "sell_confirm_bars": _find_exit_component_value(strategy_raw, "confirm_bars", default=1),
@@ -1137,6 +1137,7 @@ def _validate_component_keys(group_name: str, component_type: str, raw: dict[str
         ("filters", "ema_trend"): {"type", "enabled", "period"},
         ("exits", "supertrend_flip"): {"type", "enabled", "confirm_bars"},
         ("exits", "triple_supertrend_flip"): {"type", "enabled", "down_count", "confirm_bars"},
+        ("exits", "fixed_stop_loss"): {"type", "enabled", "loss_pct"},
     }.get((group_name, component_type))
     if allowed is None:
         raise ValueError(f"Unsupported component: signals.{group_name} type={component_type}")
@@ -1147,6 +1148,23 @@ def _validate_component_keys(group_name: str, component_type: str, raw: dict[str
         )
     if (group_name, component_type) == ("entries", "triple_supertrend"):
         _validate_triple_supertrend_settings(raw.get("settings"))
+    if (group_name, component_type) == ("exits", "fixed_stop_loss"):
+        loss_pct = raw.get("loss_pct")
+        if bool(raw.get("enabled", True)) and loss_pct is None:
+            raise ValueError(
+                "signals.exits type=fixed_stop_loss requires loss_pct when enabled."
+            )
+        if loss_pct is not None:
+            try:
+                normalized_loss_pct = float(loss_pct)
+            except (TypeError, ValueError) as exc:
+                raise ValueError(
+                    "signals.exits type=fixed_stop_loss loss_pct must be numeric."
+                ) from exc
+            if not 0 < normalized_loss_pct < 1:
+                raise ValueError(
+                    "signals.exits type=fixed_stop_loss loss_pct must be between 0 and 1."
+                )
 
 
 def _validate_triple_supertrend_settings(raw: Any) -> None:

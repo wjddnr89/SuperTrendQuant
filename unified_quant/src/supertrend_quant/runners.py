@@ -685,6 +685,12 @@ def run_backtest_on_data(
             df = execution_bars.get(order.symbol)
             if df is None or exec_ts not in df.index:
                 if order.side.lower() == "sell" and order.symbol in positions:
+                    if allow_valuation_carry_forward:
+                        # Validated no-trade observations have no executable
+                        # OHLCV bar.  Keep the holding and let the strategy
+                        # reconsider the exit on the next signal instead of
+                        # fabricating a fill at a carried valuation price.
+                        continue
                     raise RuntimeError(
                         "Held position has no executable price for a requested sell: "
                         f"{order.symbol}/{pd.Timestamp(exec_ts).date()}"

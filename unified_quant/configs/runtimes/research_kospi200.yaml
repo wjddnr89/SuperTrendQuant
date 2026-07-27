@@ -27,9 +27,9 @@ execution:
 
 paper:
   state_file: state/research_kospi200_paper.json
-  results_dir: results/research/kr/kospi200/paper
+  results_dir: results/research/kospi200/paper
   loop_interval_seconds: 60
   run_once_per_candle: true
 
 backtest:
-  results_dir: results/research/kr/kospi200/backtests
+  results_dir: results/research/kospi200/backtests

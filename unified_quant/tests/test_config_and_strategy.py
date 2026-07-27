@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 from supertrend_quant.brokers import PaperBroker
 from supertrend_quant.config import benchmark_for_symbol, load_split_config
@@ -67,6 +68,59 @@ class ConfigAndStrategyTest(unittest.TestCase):
         self.assertEqual(config.paper.results_dir, "results/research/sp500/paper")
         self.assertEqual(config.backtest.results_dir, "results/research/sp500/backtests")
         self.assertNotIn("relative_strength", {component.type for component in config.components})
+
+    def test_kr_research_runtimes_use_universe_first_result_directories(self):
+        expected_roots = {
+            "research_kospi200.yaml": "results/research/kospi200",
+            "research_kosdaq150.yaml": "results/research/kosdaq150",
+            "research_kr.yaml": "results/research/kospi200_kosdaq150",
+        }
+
+        for runtime_name, expected_root in expected_roots.items():
+            with self.subTest(runtime=runtime_name):
+                config = load_split_config(
+                    "configs/strategies/simple_supertrend.yaml",
+                    f"configs/runtimes/{runtime_name}",
+                )
+                self.assertEqual(config.paper.results_dir, f"{expected_root}/paper")
+                self.assertEqual(
+                    config.backtest.results_dir,
+                    f"{expected_root}/backtests",
+                )
+
+    def test_dual_momentum_stop_loss_experiment_matrix_loads(self):
+        experiment_root = (
+            CONFIG_ROOT
+            / "experiments"
+            / "leader_rotation_dual_momentum_stop_loss"
+        )
+        strategy_paths = sorted(experiment_root.glob("*.yaml"))
+        runtime_names = (
+            "research_nasdaq100.yaml",
+            "research_sp500.yaml",
+            "research_kospi200.yaml",
+            "research_kosdaq150.yaml",
+        )
+
+        self.assertEqual(len(strategy_paths), 7)
+        for strategy_path in strategy_paths:
+            with self.subTest(strategy=strategy_path.name):
+                raw = yaml.safe_load(strategy_path.read_text(encoding="utf-8"))
+                self.assertNotIn("min_rotation_profit_pct", raw["rotation"])
+                for runtime_name in runtime_names:
+                    config = load_split_config(
+                        strategy_path,
+                        CONFIG_ROOT / "runtimes" / runtime_name,
+                    )
+                    stop_loss = next(
+                        component
+                        for component in config.components
+                        if component.type == "fixed_stop_loss"
+                    )
+                    self.assertEqual(stop_loss.group, "exits")
+                    self.assertIsNone(
+                        config.leader_rotation.min_rotation_profit_pct
+                    )
 
     def test_strategy_registry_creates_registered_strategy(self):
         config = load_split_config("configs/strategies/simple_supertrend.yaml", "configs/runtimes/research_sp500.yaml")
@@ -150,7 +204,7 @@ class ConfigAndStrategyTest(unittest.TestCase):
 
     def test_canonical_nasdaq100_paper_runtime_uses_toss_quotes_only(self):
         config = load_split_config(
-            "configs/strategies/leader_rotation_dual_momentum_nasdaq100.yaml",
+            "configs/strategies/leader_rotation_dual_momentum.yaml",
             "configs/runtimes/paper_toss_nasdaq100_canonical.yaml",
         )
 

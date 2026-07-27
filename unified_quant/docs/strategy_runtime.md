@@ -163,7 +163,8 @@ Backtests write beneath their runtime's `backtest.results_dir`:
 - `report.html`: self-contained Korean Plotly report. `--no-report` skips only
   this file while retaining all data artifacts.
 
-Strategy comparisons write beneath `results/research/comparisons/<run_id>`:
+Strategy comparisons write beside the selected runtime's backtest directory at
+`results/research/<universe>/comparisons/<run_id>`:
 
 - `comparison.csv`: ranked metrics for every successful strategy YAML;
 - `summary.json`: winner, comparison settings, common date range, and failures;

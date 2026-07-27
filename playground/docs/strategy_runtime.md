@@ -98,7 +98,8 @@ Backtests write beneath their runtime's `backtest.results_dir`:
 - `equity.csv`: historical account equity.
 - `universe_snapshot.json`: membership, filters, exclusions, and as-of hash.
 
-Strategy comparisons write beneath `results/research/comparisons/<run_id>`:
+Strategy comparisons write beside the selected runtime's backtest directory at
+`results/research/<universe>/comparisons/<run_id>`:
 
 - `comparison.csv`: ranked metrics for every successful strategy YAML;
 - `summary.json`: winner, comparison settings, common date range, and failures;

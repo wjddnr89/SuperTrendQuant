@@ -81,11 +81,15 @@ def config_to_split_dicts(
         "signals": grouped,
     }
     if config.strategy.type == "leader_rotation":
-        strategy["rotation"] = {
+        rotation = {
             "hurdle": {"multiplier": config.leader_rotation.hurdle_atr_mult},
             "allow_late_chase": config.leader_rotation.allow_late_chase,
-            "min_rotation_profit_pct": config.leader_rotation.min_rotation_profit_pct,
         }
+        if config.leader_rotation.min_rotation_profit_pct is not None:
+            rotation["min_rotation_profit_pct"] = (
+                config.leader_rotation.min_rotation_profit_pct
+            )
+        strategy["rotation"] = rotation
     if config.strategy.params:
         strategy["params"] = dict(config.strategy.params)
 

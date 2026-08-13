@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nasdaq Three-account Paper</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:#0d1117;color:#e6edf3}
+main{max-width:1100px;margin:auto;padding:28px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+article{background:#161b22;border:1px solid #30363d;border-radius:14px;padding:20px}
+strong{font-size:30px} dl{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+dt{color:#8b949e} dd{margin:0;text-align:right}
+table{width:100%;border-collapse:collapse;margin-top:24px;background:#161b22}
+th,td{padding:10px;border-bottom:1px solid #30363d;text-align:right}
+th:first-child,td:first-child{text-align:left}
+</style></head><body><main>
+<h1>Nasdaq-100 3계좌 가상실험</h1>
+<p>기준일 2026-07-31 · 전일 완성 일봉 신호 / 당일 첫 1분봉 체결</p>
+<section class="cards"><article><h2>A · Original Best</h2><p>수익성 가설</p><strong>$10,000.00</strong><dl><dt>일일</dt><dd>+0.00%</dd><dt>누적</dt><dd>+0.00%</dd><dt>낙폭</dt><dd>0.00%</dd><dt>보유</dt><dd>-</dd><dt>상태</dt><dd>processed</dd></dl></article><article><h2>B · Stable Plateau</h2><p>견고성 가설</p><strong>$10,000.00</strong><dl><dt>일일</dt><dd>+0.00%</dd><dt>누적</dt><dd>+0.00%</dd><dt>낙폭</dt><dd>0.00%</dd><dt>보유</dt><dd>-</dd><dt>상태</dt><dd>processed</dd></dl></article><article><h2>C · Original Best - No Market Filter</h2><p>수익 극대화·시장필터 제거 가설</p><strong>$9,317.95</strong><dl><dt>일일</dt><dd>-6.68%</dd><dt>누적</dt><dd>-6.82%</dd><dt>낙폭</dt><dd>-6.82%</dd><dt>보유</dt><dd>FTNT</dd><dt>상태</dt><dd>processed</dd></dl></article></section><table class="dataframe summary">
+  <thead>
+    <tr style="text-align: right;">
+      <th>account_id</th>
+      <th>equity</th>
+      <th>daily_return</th>
+      <th>cumulative_return</th>
+      <th>drawdown</th>
+      <th>position_symbol</th>
+      <th>orders</th>
+      <th>fills</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A</td>
+      <td>10000.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td>10000.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>9317.946821</td>
+      <td>-0.066828</td>
+      <td>-0.068205</td>
+      <td>-0.068205</td>
+      <td>FTNT</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+  </tbody>
+</table>
+</main></body></html>

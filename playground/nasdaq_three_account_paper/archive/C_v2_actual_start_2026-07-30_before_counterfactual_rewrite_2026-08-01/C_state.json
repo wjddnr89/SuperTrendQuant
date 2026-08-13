@@ -1,0 +1,35 @@
+{
+  "cash": 146.3968205800029,
+  "positions": {
+    "FTNT": {
+      "quantity": 59.0,
+      "avg_price": 166.84337999999997
+    }
+  },
+  "fills": [
+    "BUY FTNT 59 @ 166.8434"
+  ],
+  "position_economics": {
+    "FTNT": {
+      "entry_cost": 9853.603179419997,
+      "distributions": 0.0
+    }
+  },
+  "metadata": {
+    "strategy_account": "C",
+    "strategy_generation": "C_v2_original_best_no_market_filter",
+    "inception_after_execution_date": "2026-07-29",
+    "blocked_symbols": [],
+    "strategy_policy": {
+      "name": "Original Best - No Market Filter",
+      "hypothesis": "수익 극대화·시장필터 제거 가설",
+      "market_filter": "none",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    "last_execution_date": "2026-07-31",
+    "last_signal_date": "2026-07-30"
+  }
+}

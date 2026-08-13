@@ -1,0 +1,116 @@
+{
+  "experiment": {
+    "name": "nasdaq_seven_account_paper",
+    "market": "US",
+    "benchmark": "QQQ",
+    "initial_cash": 10000.0,
+    "fee_rate": 0.001,
+    "slippage_rate": 0.0005,
+    "signal_history_bars": 320,
+    "daily_refresh_bars": 10,
+    "minute_max_pages": 30,
+    "intraday_history_minutes": 6000,
+    "intraday_refresh_minutes": 800,
+    "intraday_seed_period": "60d",
+    "regular_open": "09:30",
+    "regular_close": "16:00",
+    "timezone": "America/New_York"
+  },
+  "universe": {
+    "history_file": "../data/universes/nasdaq100_quarterly_history.json",
+    "profile": "nasdaq100"
+  },
+  "strategy": {
+    "strategy_file": "../../unified_quant/configs/strategies/leader_rotation_dual_momentum.yaml",
+    "runtime_file": "../../unified_quant/configs/runtimes/research_nasdaq100.yaml",
+    "rs_method": "dual_momentum",
+    "rs_period": 150,
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "sell_confirm_bars": 1,
+    "rotation_hurdle": 2.0,
+    "max_positions": 1,
+    "supertrend_period": 10,
+    "supertrend_multiplier": 3.0
+  },
+  "accounts": {
+    "A": {
+      "name": "Original Best",
+      "hypothesis": "수익성 가설",
+      "market_filter": "1d",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    "B": {
+      "name": "Stable Plateau",
+      "hypothesis": "견고성 가설",
+      "market_filter": "1d",
+      "rotation_profit_gate": "off",
+      "stop_loss_pct": 0.12,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    "C": {
+      "name": "Original Best - No Market Filter",
+      "hypothesis": "수익 극대화·시장필터 제거 가설",
+      "market_filter": "none",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    "D": {
+      "name": "Original Best - No Market Filter - 2h Exit",
+      "hypothesis": "C와 동일한 진입·회전 규칙에서 2시간봉 매도 가설",
+      "market_filter": "none",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null,
+      "exit_timeframe": "2h",
+      "exit_supertrend_period": 10,
+      "exit_supertrend_multiplier": 3.0,
+      "exit_trigger_timeframe": "1m",
+      "exit_confirm_minutes": 10,
+      "reentry_release": "completed_2h_bullish_after_exit",
+      "entry_2h_safety_gate": true
+    },
+    "E": {
+      "name": "Original Best - ATR Risk 2.5%",
+      "hypothesis": "주력·위험조정 성과 우선: A + ATR 2.5%",
+      "market_filter": "1d",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null,
+      "entry_atr_risk_pct": 0.025
+    },
+    "F": {
+      "name": "No Market Filter - ATR Risk 2.5%",
+      "hypothesis": "공격형 보조계좌: C + ATR 2.5%",
+      "market_filter": "none",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null,
+      "entry_atr_risk_pct": 0.025
+    },
+    "G": {
+      "name": "No Market Filter - ATR Risk 2.0%",
+      "hypothesis": "C 자체의 MDD 최소화: C + ATR 2.0%",
+      "market_filter": "none",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null,
+      "entry_atr_risk_pct": 0.02
+    }
+  },
+  "storage": {
+    "state_dir": "state",
+    "data_dir": "data",
+    "results_dir": "results"
+  }
+}

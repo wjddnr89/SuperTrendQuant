@@ -1,0 +1,81 @@
+{
+  "name": "kospi200_market_filter_comparison_v1",
+  "strategy": "unified_quant/configs/strategies/leader_rotation_dual_momentum.yaml",
+  "runtime": "unified_quant/configs/runtimes/research_kospi200.yaml",
+  "period": "max",
+  "start": "2015-10-19",
+  "end": "2026-07-15",
+  "costs": {
+    "fee_rate": 0.00225,
+    "slippage_rate": 0.0005
+  },
+  "base_combo": {
+    "entry": "single",
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_method": "dual_momentum",
+    "rs_period": 150,
+    "sell_confirm_bars": 1,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0
+  },
+  "policies": [
+    {
+      "policy_id": "A",
+      "name": "Original Best",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    {
+      "policy_id": "B",
+      "name": "Stable Plateau",
+      "rotation_profit_gate": "off",
+      "stop_loss_pct": 0.12,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    {
+      "policy_id": "C",
+      "name": "Late-chase Defense",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": 0.08,
+      "late_chase_mode": "kijun_atr_capped",
+      "max_extension_atr": 3.5
+    }
+  ],
+  "market_filter_variants": [
+    {
+      "variant_id": "cap_weight_069500",
+      "name": "KODEX200 cap-weight SuperTrend",
+      "type": "cap_weight"
+    },
+    {
+      "variant_id": "none",
+      "name": "No market filter",
+      "type": "none"
+    },
+    {
+      "variant_id": "breadth_50",
+      "name": "Point-in-time constituent breadth >= 50%",
+      "type": "breadth",
+      "threshold": 0.5,
+      "minimum_coverage": 0.75
+    },
+    {
+      "variant_id": "equal_weight",
+      "name": "Point-in-time equal-weight synthetic index SuperTrend",
+      "type": "equal_weight",
+      "minimum_coverage": 0.75
+    }
+  ],
+  "evaluation": {
+    "first_year": 2016,
+    "primary_first_year": 2021,
+    "last_year": 2026,
+    "cost_multipliers": [1.0]
+  }
+}

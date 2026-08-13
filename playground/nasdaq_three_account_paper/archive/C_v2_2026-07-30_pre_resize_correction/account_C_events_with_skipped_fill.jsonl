@@ -1,0 +1,1 @@
+{"execution_date": "2026-07-30", "signal_date": "2026-07-29", "plan": [{"symbol": "FTNT", "side": "buy", "quantity": 65, "reason": "Top-ranked leader"}], "fills": ["SKIP BUY FTNT: insufficient cash"], "equity": 10000.0, "cash": 10000.0, "position": "", "notes": []}

@@ -1,0 +1,25 @@
+{
+  "cash": 10000.0,
+  "positions": {},
+  "fills": [
+    "SKIP BUY FTNT: insufficient cash"
+  ],
+  "position_economics": {},
+  "metadata": {
+    "strategy_account": "C",
+    "strategy_generation": "C_v2_original_best_no_market_filter",
+    "inception_after_execution_date": "2026-07-29",
+    "blocked_symbols": [],
+    "strategy_policy": {
+      "name": "Original Best - No Market Filter",
+      "hypothesis": "수익 극대화·시장필터 제거 가설",
+      "market_filter": "none",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null
+    },
+    "last_execution_date": "2026-07-30",
+    "last_signal_date": "2026-07-29"
+  }
+}

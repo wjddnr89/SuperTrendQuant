@@ -1,0 +1,20 @@
+{
+  "cash": 10000.0,
+  "positions": {},
+  "fills": [],
+  "position_economics": {},
+  "metadata": {
+    "last_execution_date": "2026-07-29",
+    "last_signal_date": "2026-07-28",
+    "blocked_symbols": [],
+    "strategy_account": "C",
+    "strategy_policy": {
+      "name": "Late-chase Defense",
+      "hypothesis": "진입 위험 방어 가설",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": 0.08,
+      "late_chase_mode": "kijun_atr_capped",
+      "max_extension_atr": 3.5
+    }
+  }
+}

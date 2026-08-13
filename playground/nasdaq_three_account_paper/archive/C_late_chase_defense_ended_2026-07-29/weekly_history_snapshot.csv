@@ -1,0 +1,4 @@
+﻿iso_year,iso_week,week,account_id,account_name,hypothesis,start_date,end_date,trading_days,start_equity,end_equity,weekly_return,cumulative_return,worst_drawdown,orders,fills,latest_position,latest_status
+2026,31,2026-W31,A,Original Best,수익성 가설,2026-07-27,2026-07-29,3,10000.0,10000.0,0.0,0.0,0.0,0,0,,processed
+2026,31,2026-W31,B,Stable Plateau,견고성 가설,2026-07-27,2026-07-29,3,10000.0,10000.0,0.0,0.0,0.0,0,0,,processed
+2026,31,2026-W31,C,Late-chase Defense,진입 위험 방어 가설,2026-07-27,2026-07-29,3,10000.0,10000.0,0.0,0.0,0.0,0,0,,processed

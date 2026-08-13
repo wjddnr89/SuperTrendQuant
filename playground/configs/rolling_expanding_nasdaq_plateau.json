@@ -1,0 +1,82 @@
+{
+  "name": "rolling_expanding_nasdaq_plateau_v1",
+  "strategy": "unified_quant/configs/strategies/leader_rotation_dual_momentum.yaml",
+  "runtime": "unified_quant/configs/runtimes/research_nasdaq100.yaml",
+  "period": "max",
+  "start": "2015-10-19",
+  "end": "2026-07-15",
+  "costs": {
+    "fee_rate": 0.001,
+    "slippage_rate": 0.0005
+  },
+  "base_combo": {
+    "entry": "single",
+    "market_filter": "1d",
+    "asset_filter": "ichimoku_cloud+ema_trend",
+    "rs_period": 150,
+    "sell_confirm_bars": 1,
+    "hurdle": 2.0,
+    "max_positions": 1,
+    "st_period": 10,
+    "st_multiplier": 3.0
+  },
+  "candidate_families": [
+    {
+      "family": "legacy_gate0_unlimited",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": [null, 0.06, 0.08, 0.10, 0.12],
+      "late_chase": [
+        {"mode": "unlimited"}
+      ],
+      "core": {
+        "stop_loss_pct": null,
+        "late_chase_mode": "unlimited",
+        "max_extension_atr": null
+      }
+    },
+    {
+      "family": "gateoff_unlimited",
+      "rotation_profit_gate": "off",
+      "stop_loss_pct": [0.06, 0.08, 0.10, 0.12],
+      "late_chase": [
+        {"mode": "unlimited"}
+      ],
+      "core": {
+        "stop_loss_pct": 0.08,
+        "late_chase_mode": "unlimited",
+        "max_extension_atr": null
+      }
+    },
+    {
+      "family": "gate0_capped",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": [0.06, 0.08, 0.10, 0.12],
+      "late_chase": [
+        {"mode": "kijun_atr_capped", "max_extension_atr": 2.5},
+        {"mode": "kijun_atr_capped", "max_extension_atr": 3.5},
+        {"mode": "kijun_atr_capped", "max_extension_atr": 4.5}
+      ],
+      "core": {
+        "stop_loss_pct": 0.08,
+        "late_chase_mode": "kijun_atr_capped",
+        "max_extension_atr": 3.5
+      }
+    }
+  ],
+  "validation": {
+    "first_train_year": 2016,
+    "first_outer_test_year": 2021,
+    "last_outer_test_year": 2026,
+    "rolling_years": 5,
+    "methods": ["rolling_5y", "expanding"]
+  },
+  "selection": {
+    "min_positive_year_ratio": 0.75,
+    "min_total_trades": 15,
+    "max_abs_mdd": 0.55,
+    "max_top_trade_gross_profit_share": 0.60,
+    "stress_shortlist": 5,
+    "cost_stress_multiplier": 2.0,
+    "plateau_neighbor_steps": 1
+  }
+}

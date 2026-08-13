@@ -1,0 +1,2 @@
+{"execution_date": "2026-07-30", "signal_date": "2026-07-29", "plan": [{"symbol": "FTNT", "side": "buy", "quantity": 59.0, "reason": "Top-ranked leader"}], "fills": ["BUY FTNT 59 @ 166.8434"], "equity": 9985.236820580003, "cash": 146.3968205800029, "position": "FTNT", "notes": ["Execution-price cash resize FTNT: 65 -> 59"]}
+{"execution_date": "2026-07-31", "signal_date": "2026-07-30", "plan": [], "fills": [], "equity": 9317.946820580002, "cash": 146.3968205800029, "position": "FTNT", "notes": []}

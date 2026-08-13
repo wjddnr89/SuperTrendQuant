@@ -1,0 +1,25 @@
+{
+  "cash": 10000.0,
+  "positions": {},
+  "fills": [],
+  "position_economics": {},
+  "metadata": {
+    "last_execution_date": "2026-07-31",
+    "last_signal_date": "2026-07-30",
+    "blocked_symbols": [],
+    "strategy_account": "E",
+    "strategy_generation": "E_v1_original_best_atr_risk_2p5",
+    "cold_start_after_execution_date": "2026-07-31",
+    "history_basis": "forward_paper_cold_start",
+    "strategy_policy": {
+      "name": "Original Best - ATR Risk 2.5%",
+      "hypothesis": "주력·위험조정 성과 우선: A + ATR 2.5%",
+      "market_filter": "1d",
+      "rotation_profit_gate": "nonnegative",
+      "stop_loss_pct": null,
+      "late_chase_mode": "unlimited",
+      "max_extension_atr": null,
+      "entry_atr_risk_pct": 0.025
+    }
+  }
+}

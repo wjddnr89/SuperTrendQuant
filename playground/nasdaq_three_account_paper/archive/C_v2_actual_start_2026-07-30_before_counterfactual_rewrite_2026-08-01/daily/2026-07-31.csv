@@ -1,0 +1,4 @@
+﻿execution_date,signal_date,account_id,account_name,hypothesis,status,equity,cash,positions_value,daily_return,cumulative_return,drawdown,position_symbol,position_quantity,position_avg_price,mark_price,order_count,fill_count,orders,fills,notes
+2026-07-31,2026-07-30,A,Original Best,수익성 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]
+2026-07-31,2026-07-30,B,Stable Plateau,견고성 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]
+2026-07-31,2026-07-30,C,Original Best - No Market Filter,수익 극대화·시장필터 제거 가설,processed,9317.946820580002,146.3968205800029,9171.55,-0.06682765887181452,-0.0682053179419998,-0.0682053179419998,FTNT,59.0,166.84337999999997,155.45,0,0,[],[],[]

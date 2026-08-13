@@ -1,0 +1,4 @@
+﻿execution_date,signal_date,account_id,account_name,hypothesis,status,equity,cash,positions_value,daily_return,cumulative_return,drawdown,position_symbol,position_quantity,position_avg_price,mark_price,order_count,fill_count,orders,fills,notes
+2026-07-27,2026-07-24,A,Original Best,수익성 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]
+2026-07-27,2026-07-24,B,Stable Plateau,견고성 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]
+2026-07-27,2026-07-24,C,Late-chase Defense,진입 위험 방어 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]

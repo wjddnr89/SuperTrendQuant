@@ -1,0 +1,4 @@
+﻿execution_date,signal_date,account_id,account_name,hypothesis,status,equity,cash,positions_value,daily_return,cumulative_return,drawdown,position_symbol,position_quantity,position_avg_price,mark_price,order_count,fill_count,orders,fills,notes
+2026-07-30,2026-07-29,A,Original Best,수익성 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]
+2026-07-30,2026-07-29,B,Stable Plateau,견고성 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,0,0,[],[],[]
+2026-07-30,2026-07-29,C,Original Best - No Market Filter,수익 극대화·시장필터 제거 가설,processed,10000.0,10000.0,0.0,0.0,0.0,0.0,,0.0,0.0,0.0,1,0,"[{""symbol"": ""FTNT"", ""side"": ""buy"", ""quantity"": 65, ""reason"": ""Top-ranked leader""}]","[""SKIP BUY FTNT: insufficient cash""]",[]
